@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Josh Meehl">
-<meta name="dcterms.date" content="2025-12-01">
 
-<title>Genomic Foundation Models</title>
+<title>2&nbsp; PRS &amp; GWAS Basics – Genomic Foundation Models</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -32,7 +50,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./intro.html" rel="next">
+<link href="./ch-p1-cadd.html" rel="next">
+<link href="./ch-p1-ngs.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -70,6 +89,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -83,7 +131,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ch-p1-ngs.html">Part I: Data &amp; Pre-DL Methods</a></li><li class="breadcrumb-item"><a href="./ch-p1-prs.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">PRS &amp; GWAS Basics</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -110,7 +158,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
@@ -137,7 +185,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch-p1-prs.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch-p1-prs.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">PRS &amp; GWAS Basics</span></span></a>
   </div>
 </li>
@@ -322,51 +370,39 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
+  <li><a href="#the-gwas-paradigm" id="toc-the-gwas-paradigm" class="nav-link active" data-scroll-target="#the-gwas-paradigm"><span class="header-section-number">2.1</span> The GWAS Paradigm</a>
   <ul class="collapse">
-  <li><a href="#who-this-book-is-for" id="toc-who-this-book-is-for" class="nav-link" data-scroll-target="#who-this-book-is-for">Who This Book Is For</a></li>
-  <li><a href="#how-the-book-is-organized" id="toc-how-the-book-is-organized" class="nav-link" data-scroll-target="#how-the-book-is-organized">How the Book Is Organized</a></li>
-  <li><a href="#key-themes-across-the-book" id="toc-key-themes-across-the-book" class="nav-link" data-scroll-target="#key-themes-across-the-book">Key Themes Across the Book</a>
+  <li><a href="#key-concepts" id="toc-key-concepts" class="nav-link" data-scroll-target="#key-concepts"><span class="header-section-number">2.1.1</span> Key Concepts</a></li>
+  </ul></li>
+  <li><a href="#the-fine-mapping-challenge" id="toc-the-fine-mapping-challenge" class="nav-link" data-scroll-target="#the-fine-mapping-challenge"><span class="header-section-number">2.2</span> The Fine-Mapping Challenge</a></li>
+  <li><a href="#constructing-polygenic-risk-scores" id="toc-constructing-polygenic-risk-scores" class="nav-link" data-scroll-target="#constructing-polygenic-risk-scores"><span class="header-section-number">2.3</span> Constructing Polygenic Risk Scores</a>
   <ul class="collapse">
-  <li><a href="#data-architecture-evolution" id="toc-data-architecture-evolution" class="nav-link" data-scroll-target="#data-architecture-evolution">Data → Architecture Evolution</a></li>
-  <li><a href="#context-length-scaling-1-kb-100-kb-1-mb" id="toc-context-length-scaling-1-kb-100-kb-1-mb" class="nav-link" data-scroll-target="#context-length-scaling-1-kb-100-kb-1-mb">Context Length Scaling: 1 kb → 100 kb → 1 Mb</a></li>
-  <li><a href="#self-supervision-leveraging-unlabeled-genomic-data" id="toc-self-supervision-leveraging-unlabeled-genomic-data" class="nav-link" data-scroll-target="#self-supervision-leveraging-unlabeled-genomic-data">Self-Supervision: Leveraging Unlabeled Genomic Data</a></li>
-  <li><a href="#transfer-learning-protein-lms-dna-lms-human-cross-species" id="toc-transfer-learning-protein-lms-dna-lms-human-cross-species" class="nav-link" data-scroll-target="#transfer-learning-protein-lms-dna-lms-human-cross-species">Transfer Learning: Protein LMs → DNA LMs; Human → Cross-Species</a></li>
-  <li><a href="#clinical-translation-vep-prs-rare-disease-and-beyond" id="toc-clinical-translation-vep-prs-rare-disease-and-beyond" class="nav-link" data-scroll-target="#clinical-translation-vep-prs-rare-disease-and-beyond">Clinical Translation: VEP, PRS, Rare Disease, and Beyond</a></li>
-  <li><a href="#interpretability-from-black-box-to-mechanistic-insight" id="toc-interpretability-from-black-box-to-mechanistic-insight" class="nav-link" data-scroll-target="#interpretability-from-black-box-to-mechanistic-insight">Interpretability: From Black Box to Mechanistic Insight</a></li>
+  <li><a href="#traditional-prs-methods" id="toc-traditional-prs-methods" class="nav-link" data-scroll-target="#traditional-prs-methods"><span class="header-section-number">2.3.1</span> Traditional PRS Methods</a></li>
   </ul></li>
-  <li><a href="#what-this-book-is-not" id="toc-what-this-book-is-not" class="nav-link" data-scroll-target="#what-this-book-is-not">What This Book Is <em>Not</em></a></li>
-  <li><a href="#how-to-read-and-use-this-book" id="toc-how-to-read-and-use-this-book" class="nav-link" data-scroll-target="#how-to-read-and-use-this-book">How to Read and Use This Book</a></li>
-  <li><a href="#acknowledgments" id="toc-acknowledgments" class="nav-link" data-scroll-target="#acknowledgments">Acknowledgments</a></li>
+  <li><a href="#heritability-and-its-partitioning" id="toc-heritability-and-its-partitioning" class="nav-link" data-scroll-target="#heritability-and-its-partitioning"><span class="header-section-number">2.4</span> Heritability and Its Partitioning</a></li>
+  <li><a href="#limitations-of-current-approaches" id="toc-limitations-of-current-approaches" class="nav-link" data-scroll-target="#limitations-of-current-approaches"><span class="header-section-number">2.5</span> Limitations of Current Approaches</a>
+  <ul class="collapse">
+  <li><a href="#ancestry-bias" id="toc-ancestry-bias" class="nav-link" data-scroll-target="#ancestry-bias"><span class="header-section-number">2.5.1</span> Ancestry Bias</a></li>
+  <li><a href="#missing-heritability" id="toc-missing-heritability" class="nav-link" data-scroll-target="#missing-heritability"><span class="header-section-number">2.5.2</span> Missing Heritability</a></li>
+  <li><a href="#mechanistic-opacity" id="toc-mechanistic-opacity" class="nav-link" data-scroll-target="#mechanistic-opacity"><span class="header-section-number">2.5.3</span> Mechanistic Opacity</a></li>
   </ul></li>
+  <li><a href="#the-promise-of-deep-learning" id="toc-the-promise-of-deep-learning" class="nav-link" data-scroll-target="#the-promise-of-deep-learning"><span class="header-section-number">2.6</span> The Promise of Deep Learning</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./ch-p1-ngs.html">Part I: Data &amp; Pre-DL Methods</a></li><li class="breadcrumb-item"><a href="./ch-p1-prs.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">PRS &amp; GWAS Basics</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Genomic Foundation Models</h1>
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">PRS &amp; GWAS Basics</span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Josh Meehl </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">December 1, 2025</p>
-    </div>
-  </div>
   
     
   </div>
@@ -376,181 +412,124 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>Genomics is in the middle of a quiet revolution.</p>
-<p>For years, “machine learning in genetics” meant hand-crafted features, linear models, and carefully tuned statistical pipelines. Variant calling relied on logistic regression and hidden Markov models. Genome-wide association studies (GWAS) and polygenic risk scores (PRS) summarized common variant effects. Deleteriousness scores like CADD distilled curated annotations into prioritization heuristics. Functional genomics resources—ENCODE, GTEx, large biobanks—arrived in waves, but each new dataset was bolted onto bespoke tools and task-specific models.</p>
-<p>Over roughly the last decade, that picture has changed. Convolutional neural networks (CNNs) began to learn regulatory code directly from sequence. Transformers and protein language models showed how self-supervision on massive unlabeled corpora could extract rich biological structure. Genomic foundation models (GFMs) now promise reusable representations of DNA, RNA, protein, and multi-omic context that can be adapted to everything from variant effect prediction to clinical risk scoring.</p>
-<p>This book is my attempt to make sense of that transition—<em>from sequence variation to genomic foundation models and back again to clinical and biological questions</em>—in a way that is coherent, historically grounded, and practically useful.</p>
-<hr>
-<section id="who-this-book-is-for" class="level2">
-<h2 class="anchored" data-anchor-id="who-this-book-is-for">Who This Book Is For</h2>
-<p>This book is written for readers who sit somewhere in the triangle between <strong>genomics</strong>, <strong>statistics</strong>, and <strong>machine learning</strong>:</p>
+<section id="the-gwas-paradigm" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="the-gwas-paradigm"><span class="header-section-number">2.1</span> The GWAS Paradigm</h2>
+<p>Genome-wide association studies (GWAS) have transformed our understanding of the genetic architecture of complex traits and diseases. By testing millions of common genetic variants across large populations, GWAS identify single nucleotide polymorphisms (SNPs) statistically associated with phenotypes of interest. The NHGRI-EBI GWAS Catalog now contains tens of thousands of robust associations across hundreds of traits.</p>
+<section id="key-concepts" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="key-concepts"><span class="header-section-number">2.1.1</span> Key Concepts</h3>
+<p><strong>Effect sizes and summary statistics</strong>: For each tested variant, GWAS produces summary statistics including:</p>
 <ul>
-<li><p><strong>Computational biologists and statistical geneticists</strong><br>
-who want to understand how deep learning and foundation models fit alongside GWAS, PRS, rare variant association, and functional genomics.</p></li>
-<li><p><strong>Machine learning researchers and engineers</strong><br>
-who are comfortable with CNNs, transformers, and language models, and want a pragmatic guide to what makes genomic data different from text or images.</p></li>
-<li><p><strong>Clinicians and translational researchers</strong><br>
-who increasingly see “AI scores,” “foundation models,” or “genomic LLMs” in papers, reports, and grant proposals, and want a grounded view of what these tools can and cannot do in practice.</p></li>
+<li>Effect size (β): The estimated change in phenotype per copy of the effect allele</li>
+<li>Standard error: Uncertainty in the effect estimate</li>
+<li>P-value: Statistical significance of the association</li>
+<li>Allele frequency: Population prevalence of the variant</li>
 </ul>
-<p>Some familiarity with probability, linear models, and basic genomics (variants, genes, regulatory elements) will help, but the early chapters are designed to be a gentle ramp rather than a gate.</p>
-<hr>
+<p>Most GWAS-identified variants have small individual effects—typically explaining less than 1% of phenotypic variance each—reflecting the highly polygenic nature of complex traits.</p>
+<p><strong>Linkage disequilibrium (LD)</strong>: Variants that are physically close on a chromosome tend to be inherited together, creating correlations in genotype data. This LD structure means that GWAS signals often implicate blocks of correlated variants rather than pinpointing causal variants directly. LD patterns vary substantially across populations due to different demographic histories, creating challenges for cross-ancestry analyses.</p>
 </section>
-<section id="how-the-book-is-organized" class="level2">
-<h2 class="anchored" data-anchor-id="how-the-book-is-organized">How the Book Is Organized</h2>
-<p>The book is organized into five parts that mirror how the field itself has evolved—from data and pre-deep-learning methods to CNNs, transformers, foundation models, and finally clinical and translational applications. :contentReference<span data-index="0">oaicite:0</span></p>
+</section>
+<section id="the-fine-mapping-challenge" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="the-fine-mapping-challenge"><span class="header-section-number">2.2</span> The Fine-Mapping Challenge</h2>
+<p>A central challenge in post-GWAS analysis is distinguishing causal variants from those merely correlated with causal variants through LD. Fine-mapping methods attempt to resolve this by computing posterior inclusion probabilities (PIPs) for each variant being causal.</p>
+<p>Statistical fine-mapping approaches like SuSiE identify credible sets of variants likely to contain the causal variant <span class="citation" data-cites="avsec_enformer_2021">(<a href="#ref-avsec_enformer_2021" role="doc-biblioref">Avsec et al. 2021</a>)</span>. For 48 well-powered traits in the UK Biobank, genome-wide fine-mapping identified causal variants collectively explaining 17% of SNP-based heritability, though reaching 50% would require approximately 2 million samples on average <span class="citation" data-cites="wu_genome-wide_2024">(<a href="#ref-wu_genome-wide_2024" role="doc-biblioref">Wu et al. 2024</a>)</span>.</p>
+<p>The majority of GWAS-identified variants are spuriously correlated with the phenotype through LD rather than being truly causal. Fine-mapping—predicting which variants are causal—is crucial for downstream tasks including uncovering biological mechanisms and constructing robust polygenic risk scores <span class="citation" data-cites="rakowski_mifm_2025">(<a href="#ref-rakowski_mifm_2025" role="doc-biblioref">Rakowski and Lippert 2025</a>)</span>.</p>
+</section>
+<section id="constructing-polygenic-risk-scores" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="constructing-polygenic-risk-scores"><span class="header-section-number">2.3</span> Constructing Polygenic Risk Scores</h2>
+<p>Polygenic risk scores (PRS) aggregate the effects of many genetic variants into a single measure of an individual’s genetic predisposition to a trait or disease.</p>
+<section id="traditional-prs-methods" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="traditional-prs-methods"><span class="header-section-number">2.3.1</span> Traditional PRS Methods</h3>
+<p><strong>Clumping and thresholding (C+T)</strong>: The simplest approach:</p>
+<ol type="1">
+<li>Select variants below a p-value threshold</li>
+<li>“Clump” correlated variants, keeping only the most significant per LD block</li>
+<li>Sum effect sizes weighted by genotype dosage</li>
+</ol>
+<p><strong>LDpred and Bayesian methods</strong>: More sophisticated approaches model the joint distribution of effect sizes while accounting for LD structure, typically improving prediction accuracy over C+T methods.</p>
+<p><strong>Linear assumptions</strong>: Most PRS methods assume that variant effects:</p>
 <ul>
-<li><p><strong>Part I: Data &amp; Pre-DL Methods (Chapters 1–4)</strong><br>
-We start from the raw materials: next-generation sequencing and variant calling, GWAS and PRS basics, classical deleteriousness scores, and foundational functional genomics resources. This part establishes the statistical and biological context that later deep models must respect.</p></li>
-<li><p><strong>Part II: CNN Seq-to-Function Models (Chapters 5–7)</strong><br>
-We then move into supervised sequence-to-function models like DeepSEA, ExPecto, and SpliceAI. These chapters show how CNNs can learn regulatory code, link chromatin to expression, and predict splicing, and they surface early lessons about architecture, context windows, and training data.</p></li>
-<li><p><strong>Part III: Transformer Models (Chapters 8–11)</strong><br>
-With that foundation, we broaden to representation learning and long-range modeling. We discuss sequence tokenization and context representation, protein language models, DNA foundation models, and hybrid architectures that couple CNNs and transformers to capture long-range regulatory interactions.</p></li>
-<li><p><strong>Part IV: GFMs &amp; Multi-omics (Chapters 12–16)</strong><br>
-Here we step back and ask: what makes a genomic model a <em>foundation model</em>? We examine principles for designing GFMs, how variant effect prediction is being reshaped by foundation models, and how confounding, interpretability, and multi-omic integration become more critical as models grow larger and more general.</p></li>
-<li><p><strong>Part V: Applications (Chapters 17–19)</strong><br>
-Finally, we move from methods to workflows: clinical risk prediction, pathogenic variant discovery, and drug discovery/biotech applications. These chapters focus less on novel architectures and more on how GFMs plug into broader pipelines, evaluation strategies, and decision-making processes.</p></li>
+<li>Scale linearly with allele count (additive model)</li>
+<li>Are constant across individuals</li>
+<li>Combine additively across the genome</li>
 </ul>
-<p>You do not have to read the book linearly. If you are already comfortable with GWAS and classical variant scores, you might skim Part I and start with the CNN or transformer chapters. If you care primarily about clinical or biotech applications, you may wish to read Part V early, referring back to earlier chapters as needed.</p>
-<hr>
+<p>While computationally convenient, these assumptions increase error, particularly for individuals from underrepresented populations <span class="citation" data-cites="georgantas_delphi_2024">(<a href="#ref-georgantas_delphi_2024" role="doc-biblioref">Georgantas, Kutalik, and Richiardi 2024</a>)</span>.</p>
 </section>
-<section id="key-themes-across-the-book" class="level2">
-<h2 class="anchored" data-anchor-id="key-themes-across-the-book">Key Themes Across the Book</h2>
-<p>Several themes recur throughout the chapters, and the rest of the book can be read as a deepening of each of these:</p>
-<section id="data-architecture-evolution" class="level3">
-<h3 class="anchored" data-anchor-id="data-architecture-evolution">Data → Architecture Evolution</h3>
-<p>We trace how <strong>data availability and representation</strong> drove model design:</p>
+</section>
+<section id="heritability-and-its-partitioning" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="heritability-and-its-partitioning"><span class="header-section-number">2.4</span> Heritability and Its Partitioning</h2>
+<p><strong>SNP-based heritability</strong> (<span class="math inline">\(h^2_{SNP}\)</span>) estimates the proportion of phenotypic variance explained by all measured common variants. This is typically lower than family-based heritability estimates, a phenomenon termed “missing heritability.”</p>
+<p><strong>LD Score Regression (LDSR)</strong> enables partitioning of heritability using only GWAS summary statistics. By correlating test statistics with LD scores, LDSR can estimate:</p>
 <ul>
-<li>From hand-engineered features and shallow models (e.g., CADD-style scores)<br>
-</li>
-<li>To supervised CNNs that learn regulatory motifs and grammars directly from sequence<br>
-</li>
-<li>To transformers and structured state-space models (SSMs) that operate on longer contexts and richer tokenizations<br>
-</li>
-<li>To GFMs trained to be reused across tasks, tissues, and species</li>
+<li>Total SNP heritability</li>
+<li>Heritability enrichment in functional annotations</li>
+<li>Genetic correlations between traits</li>
 </ul>
-<p>At each stage, the goal is not simply “more complex models,” but better alignment between <em>what the data contain</em> and <em>what the model can express</em>.</p>
+<p>Analysis of UK Biobank GWAS revealed that heritability partitions distinctly across regulatory sequence classes, with tissue-specific enhancers explaining substantial heritability for relevant traits—for example, monocyte/macrophage enhancers for monocyte count, and brain enhancers for cognitive traits <span class="citation" data-cites="zhou_sei_2022">(<a href="#ref-zhou_sei_2022" role="doc-biblioref"><strong>zhou_sei_2022?</strong></a>)</span>.</p>
 </section>
-<section id="context-length-scaling-1-kb-100-kb-1-mb" class="level3">
-<h3 class="anchored" data-anchor-id="context-length-scaling-1-kb-100-kb-1-mb">Context Length Scaling: 1 kb → 100 kb → 1 Mb</h3>
-<p>Many of the most interesting genomic questions are <strong>non-local</strong>:</p>
+<section id="limitations-of-current-approaches" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="limitations-of-current-approaches"><span class="header-section-number">2.5</span> Limitations of Current Approaches</h2>
+<section id="ancestry-bias" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="ancestry-bias"><span class="header-section-number">2.5.1</span> Ancestry Bias</h3>
+<p>The vast majority of GWAS have been conducted in populations of European ancestry. This creates systematic problems:</p>
 <ul>
-<li>Enhancers regulate genes hundreds of kilobases away.<br>
-</li>
-<li>Chromatin conformation creates long-range dependencies.<br>
-</li>
-<li>Polygenic traits aggregate effects across the entire genome.</li>
-</ul>
-<p>We follow how context windows grew from ~1 kb promoter-centric CNNs, to tens of kilobases in ExPecto-style models, to 100 kb–1 Mb in modern hybrid and SSM-based architectures—and how each jump in context length changes both modeling tactics and biological interpretation.</p>
-</section>
-<section id="self-supervision-leveraging-unlabeled-genomic-data" class="level3">
-<h3 class="anchored" data-anchor-id="self-supervision-leveraging-unlabeled-genomic-data">Self-Supervision: Leveraging Unlabeled Genomic Data</h3>
-<p>Unlike labeled regulatory or clinical datasets, the <strong>raw genome is cheap and abundant</strong>. We explore how self-supervised objectives—masked language modeling, next-token prediction, denoising tasks—allow models to learn useful representations from unlabeled sequences, and how these representations transfer to:</p>
-<ul>
-<li>Variant effect prediction<br>
-</li>
-<li>Regulatory element annotation<br>
-</li>
-<li>Cross-species generalization<br>
-</li>
-<li>Downstream clinical prediction tasks</li>
+<li><strong>Reduced prediction accuracy</strong>: PRS derived from European GWAS perform substantially worse in non-European populations due to differences in LD structure and allele frequencies</li>
+<li><strong>Health disparities</strong>: Clinical deployment of ancestry-biased PRS could exacerbate existing health inequities</li>
+<li><strong>Missed variants</strong>: Causal variants common in non-European populations but rare in Europeans may be missed entirely</li>
 </ul>
 </section>
-<section id="transfer-learning-protein-lms-dna-lms-human-cross-species" class="level3">
-<h3 class="anchored" data-anchor-id="transfer-learning-protein-lms-dna-lms-human-cross-species">Transfer Learning: Protein LMs → DNA LMs; Human → Cross-Species</h3>
-<p>Genomic foundation models are fundamentally about <strong>transfer</strong>:</p>
+<section id="missing-heritability" class="level3" data-number="2.5.2">
+<h3 data-number="2.5.2" class="anchored" data-anchor-id="missing-heritability"><span class="header-section-number">2.5.2</span> Missing Heritability</h3>
+<p>SNP-based heritability estimates typically capture only 20-50% of family-based heritability, attributed to:</p>
 <ul>
-<li>From protein language models to variant effect prediction and structure-informed tasks<br>
-</li>
-<li>From human-focused models to cross-species models that incorporate evolutionary signal<br>
-</li>
-<li>From pretraining on large unlabeled corpora to fine-tuning on smaller, task-specific or cell-type-specific datasets</li>
+<li><strong>Rare variants</strong>: GWAS are underpowered to detect rare variant associations</li>
+<li><strong>Structural variants</strong>: Most arrays and imputation panels miss copy number variants and other structural variation</li>
+<li><strong>Gene-gene interactions (epistasis)</strong>: Standard additive models ignore non-linear interactions</li>
+<li><strong>Gene-environment interactions</strong>: Effects that depend on environmental context</li>
 </ul>
-<p>We emphasize both the opportunities and the pitfalls: where transfer learning works remarkably well, and where naive reuse can bake in biases or violate domain assumptions.</p>
 </section>
-<section id="clinical-translation-vep-prs-rare-disease-and-beyond" class="level3">
-<h3 class="anchored" data-anchor-id="clinical-translation-vep-prs-rare-disease-and-beyond">Clinical Translation: VEP, PRS, Rare Disease, and Beyond</h3>
-<p>Throughout the book we keep returning to a basic question:</p>
-<blockquote class="blockquote">
-<p>When, if ever, do these models <em>change decisions</em> in medicine and biology?</p>
-</blockquote>
-<p>We examine how GFMs augment or reshape:</p>
+<section id="mechanistic-opacity" class="level3" data-number="2.5.3">
+<h3 data-number="2.5.3" class="anchored" data-anchor-id="mechanistic-opacity"><span class="header-section-number">2.5.3</span> Mechanistic Opacity</h3>
+<p>GWAS associations rarely identify causal genes or mechanisms directly:</p>
 <ul>
-<li>Variant effect prediction pipelines for rare disease diagnosis<br>
-</li>
-<li>Polygenic and multi-omic risk prediction for complex traits<br>
-</li>
-<li>Fine-mapping and gene prioritization in drug target discovery<br>
-</li>
-<li>Biomarker development, patient stratification, and trial design</li>
+<li>Most significant variants lie in non-coding regions</li>
+<li>The nearest gene is often not the causal gene</li>
+<li>Regulatory effects may act over large genomic distances</li>
 </ul>
-<p>The focus is on workflows and evaluation: calibration, robustness, fairness, and reproducibility in real clinical and translational settings.</p>
-</section>
-<section id="interpretability-from-black-box-to-mechanistic-insight" class="level3">
-<h3 class="anchored" data-anchor-id="interpretability-from-black-box-to-mechanistic-insight">Interpretability: From Black Box to Mechanistic Insight</h3>
-<p>Finally, we treat interpretability not as an afterthought, but as a central design constraint. As models grow larger and more flexible, we ask:</p>
-<ul>
-<li>Can we extract motifs, grammars, and regulatory programs from sequence models in a way that aligns with experimental biology?<br>
-</li>
-<li>How can we distinguish genuine mechanism from confounded shortcuts and benchmark leakage?<br>
-</li>
-<li>What tools—from saliency and attribution to mechanistic interpretability—are actually useful in genomics practice?</li>
-</ul>
-<p>These themes tie together discussions of confounders, evaluation, and mechanistic modeling across Parts II–V.</p>
-<hr>
 </section>
 </section>
-<section id="what-this-book-is-not" class="level2">
-<h2 class="anchored" data-anchor-id="what-this-book-is-not">What This Book Is <em>Not</em></h2>
-<p>To keep the narrative focused, this book deliberately avoids trying to be:</p>
-<ul>
-<li>A <strong>comprehensive survey</strong> of every published model or dataset.<br>
-</li>
-<li>A <strong>software manual</strong> for specific tools, APIs, or cloud platforms.<br>
-</li>
-<li>A <strong>proof-heavy textbook</strong> on statistical genetics or deep learning theory.</li>
-</ul>
-<p>Instead, the goal is to provide a <strong>conceptual map and a set of worked examples</strong> that will help you navigate the rapidly evolving space of genomic foundation models, understand their assumptions and limitations, and decide where they fit into your own research or clinical practice.</p>
-<p>Where detailed tutorials, code, or benchmarks are helpful, I point to external resources rather than reproducing them in full.</p>
-<hr>
-</section>
-<section id="how-to-read-and-use-this-book" class="level2">
-<h2 class="anchored" data-anchor-id="how-to-read-and-use-this-book">How to Read and Use This Book</h2>
-<p>A few practical suggestions:</p>
-<ul>
-<li><p><strong>Use the early chapters as shared vocabulary.</strong><br>
-Even if you are already familiar with NGS pipelines or GWAS, skimming Chapters 1–4 ensures we share terminology and assumptions.</p></li>
-<li><p><strong>Pick application-driven paths.</strong><br>
-If your primary interest is clinical risk prediction, you might follow a path like: Chapters 2–3 → 5–7 → 10–13 → 17. For variant discovery: Chapters 1–4 → 9–13 → 18. For biotech and drug discovery: Chapters 3–4 → 9–12 → 16–19.</p></li>
-<li><p><strong>Move back and forth between methods and applications.</strong><br>
-The later application chapters are written to be readable on their own, but they gain depth if you revisit relevant method chapters (e.g., SpliceAI in Chapter 7 when thinking about splice-disrupting variants in Chapter 18).</p></li>
-<li><p><strong>Treat the references as a roadmap.</strong><br>
-The citations are curated to point to primary papers and representative follow-ups rather than exhaustive lists. Following those threads is often the fastest way to get from this conceptual overview to the cutting edge in a particular niche.</p></li>
-</ul>
-<hr>
-</section>
-<section id="acknowledgments" class="level2">
-<h2 class="anchored" data-anchor-id="acknowledgments">Acknowledgments</h2>
-<p>This book grew directly out of work with the Mayo Clinic GenAI team, and I owe a special debt of gratitude to the colleagues who made that environment so generative.</p>
-<p>To the <strong>principal investigators and clinicians</strong> who grounded our models in real clinical questions:<br>
-Drs. <strong>Shant Ayanian</strong>, <strong>Elena Myasoedova</strong>, and <strong>Alexander Ryu</strong>.</p>
-<p>To <strong>leadership</strong> for carving out the space, support, and vision for this work:<br>
-Dr.&nbsp;<strong>Matthew Callstrom</strong>, Dr.&nbsp;<strong>Panos Korfiatis</strong>, and <strong>Matt Redlon</strong>.</p>
-<p>To my <strong>Data Science and Machine Learning Engineering colleagues</strong>, whose ideas, code, and patience shaped many of the workflows and examples in this book:<br>
-<strong>Bridget Toomey</strong>, <strong>Carl Molnar</strong>, <strong>Zach Jensen</strong>, and <strong>Marc Blasi</strong>.</p>
-<p>I am also grateful for the architectural creativity and technical depth of our <strong>collaborators at Cerebras</strong>:<br>
-<strong>Natalia Vassilieva</strong>, <strong>Jason Wolfe</strong>, <strong>Omid Shams Solari</strong>, <strong>Vinay Pondenkandath</strong>, <strong>Bhargav Kanakiya</strong>, and <strong>Faisal Al-khateeb</strong>.</p>
-<p>And to our <strong>collaborators at GoodFire</strong>, whose partnership helped push these ideas closer to interpretable and deployable systems:<br>
-<strong>Daniel Balsam</strong>, <strong>Nicholas Wang</strong>, <strong>Michael Pearce</strong>, and <strong>Mark Bissell</strong>.</p>
-<p>I also want to thank my former colleagues at <strong>LGC</strong> for foundational work on protein language models and for the conversations that helped shape my thinking about PLMs:<br>
-<strong>Prasad Siddavatam</strong> and <strong>Robin Butler</strong>.</p>
-<p>Finally, beyond these named groups, this book owes a great deal to the broader community of people building and using genomic models: the teams who generated large-scale sequencing and functional genomics datasets; the authors of classical tools like CADD and PGS; the many groups pushing forward CNNs, transformers, and foundation models for DNA, RNA, and protein; and the clinicians, statisticians, and experimental biologists who keep all of us honest about what actually matters.</p>
-<p>If this book helps you connect a new model to a real biological question, or use genomic foundation models a bit more thoughtfully in your own work, then it will have done its job.</p>
-<p>— <em>Josh Meehl</em></p>
+<section id="the-promise-of-deep-learning" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="the-promise-of-deep-learning"><span class="header-section-number">2.6</span> The Promise of Deep Learning</h2>
+<p>These limitations motivate the deep learning approaches covered in subsequent chapters. Sequence-based models can:</p>
+<ol type="1">
+<li><p><strong>Predict variant effects <em>ab initio</em></strong>: Models like ExPecto and Enformer predict functional consequences from sequence alone, enabling prioritization of likely causal variants within LD blocks <span class="citation" data-cites="zhou_expecto_2018 avsec_enformer_2021">(<a href="#ref-zhou_expecto_2018" role="doc-biblioref">Zhou et al. 2018</a>; <a href="#ref-avsec_enformer_2021" role="doc-biblioref">Avsec et al. 2021</a>)</span></p></li>
+<li><p><strong>Improve fine-mapping</strong>: Functional predictions can be integrated with statistical fine-mapping to improve causal variant identification. Hybrid CNN-transformer models like Borzoi show superior performance in identifying causal SNPs within LD blocks <span class="citation" data-cites="manzo_comparative_2025">(<a href="#ref-manzo_comparative_2025" role="doc-biblioref">Manzo, Borkowski, and Ovcharenko 2025</a>)</span></p></li>
+<li><p><strong>Enable cross-ancestry transfer</strong>: By learning functional effects from sequence rather than population-specific LD patterns, sequence models may generalize better across ancestries. Variants prioritized by sequence-based models construct PRS that transfer better to non-European target populations <span class="citation" data-cites="rakowski_mifm_2025">(<a href="#ref-rakowski_mifm_2025" role="doc-biblioref">Rakowski and Lippert 2025</a>)</span></p></li>
+<li><p><strong>Capture non-linear effects</strong>: Deep learning architectures can model complex, non-linear relationships between genotype and phenotype. Methods like Delphi relax linear assumptions to produce more predictive PRS, with relative improvements of 11-35% in variance explained across traits <span class="citation" data-cites="georgantas_delphi_2024">(<a href="#ref-georgantas_delphi_2024" role="doc-biblioref">Georgantas, Kutalik, and Richiardi 2024</a>)</span></p></li>
+<li><p><strong>Incorporate rare variants</strong>: Approaches like DeepRVAT learn gene impairment scores from rare variant annotations, facilitating refinement of PRS by accounting for rare variant effects that standard GWAS miss.</p></li>
+</ol>
+<p>The chapters that follow trace the development of these capabilities, from early CNN-based regulatory prediction through modern transformer architectures that integrate long-range genomic context.</p>
 
 
-</section>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-avsec_enformer_2021" class="csl-entry" role="listitem">
+Avsec, Žiga, Vikram Agarwal, D. Visentin, J. Ledsam, A. Grabska-Barwinska, Kyle R. Taylor, Yannis Assael, J. Jumper, Pushmeet Kohli, and David R. Kelley. 2021. <span>“[<span>Enformer</span>] <span>Effective</span> Gene Expression Prediction from Sequence by Integrating Long-Range Interactions.”</span> <em>Nature Methods</em> 18 (October): 1196–1203. <a href="https://doi.org/10.1038/s41592-021-01252-x">https://doi.org/10.1038/s41592-021-01252-x</a>.
+</div>
+<div id="ref-georgantas_delphi_2024" class="csl-entry" role="listitem">
+Georgantas, Costa, Zoltán Kutalik, and Jonas Richiardi. 2024. <span>“Delphi: <span>A</span> <span>Deep</span>-Learning <span>Method</span> for <span>Polygenic</span> <span>Risk</span> <span>Prediction</span>.”</span> medRxiv. <a href="https://doi.org/10.1101/2024.04.19.24306079">https://doi.org/10.1101/2024.04.19.24306079</a>.
+</div>
+<div id="ref-manzo_comparative_2025" class="csl-entry" role="listitem">
+Manzo, Gaetano, Kathryn Borkowski, and Ivan Ovcharenko. 2025. <span>“Comparative <span>Analysis</span> of <span>Deep</span> <span>Learning</span> <span>Models</span> for <span>Predicting</span> <span>Causative</span> <span>Regulatory</span> <span>Variants</span>.”</span> <em>bioRxiv: The Preprint Server for Biology</em>, June, 2025.05.19.654920. <a href="https://doi.org/10.1101/2025.05.19.654920">https://doi.org/10.1101/2025.05.19.654920</a>.
+</div>
+<div id="ref-rakowski_mifm_2025" class="csl-entry" role="listitem">
+Rakowski, Alexander, and Christoph Lippert. 2025. <span>“[<span>MIFM</span>] <span>Multiple</span> Instance Fine-Mapping: Predicting Causal Regulatory Variants with a Deep Sequence Model.”</span> medRxiv. <a href="https://doi.org/10.1101/2025.06.13.25329551">https://doi.org/10.1101/2025.06.13.25329551</a>.
+</div>
+<div id="ref-wu_genome-wide_2024" class="csl-entry" role="listitem">
+Wu, Yang, Zhili Zheng, Loic Thibaut2, Michael E. Goddard, Naomi R. Wray, Peter M. Visscher, and Jian Zeng. 2024. <span>“Genome-Wide Fine-Mapping Improves Identification of Causal Variants.”</span> <em>Research Square</em>, August, rs.3.rs–4759390. <a href="https://doi.org/10.21203/rs.3.rs-4759390/v1">https://doi.org/10.21203/rs.3.rs-4759390/v1</a>.
+</div>
+<div id="ref-zhou_expecto_2018" class="csl-entry" role="listitem">
+Zhou, Jian, Chandra L. Theesfeld, Kevin Yao, Kathleen M. Chen, Aaron K. Wong, and Olga G. Troyanskaya. 2018. <span>“[<span>ExPecto</span>] <span>Deep</span> Learning Sequence-Based Ab Initio Prediction of Variant Effects on Expression and Disease Risk.”</span> <em>Nature Genetics</em> 50 (8): 1171–79. <a href="https://doi.org/10.1038/s41588-018-0160-6">https://doi.org/10.1038/s41588-018-0160-6</a>.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
@@ -976,10 +955,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./ch-p1-ngs.html" class="pagination-link" aria-label="NGS &amp; Variant Calling">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">NGS &amp; Variant Calling</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./intro.html" class="pagination-link" aria-label="Introduction">
-        <span class="nav-page-text">Introduction</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./ch-p1-cadd.html" class="pagination-link" aria-label="Deleteriousness Scores">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Deleteriousness Scores</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
