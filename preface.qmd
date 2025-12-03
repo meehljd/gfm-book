@@ -1,182 +1,144 @@
 # Preface {.unnumbered}
 
-Genomics is in the middle of a quiet revolution.
+Genomics is in the middle of an uncomfortable growth spurt.
 
-For years, “machine learning in genetics” meant hand-crafted features, linear models, and carefully tuned statistical pipelines. Variant calling relied on logistic regression and hidden Markov models. Genome-wide association studies (GWAS) and polygenic scores (PGS) summarized common variant effects. Deleteriousness scores like CADD distilled curated annotations into prioritization heuristics. Functional genomics resources—ENCODE, GTEx, large biobanks—arrived in waves, but each new dataset was bolted onto bespoke tools and task-specific models.
+For a long time, “machine learning in genetics” mostly meant carefully engineered features, linear or logistic regression, and classical mixed models wrapped in beautifully tuned pipelines. Variant interpretation relied on aggregating conservation scores, motif matches, and hand-crafted heuristics. Each new dataset or technology tended to come with its own bespoke tools, data formats, and vocabularies.
 
-Over roughly the last decade, that picture has changed. Convolutional neural networks (CNNs) began to learn regulatory code directly from sequence. Transformers and protein language models showed how self-supervision on massive unlabeled corpora could extract rich biological structure. Genomic foundation models (GFMs) now promise reusable representations of DNA, RNA, protein, and multi-omic context that can be adapted to everything from variant effect prediction to clinical risk scoring.
+In parallel, deep learning and, later, foundation models reshaped how we work with images, text, and protein sequences. Genomics watched that evolution from the sidelines, borrowing ideas where it could—first convolutional networks for sequence-to-function prediction, then transformers and self-supervision, and now large multi-omic foundation models.
 
-This book is my attempt to make sense of that transition—*from sequence variation to genomic foundation models and back again to clinical and biological questions*—in a way that is coherent, historically grounded, and practically useful.
+This book grew out of the tension between those two worlds: the mature, statistically grounded tradition of human genetics, and the rapidly changing ecosystem of deep learning and foundation models. It is an attempt to make that transition legible—to connect the older tools and intuitions that still matter with the new modeling ideas that are just starting to settle into place.
 
----
-
-## Who This Book Is For
-
-This book is written for readers who sit somewhere in the triangle between **genomics**, **statistics**, and **machine learning**:
-
-- **Computational biologists and statistical geneticists**  
-  who want to understand how deep learning and foundation models fit alongside GWAS, PGS, rare variant association, and functional genomics.
-
-- **Machine learning researchers and engineers**  
-  who are comfortable with CNNs, transformers, and language models, and want a pragmatic guide to what makes genomic data different from text or images.
-
-- **Clinicians and translational researchers**  
-  who increasingly see “AI scores,” “foundation models,” or “genomic LLMs” in papers, reports, and grant proposals, and want a grounded view of what these tools can and cannot do in practice.
-
-Some familiarity with probability, linear models, and basic genomics (variants, genes, regulatory elements) will help, but the early chapters are designed to be a gentle ramp rather than a gate.
+I wrote it first for myself and my collaborators: as a way to organize scattered notes, paper marginalia, whiteboard sketches, and half-finished slides into something coherent. Over time it became clear that turning those notes into a book might be useful to others trying to navigate the same landscape—especially people who live at one corner of the triangle (genomics, statistics, or machine learning) and are trying to get oriented to the other two.
 
 ---
 
-## How the Book Is Organized
+## Why I Wrote This Book
 
-The book is organized into five parts that mirror how the field itself has evolved—from data and pre-deep-learning methods to CNNs, transformers, foundation models, and finally clinical and translational applications. :contentReference[oaicite:0]{index=0}
+Day-to-day work on genomic foundation models can feel strangely fragmented.
 
-- **Part I: Data & Pre-DL Methods (Chapters 1–4)**  
-  We start from the raw materials: next-generation sequencing and variant calling, GWAS and PGS basics, classical deleteriousness scores, and foundational functional genomics resources. This part establishes the statistical and biological context that later deep models must respect.
+You might spend one week debugging coverage artifacts in exome data, the next trying to reproduce a published splice prediction model, and the next arguing about calibration of clinical risk scores. Each of those tasks pulls on different pieces of knowledge: sequencing technologies, association statistics, representation learning, interpretability, and clinical validation.
 
-- **Part II: CNN Seq-to-Function Models (Chapters 5–7)**  
-  We then move into supervised sequence-to-function models like DeepSEA, ExPecto, and SpliceAI. These chapters show how CNNs can learn regulatory code, link chromatin to expression, and predict splicing, and they surface early lessons about architecture, context windows, and training data.
+Most resources cover only one slice:
 
-- **Part III: Transformer Models (Chapters 8–11)**  
-  With that foundation, we broaden to representation learning and long-range modeling. We discuss sequence tokenization and context representation, protein language models, DNA foundation models, and hybrid architectures that couple CNNs and transformers to capture long-range regulatory interactions.
+- Genomics and human genetics textbooks do an excellent job of biological context, but understandably treat machine learning as a secondary topic.
+- Deep learning books and courses explain optimization and architectures, but rarely dig into the peculiarities of genomic data or the constraints of clinical deployment.
+- Research papers often assume a lot of background on both sides, and focus on incremental advances rather than the big picture.
 
-- **Part IV: GFMs & Multi-omics (Chapters 12–16)**  
-  Here we step back and ask: what makes a genomic model a *foundation model*? We examine principles for designing GFMs, how variant effect prediction is being reshaped by foundation models, and how confounding, interpretability, and multi-omic integration become more critical as models grow larger and more general.
+What I wanted—but could not find in one place—was a **conceptual throughline**:
 
-- **Part V: Applications (Chapters 17–19)**  
-  Finally, we move from methods to workflows: clinical risk prediction, pathogenic variant discovery, and drug discovery/biotech applications. These chapters focus less on novel architectures and more on how GFMs plug into broader pipelines, evaluation strategies, and decision-making processes.
+- How do we get from reads to variants in a way that a deep model can trust?
+- How should we think about polygenic scores, fine-mapping, and functional assays in the era of foundation models?
+- When we say a model “understands” regulatory grammar or protein function, what does that actually mean?
+- And what does it take to move from a promising preprint to a tool that can support decisions about real patients?
 
-You do not have to read the book linearly. If you are already comfortable with GWAS and classical variant scores, you might skim Part I and start with the CNN or transformer chapters. If you care primarily about clinical or biotech applications, you may wish to read Part V early, referring back to earlier chapters as needed.
-
----
-
-## Key Themes Across the Book
-
-Several themes recur throughout the chapters, and the rest of the book can be read as a deepening of each of these:
-
-### Data → Architecture Evolution
-
-We trace how **data availability and representation** drove model design:
-
-- From hand-engineered features and shallow models (e.g., CADD-style scores)  
-- To supervised CNNs that learn regulatory motifs and grammars directly from sequence  
-- To transformers and structured state-space models (SSMs) that operate on longer contexts and richer tokenizations  
-- To GFMs trained to be reused across tasks, tissues, and species  
-
-At each stage, the goal is not simply “more complex models,” but better alignment between *what the data contain* and *what the model can express*.
-
-### Context Length Scaling: 1 kb → 100 kb → 1 Mb
-
-Many of the most interesting genomic questions are **non-local**:
-
-- Enhancers regulate genes hundreds of kilobases away.  
-- Chromatin conformation creates long-range dependencies.  
-- Polygenic traits aggregate effects across the entire genome.
-
-We follow how context windows grew from ~1 kb promoter-centric CNNs, to tens of kilobases in ExPecto-style models, to 100 kb–1 Mb in modern hybrid and SSM-based architectures—and how each jump in context length changes both modeling tactics and biological interpretation.
-
-### Self-Supervision: Leveraging Unlabeled Genomic Data
-
-Unlike labeled regulatory or clinical datasets, the **raw genome is cheap and abundant**. We explore how self-supervised objectives—masked language modeling, next-token prediction, denoising tasks—allow models to learn useful representations from unlabeled sequences, and how these representations transfer to:
-
-- Variant effect prediction  
-- Regulatory element annotation  
-- Cross-species generalization  
-- Downstream clinical prediction tasks
-
-### Transfer Learning: Protein LMs → DNA LMs; Human → Cross-Species
-
-Genomic foundation models are fundamentally about **transfer**:
-
-- From protein language models to variant effect prediction and structure-informed tasks  
-- From human-focused models to cross-species models that incorporate evolutionary signal  
-- From pretraining on large unlabeled corpora to fine-tuning on smaller, task-specific or cell-type-specific datasets
-
-We emphasize both the opportunities and the pitfalls: where transfer learning works remarkably well, and where naive reuse can bake in biases or violate domain assumptions.
-
-### Clinical Translation: VEP, PGS, Rare Disease, and Beyond
-
-Throughout the book we keep returning to a basic question:
-
-> When, if ever, do these models *change decisions* in medicine and biology?
-
-We examine how GFMs augment or reshape:
-
-- Variant effect prediction pipelines for rare disease diagnosis  
-- Polygenic and multi-omic risk prediction for complex traits  
-- Fine-mapping and gene prioritization in drug target discovery  
-- Biomarker development, patient stratification, and trial design  
-
-The focus is on workflows and evaluation: calibration, robustness, fairness, and reproducibility in real clinical and translational settings.
-
-### Interpretability: From Black Box to Mechanistic Insight
-
-Finally, we treat interpretability not as an afterthought, but as a central design constraint. As models grow larger and more flexible, we ask:
-
-- Can we extract motifs, grammars, and regulatory programs from sequence models in a way that aligns with experimental biology?  
-- How can we distinguish genuine mechanism from confounded shortcuts and benchmark leakage?  
-- What tools—from saliency and attribution to mechanistic interpretability—are actually useful in genomics practice?
-
-These themes tie together discussions of confounders, evaluation, and mechanistic modeling across Parts II–V.
+The book is my best attempt at answering those questions in a way that is historically grounded, technically honest, and practically oriented.
 
 ---
 
-## What This Book Is *Not*
+## How This Book Came Together
 
-To keep the narrative focused, this book deliberately avoids trying to be:
+The structure of the book reflects the way these ideas evolved in my own work.
 
-- A **comprehensive survey** of every published model or dataset.  
-- A **software manual** for specific tools, APIs, or cloud platforms.  
-- A **proof-heavy textbook** on statistical genetics or deep learning theory.
+Early sections grew out of teaching and mentoring conversations: explaining next-generation sequencing, variant calling, and pre-deep-learning interpretation methods to new team members who were strong in statistics or ML but new to genomics (and vice versa).
 
-Instead, the goal is to provide a **conceptual map and a set of worked examples** that will help you navigate the rapidly evolving space of genomic foundation models, understand their assumptions and limitations, and decide where they fit into your own research or clinical practice.
+The middle sections emerged from a series of “journal club plus experiments” cycles, where we:
 
-Where detailed tutorials, code, or benchmarks are helpful, I point to external resources rather than reproducing them in full.
+- read papers on sequence-to-function CNNs, protein language models, and genomic transformers,
+- tried to reproduce key results or adapt them to our datasets,
+- and documented the pain points—data formats, training instabilities, evaluation pitfalls—that never quite fit into a methods section.
 
----
+The later parts were shaped by collaborations around clinical prediction, variant interpretation pipelines, and larger multi-omic models. Many of the examples and caveats come directly from these projects: places where a model that looked excellent on paper behaved in surprising ways when exposed to real-world data, or where simple baselines outperformed much fancier architectures once confounding and distribution shift were handled correctly.
 
-## How to Read and Use This Book
-
-A few practical suggestions:
-
-- **Use the early chapters as shared vocabulary.**  
-  Even if you are already familiar with NGS pipelines or GWAS, skimming Chapters 1–4 ensures we share terminology and assumptions.
-
-- **Pick application-driven paths.**  
-  If your primary interest is clinical risk prediction, you might follow a path like: Chapters 2–3 → 5–7 → 10–13 → 17. For variant discovery: Chapters 1–4 → 9–13 → 18. For biotech and drug discovery: Chapters 3–4 → 9–12 → 16–19.
-
-- **Move back and forth between methods and applications.**  
-  The later application chapters are written to be readable on their own, but they gain depth if you revisit relevant method chapters (e.g., SpliceAI in @sec-splice when thinking about splice-disrupting variants in @sec-variants).
-
-- **Treat the references as a roadmap.**  
-  The citations are curated to point to primary papers and representative follow-ups rather than exhaustive lists. Following those threads is often the fastest way to get from this conceptual overview to the cutting edge in a particular niche.
+Because of that origin, the book has a particular bias: it is written from the perspective of someone who spends much of their time trying to get models to work in messy, high-stakes settings. You will see this in the emphasis on data quality, evaluation, and clinical translation.
 
 ---
 
-## Acknowledgments
+## How to Read This Book
 
-This book grew directly out of work with the Mayo Clinic GenAI team, and I owe a special debt of gratitude to the colleagues who made that environment so generative.
+This is **not** a genomics textbook, a complete review of every DNA or protein model, or a deep-learning-from-scratch course. Instead, it is meant to be:
 
-To the **principal investigators and clinicians** who grounded our models in real clinical questions:  
-Drs. **Shant Ayanian**, **Elena Myasoedova**, and **Alexander Ryu**.
+- a **roadmap** to the main kinds of data, models, and objectives that matter for genomic foundation models today;
+- a **bridge** between classical statistical genetics and modern representation learning;
+- and a **practical guide** to the kinds of failure modes and design choices that matter in real applications.
 
-To **leadership** for carving out the space, support, and vision for this work:  
-Dr. **Matthew Callstrom**, Dr. **Panos Korfiatis**, and **Matt Redlon**.
+You do **not** need to read the book cover-to-cover in order.
 
-To my **Data Science and Machine Learning Engineering colleagues**, whose ideas, code, and patience shaped many of the workflows and examples in this book:  
+- If your background is in **genomics or statistical genetics**, you may want to skim the early deep-learning motivations and focus more on the sections that introduce convolutional models, transformers, and self-supervision, then move on to evaluation and applications.
+- If you come from **machine learning**, it may be more helpful to start with the genomic data and pre-deep-learning methods, then dive into the sequence-to-function and transformer-based chapters with an eye toward how the data and objectives differ from text or images.
+- If you are a **clinician or translational researcher**, you might care most about the reliability, confounding, and clinical deployment discussions, dipping back into the modeling parts as needed to interpret results or communicate with technical collaborators.
+
+The book is organized into six parts:
+
+- **Part I** introduces genomic data and pre-deep-learning interpretation methods, from sequencing and variant calling to early pathogenicity scores and polygenic models.
+- **Part II** focuses on supervised sequence-to-function models, with an emphasis on convolutional architectures, regulatory prediction, and splicing.
+- **Part III** turns to transformer-based models and self-supervision, covering protein and DNA language models and hybrid architectures that combine CNNs and transformers.
+- **Part IV** discusses what makes a model a *foundation model* in genomics, including multi-omic architectures, variant effect modeling, and emergent capabilities.
+- **Part V** examines reliability, evaluation, confounding, and interpretability—how we know whether a model is learning what we think it is, and how to detect when it is not.
+- **Part VI** looks at applications: clinical and risk prediction, variant interpretation workflows, and early steps toward drug discovery and biotech use cases.
+
+Within each part, the goal is not to catalogue every paper, but to highlight representative examples and the design principles they illustrate. References are there to give you starting points, not to serve as a comprehensive literature review.
+
+---
+
+## What This Book Assumes (and What It Does Not)
+
+The book assumes:
+
+- basic familiarity with probability and statistics (regression, hypothesis testing, effect sizes),
+- core genomics concepts (genes, variants, linkage disequilibrium, GWAS at a high level),
+- and some exposure to machine learning ideas (training versus test data, overfitting, loss functions).
+
+It **does not** assume that you have implemented deep learning models yourself, or that you are fluent in every area. When a chapter leans heavily on a particular background (for example, causal inference or modern self-supervised learning), it will either provide a brief refresher or point you to an appendix or external resource.
+
+If you are missing some of this background, that is fine. The intent is for you to be able to read actively: to pause, look up side topics, and then return to the main arc without feeling lost.
+
+---
+
+## A Note on Scope and Opinions
+
+Genomic foundation models are evolving quickly. Any snapshot is, by definition, incomplete and slightly out of date.
+
+Rather than chasing every new architecture or benchmark, the book focuses on **durable ideas**:
+
+- how different data types fit together,
+- what kinds of objectives encourage useful representations,
+- how evaluation can fail in genomics-specific ways,
+- and where deep models complement (rather than replace) classical approaches.
+
+Inevitably, there are judgment calls about which papers, methods, and perspectives to emphasize. Those choices reflect my own experiences and biases. They are not an official position of any institution I work with, and they will certainly differ from other reasonable views in the field.
+
+You should treat the book as one opinionated map of the landscape, not the landscape itself.
+
+---
+
+## Acknowledgements
+
+This book exists because of many generous people who shared their time, ideas, and encouragement.
+
+First, I owe a deep debt of gratitude to my colleagues in the **Mayo GenAI** and broader data science community. The day-to-day conversations, whiteboard sessions, and “what went wrong here?” post-mortems with this group shaped much of the perspective and many of the examples in the chapters.
+
+I am especially grateful to the **principal investigators and clinicians** whose questions kept the focus on real patients and real decisions:  
+**Dr. Shant Ayanian**, **Dr. Elena Myasoedova**, and **Dr. Alexander Ryu**.
+
+To **leadership at Mayo Clinic** who supported the time, computing resources, and institutional patience needed for both the models and this book:  
+**Dr. Matthew Callstrom**, **Dr. Panos Korfiatis**, and **Matt Redlon**.
+
+To my **Data Science and Machine Learning Engineering colleagues**, whose work and feedback directly shaped many of the workflows and case studies:  
 **Bridget Toomey**, **Carl Molnar**, **Zach Jensen**, and **Marc Blasi**.
 
-I am also grateful for the architectural creativity and technical depth of our **collaborators at Cerebras**:  
+I am also grateful for the architectural creativity, hardware insight, and willingness to experiment from our **collaborators at Cerebras**:  
 **Natalia Vassilieva**, **Jason Wolfe**, **Omid Shams Solari**, **Vinay Pondenkandath**, **Bhargav Kanakiya**, and **Faisal Al-khateeb**.
 
-And to our **collaborators at GoodFire**, whose partnership helped push these ideas closer to interpretable and deployable systems:  
+And to our **collaborators at GoodFire**, whose partnership helped push these ideas toward interpretable and deployable systems:  
 **Daniel Balsam**, **Nicholas Wang**, **Michael Pearce**, and **Mark Bissell**.
 
-I also want to thank my former colleagues at **LGC** for foundational work on protein language models and for the conversations that helped shape my thinking about PLMs:  
+I would also like to thank my former colleagues at **LGC** for foundational work and conversations around protein language models and large-scale representation learning:  
 **Prasad Siddavatam** and **Robin Butler**.
 
-Finally, beyond these named groups, this book owes a great deal to the broader community of people building and using genomic models: the teams who generated large-scale sequencing and functional genomics datasets; the authors of classical tools like CADD and PGS; the many groups pushing forward CNNs, transformers, and foundation models for DNA, RNA, and protein; and the clinicians, statisticians, and experimental biologists who keep all of us honest about what actually matters.
+Beyond these named groups, many others contributed indirectly—through critical questions at talks, thoughtful reviews of draft chapters, shared code, or simply by insisting that models be connected back to biologically meaningful questions. To all of the geneticists, molecular biologists, statisticians, clinicians, and engineers who keep us honest about what actually matters: thank you.
 
-If this book helps you connect a new model to a real biological question, or use genomic foundation models a bit more thoughtfully in your own work, then it will have done its job.
+Finally, I am grateful to my family and friends for their patience with evenings and weekends spent turning notes into chapters. Your support made it possible to see this project through.
+
+If this book helps you connect a new model to a real biological question, design a more robust evaluation, or communicate more clearly across disciplinary boundaries—and if it nudges you to use these tools thoughtfully in your own work—then it will have done its job.
 
 — *Josh Meehl*

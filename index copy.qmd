@@ -1,0 +1,210 @@
+::: {.callout-warning .content-visible when-profile="draft"}
+This book is in active development. Sections and examples may change as the field and my understanding evolve.
+:::
+
+# Introduction {.unnumbered}
+
+Genomics is in the middle of a quiet phase change.
+
+On one side, sequencing has become routine. Large biobanks, rare disease programs, and functional genomics consortia now generate data at a scale that would have been hard to imagine a decade ago. Whole genomes and exomes are becoming standard of care in some clinical settings, and single-cell assays and perturbation screens are increasingly common in research labs.
+
+On the other side, deep learning has matured. Convolutional networks, transformers, and related architectures have already transformed how we represent language, images, and proteins. Self-supervised learning, large-scale pretraining, and the “foundation model” mindset are now part of the everyday vocabulary of many machine learning teams.
+
+This book is about the intersection: **genomic foundation models**—large, learned sequence representations that aim to be reused across many tasks, from variant interpretation to clinical risk prediction.
+
+Rather than offering a general introduction to either genomics or machine learning, the goal here is narrower and more opinionated:
+
+> To provide a conceptual and practical map of how modern deep learning models are used in genomics, what makes them succeed or fail, and how they can be used responsibly in research and clinical workflows.
+
+The chapters trace a path from classic pipelines and pre-deep-learning methods, through CNN-based sequence-to-function models and transformers, to multi-omic GFMs and real-world applications. Along the way, we will repeatedly ask:
+
+- What information is actually present in the data?  
+- What inductive biases do different architectures impose?  
+- How should we evaluate these models in ways that connect to biological and clinical decisions?  
+
+---
+
+## Why Genomic Foundation Models?
+
+Traditional genomic modeling has usually been **task-specific**:
+
+- A variant caller tuned to distinguish sequencing errors from true variants.  
+- A supervised CNN trained to predict a fixed set of chromatin marks.  
+- A risk score fit for one trait, in one ancestry group, in one health system.  
+
+These models can work very well in the setting they were designed for, but they often do not transfer gracefully to new assays, tissues, ancestries, or institutions.
+
+The **foundation model** paradigm takes a different view:
+
+1. **Scale**  
+   Train large models on massive, heterogeneous datasets—across assays, tissues, species, and cohorts—so they learn reusable structure.
+
+2. **Self-supervision**  
+   Use objectives such as masked-token prediction, next-token modeling, or contrastive learning that do not require manual labels, allowing us to exploit unlabeled genomes, perturbation screens, and population variation.
+
+3. **Reusability**  
+   Treat the model as a *backbone*: for new tasks, we probe, adapt, or fine-tune the same representation instead of training a new model from scratch.
+
+In genomics, this paradigm is still evolving and far from settled. Some tasks benefit dramatically from pretraining; others barely move beyond strong classical baselines. A central theme of the book is learning to tell the difference.
+
+---
+
+## Recurring Themes
+
+Several threads run through the book; individual chapters can be read as different views of the same underlying questions.
+
+### Data and Architecture Co-evolve
+
+We will see how:
+
+- Early deleteriousness scores built on hand-engineered features and shallow models.  
+- CNNs enabled direct learning of regulatory “motifs” and local grammar from raw sequence.  
+- Transformers and other long-context models opened the door to capturing broader regulatory neighborhoods and chromatin structure.  
+- GFMs push toward representations that span multiple assays, tissues, and even organisms.
+
+At each stage, the interesting question is not “Is this model fancier?” but “How does the available data constrain what the model can sensibly learn?”
+
+### Context Length and Genomic Geometry
+
+Many genomic phenomena are intrinsically non-local: enhancers regulating distant genes, looping interactions, polygenic effects spread across the genome. The book returns repeatedly to “how far” a model can see, how it represents long-range dependencies, and what is gained (and lost) as context windows and architectures scale.
+
+### Prediction vs. Design
+
+Most current models are used as **predictors**: given sequence and context, what happens? But the same models can be embedded in **design** and **closed-loop** workflows, from variant prioritization to sequence or library design. We will explore how foundation models change the boundary between analysis and experimental planning, and what new failure modes emerge in the process.
+
+### From Benchmarks to Decisions
+
+Benchmark scores are seductive and easy to compare. Real biological and clinical decisions are messy, multi-objective, and often constrained by data drift, bias, and poorly specified endpoints. A recurring theme is the gap between “state-of-the-art AUC” and actual impact—and how careful evaluation, confounder analysis, and calibration can narrow that gap.
+
+### Interpretability and Mechanism
+
+Finally, we return often to interpretability—not as optional decoration, but as a design constraint. We will ask when saliency maps, motif extraction, or more mechanistic analyses genuinely deepen understanding, and when they simply provide a veneer of comfort over confounded or brittle models.
+
+---
+
+## How the Book Is Organized
+
+The book is organized into six parts plus two short appendices. Each part can be read on its own, but they are designed to build on one another. :contentReference[oaicite:1]{index=1}  
+
+### Part I — Data & Pre-DL Methods 
+
+Part I lays the **genomic and statistical foundation** that later models rest on.
+
+- **Chapter 1 — NGS & Variant Calling**  
+  Introduces next-generation sequencing, alignment, and variant calling, highlighting sources of error and the evolution from hand-crafted pipelines to learned variant callers.
+
+- **Chapter 2 — Foundational Genomics Data**  
+  Surveys the core data resources that underlie most modern work—reference genomes, population variation catalogs, clinical variant databases, and functional genomics consortia—and discusses how they are used as training targets and evaluation benchmarks.
+
+- **Chapter 3 — GWAS & Polygenic Scores**  
+  Reviews genome-wide association studies, linkage disequilibrium, fine-mapping, and polygenic scores, emphasizing what these “variant-to-trait” associations do and do not tell us.
+
+- **Chapter 4 — Deleteriousness Scores**  
+  Covers conservation-based and machine learning-based variant effect predictors such as CADD, including their feature sets, label construction, and issues like circularity and dataset bias.
+
+Together, Part I answers: *What data and pre-deep-learning tools form the backdrop that any genomic foundation model must respect, integrate with, or improve upon?*
+
+---
+
+### Part II — CNN Seq-to-Function Models
+
+Part II turns to the first wave of **deep sequence-to-function models**, largely built on convolutional neural networks.
+
+- **Chapter 5 — Regulatory Prediction**  
+  Presents CNN-based models that predict chromatin accessibility, histone marks, and related regulatory annotations directly from DNA sequence, and explores what they learn about motifs and regulatory grammar.
+
+- **Chapter 6 — Transcriptional Effects**  
+  Extends from chromatin to gene expression, showing how models combine sequence, regulatory features, and context to predict expression levels and perturbation effects.
+
+- **Chapter 7 — Splicing Prediction**  
+  Focuses on deep models of pre-mRNA splicing and splice-site choice, and how these models can be used to interpret variant effects on splicing in both research and clinical contexts.
+
+---
+
+### Part III — Transformer Models
+
+Part III introduces **transformer-based and related architectures** for representing biological sequence.
+
+- **Chapter 8 — Sequence Representation & Tokens**  
+  Examines how we turn genomic and protein sequences into model-compatible tokens, including k-mers, byte-pair encodings, and other schemes, and how these choices shape downstream models.
+
+- **Chapter 9 — Protein Language Models**  
+  Describes large protein language models trained on sequence databases, their emergent structure and function representations, and applications to variant effect prediction and protein design.
+
+- **Chapter 10 — DNA Foundation Models**  
+  Surveys DNA language models and other genomic foundation backbones, including their training corpora, objectives, evaluation suites, and limitations.
+
+- **Chapter 11 — Long-range Hybrid Models**  
+  Covers hybrid CNN/transformer and related architectures designed to handle long genomic contexts, such as models that predict regulatory readouts over tens to hundreds of kilobases.
+
+---
+
+### Part IV — GFMs & Multi-omics
+
+Part IV is the conceptual core of the book, focusing explicitly on **genomic foundation models** and their multi-omic extensions.
+
+- **Chapter 12 — Genomic FMs: Principles & Practice**  
+  Provides a working definition and taxonomy of genomic FMs, design dimensions (architecture, context length, conditioning), and practical guidance for using pretrained backbones in downstream tasks.
+
+- **Chapter 13 — Variant Effect Prediction**  
+  Recasts variant effect prediction in the foundation-model era, spanning protein and DNA-based approaches, and discusses calibration, uncertainty, and integration into existing pipelines.
+
+- **Chapter 14 — Multi-omics & Systems Context**  
+  Broadens the view from isolated sequences to multi-omic and systems-level representations, including models that integrate genomic, transcriptomic, proteomic, and phenotype data.
+
+---
+
+### Part V — Reliability & Interpretation
+
+Part V pulls out cross-cutting issues that apply to essentially every model in the book.
+
+- **Chapter 15 — Model Evaluation & Benchmarks**  
+  Develops a unified framework for evaluating models across molecular, variant-level, trait-level, and clinical tasks, and discusses data splitting, metric choice, and the link between benchmarks and real-world decisions.
+
+- **Chapter 16 — Confounders in Model Training**  
+  Details sources of confounding and data leakage—from batch effects and ancestry structure to label bias and covariate shift—and offers practical strategies for detection and mitigation.
+
+- **Chapter 17 — Interpretability & Mechanisms**  
+  Explores interpretability tools from classical motif discovery and attribution methods to emerging mechanistic approaches, and asks when these tools genuinely reveal biological mechanism.
+
+---
+
+### Part VI — Applications
+
+Part VI moves from methods to **end-to-end workflows** in research and clinical practice.
+
+- **Chapter 18 — Clinical Risk Prediction**  
+  Discusses risk prediction tasks that combine genomic features (including outputs from GFMs) with clinical and environmental data, focusing on discrimination, calibration, fairness, and deployment in health systems.
+
+- **Chapter 19 — Pathogenic Variant Discovery**  
+  Examines how models fit into rare disease and cancer workflows, including variant prioritization pipelines, integration with family and tumor-normal data, and lab-in-the-loop validation.
+
+- **Chapter 20 — Drug Discovery & Biotech**  
+  Looks at how GFMs intersect with target discovery, functional genomics screens, biomarker development, and biotech/industry workflows, including build-vs-buy and organizational considerations.
+
+---
+
+### Appendices
+
+Two short appendices provide background and pointers:
+
+- **Appendix A — Deep Learning Primer for Genomics**  
+  A compact introduction to neural networks, CNNs, transformers, training, and evaluation, aimed at genomics-first readers who want enough ML background to engage with the main chapters. :contentReference[oaicite:2]{index=2}  
+
+- **Appendix B — Additional Resources**  
+  Curated textbooks, courses, software, and papers for deeper dives into genomics, statistical genetics, and deep learning.
+
+---
+
+## A Moving Target
+
+Genomic foundation models are a moving target: architectures, datasets, and evaluation suites are evolving quickly. This book is not intended as a frozen survey of “the state of the art,” but as a framework for reasoning about new models as they appear.
+
+If it succeeds, you should finish able to:
+
+- Place a new model in the landscape of data, architecture, objective, and application.  
+- Design analyses and experiments that use GFMs as components—features, priors, or simulators—without overclaiming what they can do.  
+- Recognize common pitfalls in training, evaluation, and deployment, especially in clinical and translational settings.  
+- Decide where foundation models are genuinely useful—and where simpler methods or classical baselines are sufficient.  
+
+The next chapter now turns to the foundations: how we get from raw reads to variants, and from variants to the datasets and benchmarks on which all of these models depend.
