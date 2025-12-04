@@ -39,10 +39,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-a1553387a0f784068632030e9fbb8a3c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-a1553387a0f784068632030e9fbb8a3c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-d1e9b63c6b6094879b9f94a7628e3370.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-a1553387a0f784068632030e9fbb8a3c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -75,7 +79,169 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -100,6 +266,9 @@ ul.task-list li input[type="checkbox"] {
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Genomic Foundation Models</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -358,6 +527,7 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Preface</h1>
@@ -377,41 +547,31 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Genomics is in the middle of an uncomfortable growth spurt.</p>
-<p>For a long time, “machine learning in genetics” mostly meant carefully engineered features, linear or logistic regression, and classical mixed models wrapped in beautifully tuned pipelines. Variant interpretation relied on aggregating conservation scores, motif matches, and hand-crafted heuristics. Each new dataset or technology tended to come with its own bespoke tools, data formats, and vocabularies.</p>
-<p>In parallel, deep learning and, later, foundation models reshaped how we work with images, text, and protein sequences. Genomics watched that evolution from the sidelines, borrowing ideas where it could—first convolutional networks for sequence-to-function prediction, then transformers and self-supervision, and now large multi-omic foundation models.</p>
-<p>This book grew out of the tension between those two worlds: the mature, statistically grounded tradition of human genetics, and the rapidly changing ecosystem of deep learning and foundation models. It is an attempt to make that transition legible—to connect the older tools and intuitions that still matter with the new modeling ideas that are just starting to settle into place.</p>
-<p>I wrote it first for myself and my collaborators: as a way to organize scattered notes, paper marginalia, whiteboard sketches, and half-finished slides into something coherent. Over time it became clear that turning those notes into a book might be useful to others trying to navigate the same landscape—especially people who live at one corner of the triangle (genomics, statistics, or machine learning) and are trying to get oriented to the other two.</p>
+<p>Working on genomic foundation models means context-switching constantly: debugging data artifacts one week, reproducing a transformer-based variant effect predictor the next, and arguing about clinical patient cohorts the week after. The knowledge required is scattered across textbooks, methods papers, and tribal folklore - genomics on one shelf, deep learning on another, clinical deployment in someone else’s head entirely.</p>
+<p>This book is my attempt to put those pieces in one place: to connect the mature, statistically grounded tradition of human genetics with the rapidly changing ecosystem of deep learning and foundation models, and to make that transition legible for people who live in one corner of the triangle and are trying to get oriented to the others.</p>
+<p>I wrote it first for myself and my collaborators: as a way to organize wiki pages, markdown files, and half-finished slide decks into something coherent. Over time it became clear that turning those notes into a book might be useful to others navigating the same landscape.</p>
 <hr>
 <section id="why-i-wrote-this-book" class="level2">
 <h2 class="anchored" data-anchor-id="why-i-wrote-this-book">Why I Wrote This Book</h2>
-<p>Day-to-day work on genomic foundation models can feel strangely fragmented.</p>
-<p>You might spend one week debugging coverage artifacts in exome data, the next trying to reproduce a published splice prediction model, and the next arguing about calibration of clinical risk scores. Each of those tasks pulls on different pieces of knowledge: sequencing technologies, association statistics, representation learning, interpretability, and clinical validation.</p>
-<p>Most resources cover only one slice:</p>
-<ul>
-<li>Genomics and human genetics textbooks do an excellent job of biological context, but understandably treat machine learning as a secondary topic.</li>
-<li>Deep learning books and courses explain optimization and architectures, but rarely dig into the peculiarities of genomic data or the constraints of clinical deployment.</li>
-<li>Research papers often assume a lot of background on both sides, and focus on incremental advances rather than the big picture.</li>
-</ul>
-<p>What I wanted—but could not find in one place—was a <strong>conceptual throughline</strong>:</p>
+<p>What I wanted, but could not find, was a <strong>conceptual throughline</strong>:</p>
 <ul>
 <li>How do we get from reads to variants in a way that a deep model can trust?</li>
 <li>How should we think about polygenic scores, fine-mapping, and functional assays in the era of foundation models?</li>
 <li>When we say a model “understands” regulatory grammar or protein function, what does that actually mean?</li>
 <li>And what does it take to move from a promising preprint to a tool that can support decisions about real patients?</li>
 </ul>
-<p>The book is my best attempt at answering those questions in a way that is historically grounded, technically honest, and practically oriented.</p>
+<p>This book is my best attempt at answering those questions in a way that is historically grounded, technically honest, and practically oriented.</p>
 <hr>
 </section>
 <section id="how-this-book-came-together" class="level2">
 <h2 class="anchored" data-anchor-id="how-this-book-came-together">How This Book Came Together</h2>
 <p>The structure of the book reflects the way these ideas evolved in my own work.</p>
 <p>Early sections grew out of teaching and mentoring conversations: explaining next-generation sequencing, variant calling, and pre-deep-learning interpretation methods to new team members who were strong in statistics or ML but new to genomics (and vice versa).</p>
-<p>The middle sections emerged from a series of “journal club plus experiments” cycles, where we:</p>
+<p>The middle sections emerged from a series of “journal club + experiments” cycles, where we:</p>
 <ul>
 <li>read papers on sequence-to-function CNNs, protein language models, and genomic transformers,</li>
-<li>tried to reproduce key results or adapt them to our datasets,</li>
-<li>and documented the pain points—data formats, training instabilities, evaluation pitfalls—that never quite fit into a methods section.</li>
+<li>tried to reproduce key results or adapt them to key datasets,</li>
+<li>and documented the pain points—data formats, training instabilities, evaluation pitfalls, which never quite fit into a methods section.</li>
 </ul>
 <p>The later parts were shaped by collaborations around clinical prediction, variant interpretation pipelines, and larger multi-omic models. Many of the examples and caveats come directly from these projects: places where a model that looked excellent on paper behaved in surprising ways when exposed to real-world data, or where simple baselines outperformed much fancier architectures once confounding and distribution shift were handled correctly.</p>
 <p>Because of that origin, the book has a particular bias: it is written from the perspective of someone who spends much of their time trying to get models to work in messy, high-stakes settings. You will see this in the emphasis on data quality, evaluation, and clinical translation.</p>
@@ -421,9 +581,9 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="how-to-read-this-book">How to Read This Book</h2>
 <p>This is <strong>not</strong> a genomics textbook, a complete review of every DNA or protein model, or a deep-learning-from-scratch course. Instead, it is meant to be:</p>
 <ul>
-<li>a <strong>roadmap</strong> to the main kinds of data, models, and objectives that matter for genomic foundation models today;</li>
-<li>a <strong>bridge</strong> between classical statistical genetics and modern representation learning;</li>
-<li>and a <strong>practical guide</strong> to the kinds of failure modes and design choices that matter in real applications.</li>
+<li>a <strong>roadmap</strong> to the main kinds of data, models, and objectives that matter for genomic foundation models today</li>
+<li>a <strong>bridge</strong> between classical statistical genetics and modern representation learning</li>
+<li>a <strong>practical guide</strong> to the kinds of failure modes and design choices that matter in real applications.</li>
 </ul>
 <p>You do <strong>not</strong> need to read the book cover-to-cover in order.</p>
 <ul>
@@ -472,12 +632,12 @@ ul.task-list li input[type="checkbox"] {
 <section id="acknowledgements" class="level2">
 <h2 class="anchored" data-anchor-id="acknowledgements">Acknowledgements</h2>
 <p>This book exists because of many generous people who shared their time, ideas, and encouragement.</p>
-<p>First, I owe a deep debt of gratitude to my colleagues in the <strong>Mayo GenAI</strong> and broader data science community. The day-to-day conversations, whiteboard sessions, and “what went wrong here?” post-mortems with this group shaped much of the perspective and many of the examples in the chapters.</p>
+<p>First, I owe a deep debt of gratitude to my colleagues in the <strong>Mayo Clinic GenAI</strong> and broader data science community. The day-to-day conversations, whiteboard sessions, and “what went wrong here?” post-mortems with this group shaped much of the perspective and many of the examples in the chapters.</p>
 <p>I am especially grateful to the <strong>principal investigators and clinicians</strong> whose questions kept the focus on real patients and real decisions:<br>
 <strong>Dr.&nbsp;Shant Ayanian</strong>, <strong>Dr.&nbsp;Elena Myasoedova</strong>, and <strong>Dr.&nbsp;Alexander Ryu</strong>.</p>
 <p>To <strong>leadership at Mayo Clinic</strong> who supported the time, computing resources, and institutional patience needed for both the models and this book:<br>
 <strong>Dr.&nbsp;Matthew Callstrom</strong>, <strong>Dr.&nbsp;Panos Korfiatis</strong>, and <strong>Matt Redlon</strong>.</p>
-<p>To my <strong>Data Science and Machine Learning Engineering colleagues</strong>, whose work and feedback directly shaped many of the workflows and case studies:<br>
+<p>To my <strong>data science and machine learning engineering colleagues</strong>, whose work and feedback directly shaped many of the workflows and case studies:<br>
 <strong>Bridget Toomey</strong>, <strong>Carl Molnar</strong>, <strong>Zach Jensen</strong>, and <strong>Marc Blasi</strong>.</p>
 <p>I am also grateful for the architectural creativity, hardware insight, and willingness to experiment from our <strong>collaborators at Cerebras</strong>:<br>
 <strong>Natalia Vassilieva</strong>, <strong>Jason Wolfe</strong>, <strong>Omid Shams Solari</strong>, <strong>Vinay Pondenkandath</strong>, <strong>Bhargav Kanakiya</strong>, and <strong>Faisal Al-khateeb</strong>.</p>
@@ -485,9 +645,9 @@ ul.task-list li input[type="checkbox"] {
 <strong>Daniel Balsam</strong>, <strong>Nicholas Wang</strong>, <strong>Michael Pearce</strong>, and <strong>Mark Bissell</strong>.</p>
 <p>I would also like to thank my former colleagues at <strong>LGC</strong> for foundational work and conversations around protein language models and large-scale representation learning:<br>
 <strong>Prasad Siddavatam</strong> and <strong>Robin Butler</strong>.</p>
-<p>Beyond these named groups, many others contributed indirectly—through critical questions at talks, thoughtful reviews of draft chapters, shared code, or simply by insisting that models be connected back to biologically meaningful questions. To all of the geneticists, molecular biologists, statisticians, clinicians, and engineers who keep us honest about what actually matters: thank you.</p>
-<p>Finally, I am grateful to my family and friends for their patience with evenings and weekends spent turning notes into chapters. Your support made it possible to see this project through.</p>
-<p>If this book helps you connect a new model to a real biological question, design a more robust evaluation, or communicate more clearly across disciplinary boundaries—and if it nudges you to use these tools thoughtfully in your own work—then it will have done its job.</p>
+<p>Beyond these named groups, I owe a broader debt to the geneticists, molecular biologists, statisticians, clinicians, and engineers whose work this book draws on. The field moves forward because people share code, publish honest benchmarks, and insist that models be connected back to biologically meaningful questions. Thank you for setting that standard.</p>
+<p>Finally, I am grateful to my wife, Alyssa, and our two kids for their patience with the evenings and weekends this book consumed. You gave me the space to finish it and the reasons to step away from it.</p>
+<p>If this book helps you connect a new model to a real biological question, design a more robust evaluation, or communicate more clearly across disciplinary boundaries then it will have done its job.</p>
 <p>— <em>Josh Meehl</em></p>
 
 
@@ -496,6 +656,19 @@ ul.task-list li input[type="checkbox"] {
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {

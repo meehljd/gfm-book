@@ -1,37 +1,23 @@
 # Preface {.unnumbered}
 
-Genomics is in the middle of an uncomfortable growth spurt.
+Working on genomic foundation models means context-switching constantly: debugging data artifacts one week, reproducing a transformer-based variant effect predictor the next, and arguing about clinical patient cohorts the week after. The knowledge required is scattered across textbooks, methods papers, and tribal folklore - genomics on one shelf, deep learning on another, clinical deployment in someone else's head entirely.
 
-For a long time, “machine learning in genetics” mostly meant carefully engineered features, linear or logistic regression, and classical mixed models wrapped in beautifully tuned pipelines. Variant interpretation relied on aggregating conservation scores, motif matches, and hand-crafted heuristics. Each new dataset or technology tended to come with its own bespoke tools, data formats, and vocabularies.
+This book is my attempt to put those pieces in one place: to connect the mature, statistically grounded tradition of human genetics with the rapidly changing ecosystem of deep learning and foundation models, and to make that transition legible for people who live in one corner of the triangle and are trying to get oriented to the others.
 
-In parallel, deep learning and, later, foundation models reshaped how we work with images, text, and protein sequences. Genomics watched that evolution from the sidelines, borrowing ideas where it could—first convolutional networks for sequence-to-function prediction, then transformers and self-supervision, and now large multi-omic foundation models.
-
-This book grew out of the tension between those two worlds: the mature, statistically grounded tradition of human genetics, and the rapidly changing ecosystem of deep learning and foundation models. It is an attempt to make that transition legible—to connect the older tools and intuitions that still matter with the new modeling ideas that are just starting to settle into place.
-
-I wrote it first for myself and my collaborators: as a way to organize scattered notes, paper marginalia, whiteboard sketches, and half-finished slides into something coherent. Over time it became clear that turning those notes into a book might be useful to others trying to navigate the same landscape—especially people who live at one corner of the triangle (genomics, statistics, or machine learning) and are trying to get oriented to the other two.
+I wrote it first for myself and my collaborators: as a way to organize wiki pages, markdown files, and half-finished slide decks into something coherent. Over time it became clear that turning those notes into a book might be useful to others navigating the same landscape.
 
 ---
 
 ## Why I Wrote This Book
 
-Day-to-day work on genomic foundation models can feel strangely fragmented.
-
-You might spend one week debugging coverage artifacts in exome data, the next trying to reproduce a published splice prediction model, and the next arguing about calibration of clinical risk scores. Each of those tasks pulls on different pieces of knowledge: sequencing technologies, association statistics, representation learning, interpretability, and clinical validation.
-
-Most resources cover only one slice:
-
-- Genomics and human genetics textbooks do an excellent job of biological context, but understandably treat machine learning as a secondary topic.
-- Deep learning books and courses explain optimization and architectures, but rarely dig into the peculiarities of genomic data or the constraints of clinical deployment.
-- Research papers often assume a lot of background on both sides, and focus on incremental advances rather than the big picture.
-
-What I wanted—but could not find in one place—was a **conceptual throughline**:
+What I wanted, but could not find, was a **conceptual throughline**:
 
 - How do we get from reads to variants in a way that a deep model can trust?
 - How should we think about polygenic scores, fine-mapping, and functional assays in the era of foundation models?
-- When we say a model “understands” regulatory grammar or protein function, what does that actually mean?
+- When we say a model "understands" regulatory grammar or protein function, what does that actually mean?
 - And what does it take to move from a promising preprint to a tool that can support decisions about real patients?
 
-The book is my best attempt at answering those questions in a way that is historically grounded, technically honest, and practically oriented.
+This book is my best attempt at answering those questions in a way that is historically grounded, technically honest, and practically oriented.
 
 ---
 
@@ -41,11 +27,11 @@ The structure of the book reflects the way these ideas evolved in my own work.
 
 Early sections grew out of teaching and mentoring conversations: explaining next-generation sequencing, variant calling, and pre-deep-learning interpretation methods to new team members who were strong in statistics or ML but new to genomics (and vice versa).
 
-The middle sections emerged from a series of “journal club plus experiments” cycles, where we:
+The middle sections emerged from a series of “journal club + experiments” cycles, where we:
 
 - read papers on sequence-to-function CNNs, protein language models, and genomic transformers,
-- tried to reproduce key results or adapt them to our datasets,
-- and documented the pain points—data formats, training instabilities, evaluation pitfalls—that never quite fit into a methods section.
+- tried to reproduce key results or adapt them to key datasets,
+- and documented the pain points—data formats, training instabilities, evaluation pitfalls, which never quite fit into a methods section.
 
 The later parts were shaped by collaborations around clinical prediction, variant interpretation pipelines, and larger multi-omic models. Many of the examples and caveats come directly from these projects: places where a model that looked excellent on paper behaved in surprising ways when exposed to real-world data, or where simple baselines outperformed much fancier architectures once confounding and distribution shift were handled correctly.
 
@@ -57,9 +43,9 @@ Because of that origin, the book has a particular bias: it is written from the p
 
 This is **not** a genomics textbook, a complete review of every DNA or protein model, or a deep-learning-from-scratch course. Instead, it is meant to be:
 
-- a **roadmap** to the main kinds of data, models, and objectives that matter for genomic foundation models today;
-- a **bridge** between classical statistical genetics and modern representation learning;
-- and a **practical guide** to the kinds of failure modes and design choices that matter in real applications.
+- a **roadmap** to the main kinds of data, models, and objectives that matter for genomic foundation models today
+- a **bridge** between classical statistical genetics and modern representation learning
+- a **practical guide** to the kinds of failure modes and design choices that matter in real applications.
 
 You do **not** need to read the book cover-to-cover in order.
 
@@ -115,7 +101,7 @@ You should treat the book as one opinionated map of the landscape, not the lands
 
 This book exists because of many generous people who shared their time, ideas, and encouragement.
 
-First, I owe a deep debt of gratitude to my colleagues in the **Mayo GenAI** and broader data science community. The day-to-day conversations, whiteboard sessions, and “what went wrong here?” post-mortems with this group shaped much of the perspective and many of the examples in the chapters.
+First, I owe a deep debt of gratitude to my colleagues in the **Mayo Clinic GenAI** and broader data science community. The day-to-day conversations, whiteboard sessions, and “what went wrong here?” post-mortems with this group shaped much of the perspective and many of the examples in the chapters.
 
 I am especially grateful to the **principal investigators and clinicians** whose questions kept the focus on real patients and real decisions:  
 **Dr. Shant Ayanian**, **Dr. Elena Myasoedova**, and **Dr. Alexander Ryu**.
@@ -123,7 +109,7 @@ I am especially grateful to the **principal investigators and clinicians** whose
 To **leadership at Mayo Clinic** who supported the time, computing resources, and institutional patience needed for both the models and this book:  
 **Dr. Matthew Callstrom**, **Dr. Panos Korfiatis**, and **Matt Redlon**.
 
-To my **Data Science and Machine Learning Engineering colleagues**, whose work and feedback directly shaped many of the workflows and case studies:  
+To my **data science and machine learning engineering colleagues**, whose work and feedback directly shaped many of the workflows and case studies:  
 **Bridget Toomey**, **Carl Molnar**, **Zach Jensen**, and **Marc Blasi**.
 
 I am also grateful for the architectural creativity, hardware insight, and willingness to experiment from our **collaborators at Cerebras**:  
@@ -135,10 +121,10 @@ And to our **collaborators at GoodFire**, whose partnership helped push these id
 I would also like to thank my former colleagues at **LGC** for foundational work and conversations around protein language models and large-scale representation learning:  
 **Prasad Siddavatam** and **Robin Butler**.
 
-Beyond these named groups, many others contributed indirectly—through critical questions at talks, thoughtful reviews of draft chapters, shared code, or simply by insisting that models be connected back to biologically meaningful questions. To all of the geneticists, molecular biologists, statisticians, clinicians, and engineers who keep us honest about what actually matters: thank you.
+Beyond these named groups, I owe a broader debt to the geneticists, molecular biologists, statisticians, clinicians, and engineers whose work this book draws on. The field moves forward because people share code, publish honest benchmarks, and insist that models be connected back to biologically meaningful questions. Thank you for setting that standard.
 
-Finally, I am grateful to my family and friends for their patience with evenings and weekends spent turning notes into chapters. Your support made it possible to see this project through.
+Finally, I am grateful to my wife, Alyssa, and our two kids for their patience with the evenings and weekends this book consumed. You gave me the space to finish it and the reasons to step away from it.
 
-If this book helps you connect a new model to a real biological question, design a more robust evaluation, or communicate more clearly across disciplinary boundaries—and if it nudges you to use these tools thoughtfully in your own work—then it will have done its job.
+If this book helps you connect a new model to a real biological question, design a more robust evaluation, or communicate more clearly across disciplinary boundaries then it will have done its job.
 
 — *Josh Meehl*
