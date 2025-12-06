@@ -76,23 +76,19 @@ Finally, we return often to interpretability, not as optional decoration, but as
 
 ## How the Book Is Organized
 
-The book is organized into six parts plus two short appendices. Each part can be read on its own, but they are designed to build on one another.
+The book is organized into six parts plus three short appendices. Each part can be read on its own, but they are designed to build on one another.
 
 ### Part I — Data & Pre-DL Methods 
 
 Part I lays the **genomic and statistical foundation** that later models rest on.
 
-- **Chapter 1 — NGS & Variant Calling**  
-  Introduces next-generation sequencing, alignment, and variant calling, highlighting sources of error and the evolution from hand-crafted pipelines to learned variant callers.
+- [Chapter @sec-ngs] introduces next-generation sequencing, alignment, and variant calling, highlighting sources of error and the evolution from hand-crafted pipelines to learned variant callers.
 
-- **Chapter 2 — Foundational Genomics Data**  
-  Surveys the core data resources that underlie most modern work: reference genomes, population variation catalogs, clinical variant databases, and functional genomics consortia. It also discusses how they are used as training targets and evaluation benchmarks.
+- [Chapter @sec-data] surveys the core data resources that underlie most modern work: reference genomes, population variation catalogs, clinical variant databases, and functional genomics consortia. It also discusses how they are used as training targets and evaluation benchmarks.
 
-- **Chapter 3 — GWAS & Polygenic Scores**  
-  Reviews genome-wide association studies, linkage disequilibrium, fine-mapping, and polygenic scores, emphasizing what these “variant-to-trait” associations do and do not tell us.
+- [Chapter @sec-pgs] reviews genome-wide association studies, linkage disequilibrium, fine-mapping, and polygenic scores, emphasizing what these “variant-to-trait” associations do and do not tell us.
 
-- **Chapter 4 — Deleteriousness Scores**  
-  Covers conservation-based and machine learning-based variant effect predictors such as CADD, including their feature sets, label construction, and issues like circularity and dataset bias.
+- [Chapter @sec-cadd] covers conservation-based and machine learning-based variant effect predictors such as CADD, including their feature sets, label construction, and issues like circularity and dataset bias.
 
 Together, Part I answers: *What data and pre-deep-learning tools form the backdrop that any genomic foundation model must respect, integrate with, or improve upon?*
 
@@ -102,14 +98,11 @@ Together, Part I answers: *What data and pre-deep-learning tools form the backdr
 
 Part II turns to the first wave of **deep sequence-to-function models**, largely built on convolutional neural networks.
 
-- **Chapter 5 — Regulatory Prediction**  
-  Presents CNN-based models that predict chromatin accessibility, histone marks, and related regulatory annotations directly from DNA sequence, and explores what they learn about motifs and regulatory grammar.
+- [Chapter @sec-reg] presents CNN-based models that predict chromatin accessibility, histone marks, and related regulatory annotations directly from DNA sequence, and explores what they learn about motifs and regulatory grammar.
 
-- **Chapter 6 — Transcriptional Effects**  
-  Extends from chromatin to gene expression, showing how models combine sequence, regulatory features, and context to predict expression levels and perturbation effects.
+- [Chapter @sec-trans] extends from chromatin to gene expression, showing how models combine sequence, regulatory features, and context to predict expression levels and perturbation effects.
 
-- **Chapter 7 — Splicing Prediction**  
-  Focuses on deep models of pre-mRNA splicing and splice-site choice, and how these models can be used to interpret variant effects on splicing in both research and clinical contexts.
+- [Chapter @sec-splice] focuses on deep models of pre-mRNA splicing and splice-site choice, and how these models can be used to interpret variant effects on splicing in both research and clinical contexts.
 
 ---
 
@@ -117,17 +110,13 @@ Part II turns to the first wave of **deep sequence-to-function models**, largely
 
 Part III introduces **transformer-based and related architectures** for representing biological sequence.
 
-- **Chapter 8 — Sequence Representation & Tokens**  
-  Examines how we turn genomic and protein sequences into model-compatible tokens, including k-mers, byte-pair encodings, and other schemes, and how these choices shape downstream models.
+- [Chapter @sec-token] examines how we turn genomic and protein sequences into model-compatible tokens, including k-mers, byte-pair encodings, and other schemes, and how these choices shape downstream models.
 
-- **Chapter 9 — Protein Language Models**  
-  Describes large protein language models trained on sequence databases, their emergent structure and function representations, and applications to variant effect prediction and protein design.
+- [Chapter @sec-prot] describes large protein language models trained on sequence databases, their emergent structure and function representations, and applications to variant effect prediction and protein design.
 
-- **Chapter 10 — DNA Foundation Models**  
-  Surveys DNA language models and other genomic foundation backbones, including their training corpora, objectives, evaluation suites, and limitations.
+- [Chapter @sec-dna] surveys DNA language models and other genomic foundation backbones, including their training corpora, objectives, evaluation suites, and limitations.
 
-- **Chapter 11 — Long-range Hybrid Models**  
-  Covers hybrid CNN/transformer and related architectures designed to handle long genomic contexts, such as models that predict regulatory readouts over tens to hundreds of kilobases.
+- [Chapter @sec-hybrid] covers hybrid CNN/transformer and related architectures designed to handle long genomic contexts, such as models that predict regulatory readouts over tens to hundreds of kilobases.
 
 ---
 
@@ -135,14 +124,11 @@ Part III introduces **transformer-based and related architectures** for represen
 
 Part IV is the conceptual core of the book, focusing explicitly on **genomic foundation models** and their multi-omic extensions.
 
-- **Chapter 12 — Genomic FMs: Principles & Practice**  
-  Provides a working definition and taxonomy of genomic FMs, design dimensions (architecture, context length, conditioning), and practical guidance for using pretrained backbones in downstream tasks.
+- [Chapter @sec-princ] provides a working definition and taxonomy of genomic FMs, design dimensions (architecture, context length, conditioning), and practical guidance for using pretrained backbones in downstream tasks...
 
-- **Chapter 13 — Variant Effect Prediction**  
-  Recasts variant effect prediction in the foundation-model era, spanning protein and DNA-based approaches, and discusses calibration, uncertainty, and integration into existing pipelines.
+- [Chapter @sec-veps] recasts variant effect prediction in the foundation-model era, spanning protein and DNA-based approaches, and discusses calibration, uncertainty, and integration into existing pipelines.
 
-- **Chapter 14 — Multi-omics & Systems Context**  
-  Broadens the view from isolated sequences to multi-omic and systems-level representations, including models that integrate genomic, transcriptomic, proteomic, and phenotype data.
+- [Chapter @sec-multi] broadens the view from isolated sequences to multi-omic and systems-level representations, including models that integrate genomic, transcriptomic, proteomic, and phenotype data.
 
 ---
 
@@ -150,14 +136,11 @@ Part IV is the conceptual core of the book, focusing explicitly on **genomic fou
 
 Part V pulls out cross-cutting issues that apply to essentially every model in the book.
 
-- **Chapter 15 — Model Evaluation & Benchmarks**  
-  Develops a unified framework for evaluating models across molecular, variant-level, trait-level, and clinical tasks, and discusses data splitting, metric choice, and the link between benchmarks and real-world decisions.
+- [Chapter @sec-eval] develops a unified framework for evaluating models across molecular, variant-level, trait-level, and clinical tasks, and discusses data splitting, metric choice, and the link between benchmarks and real-world decisions.
 
-- **Chapter 16 — Confounders in Model Training**  
-  Details sources of confounding and data leakage, from batch effects and ancestry structure to label bias and covariate shift, and offers practical strategies for detection and mitigation.
+- [Chapter @sec-confound] details sources of confounding and data leakage, from batch effects and ancestry structure to label bias and covariate shift, and offers practical strategies for detection and mitigation.
 
-- **Chapter 17 — Interpretability & Mechanisms**  
-  Explores interpretability tools from classical motif discovery and attribution methods to emerging mechanistic approaches, and asks when these tools genuinely reveal biological mechanisms.
+- [Chapter @sec-interp] explores interpretability tools from classical motif discovery and attribution methods to emerging mechanistic approaches, and asks when these tools genuinely reveal biological mechanisms.
 
 ---
 
@@ -165,14 +148,11 @@ Part V pulls out cross-cutting issues that apply to essentially every model in t
 
 Part VI moves from methods to **end-to-end workflows** in research and clinical practice.
 
-- **Chapter 18 — Clinical Risk Prediction**  
-  Discusses risk prediction tasks that combine genomic features (including outputs from GFMs) with clinical and environmental data, focusing on discrimination, calibration, fairness, and deployment in health systems.
+- [Chapter @sec-clinical] discusses risk prediction tasks that combine genomic features (including outputs from GFMs) with clinical and environmental data, focusing on discrimination, calibration, fairness, and deployment in health systems.
 
-- **Chapter 19 — Pathogenic Variant Discovery**  
-  Examines how models fit into rare disease and cancer workflows, including variant prioritization pipelines, integration with family and tumor-normal data, and lab-in-the-loop validation.
+- [Chapter @sec-variants] examines how models fit into rare disease and cancer workflows, including variant prioritization pipelines, integration with family and tumor-normal data, and lab-in-the-loop validation.
 
-- **Chapter 20 — Drug Discovery & Biotech**  
-  Looks at how GFMs intersect with target discovery, functional genomics screens, biomarker development, and biotech/industry workflows, including build-vs-buy and organizational considerations.
+- [Chapter @sec-drugs] looks at how GFMs intersect with target discovery, functional genomics screens, biomarker development, and biotech/industry workflows, including build-vs-buy and organizational considerations.
 
 ---
 
@@ -180,11 +160,11 @@ Part VI moves from methods to **end-to-end workflows** in research and clinical 
 
 Two short appendices provide background and pointers:
 
-- **Appendix A — Deep Learning Primer for Genomics**  
-  A compact introduction to neural networks, CNNs, transformers, training, and evaluation, aimed at genomics-first readers who want enough ML background to engage with the main chapters. :contentReference[oaicite:2]{index=2}  
+- [@sec-apx-dl] is a compact introduction to neural networks, CNNs, transformers, training, and evaluation, aimed at genomics-first readers who want enough ML background to engage with the main chapters. :contentReference[oaicite:2]{index=2}  
 
-- **Appendix B — Additional Resources**  
-  Curated textbooks, courses, software, and papers for deeper dives into genomics, statistical genetics, and deep learning.
+- [@sec-apx-resources] is a curated set textbooks, courses, software, and papers for deeper dives into genomics, statistical genetics, and deep learning.
+
+- [@sec-apx-glossary] is a glossary of key terms.
 
 ---
 
