@@ -1,3 +1,14 @@
+---
+format:
+  html:  # Regular built-in format
+    citeproc: false
+    filters:
+      - at: pre-quarto
+        path: _extensions/andrewheiss/wordcount/citeproc.lua
+      - at: pre-quarto
+        path: _extensions/andrewheiss/wordcount/wordcount.lua
+---
+
 ::: {.callout-warning .content-visible when-profile="draft"}
 **TODO:**
 
@@ -60,7 +71,7 @@ Next comes **read alignment**, in which short reads are aligned to a reference g
 
 **Per-sample variant calling** then takes place, where tools like the Genome Analysis Toolkit (GATK) HaplotypeCaller fit local haplotypes using hidden Markov models, de Bruijn graphs, or other probabilistic frameworks [@mckenna_gatk_2010]. These tools produce candidate variants with genotype likelihoods for each sample.
 
-Finally, for cohorts, **joint genotyping and cohort refinement** recombines per-sample likelihoods to enforce a consistent set of variants across individuals. Variant quality score recalibration (VQSR) or hard filters distinguish true variants from artifacts based on features like depth, mapping quality, and strand bias.
+Finally, for **cohort variant calling**, joint genotyping and cohort refinement recombines per-sample likelihoods to enforce a consistent set of variants across individuals. Raw calls are then filtered to distinguish true variants from artifacts. Simple hard filters apply fixed cutoffs to individual metrics, but GATK's Variant Quality Score Recalibration (VQSR) takes a more sophisticated approach: it fits a Gaussian mixture model in the multi-dimensional space of variant annotations (depth, strand bias, mapping quality, read position bias, etc.), using variants at known polymorphic sites as a training set. Each candidate receives a recalibrated score reflecting how well it matches the learned "true variant" distribution, allowing joint consideration of multiple quality axes rather than independent hard thresholds.
 
 These steps are encoded in pipelines like GATK Best Practices and similar frameworks. The key point is that each step uses hand-designed summary features and mechanistic models chosen by experts, not learned end-to-end [@van_der_auwera_gatk_best_2018].
 
@@ -72,7 +83,7 @@ $$P(G \mid D) \propto P(G) \prod_{r \in \text{reads}} P(r \mid G)$$
 
 where $P(G)$ is a prior over genotypes (often assuming Hardy-Weinberg equilibrium) and $P(r \mid G)$ is the likelihood of observing read $r$ given genotype $G$. Computing $P(r \mid G)$ is non-trivial: GATK uses a pair hidden Markov model (pair-HMM) to marginalize over possible alignments between the read and candidate haplotypes, incorporating base quality scores to weight the contribution of each base.
 
-This formulation assumes conditional independence of reads given the genotype—an assumption known to be violated in practice due to correlated errors from PCR duplicates, systematic instrument biases, and local sequence context [@depristo_gatk_2011]. DeepVariant's CNN, by contrast, sees all reads in a pileup simultaneously and can learn to model these dependencies implicitly.
+This formulation assumes conditional independence of reads given the genotype—an assumption known to be violated in practice due to correlated errors from PCR duplicates, systematic instrument biases, and local sequence context [@depristo_gatk_2011]. DeepVariant's CNN (see @sec-deepvar), by contrast, sees all reads in a pileup simultaneously and can learn to model these dependencies implicitly.
 
 ## Haplotype Phasing
 
@@ -126,11 +137,11 @@ The human leukocyte antigen (HLA) locus on chromosome 6p21 is among the most cha
 
 HLA is difficult to call for several reasons. The HLA genes (*HLA-A*, *HLA-B*, *HLA-C*, *HLA-DRB1*, and others) are the most polymorphic coding genes in the human genome, with thousands of known alleles per gene [@robinson_hla-db_2020]. Standard reference-based alignment struggles because reads may match the reference poorly even when they represent common, well-characterized alleles. The MHC region contains segmental duplications, copy-number variable genes (such as *HLA-DRB3/4/5*), and pseudogenes that confound read mapping. Different HLA alleles may differ by only a few nucleotides, making accurate allele-level typing difficult with short reads alone. Reads carrying non-reference HLA alleles may fail to align or align with low mapping quality, causing systematic undercalling of alternate alleles.
 
-Despite these challenges, accurate HLA typing is essential for several clinical applications. In transplantation, HLA matching between donor and recipient is critical for organ and hematopoietic stem cell transplantation outcomes. HLA alleles are the strongest genetic risk factors for many autoimmune conditions, including type 1 diabetes, rheumatoid arthritis, and multiple sclerosis; fine-mapping causal alleles and amino acid positions requires accurate genotyping [@sakaue_hla_2023; @padyukov_ra_2022]. Specific HLA alleles—such as *HLA-B\*57:01* for abacavir and *HLA-B\*15:02* for carbamazepine—are pharmacogenomic markers for severe adverse drug reactions. HLA diversity also shapes immune responses to pathogens, including HIV, hepatitis, and SARS-CoV-2 [@mallal_abacavir_2008; @chung_carbamazepine_2004].
+Despite these challenges, accurate HLA typing is essential for several clinical applications. In transplantation, HLA matching between donor and recipient is critical for organ and hematopoietic stem cell transplantation outcomes. HLA alleles are the strongest genetic risk factors for many autoimmune conditions, including type 1 diabetes, rheumatoid arthritis, and multiple sclerosis; fine-mapping causal alleles and amino acid positions requires accurate genotyping [@sakaue_hla_2023; @padyukov_ra_2022]. Specific HLA alleles—such as *HLA-B\*57:01* for abacavir and *HLA-B\*15:02* for carbamazepine—are pharmacogenomic markers for severe adverse drug reactions [@mallal_abacavir_2008; @chung_carbamazepine_2004]. HLA diversity also shapes immune responses to pathogens, including HIV, hepatitis, and SARS-CoV-2.
 
 Because standard variant callers perform poorly in HLA, specialized tools have been developed. HLA imputation methods, including those available through the Michigan Imputation Server, use dense reference panels to impute HLA alleles from array genotypes, enabling large-scale association studies [@sakaue_hla_2023]. Sequence-based typing tools such as T1K perform HLA and KIR (killer immunoglobulin-like receptor) genotyping directly from WES, WGS, or RNA-seq data by aligning reads against allele databases (such as IPD-IMGT/HLA) rather than the linear reference genome [@song_t1k_2022]. T1K is notable for its speed, accuracy across sequencing platforms, and ability to handle both DNA and RNA data. Graph-based approaches that incorporate known HLA alleles as alternate paths can also improve alignment and variant calling in this region [@garrison_vgtool_2018; @liao_pangenome_2023].
 
-For the purposes of this book, HLA exemplifies a broader lesson: regions of extreme diversity, structural complexity, or clinical importance may require specialized methods beyond generic variant calling pipelines. The models in later chapters that predict variant effects must be aware of—and often explicitly exclude or specially handle—these challenging regions.
+For the purposes of this book, HLA exemplifies a broader lesson: regions of extreme diversity, structural complexity, or clinical importance may require specialized methods beyond generic variant calling pipelines. Later chapters show how variant effect models handle these challenging regions—often by excluding them entirely or applying specialized processing.
 
 ## Benchmarking and Ground Truth
 
@@ -152,21 +163,19 @@ GIAB truth sets have known limitations. They are derived primarily from short-re
 
 Ongoing efforts—including the T2T Consortium's complete genome assemblies and the Human Pangenome Reference Consortium's diverse haplotype collection—are expanding the scope of benchmarking resources [@liao_pangenome_2023].
 
-## DeepVariant: CNNs for Variant Calling
+## DeepVariant: CNNs for Variant Calling {#sec-deepvar}
 
 DeepVariant replaces much of the hand-engineered logic in classical pipelines with a deep convolutional neural network trained to classify candidate variants directly from read pileups [@poplin_deepvariant_2018].
 
 ### Image-Like Pileup Representation
 
-Around each candidate site, DeepVariant constructs an image-like representation. Each row corresponds to a read overlapping the site, channels encode base identity, base quality, mapping quality, strand, and other features, and the reference sequence and candidate alleles are overlaid. This transforms the problem into a vision task: classify the central locus as homozygous reference, heterozygous, or homozygous alternate given the pileup image.
-
-In modern versions, DeepVariant encodes each candidate variant site as a six-channel tensor. The channels capture whether each position matches or mismatches the reference, Phred-scaled base quality scores, mapping quality indicating confidence in alignment, strand orientation, which reads support the reference versus alternate allele, and additional features capturing alignment differences. This representation allows the CNN to see patterns that correlate with true variants—such as balanced allele support across strands and consistent base qualities—versus artifacts like strand-biased support or clustering of mismatches at read ends.
+Around each candidate site, DeepVariant constructs a six-channel tensor resembling an image. Each row corresponds to a read overlapping the site, with channels encoding reference match/mismatch status, Phred-scaled base quality, mapping quality, strand orientation, allele support (reference vs. alternate), and additional alignment features. The reference sequence and candidate alleles are overlaid. This representation allows the CNN to distinguish patterns consistent with true variants—balanced allele support across strands, consistent base qualities, clean alignments—from artifacts like strand-biased support or mismatches clustered at read ends.
 
 ### Inception-Style CNN Classifier
 
-DeepVariant uses an Inception-style CNN originally developed for image classification. Trained on high-confidence truth sets such as GIAB genomes, it learns to recognize patterns consistent with true variants (balanced alleles, consistent qualities, clean alignments) and to recognize artifacts (strand bias, mapping pileups in repeats, inconsistent quality patterns).
+DeepVariant uses an Inception-style CNN originally developed for image classification. Trained on high-confidence truth sets such as GIAB genomes, it learns to recognize true variant patterns and reject artifacts (strand bias, mapping pileups in repeats, inconsistent quality profiles). Once trained, the same architecture generalizes across whole-genome versus whole-exome data, PCR-free versus PCR-amplified libraries, and different instrument models and read lengths.
 
-Once trained, the same architecture generalizes across whole-genome versus whole-exome data, PCR-free versus PCR-amplified libraries, and different instrument models and read lengths.
+Crucially, DeepVariant learns to weigh quality signals jointly and end-to-end, rather than relying on post-hoc recalibration. Where VQSR fits a separate model on hand-selected annotations after calling, DeepVariant integrates the raw evidence directly into its classification—the CNN sees the same strand bias and quality patterns that VQSR would use, but learns their relationship to true variant status during training rather than in a decoupled second step.
 
 ### Cohort Calling with DeepVariant and GLnexus
 
