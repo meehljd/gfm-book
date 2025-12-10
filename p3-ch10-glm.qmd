@@ -1,336 +1,179 @@
 ::: {.callout-warning .content-visible when-profile="draft"}
 **TODO:**
 
-- ...
-- ...
+- Add figure: timeline of genomic language model development (DNABERT → Nucleotide Transformer → HyenaDNA → Caduceus → GROVER)
+- Add figure: architecture comparison diagram showing transformer vs Hyena vs Mamba approaches
+- Add figure: context length evolution visualization showing the dramatic expansion from 512 bp to 1 Mb
+- Add visualization: benchmark performance comparison across Nucleotide Transformer tasks
+- Add figure: conceptual diagram of in-context learning in genomics (HyenaDNA)
+- Add table: comprehensive model comparison with parameters, training data, context length, and key innovations
+- Citations: verify all citations are in bibliography
 :::
 
 
 # Genomic Foundation Models  {#sec-dna}
 
-Genomic language models extend the ideas of protein language models (@sec-prot) to the DNA level: they treat genomes themselves as a “corpus,” learn statistical regularities through self-supervision, and reuse those representations for many downstream tasks.
+Genomic language models extend the ideas of protein language models (@sec-prot) to the DNA level. They treat genomes themselves as a corpus, learn statistical regularities through self-supervision, and reuse those representations for many downstream tasks. Where Chapters 5–7 focused on supervised sequence-to-function CNNs and specialized architectures, and @sec-token focused on representation and tokenization, this chapter turns to genomic foundation models: large, often transformer-based or hybrid architectures trained on unlabeled genomic sequence at scale.
 
-Where Chapters 5–7 focused on supervised sequence-to-function CNNs and specialized architectures, and @sec-token focused on representation and tokenization, this chapter turns to **Genomic foundation models**—large, often transformer-based or hybrid architectures trained on unlabeled genomic sequence at scale.
+These models aim to provide a single, reusable backbone for tasks ranging from regulatory annotation and variant effect prediction to cross-species transfer and clinical prioritization. They mark the transition from building one model per dataset to constructing general-purpose genomic backbones analogous to BERT, GPT, and ESM in natural and protein language modeling.
 
-These models aim to provide a single, reusable backbone for tasks ranging from regulatory annotation and variant effect prediction to cross-species transfer and clinical prioritization. They mark the transition from “a model per dataset” to **general-purpose genomic backbones** analogous to BERT, GPT, and ESM in natural and protein language modeling.
+## From Supervised CNNs to Self-Supervised Genomic Language Models
 
----
+The CNN era represented by DeepSEA, ExPecto, and SpliceAI (Chapters 5–7) shared a common pattern. Models took one-hot encoded DNA sequence around a locus as input, predicted task-specific labels such as chromatin marks, expression levels, or splice junctions, and optimized supervised loss functions against those labels. This approach achieved remarkable performance but suffered from three fundamental constraints.
 
-## From Supervised CNNs to Self-Supervised Genomic LMs
+The first constraint was label dependence. Every new assay, cell type, or phenotype required new labeled data to train a model. A chromatin accessibility model trained on ENCODE data could not predict histone modifications without additional labeled examples for those marks. This created substantial overhead for each new application.
 
-The CNN era (DeepSEA, ExPecto, SpliceAI; Chapters 5–7) shared a common pattern:
+The second constraint was task coupling. Model design became tightly coupled to the specific task. SpliceAI's architecture was specialized for splice junction prediction, with convolutions designed to capture the relevant spatial patterns. ExPecto's spatial feature transformation was engineered specifically for the distance-dependent relationship between regulatory elements and transcription start sites. These architectural choices, while effective for their intended purposes, did not transfer naturally to other problems.
 
-- **Inputs:** One-hot encoded DNA sequence around a locus  
-- **Targets:** Task-specific labels (chromatin marks, expression, splice junctions)  
-- **Objective:** Predict those labels using supervised loss functions
+The third constraint was limited reuse. Features learned for one problem did not automatically transfer to others. A model trained to predict chromatin accessibility might learn representations of regulatory motifs, but those representations were not directly accessible for other tasks like variant effect prediction or gene expression modeling without substantial re-engineering.
 
-This approach achieved remarkable performance but suffers from three fundamental constraints:
+Protein language models showed a different route: self-supervised learning on unlabeled sequences, with downstream tasks solved by probing or fine-tuning. Genomic language models import this recipe to DNA. The training data comprises large collections of genomic sequences across species, individuals, or functional regions. The training objectives include masked language modeling, where the model predicts masked bases or tokens from surrounding context, and next-token or sequence modeling, where the model predicts the next token in a sequence. Some models combine these self-supervised objectives with auxiliary tasks such as predicting known annotations.
 
-1. **Label dependence** – Every new assay, cell type, or phenotype requires new labeled data.
-2. **Task coupling** – Model design is tightly coupled to the task (e.g., splice-aware architectures, expression-distance kernels).
-3. **Limited reuse** – Features learned for one problem do not automatically transfer to others.
+These pretrained models can be used in multiple ways. The simplest approach freezes the model and trains lightweight probes for specific tasks. Fine-tuning updates the entire model or uses adapter modules for specialized downstream applications. Zero-shot or few-shot scoring compares log-likelihoods of alternative sequences or alleles without any task-specific training. The promise is that once a sufficiently powerful backbone is trained, it becomes the default starting point for nearly any DNA-level prediction problem.
 
-Protein language models (@sec-prot) showed a different route: **self-supervised learning on unlabeled sequences**, with downstream tasks solved by probing or fine-tuning. Genomic language models import this recipe to DNA:
+## DNABERT: BERT for K-merized DNA
 
-- **Data:** Large collections of genomic sequences across species, individuals, or functional regions.
-- **Objectives:**
-  - Masked language modeling (MLM): predict masked bases or tokens.
-  - Next-token or sequence modeling: predict the next token in a sequence.
-  - Hybrid tasks: combine MLM with auxiliary objectives (e.g., predicting annotations).
+DNABERT applied the BERT masked language modeling framework to genomic sequences, using overlapping k-mers (typically 6-mers) as tokens and training on human reference sequences [@ji_dnabert_2021]. As discussed in @sec-token, this design had several defining characteristics.
 
-- **Usage modes:**
-  - Freeze the model and train light-weight **probes** for specific tasks.
-  - Fine-tune the entire model (or adapters) for specialized downstream tasks.
-  - Use **zero-shot** or **few-shot** scoring by comparing log-likelihoods of alternative sequences or alleles.
+The tokenization scheme converted DNA sequences into overlapping k-mers, creating a discrete vocabulary of size $4^k$. For 6-mers, this yields a vocabulary of 4,096 tokens. The model used the standard BERT architecture with masked token prediction as its training objective. Context windows were relatively modest, spanning a few hundred base pairs (typically 512 tokens). The model was then fine-tuned on downstream tasks including promoter classification, splice site prediction, and transcription factor binding site identification.
 
-The promise is that **once** a sufficiently powerful backbone is trained, it becomes the default starting point for nearly any DNA-level prediction problem.
+DNABERT provided proof of concept for several important ideas. Self-supervised pretraining on raw DNA can improve performance over training from scratch. Learned embeddings capture biologically meaningful regularities, even when trained only on the reference genome. BERT-style architectures can be re-used across multiple downstream tasks with modest fine-tuning.
 
----
+However, the k-mer design introduced significant limitations detailed in @sec-token. The overlapping k-mer tokenization provided no true sequence compression, as each nucleotide participated in multiple adjacent tokens. This created ambiguity in positional interpretation, since the precise position of a variant within the k-mer vocabulary was unclear. The quadratic attention complexity of transformers combined with redundant overlapping tokens severely limited the effective context length.
 
-## Early Genomic Transformers: DNABERT and DNABERT-2
+## DNABERT-2: Improved Tokenization and Efficiency
 
-### DNABERT — BERT for k-merized DNA
+DNABERT-2 revisited both tokenization and architecture, demonstrating how much representation choices matter for genomic language models [@zhou_dnabert-2_2024]. The key differences relative to the original DNABERT addressed its core limitations.
 
-DNABERT applied the BERT masked language modeling framework to genomic sequences, using overlapping k-mers (e.g., 6-mers) as tokens and training on human reference sequences [@ji_dnabert_2021]. As discussed in @sec-token, this design had several defining characteristics:
+The tokenization scheme adopted improved approaches such as BPE-style merges that better compress redundancies and reduce effective sequence length. This allowed the model to represent longer genomic contexts within the same number of tokens. Architectural refinements improved efficiency, enabling scaling to larger contexts and training corpora without prohibitive memory costs.
 
-- **Tokenization:** Overlapping k-mers created a discrete vocabulary of size $4^k$.
-- **Objective:** Masked token prediction, exactly as in BERT.
-- **Input scale:** Context windows of a few hundred base pairs (e.g., 512 tokens).
-- **Downstream evaluation:** Fine-tuned on tasks such as promoter classification, splice site prediction, and transcription factor binding.
+On standardized benchmarks spanning sequence classification, regulatory element prediction, and variant effect scoring, DNABERT-2 achieved consistent gains over both the original DNABERT and non-pretrained baselines. These improvements validated the importance of thoughtful tokenization design for genomic applications.
 
-DNABERT provided *proof of concept* that:
+The DNABERT family collectively established three important principles. Self-supervision on DNA works and is competitive with hand-engineered pipelines for many sequence annotation tasks. Tokenization choices have large practical consequences, as the seemingly minor decision of how to convert nucleotides into tokens substantially affects both computational efficiency and downstream performance. Masked language model training can produce reusable representations for diverse sequence tasks, suggesting that the foundation model paradigm transfers effectively from natural language to genomic sequence.
 
-- Self-supervised pretraining on raw DNA can improve performance over training from scratch.
-- Learned embeddings capture biologically meaningful regularities, even when trained only on the reference genome.
-- BERT-style architectures can be re-used across multiple downstream tasks.
+## Nucleotide Transformer: Scaling Context and Diversity
 
-However, the k-mer design also introduced the limitations detailed in @sec-token:
+DNABERT demonstrated feasibility, but its context windows and training data were modest relative to the scale of genomes. The Nucleotide Transformer pushed much further, emphasizing scale and diversity in both model size and training corpus [@dalla-torre_nucleotide_2023].
 
-- No true sequence compression—overlapping k-mers do not reduce sequence length.
-- Ambiguity in positional interpretation—each nucleotide participates in multiple tokens.
-- Limited context and scaling, due to quadratic attention and redundant overlapping tokens.
+The training corpus spanned genomic data from multiple species and populations, exposing the model to diverse sequence patterns. The architecture comprised transformer encoders of various sizes, from moderate to very large parameter counts. Context length expanded to approximately 6 kb per input sequence, representing an order-of-magnitude increase over DNABERT while still using dense attention. The training objective remained masked language modeling on subsequences sampled from genomes.
 
-### DNABERT-2 — Toward Better Tokenization and Efficiency
+The Nucleotide Transformer work contributed several important ideas to the field. Cross-species pretraining, where training spans many genomes rather than a single reference, exposes the model to diverse sequence patterns, different regulatory architectures, and evolutionary constraints that recur across lineages. This mirrors the use of large multi-species multiple sequence alignments in protein language models but operates at the raw DNA level.
 
-DNABERT-2 revisited both tokenization and architecture, highlighting how much **representation** matters for genomic LMs [@zhou_dnabert-2_2024].
+To quantify representation quality, the Nucleotide Transformer introduced a benchmark panel of genomic tasks that has become a standard yardstick for subsequent DNA language models. Typical tasks include promoter and enhancer classification, histone mark and chromatin accessibility prediction, variant and pathogenicity proxies, and regulatory element type classification. Models are evaluated via linear probes, shallow classifiers, or light fine-tuning.
 
-Key differences relative to DNABERT:
+As with protein and natural-language models, performance improved predictably with larger models, more pretraining data, and longer context windows. These scaling trends help forecast the returns from investing in even larger genomic language models.
 
-- **Tokenization:** Improved schemes (e.g., BPE-style merges) that better compress redundancies and reduce sequence length.
-- **Efficiency:** Models that scale to larger contexts and corpora without prohibitive memory costs.
-- **Performance:** Consistent gains on a range of seq2label genomics benchmarks over both DNABERT and non-pretrained baselines.
+| Model | Architecture | Max Context | Complexity |
+|-------|--------------|-------------|------------|
+| DNABERT | Transformer | 512 bp | $O(L^2)$ |
+| Nucleotide Transformer | Transformer | 6 kb | $O(L^2)$ |
+| HyenaDNA | Hyena | 1 Mb | $O(L \log L)$ |
+| Caduceus | Mamba | 1 Mb | $O(L)$ |
 
-DNABERT and DNABERT-2 collectively established that:
+## HyenaDNA: Megabase Context at Single-Nucleotide Resolution
 
-1. Self-supervision on DNA works and is competitive with hand-engineered pipelines.
-2. Tokenization choices (@sec-token) have large practical consequences.
-3. Masked LM training can produce reusable representations for diverse sequence tasks.
+Quadratic attention limits transformer context length to tens of kilobases at best, even with aggressive engineering. This is a fundamental architectural constraint: processing a 100 kb sequence with dense attention requires on the order of $10^{10}$ attention computations per layer. HyenaDNA addressed this limitation by replacing attention with a Hyena long-convolution architecture that scales sub-quadratically, enabling processing of sequences up to 1 Mb in length [@nguyen_hyenadna_2023].
 
----
+The Hyena architecture uses implicit convolutions, parameterizing long convolutional filters through neural networks rather than storing explicit filter weights. This approach achieves $O(L \log L)$ complexity through efficient FFT-based convolution, compared to the $O(L^2)$ complexity of standard attention. The result is a 500-fold increase in context length over previous dense attention models while maintaining single-nucleotide resolution.
 
-## Scaling Context and Diversity: Nucleotide Transformer
+HyenaDNA introduced several qualitative advances that matter for biological applications. Processing megabase-scale windows allows the model to see entire gene bodies plus their flanking regulatory regions, long-range enhancer-promoter interactions spanning tens to hundreds of kilobases, and topologically associating domain (TAD) scale structure. This aligns better with biological reality, where regulatory interactions often span substantial genomic distances.
 
-DNABERT showed feasibility, but its context windows and training data were modest relative to the scale of genomes. **Nucleotide Transformer** pushed much further, emphasizing **scale and diversity** [@dalla-torre_nucleotide_2023]:
+Despite its long context, HyenaDNA maintains base-level resolution by using single-nucleotide tokens. This means single-nucleotide variants can be evaluated in the context of megabases of surrounding sequence without the ambiguity introduced by k-mer tokenization.
 
-- **Corpus:** Genomic data spanning multiple species and populations.
-- **Models:** Transformer encoders of various sizes, from moderate to very large parameter counts.
-- **Context length:** Up to ~6 kb per input sequence—an order-of-magnitude jump over DNABERT while still using dense attention (@sec-token).
-- **Training objective:** Masked language modeling on subsequences sampled from genomes.
+On Nucleotide Transformer benchmarks and additional tasks, HyenaDNA demonstrated in-context learning behaviors that had not previously been observed in genomic models. Performance improved when examples were included in the input context without updating model weights, suggesting that at sufficient scale, DNA models can adapt to new tasks or distributions via prompts rather than fine-tuning. This mirrors phenomena observed in large natural language models.
 
-The Nucleotide Transformer work contributed several important ideas:
+On GenomicBenchmarks and related evaluations, HyenaDNA achieved state-of-the-art results on the majority of tasks, often by substantial margins. These results illustrated that architectural innovations enabling longer context can simultaneously provide both extended range and improved predictive accuracy.
 
-1. **Cross-species pretraining**  
-   Training on many genomes (rather than a single reference) exposes the model to:
+## Caduceus: Bidirectional Modeling with Reverse-Complement Equivariance
 
-   - Diverse sequence patterns and GC content.
-   - Different regulatory architectures.
-   - Evolutionary constraints that recur across lineages.
+A unique challenge in genomic sequence modeling is the double-stranded nature of DNA. Any sequence can be read from either strand, and the reverse complement of a sequence encodes the same information from the opposite strand's perspective. For many biological processes, predictions should be identical or related in a consistent way regardless of which strand is presented to the model.
 
-   This mirrors the use of large multi-species multiple sequence alignments in protein LMs (@sec-prot) but operates at the raw DNA level.
+Standard neural networks can produce divergent predictions for a sequence and its reverse complement, even when training data is augmented with both orientations. This inconsistency is problematic for applications like regulatory element prediction, where the functional element exists on one physical stretch of DNA regardless of how we choose to represent it computationally.
 
-2. **Benchmark suite**  
-   To quantify representation quality, Nucleotide Transformer introduced a **benchmark panel** of genomic tasks, commonly referred to in later work as the Nucleotide Transformer benchmarks [@dalla-torre_nucleotide_2023]. Typical tasks include:
+Caduceus addressed this challenge by building reverse-complement equivariance directly into the architecture [@schiff_caduceus_2024]. The model extends the Mamba architecture, a state-space model with linear complexity in sequence length, to support both bidirectionality and reverse-complement equivariance. The BiMamba component enables information flow in both directions along the sequence, while the MambaDNA block ensures that predictions for a sequence and its reverse complement are mathematically related in the expected way.
 
-   - Promoter and enhancer classification.
-   - Histone mark and chromatin accessibility prediction.
-   - Variant/pathogenicity proxies.
-   - Regulatory element type classification.
+The architectural innovations in Caduceus serve distinct purposes. Bidirectionality allows each position to incorporate information from both upstream and downstream context, which matters for tasks where the relevant context is not directionally asymmetric. Reverse-complement equivariance ensures consistent predictions across strand orientations, reducing spurious variability and improving calibration.
 
-   Models are evaluated via linear probes, shallow classifiers, or light fine-tuning, providing a standard yardstick for later DNA LMs.
+On downstream benchmarks, Caduceus outperformed previous long-range models. On challenging long-range variant effect prediction tasks, Caduceus exceeded the performance of models with ten times as many parameters that did not leverage bidirectionality or equivariance. This suggests that incorporating appropriate biological inductive biases can be as valuable as scaling model size.
 
-3. **Scaling trends**  
-   As with protein and natural-language models, performance improves predictably with:
+## GROVER: Generative Regulatory Foundation Models
 
-   - Larger models.
-   - More pretraining data.
-   - Longer context windows.
+Most genomic language models focus on modeling raw DNA sequence. GROVER takes a complementary approach, shifting attention from sequence to regulatory tracks [@sanabria_grover_2024]. Rather than treating DNA as the primary input, GROVER is trained on multi-track functional genomics signals including ATAC-seq, histone modifications, and other epigenomic assays across many cell types and tissues.
 
-   These scaling curves help forecast the returns from investing in even larger genomic LMs.
+The training objective predicts masked or held-out regulatory profiles conditioned on neighboring tracks, cell-type embeddings, or limited sequence context. The architecture uses a transformer-style backbone tailored to spatiotemporal grids of genomic positions crossed with assays and cell types.
 
----
+GROVER occupies a role analogous to self-supervised vision models for images. It treats regulatory profiles as a high-dimensional signal over the genome and learns rich representations of regulatory states at each position. This supports tasks like imputation of missing assays, denoising of noisy experimental data, and cell-type-specific activity prediction.
 
-## Beyond Dense Attention: HyenaDNA and 1 Mb Context
-
-Quadratic attention limits transformer context length to tens of kilobases at best, even with aggressive engineering. **HyenaDNA** replaces attention with a **Hyena** long-convolution / state-space architecture that scales sub-quadratically and can process sequences up to 1 Mb [@nguyen_hyenadna_2023].
-
-As summarized in @sec-token:
-
-| Model                 | Architecture | Max context | Complexity   |
-|-----------------------|-------------|------------:|--------------|
-| DNABERT               | Transformer |      512 bp | $O(L^2)$   |
-| Nucleotide Transformer| Transformer |      6 kb   | $O(L^2)$   |
-| HyenaDNA              | Hyena       |      1 Mb   | $O(L \log L)$ |
-
-HyenaDNA introduced several qualitative advances:
-
-1. **Megabase-scale context**  
-   Processing 1 Mb windows allows the model to “see”:
-
-   - Entire gene bodies plus flanking regulatory regions.
-   - Long-range enhancer–promoter interactions.
-   - Topologically associating domain (TAD)-scale structure.
-
-   This aligns better with biological reality, where regulatory interactions often span tens to hundreds of kilobases.
-
-2. **Single-nucleotide resolution**  
-   Despite its long context, HyenaDNA maintains **base-level resolution**, so single-nucleotide variants can be evaluated in the context of megabases of surrounding sequence.
-
-3. **In-context learning signals**  
-   On Nucleotide Transformer benchmarks and additional tasks, HyenaDNA shows **in-context learning** behaviors—performance improves when examples are included in the input context without updating model weights [@nguyen_hyenadna_2023]. This suggests that at sufficient scale, DNA models can adapt to new tasks or distributions via prompts rather than fine-tuning, mirroring phenomena seen in large language models.
-
-4. **State-of-the-art performance**  
-   On GenomicBenchmarks and related evaluations, HyenaDNA achieves state-of-the-art results on the majority of tasks, often by large margins, illustrating that architectural innovations can yield both *longer context* and *better predictive accuracy* [@nguyen_hyenadna_2023].
-
----
-
-## Generative Regulatory Foundation Models: GROVER
-
-Most models above focus on sequence-level objectives (masked or next-token). **GROVER** shifts attention from sequence to **regulatory tracks** [@sanabria_grover_2024]:
-
-- **Inputs/outputs:** GROVER is trained on multi-track functional genomics signals (e.g., ATAC-seq, histone marks) across many cell types and tissues instead of raw sequence alone.
-- **Objective:** Predict masked or held-out regulatory profiles conditioned on neighboring tracks, cell-type embeddings, or limited sequence context.
-- **Architecture:** A transformer-style backbone tailored to **spatiotemporal grids** of genomic positions × assays × cell types.
-
-GROVER plays a role analogous to self-supervised vision models for images:
-
-1. It treats regulatory profiles as a high-dimensional “image” over the genome.
-2. It learns rich representations of **regulatory states** at each position.
-3. It supports tasks like imputation of missing assays, denoising, and cell-type-specific activity prediction.
-
-While not a pure DNA language model, GROVER-style systems complement sequence-based LMs:
-
-- DNA LMs capture **what the genome can do** (the encoded potential).
-- Regulatory LMs like GROVER capture **what the genome is actually doing** in specific contexts (cell types, conditions).
-
-Later chapters (Part IV) explore how sequence-based and regulatory foundation models can be combined—e.g., using DNA LMs to parameterize sequence priors and regulatory LMs for context-specific readouts [@sanabria_grover_2024].
-
----
+While not a pure DNA language model, GROVER-style systems complement sequence-based models in important ways. DNA language models capture what the genome can do, encoding the potential regulatory activities specified by the sequence. Regulatory foundation models like GROVER capture what the genome is actually doing in specific contexts, representing the realized regulatory state in particular cell types and conditions. Later chapters explore how sequence-based and regulatory foundation models can be combined, using DNA language models to parameterize sequence priors and regulatory models for context-specific readouts.
 
 ## Central-Dogma-Aware and Annotation-Enriched Models
 
-@sec-token discussed how tokenization can encode biological structure. Some recent models push this further by integrating **central dogma** and **genomic annotations** directly into the modeling framework.
+The tokenization discussion in @sec-token described how biological structure can be encoded directly into the input representation. Recent models push this idea further by integrating central dogma knowledge and genomic annotations into the modeling framework itself.
 
-### Life-Code: Central Dogma as an Inductive Bias
+### Life-Code: The Central Dogma as Inductive Bias
 
-**Life-Code** proposes codon-aware, central-dogma-informed tokenization to bridge DNA, RNA, and protein within a single language-modeling framework [@liu_life-code_2025]:
+Life-Code proposes codon-aware, central-dogma-informed tokenization to bridge DNA, RNA, and protein within a single language-modeling framework [@liu_life-code_2025]. The key insight is that different genomic regions should be tokenized differently based on their biological function.
 
-- **Coding regions:** Tokenized as codons (3-mers in frame), reflecting the genetic code.
-- **Noncoding regions:** Tokenized via learned subword units.
-- **Integration:** Unified representations span DNA → RNA → protein, enabling knowledge sharing across modalities.
+Coding regions are tokenized as codons, the three-nucleotide units that specify amino acids during translation. This respects the genetic code's fundamental structure and enables the model to learn patterns at the level of the biological unit of selection for protein-coding sequences. Noncoding regions, which lack this inherent three-nucleotide structure, are tokenized via learned subword units optimized during training. The resulting unified representations span DNA, RNA, and protein, enabling knowledge sharing across modalities.
 
-Life-Code uses distillation from protein LMs (@sec-prot) to:
+Life-Code uses knowledge distillation from protein language models to import protein-level structural knowledge into DNA and RNA sequence representations. This improves performance on tasks involving coding sequence, such as predicting the effects of missense mutations or expression changes, and achieves competitive or state-of-the-art results on tasks across all three omic modalities.
 
-- Import protein-level structural knowledge into DNA/RNA sequence representations.
-- Improve performance on tasks involving coding sequence, such as predicting missense effects or expression changes.
-- Achieve competitive or state-of-the-art results on tasks across the full central dogma (DNA, RNA, protein) [@liu_life-code_2025].
+### BioToken: Encoding Variants and Structure
 
-### BioToken: Encoding Variants and Structure as Tokens
+BioToken extends tokenization beyond nucleotide content to include explicit genomic annotations [@medvedev_biotoken_2025]. Rather than representing a genomic region purely as a string of nucleotides, BioToken creates tokens that encode additional biological context.
 
-**BioToken** extends tokenization beyond nucleotide content to include **explicit genomic annotations** [@medvedev_biotoken_2025]:
+Variant-aware tokens explicitly represent SNPs, insertions, and deletions as distinct tokens rather than as implicit changes in the underlying sequence. Structural annotations encode information about exons, introns, UTRs, promoters, enhancers, and other regulatory elements. Functional context tokens include signals such as conservation scores, chromatin state, or known regulatory motifs.
 
-- **Variant-aware tokens:** Encode SNPs, insertions, and deletions as distinct tokens rather than implicit changes in sequence.
-- **Structural annotations:** Incorporate information about exons, introns, UTRs, promoters, enhancers, and other regulatory elements.
-- **Functional context:** Include signals such as chromatin state, conservation scores, or known regulatory motifs.
+This design moves toward fully structured genomic language models where the input is not only DNA bases but also position-specific metadata. The resulting representations can directly integrate sequence, structure, and functional annotations in a unified framework.
 
-This design moves toward **fully structured genomic LMs**, where:
+The associated model BioFM, built on BioToken, achieves competitive or superior results relative to specialized models like Enformer and SpliceAI across genomic benchmarks including noncoding pathogenicity prediction, expression modulation, sQTL prediction, and long-range genomic interactions. Notably, BioFM achieves state-of-the-art performance with significantly fewer parameters (265M), substantially reducing training costs and computational requirements compared to larger models.
 
-- The input “sentence” is not only DNA bases but also position-specific metadata.
-- Representations can directly integrate sequence, structure, and functional annotations.
+Life-Code and BioToken foreshadow the multi-modal, multi-omic foundation models discussed in Part IV, where sequence is only one of many integrated information streams.
 
-Life-Code and BioToken foreshadow the **multi-modal, multi-omic foundation models** discussed in Part IV, where sequence is only one of many integrated information streams.
+## Using Genomic Language Models in Practice
 
----
-
-## Using Genomic LMs in Practice
-
-Just as protein LMs can be used in different modes (frozen embeddings, fine-tuning, zero-shot scoring; @sec-prot), genomic LMs have multiple usage patterns.
+Genomic language models support multiple usage patterns analogous to those established for protein language models. Understanding these patterns is essential for applying the models effectively.
 
 ### Embeddings as Universal Features
 
-The simplest way to use a genomic LM is to:
+The simplest approach extracts embeddings from a pretrained model and uses them as features for downstream tasks. The workflow involves several steps: extract embeddings for windows around loci of interest, pool or select positions relevant to the task (such as promoters, candidate enhancers, or variant sites), and train a lightweight downstream model such as a linear layer, small MLP, or logistic regression.
 
-1. Extract embeddings for windows around loci of interest (e.g., 1–6 kb segments).
-2. Pool or select positions relevant to the task (e.g., promoters, candidate enhancers, variant sites).
-3. Train a light-weight downstream model (linear layer, small MLP, or logistic regression).
+This approach supports diverse applications. Regulatory element classification can distinguish promoters, enhancers, silencers, and insulators based on their learned representations. Chromatin state prediction uses sequence embeddings to predict ATAC-seq or histone mark presence as an alternative to supervised models like DeepSEA. Variant effect scoring replaces or augments hand-crafted features in frameworks like CADD with language model derived features, analogous to CADD v1.7's incorporation of protein language model features. Splicing and transcript modeling combines language model embeddings with specialized architectures like SpliceAI.
 
-Applications include:
-
-- **Regulatory element classification:** Distinguishing promoters, enhancers, silencers, and insulators.
-- **Chromatin state prediction:** Predicting ATAC-seq or histone mark presence from sequence alone, as an alternative to models like DeepSEA (@sec-reg).
-- **Variant effect scoring:** Replacing or augmenting hand-crafted features in frameworks like CADD with LM-derived features (analogous to CADD v1.7’s use of PLM features; @sec-prot; @schubach_cadd_2024).
-- **Splicing and transcript modeling:** Combining LM embeddings with splice-aware architectures like SpliceAI (@sec-splice).
-
-Because the LM is frozen, this approach is computationally efficient and avoids catastrophic forgetting when new tasks are added.
+Because the language model remains frozen in this approach, it is computationally efficient and avoids catastrophic forgetting when new tasks are added. The pretrained model serves as a general-purpose feature extractor whose representations support many downstream applications.
 
 ### Fine-Tuning and Task-Specific Heads
 
-When more labels are available, **fine-tuning** can significantly improve performance:
+When more labeled data is available, fine-tuning can significantly improve performance beyond what frozen embeddings provide. Full fine-tuning updates all language model parameters for a specific task, allowing the model to specialize its representations. Adapter-based tuning inserts small bottleneck modules into each layer and updates only those, keeping the backbone mostly frozen while still allowing task-specific adaptation.
 
-- **Full fine-tuning:** Update all LM parameters for a specific task.
-- **Adapter-based tuning:** Insert small bottleneck modules into each layer and update only those, keeping the backbone mostly frozen.
-- **Prompt-based tuning:** Learn task-specific prompts or prefix embeddings that steer the model's behavior without changing its core weights.
+Full fine-tuning tends to achieve the highest performance when sufficient labeled data is available, but it requires more compute and risks catastrophic forgetting of general knowledge. Adapter-based approaches provide a middle ground, achieving most of the performance gains while maintaining computational efficiency and preserving the backbone's general capabilities.
 
-Fine-tuning is especially valuable for:
+### Zero-Shot and Few-Shot Scoring
 
-- High-stakes clinical tasks where every percentage point matters.
-- Tasks that probe very specific sequence-function relationships (e.g., particular TF binding specificities).
-- Scenarios where domain shift is large (e.g., applying a cross-species LM to a previously unseen clade).
+For variant interpretation, genomic language models enable zero-shot scoring based on sequence likelihood. The approach computes the model's probability for a sequence containing the reference allele and compares it to the probability for the sequence containing the alternative allele. Variants that substantially reduce sequence probability are inferred to be more disruptive.
 
-### Zero-Shot and Few-Shot Variant Scoring
+This approach requires no variant-specific training data and can score any single-nucleotide variant in any genomic context the model has learned to represent. The quality of zero-shot scoring depends on how well the model's learned probability distribution captures biological constraints, which tends to improve with model scale and training data diversity.
 
-Analogous to protein models like ESM-1v and AlphaMissense (@sec-prot; @brandes_genome-wide_2023; @cheng_alphamissense_2023), genomic LMs can be used to compute **zero-shot variant scores** by:
+Few-shot approaches include task examples in the input context, allowing the model to adapt its behavior based on demonstrations without parameter updates. HyenaDNA demonstrated that genomic models at sufficient scale exhibit this in-context learning capability, opening new possibilities for rapid task adaptation.
 
-- Comparing the log-likelihood (or pseudo-likelihood) of sequences with reference vs alternate alleles.
-- Measuring changes in masked-token prediction probabilities at variant positions.
-- Evaluating the impact of a variant on internal representations (e.g., vector distances between reference and variant embeddings).
+## Emerging Themes and Current Limitations
 
-These approaches can:
+The development of genomic language models over the past several years has established several important themes while also revealing significant limitations.
 
-- Provide rapid prioritization of novel variants without task-specific training.
-- Complement supervised classifiers trained on clinical or functional labels (e.g., ClinVar, curated datasets).
-- Offer a starting point for more specialized models (e.g., exon-specific splice models, enhancer-specific expression predictors).
+Self-supervision provides a viable path to general genomic representations. Models trained purely on the statistical structure of DNA sequence, without any functional labels, learn representations that transfer to diverse downstream tasks. This validates the foundation model paradigm for genomics and suggests continued scaling will yield further improvements.
 
----
+Scale and diversity matter substantially for model quality. Performance improves predictably with model size, training data volume, and training data diversity. Including multiple species, populations, and genomic contexts yields more robust representations than training on a single reference genome.
 
-## Evaluation, Benchmarks, and Pitfalls
+Long-range context is biologically necessary for many applications. Regulatory phenomena operate at tens to hundreds of kilobases, and the development of efficient architectures like HyenaDNA and Caduceus finally allows modeling these interactions at single-base resolution. The progression from 512 bp to 1 Mb context lengths represents a fundamental capability improvement.
 
-As genomic LMs proliferate, evaluation practices become crucial.
+Self-supervision and supervision are complementary rather than competing approaches. Self-supervised language models excel at learning broad, reusable features, but they do not automatically solve every downstream problem. Specialized architectures and supervised objectives, such as Enformer and related models discussed in @sec-hybrid, remain crucial for accurate quantitative prediction of complex genomic readouts.
 
-### Benchmark Suites
+Several important limitations remain. Current models struggle with complex variant patterns beyond single-nucleotide changes, including indels, structural variants, and epistatic interactions across distant loci. Training data and labels remain skewed toward certain ancestries, raising concerns about performance and calibration in underrepresented populations. Interpretability is limited, as it remains difficult to explain why a model assigns a particular score to a variant in terms that connect to biological mechanism. Integration with other data modalities (chromatin, expression, 3D genome structure, clinical phenotypes) is still in its early stages.
 
-Nucleotide Transformer introduced a widely used benchmark panel [@dalla-torre_nucleotide_2023], and later work, including HyenaDNA and Life-Code, also reports results on **GenomicBenchmarks** and related collections [@nguyen_hyenadna_2023]. Common traits of these suites include:
+## Summary
 
-- **Multiple task families:**
-  - Promoter/enhancer classification.
-  - TF binding prediction.
-  - Chromatin accessibility and histone marks.
-  - Splicing, TSS/TES prediction, or other sequence-label tasks.
+This chapter surveyed the landscape of genomic language models, from early proof-of-concept systems like DNABERT through scaled models like Nucleotide Transformer to architectural innovations enabling megabase context in HyenaDNA and Caduceus. We examined how models like GROVER complement sequence-based approaches by learning from regulatory tracks, and how annotation-enriched architectures like Life-Code and BioToken incorporate biological structure directly into the modeling framework.
 
-- **Standardized splits:**
-  - Train/validation/test partitions.
-  - Consistent evaluation metrics (AUROC, AUPRC, accuracy).
+The key lessons are that self-supervised pretraining transfers effectively to genomics, that architectural choices enabling long-range context provide both efficiency and accuracy improvements, and that biological inductive biases (reverse-complement equivariance, central dogma awareness, variant encoding) can substitute for raw scale in some applications.
 
-- **Baseline comparisons:**
-  - Non-pretrained CNNs and transformers.
-  - Earlier models like DeepSEA, ExPecto, and SpliceAI.
-  - Previously published genomic LMs.
-
-These benchmarks help separate **true representational gains** from gains due to dataset choice or training tricks.
-
-### Distribution Shift, Data Leakage, and Overfitting
-
-Genomic LMs are especially vulnerable to **distribution shift**: they may be pretrained on one mix of species, assays, or cohorts and then applied to a very different context (new genome builds, experimental protocols, or patient populations). The general principles and evaluation strategies for robustness to these shifts are covered in detail in @sec-eval; here we mainly note that GLM benchmarks should explicitly include “out-of-domain” settings (e.g., new tissues or cohorts) rather than only i.i.d. held-out sequences.
-
-Because many genomic resources are reused across pretraining, fine-tuning, and evaluation, **data leakage** and **overfitting** can easily inflate retrospective performance, especially for GLMs trained on massive unlabeled corpora and then evaluated on derived benchmarks. Systematic treatment of leakage paths, circularity, and confounding—along with practical mitigation strategies—is given in @sec-confound.
-
-Finally, when GLM-derived features feed into **clinical prediction** pipelines (e.g., risk scores or variant prioritization tools), the relevant notion of “performance” becomes clinical: discrimination, calibration, and net benefit for specific decisions. These clinical evaluation criteria, and how to connect model scores to real-world decisions, are discussed in @sec-clinical.
-
-
-
----
-
-## Lessons and Outlook
-
-DNA language models bring the “foundation model” paradigm to the genome. Several themes emerge:
-
-1. **Representation is central**  
-   Tokenization and context length (@sec-token) are not superficial implementation details—they determine what patterns a model can see and how efficiently it can learn. Life-Code and BioToken show that **biologically informed tokenization** and annotations can serve as powerful inductive biases [@liu_life-code_2025; @medvedev_biotoken_2025].
-
-2. **Scale and diversity matter**  
-   Nucleotide Transformer and HyenaDNA demonstrate that performance improves with both **model size** and **training data diversity** [@dalla-torre_nucleotide_2023; @nguyen_hyenadna_2023]. Including multiple species, populations, and genomic contexts yields more robust representations.
-
-3. **Long-range context is biologically necessary**  
-   Many regulatory phenomena operate at tens to hundreds of kilobases. Megabase-scale models like HyenaDNA show that we can finally begin to model these interactions at single-base resolution in a single forward pass.
-
-4. **Self-supervision and supervision are complementary**  
-   Self-supervised LMs excel at learning broad, reusable features, but they do not automatically solve every downstream problem. Specialized architectures and supervised objectives (e.g., Enformer and related models in @sec-hybrid) remain crucial for accurate quantitative prediction of complex genomic readouts.
-
-5. **Integration with other modalities is the next frontier**  
-   Models like GROVER, Life-Code, and BioToken hint at a future where DNA LMs are one part of larger **multi-modal genomic foundation models** that integrate:
-
-   - Sequence (DNA, RNA, protein).
-   - Regulatory profiles (chromatin, expression).
-   - 3D genome organization.
-   - Population genetics, phenotypes, and clinical data.
-
-This chapter has focused on **sequence-centric DNA LMs** and their immediate extensions. In @sec-hybrid, we turn to Enformer and related long-range sequence-to-function models that explicitly predict molecular readouts from sequence, closing the loop between **self-supervised sequence understanding** and **supervised functional prediction**.
+In @sec-hybrid, we turn to Enformer and related long-range sequence-to-function models that explicitly predict molecular readouts from sequence. These models close the loop between self-supervised sequence understanding and supervised functional prediction, addressing a key limitation of pure language models: their indirect relationship to quantitative molecular phenotypes.
