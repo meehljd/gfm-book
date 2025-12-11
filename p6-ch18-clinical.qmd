@@ -1,379 +1,150 @@
 ::: {.callout-warning .content-visible when-profile="draft"}
 **TODO:**
 
-- ...
-- ...
+- Add figure: Clinical risk prediction pipeline overview showing data flow from genotype/EHR through GFM feature extraction to risk stratification and clinical decision support
+- Add figure: Calibration plot examples contrasting well-calibrated versus miscalibrated models, with stratification by ancestry
+- Add figure: Model drift monitoring dashboard concept showing input distribution shifts, output score histograms over time, and performance degradation alerts
+- Add figure: Multi-modal fusion architecture comparison (early, intermediate, late fusion) with representative genomic and clinical inputs
+- Add table: Evaluation metrics summary (discrimination, calibration, clinical utility) with appropriate use cases and limitations
+- Add table: Regulatory considerations for GFM-based clinical decision support systems across FDA, CE marking, and other frameworks
+- Consider adding decision curve example for cardiometabolic risk stratification showing net benefit across threshold probabilities
 :::
+
 
 # Clinical Risk Prediction  {#sec-clinical}
 
-Modern genomic foundation models (GFMs) give us increasingly rich representations of DNA, RNA, proteins, and multi-omic context (Parts II–IV). The natural next question is: **how do we turn these representations into actionable predictions for individual patients?**
+Modern genomic foundation models provide increasingly rich representations of DNA, RNA, proteins, and multi-omic context. The preceding parts of this book have traced how these models learn from sequence and structure, predict molecular functions, and integrate information across biological scales. The natural next question is practical: how do we turn these representations into actionable predictions for individual patients?
 
-This chapter focuses on **clinical risk prediction and decision support**—models that estimate the probability, timing, or trajectory of outcomes such as incident disease, progression, recurrence, or adverse drug reactions. We emphasize how GFMs and related deep models:
+This chapter focuses on clinical risk prediction and decision support, the task of estimating the probability, timing, or trajectory of outcomes such as incident disease, progression, recurrence, or adverse drug reactions. The discussion emphasizes how genomic foundation models and related deep learning approaches extend traditional polygenic scores with richer sequence-based features and epistatic structure through methods like Delphi, G2PT, and MIFM [@georgantas_delphi_2024; @lee_g2pt_2025; @rakowski_mifm_2025]. These models combine genomic features with electronic health records and multi-omics to produce holistic patient-level risk representations, building on the systems-level integration strategies introduced in @sec-multi [@cao_glue_2022; @camillo_cpgpt_2024; @clarke_deeprvat_2024]. Throughout, the emphasis is on evaluation, calibration, uncertainty quantification, and fairness considerations that are essential for high-stakes clinical decisions.
 
-- Extend **polygenic scores (PGS)** with richer sequence-based features and epistatic structure (e.g., Delphi, G2PT, MIFM) [@georgantas_delphi_2024; @lee_g2pt_2025; @rakowski_mifm_2025].  
-- Combine **genomic features with EHR and multi-omics** to produce holistic patient-level risk representations, building on systems from @sec-multi (e.g., GLUE, CpGPT, DeepRVAT) [@cao_glue_2022; @camillo_cpgpt_2024; @clarke_deeprvat_2024].  
-- Are wrapped in **evaluation, calibration, uncertainty, and fairness** pipelines suitable for high-stakes clinical decisions.  
-
-We end with case studies in **cardiometabolic risk**, **oncology risk and recurrence**, and **pharmacogenomics / adverse drug reactions**, illustrating how GFMs move from bench to bedside.
-
----
+The chapter concludes with case studies in cardiometabolic risk, oncology risk and recurrence, and pharmacogenomics, illustrating how foundation models move from computational representations to clinical utility.
 
 ## Problem Framing: What Is Clinical Risk Prediction?
 
-Clinical risk prediction is the task of mapping **patient data**—including genotypes, family history, clinical measurements, imaging, and environmental factors—to **probabilistic statements about future outcomes**. Concretely, a model might answer questions like:
+Clinical risk prediction is the task of mapping patient data to probabilistic statements about future outcomes. The inputs include genotypes, family history, clinical measurements, imaging, and environmental factors. The outputs are probabilities or hazard estimates that answer questions such as: What is this patient's 10-year risk of coronary artery disease if treated with standard of care? Given current tumor characteristics and therapy, what is the hazard of recurrence within two years? If we start this medication, what is the probability of a severe adverse drug reaction in the next six months?
 
-- What is this patient’s **10-year risk of coronary artery disease** if treated with standard of care?  
-- Given current tumor characteristics and therapy, what is the **hazard of recurrence** within 2 years?  
-- If we start this medication, what is the **probability of a severe adverse drug reaction (ADR)** in the next 6 months?  
+These questions fall into several archetypes that differ in their temporal structure and clinical context. Individual-level incident risk concerns whether a currently disease-free individual will develop disease within a specified time window, such as 10-year type 2 diabetes risk. Progression and complication risk asks which patients with an existing condition will develop complications, for example nephropathy in diabetes or heart failure after myocardial infarction. Prognosis and survival involve time-from-baseline to events such as death, recurrence, or transplant, often with censoring and competing risks that complicate standard regression approaches. Treatment response and toxicity prediction concerns whether a patient will benefit from one therapy versus another and their risk of severe toxicity or adverse drug reactions.
 
-In practice, these tasks fall into a few archetypes:
+Genomic foundation models enter these problems as feature generators. They transform raw genomic and multi-omic data into structured embeddings, variant effect scores, or region-level functional annotations that can then be combined with clinical covariates in downstream prediction models. Real-world deployment typically requires fusing genomic features with electronic health records, imaging, and other omics, mirroring the multi-omics integration strategies discussed in @sec-multi [@cao_glue_2022; @camillo_cpgpt_2024; @clarke_deeprvat_2024].
 
-- **Individual-level incident risk**  
-  - Will a currently disease-free individual develop disease *within a specified time window* (e.g., 10-year type 2 diabetes risk)?  
-- **Progression and complication risk**  
-  - Among individuals with an existing condition, who will develop complications (e.g., nephropathy in diabetes, heart failure after myocardial infarction)?  
-- **Prognosis and survival**  
-  - Time-from-baseline to events such as death, recurrence, or transplant, often with censoring and competing risks.  
-- **Treatment response and toxicity**  
-  - Will a patient benefit from therapy A vs B, and what is their risk of severe toxicity or ADR?  
+## Feature Sources for Clinical Prediction
 
-GFMs enter these problems as **feature generators**: they transform raw genomic and multi-omic data into structured embeddings, variant effect scores, or region-level functional annotations. These representations then feed classic supervised learning tasks—classification, regression, and survival modeling—alongside clinical covariates.
+The features that enter clinical risk models can be organized into three broad categories that draw on different parts of the foundation model landscape.
 
----
+The first category comprises genomics and regulatory features derived from DNA-level models. Zero-shot variant scores from DNA foundation models such as Nucleotide Transformer, HyenaDNA, and GPN provide sequence-based predictions of variant deleteriousness without requiring trait-specific training [@dalla-torre_nucleotide_2023; @nguyen_hyenadna_2023; @benegas_gpn_2023]. Coding variant scores from protein language models, including systems similar to AlphaMissense (discussed in earlier chapters), capture the impact of missense mutations on protein structure and function. Fine-mapped causal variant probabilities from methods like MIFM provide posterior estimates of which variants within a GWAS locus are likely causal, allowing risk models to weight variants by their evidence for causality rather than treating all associated variants equally [@rakowski_mifm_2025].
 
-## Task Types and Loss Functions
+The second category encompasses multi-omics and systems context features. Cell-type-resolved epigenomic and transcriptomic embeddings from frameworks like GLUE, SCGLUE, and CpGPT capture regulatory state across chromatin accessibility, methylation, and expression [@cao_glue_2022; @camillo_cpgpt_2024]. Rare-variant burden and pathway-level representations from DeepRVAT aggregate the predicted effects of multiple rare variants into gene-level or pathway-level impairment scores [@clarke_deeprvat_2024]. Tumor-level representations from models such as SetQuence and SetOmic, or from graph neural network-based cancer subtypers, encode the complex mutational landscapes of individual tumors [@jurenaite_setquence_2024; @li_mogcn_2022; @li_cgmega_2024].
 
-Although GFMs provide sophisticated inputs, the **prediction tasks** themselves often re-use well-understood statistical frameworks.
+The third category includes clinical covariates and electronic health record data. Demographics, vitals, laboratory results, and medication history provide non-genomic risk factors that often have substantial predictive power. Problem lists, procedures, and imaging-derived features add diagnostic context. Time-varying trajectories of biomarkers such as estimated glomerular filtration rate, hemoglobin A1c, or tumor markers capture disease dynamics that static snapshots miss.
 
-### Binary and Multi-label Classification
+## Fusion Architectures
 
-For many screening or triage problems, risk prediction is posed as:
+Architecturally, risk models that combine these feature sources typically adopt one of the fusion strategies echoed from @sec-multi, each with distinct tradeoffs.
 
-> Will outcome *Y* occur within horizon *T*?
+Early fusion concatenates foundation model-derived genomic embeddings with static clinical covariates and feeds them into a single model such as a multilayer perceptron or survival regression. This approach is simple to implement and allows the model to learn arbitrary interactions between genomic and clinical features. However, early fusion is sensitive to differences in scale between modalities, handles missing data poorly since samples lacking one modality must be imputed or excluded, and can be dominated by whichever input has the most features or highest signal-to-noise ratio.
 
-Examples include incident atrial fibrillation within 5 years, or hospitalization for heart failure in the next 12 months. Models output a **risk score** $\hat{p} = P(Y=1 \mid x)$, trained with cross-entropy or focal losses.
+Intermediate fusion trains separate encoders for genomics, electronic health records, and multi-omics that produce modality-specific embeddings. A fusion layer, which might use attention mechanisms, cross-modal transformers, or graph-based integration, then combines these embeddings into a patient-level representation that downstream prediction heads use for risk estimation. Intermediate fusion is often most attractive from a practical standpoint because it allows modularity (foundation model encoders can be swapped as new versions become available) while still enabling cross-modal interactions that can capture how genomic risk manifests differently depending on clinical context.
 
-Extensions:
-
-- **Multi-label classification**: Predict multiple outcomes (e.g., myocardial infarction, stroke, heart failure) simultaneously; share a common representation but separate output heads.  
-- **Ordinal endpoints**: Disease stages or severity scores modeled with ordinal losses instead of strictly binary outcomes.
-
-GFMs contribute by providing **richer genetic features** than traditional hand-crafted burden scores or PGS (e.g., variant-level embeddings from Nucleotide Transformer, GPN, or regulatory LMs) [@dalla-torre_nucleotide_2023; @benegas_gpn_2023].
-
-### Survival and Time-to-Event Modeling
-
-Risk is often more naturally expressed as **time-to-event**:
-
-- Time from baseline to myocardial infarction or revascularization.  
-- Time from surgery to cancer recurrence.  
-- Time from first exposure to drug to severe toxicity.
-
-These require models that handle **censoring** (patients lost to follow-up or event-free at study end). Approaches include:
-
-- **Cox proportional hazards models** with genomic and GFM-derived features as covariates.  
-- **Deep survival models** that use neural networks to parameterize hazard functions, survival curves, or discrete-time hazards.  
-- **Competing risks models** for mutually exclusive outcomes (e.g., cancer-specific vs non-cancer mortality).  
-
-GFMs naturally provide **high-dimensional, possibly non-linear features**; deep survival architectures can exploit these features while learning flexible hazard structures.
-
-### Multi-task Risk and Shared Representations
-
-Large health systems increasingly estimate risk for **dozens of outcomes** simultaneously (e.g., hospital readmission, multiple cardiovascular endpoints, medication-specific ADRs). This motivates **multi-task frameworks**:
-
-- A shared encoder (combining EHR, genomic, and multi-omic encoders) produces a **patient-level embedding**.  
-- Multiple output heads estimate risks for different endpoints or time horizons.  
-
-Such models can exploit **cross-task correlations** and share statistical strength (e.g., overlapping genetic architectures between lipids, CAD, and stroke). Deep polygenic architectures like Delphi and G2PT already adopt multi-trait ideas for genomic risk representations [@georgantas_delphi_2024; @lee_g2pt_2025].
-
----
-
-## From PGS to GFM-Enabled Risk Scores
-
-Polygenic scores (PGS) are a natural starting point for genomically informed clinical prediction.
-
-### Classical PGS: Strengths and Limitations
-
-Traditional PGS typically:
-
-1. Use GWAS summary statistics to estimate per-variant weights.  
-2. Construct a score $S = \sum_j w_j g_j$, where $g_j$ is genotype at variant $j$ and $w_j$ is its estimated effect size.  
-3. Plug PGS into regression or survival models alongside clinical covariates (age, sex, BMI, labs).
-
-Despite many successes, classical PGS have well-known limitations:
-
-- **Limited modeling of epistasis and non-linearities**: Additive models struggle with higher-order interactions and context-dependent effects.  
-- **Challenge in integrating functional priors**: Annotation-aware methods exist, but rarely leverage full GFMs.  
-- **Portability gaps**: Performance often drops in under-represented ancestries due to LD structure and GWAS ascertainment.  
-
-These limitations motivate **deep learning-based PGS** that better exploit structure in both genotype and functional annotation space.
-
-### Deep Polygenic Risk: Delphi and G2PT
-
-Recent methods push beyond additive scores by using **deep sequence and genotype models**:
-
-- **Delphi**: A deep-learning method for polygenic risk prediction that jointly models variant-level features and higher-order patterns across the genome [@georgantas_delphi_2024].  
-  - Can incorporate **variant annotations and linkage structure** more flexibly than linear PGS.  
-  - Supports multi-phenotype prediction, effectively performing **task-conditioned PGS**.  
-
-- **G2PT (Genotype-to-Phenotype Transformer)**: A transformer-based architecture that treats an individual’s genotype as a sequence of variant “tokens” and learns **polygenic risk representations** with attention-based context [@lee_g2pt_2025].  
-  - Naturally captures **epistatic interactions** via attention, not just additive effects.  
-  - Emphasizes interpretability by tying attention patterns back to loci and pathways.
-
-Both systems can optionally use **GFM-derived variant features** (e.g., scores from sequence-level LMs such as Nucleotide Transformer, HyenaDNA, or GPN) [@dalla-torre_nucleotide_2023; @nguyen_hyenadna_2023; @benegas_gpn_2023]. In this view:
-
-1. A GFM maps variant and local sequence context to **variant effect features** (e.g., predicted impact on chromatin, expression, motifs).  
-2. A **polygenic risk model** (Delphi, G2PT, or related) aggregates these features across the genome to produce a **patient-level risk embedding**.  
-3. A **clinical head** uses this embedding plus EHR covariates to output risk for specific outcomes or time horizons.
-
-### Fine-mapping and Causal Variants: MIFM
-
-Polygenic risk ultimately hinges on **causal variants**, not just associated markers. MIFM (Multiple Instance Fine-Mapping) exemplifies how deep sequence models can refine the link between variant effects and risk:
-
-- **MIFM** uses a deep sequence model in a **multiple-instance learning** framework to identify causal regulatory variants within associated loci [@rakowski_mifm_2025].  
-- By modeling sets (bags) of variants per locus, it distinguishes **causal variants from passengers** in tight LD blocks.  
-- The outputs—posterior probabilities or importance scores for candidate variants—can inform both mechanistic studies and more **parsimonious, interpretable PGS**.
-
-Together, Delphi, G2PT, and MIFM illustrate a pattern that recurs throughout this chapter:
-
-> Use GFMs and deep sequence models to **transform raw genotype into rich, structured features**, then plug those features into **prediction and decision-support architectures** that live closer to the clinic.
-
----
-
-## Beyond Genotype: Fusing GFMs with EHR and Multi-omics
-
-Clinical risk prediction rarely depends on genetics alone. Real-world deployment typically requires **fusing genomic features with EHR, imaging, and other omics**, mirroring the multi-omics integration strategies from @sec-multi [@cao_glue_2022; @camillo_cpgpt_2024; @clarke_deeprvat_2024].
-
-### Feature Sources
-
-1. **Genomics and regulatory features**  
-   - Zero-shot variant scores from DNA GFMs (e.g., Nucleotide Transformer, HyenaDNA, GPN, Grover) [@dalla-torre_nucleotide_2023; @nguyen_hyenadna_2023; @benegas_gpn_2023].  
-   - Coding variant scores from protein LMs (e.g., AlphaMissense-like systems; see earlier chapters).  
-   - Fine-mapped causal variant probabilities from MIFM or similar [@rakowski_mifm_2025].  
-
-2. **Multi-omics and systems context**  
-   - Cell-type–resolved epigenomic and transcriptomic embeddings from GLUE/SCGLUE and CpGPT [@cao_glue_2022; @camillo_cpgpt_2024].  
-   - Rare-variant burden and pathway-level representations from DeepRVAT and related models [@clarke_deeprvat_2024].  
-   - Tumor-level representations from models such as SetQuence/SetOmic or GNN-based cancer subtypers [@jurenaite_setquence_2024; @li_mogcn_2022; @li_cgmega_2024].
-
-3. **Clinical covariates and EHR**  
-   - Demographics, vitals, lab results, medication history.  
-   - Problem lists, procedures, imaging-derived features.  
-   - Time-varying trajectories of biomarkers (e.g., eGFR, HbA1c, tumor markers).
-
-### Fusion Patterns
-
-Architecturally, risk models usually adopt one of the fusion strategies echoed from @sec-multi:
-
-- **Early fusion**  
-  - Concatenate GFM-derived genomic embeddings with static clinical covariates and feed into a single MLP or survival model.  
-  - Simple but sensitive to scaling, missingness, and modality imbalance.
-
-- **Intermediate fusion**  
-  - Separate encoders for genomics, EHR, and multi-omics produce modality-specific embeddings.  
-  - A fusion layer (attention, cross-modal transformer, or graph-based integration) combines them into a **patient embedding**, which downstream heads use for risk prediction.  
-
-- **Late fusion / ensembling**  
-  - Independent models per modality (e.g., a PGS-only model, an EHR-only model).  
-  - Meta-model or decision rule combines predictions (e.g., “treat if either PGS or EHR risk is high”).  
-
-From a practical standpoint, **intermediate fusion** is often most attractive: it allows modularity (swap encoders as GFMs improve) while enabling cross-modal interactions.
-
----
+Late fusion trains independent models for each modality, such as a polygenic score-only model and an electronic health record-only model, then combines their predictions through ensemble methods or a meta-model. This approach is robust to missing modalities since each sub-model operates independently, and it allows each modality to use whatever architecture works best for its data type. However, late fusion may underutilize cross-modal structure since interactions between genomic and clinical features can only be captured at the final combination stage rather than learned jointly.
 
 ## Evaluation: Discrimination, Calibration, and Clinical Utility
 
-High performance on test sets is not enough for clinical deployment. Risk models must be **discriminative, well-calibrated, robust, and clinically useful**.
+High performance on held-out test sets is necessary but not sufficient for clinical deployment. Risk models must be discriminative, well-calibrated, robust to distribution shift, and clinically useful in ways that justify the costs of implementation.
 
 ### Discrimination
 
-**Discrimination** measures how well the model ranks individuals by risk:
+Discrimination measures how well a model ranks individuals by risk, distinguishing those who will experience an outcome from those who will not. For binary endpoints such as disease occurrence within a fixed time window, the area under the receiver operating characteristic curve (AUROC) summarizes discrimination across all possible classification thresholds. When outcomes are rare, as is often the case for severe adverse drug reactions or specific disease subtypes, the area under the precision-recall curve (AUPRC) is more informative because it is sensitive to how well the model identifies true positives among many negatives. For survival tasks with time-to-event outcomes and censoring, the concordance index (C-index) and time-dependent AUC generalize discrimination metrics to the survival setting.
 
-- **AUROC (AUC)** for binary endpoints.  
-- **AUPRC** when outcomes are rare (e.g., severe ADRs).  
-- **C-index** and time-dependent AUC for survival tasks.
-
-Strong discrimination is necessary but not sufficient; poorly calibrated models can still achieve high AUROC.
-
-For a cross-cutting discussion of how these metrics are used across molecular, variant, and trait-level tasks, see @sec-eval.
+Strong discrimination is necessary but not sufficient. A model that ranks patients correctly but systematically overestimates or underestimates absolute risks will lead to inappropriate clinical decisions. For a broader discussion of how discrimination metrics are used across molecular, variant-level, and trait-level tasks, see @sec-eval.
 
 ### Calibration and Risk Stratification
 
-**Calibration** asks whether predicted probabilities match observed frequencies:
+Calibration asks whether predicted probabilities match observed frequencies. If a group of patients is assigned 20% risk of an event, approximately 20% of that group should actually experience it. Well-calibrated predictions can be taken at face value and used directly for clinical decision-making, whereas miscalibrated predictions mislead clinicians and patients regardless of how good the discrimination is.
 
-- If a group of patients is assigned ~20% risk of an event, do ~20% actually experience it?  
-- Calibration is assessed with **calibration plots**, **Hosmer–Lemeshow tests**, and **Brier scores**, often stratified by subgroups (e.g., ancestry, sex, age).  
+Calibration is assessed through calibration plots that compare predicted risk deciles to observed event rates, statistical tests like the Hosmer-Lemeshow test, and proper scoring rules like the Brier score that combine calibration and discrimination into a single metric. These assessments should be stratified by clinically relevant subgroups such as ancestry, sex, and age, since a model that is well-calibrated overall may be systematically miscalibrated for specific populations.
 
-For PGS-informed models, calibration is especially important because:
+For polygenic score-informed models, calibration is especially important because raw polygenic scores are often centered and scaled rather than calibrated to absolute risk. Mapping a polygenic score to an absolute probability of disease typically requires post-hoc models that incorporate baseline incidence and clinical covariates. Foundation models can shift score distributions as architectures evolve, meaning that recalibration may be required when swapping or updating encoders.
 
-- Raw PGS are often **centered and scaled** rather than calibrated; mapping PGS to absolute risk usually requires **post-hoc models** that incorporate baseline incidence and covariates.  
-- GFMs can shift score distributions as architectures evolve; recalibration may be required when swapping or updating encoders.
+### Uncertainty Estimation
 
-### Uncertainty Estimation and “When Not to Predict”
+In high-stakes clinical settings, models should know when they do not know. Uncertainty quantification allows models to flag predictions where confidence is low, either because the input is unusual or because the model has limited evidence for its predictions.
 
-In high-stakes settings, models should know when they **do not know**. Common strategies include:
+Common approaches to uncertainty estimation include ensemble variance, where multiple models trained with different random seeds provide prediction intervals based on their disagreement, and Monte Carlo dropout, which approximates Bayesian uncertainty by averaging predictions across multiple stochastic forward passes. Conformal prediction provides a more principled framework for outputting risk intervals or prediction sets with guaranteed coverage under exchangeability assumptions.
 
-- **Ensemble variance** or **Monte Carlo dropout** as uncertainty proxies.  
-- **Conformal prediction** to output **risk intervals** or **prediction sets** with guaranteed coverage.  
-- **Selective prediction / abstention**: allow models to **abstain** on cases where uncertainty is high or inputs are out-of-distribution (e.g., rare ancestries missing from training, novel tumor subtypes).
-
-For GFM-based systems, uncertainty can be decomposed:
-
-- **Genomic uncertainty**: confidence in variant effect predictions or fine-mapping (e.g., MIFM probabilities).  
-- **Clinical uncertainty**: extrapolation to new care settings, practice patterns, or patient populations.
-
-Communicating uncertainty transparently is a core part of decision support.
+For foundation model-based systems, uncertainty can be decomposed into genomic uncertainty (confidence in variant effect predictions, fine-mapping probabilities, or embedding reliability) and clinical uncertainty (extrapolation to new care settings, practice patterns, or patient populations). Selective prediction or abstention allows models to decline to make predictions on cases where uncertainty is high or inputs are out-of-distribution, such as patients from rare ancestries missing from training data or novel tumor subtypes that the model has not encountered. Communicating uncertainty transparently is a core component of responsible decision support.
 
 ### Fairness, Bias, and Health Equity
 
-Many genomic and EHR datasets reflect **historical and structural inequities**. Risk models can **amplify** these biases if not carefully evaluated.
+Many genomic and electronic health record datasets reflect historical and structural inequities in who is genotyped, which populations are recruited into biobanks, and how healthcare is documented and delivered. Risk models can amplify these biases if not carefully evaluated and designed.
 
-Key considerations:
+Ancestry and polygenic score portability remain central concerns. As discussed in @sec-pgs, classical polygenic scores substantially underperform in under-represented ancestries due to the European bias in GWAS design. Foundation model-based methods such as Delphi and G2PT have the opportunity, but not the guarantee, to improve portability by leveraging functional priors and cross-ancestry information [@georgantas_delphi_2024; @lee_g2pt_2025]. Whether they succeed depends on training data composition, evaluation practices, and explicit attention to cross-ancestry performance.
 
-- **Ancestry and PGS portability**: Classical PGS underperform in under-represented ancestries due to GWAS design; GFM-based methods such as Delphi and G2PT have the opportunity—but not the guarantee—to improve this by leveraging functional priors and cross-ancestry information [@georgantas_delphi_2024; @lee_g2pt_2025].  
-- **Measurement and access bias**: EHR-derived features may differ systematically across groups (e.g., who gets genotyped, which labs are ordered).  
-- **Group-wise calibration**: Evaluate calibration and discrimination separately by ancestry, sex, socio-economic proxies, and care site.  
-- **Fairness metrics and constraints**: When necessary, enforce group-level constraints (e.g., equalized odds) or design **affirmative** models targeting historically disadvantaged groups.
+Measurement and access bias affect electronic health record features. Which patients get genotyped, which laboratory tests are ordered, how diagnoses are coded, and how thoroughly clinical notes are documented all differ systematically across patient populations, care settings, and health systems. A model trained on one system's data may encode these institutional patterns rather than underlying biology.
 
-Equity is not an afterthought; for GFMs, it should inform **what data to pretrain on**, which **benchmarks** to report, and how to deploy models in practice.
+Group-wise evaluation is essential. Calibration and discrimination should be assessed separately by ancestry, sex, socioeconomic proxies, and care site. A model that appears well-calibrated overall but is miscalibrated for specific groups will exacerbate rather than reduce health disparities. When necessary, fairness constraints such as equalized odds or affirmative designs targeting historically disadvantaged groups can be incorporated into model training, though such constraints involve tradeoffs with overall performance that must be navigated thoughtfully.
 
----
+Equity is not an afterthought. For foundation models, it should inform what data to pretrain on, which benchmarks to report, and how to deploy models in practice.
 
 ## Prospective Validation, Trials, and Regulation
 
-Retrospective AUCs are not enough to justify clinical use. Clinical risk models typically require:
+Retrospective performance metrics, even when computed on held-out test sets with appropriate splitting strategies, are not sufficient to justify clinical use. Clinical risk models typically require several additional layers of validation before deployment.
 
-- **Prospective validation**: Evaluate model performance in a temporally held-out cohort, ideally in multiple health systems with different population structures and practice patterns.  
-- **Impact studies**: Measure whether using the model actually **changes clinician behavior** and **improves outcomes** (e.g., better statin targeting, fewer ADRs, reduced unnecessary imaging).  
-- **Randomized or pragmatic trials** when models materially influence treatment decisions, to guard against hidden confounding in observational evaluations.  
+Prospective validation evaluates model performance in a temporally held-out cohort, ideally in multiple health systems with different population structures and practice patterns. A model trained on data from 2015-2020 should be tested on patients from 2021-2023 to assess whether it generalizes across time. Multi-site validation tests whether a model trained at one institution transfers to others with different patient populations, sequencing platforms, and clinical workflows.
 
-Regulatory landscapes (e.g., device approvals, software-as-a-medical-device frameworks) increasingly recognize **learning systems** and **continuous updates**. GFMs complicate this further:
+Impact studies measure whether using the model actually changes clinician behavior and improves patient outcomes. A risk model might achieve excellent discrimination and calibration, but if clinicians do not trust it, do not integrate it into their workflow, or override its recommendations based on unmeasured factors, the model will have no clinical impact. Demonstrating that a model leads to better statin targeting, fewer adverse drug reactions, or reduced unnecessary imaging requires prospective studies that compare outcomes between patients whose clinicians used the model and those whose clinicians did not.
 
-- A “fixed” risk model may rely on a GFM backbone that improves over time; updates may change risk rankings and calibration.  
-- Regulatory strategies include **locked models with explicit versions**, **change control plans**, or **adaptive approvals** for constrained forms of continual learning.
+Randomized or pragmatic trials provide the strongest evidence when models materially influence treatment decisions. Observational evaluations, even prospective ones, cannot fully account for confounding between which patients receive model-guided care and which do not. For high-stakes decisions like treatment selection, randomization may be necessary to demonstrate causal benefit.
 
-Regardless of the framework, clear documentation of **data provenance**, **GFM versions**, **training procedures**, and **validation results** is essential.
+Regulatory landscapes increasingly recognize learning systems and continuous updates. Foundation models complicate this further because a "fixed" risk model may rely on a backbone that improves over time. Updates to the foundation model can change risk rankings and calibration even if the downstream prediction head remains unchanged. Regulatory strategies include locked models with explicit versions that require reapproval for each update, change control plans that prespecify acceptable ranges of performance drift, and adaptive approvals that allow constrained forms of continual learning under monitoring requirements.
 
----
+Regardless of the regulatory framework, clear documentation of data provenance, foundation model versions, training procedures, and validation results is essential for both regulatory compliance and scientific reproducibility.
 
 ## Monitoring, Drift, and Continual Learning
 
-Once deployed, GFMs and downstream risk models operate in **non-stationary environments**:
+Once deployed, foundation models and downstream risk models operate in non-stationary environments. Clinical practice patterns change as new treatments and guidelines emerge. Patient populations drift as screening programs expand or contract. Laboratory assays and sequencing pipelines evolve, introducing subtle distributional shifts in input features.
 
-- Clinical practice patterns change (new treatments, guidelines).  
-- Patient populations drift (e.g., new screening programs).  
-- Lab assays and sequencing pipelines evolve.
+Monitoring systems should track input distributions such as genotype frequencies and electronic health record feature patterns to detect when the current patient population differs from the training population. Output distributions including risk score histograms and the fraction of patients above decision thresholds reveal whether model behavior is changing over time. Performance metrics over time, often computed via rolling windows or periodic audits, detect calibration or discrimination degradation before it becomes clinically consequential.
 
-Monitoring should track:
+When drift is detected, several responses are possible depending on severity and type. Recalibration may suffice if the model's ranking behavior remains sound but the mapping from scores to probabilities has shifted. Refitting a calibration layer to current data can restore well-calibrated predictions without retraining the entire model. Partial retraining of prediction heads or fusion layers can adapt to new environments while keeping foundation model weights fixed, preserving regulatory status of the backbone while adjusting to local conditions. Full continual learning, including updating foundation model backbones, requires careful safeguards to avoid catastrophic forgetting (where the model loses performance on previously well-handled cases) and maintain regulatory compliance.
 
-- **Input distributions** (e.g., genotype frequencies, EHR feature patterns).  
-- **Output distributions** (risk score histograms, fraction of patients above decision thresholds).  
-- **Performance over time** (calibration, discrimination), often via rolling windows or periodic audits.
-
-When drift is detected:
-
-- **Recalibration** may suffice (e.g., refitting a calibration layer to current data).  
-- **Partial retraining** of heads or fusion layers can adapt to new environments while keeping GFM weights fixed.  
-- **Full continual learning**—including updating GFM backbones—requires careful safeguards to avoid catastrophic forgetting and maintain regulatory compliance.
-
-Design patterns from @sec-multi’s systems models (e.g., modular encoders, robust interfaces between GFMs and clinical layers) are crucial for maintainable, updatable decision support.
-
----
+The modular design patterns from @sec-multi, with clear interfaces between foundation encoders and clinical prediction layers, are crucial for maintainable and updatable decision support systems.
 
 ## Case Studies
 
-To make these ideas concrete, we outline three stylized case studies that build on models and concepts from earlier chapters.
+To make these ideas concrete, we examine three stylized case studies that build on models and concepts from earlier chapters. Each illustrates different aspects of foundation model integration into clinical risk prediction.
 
 ### Cardiometabolic Risk Stratification
 
-**Goal:** Identify individuals at high risk of major adverse cardiovascular events (MACE)—e.g., myocardial infarction, stroke, cardiovascular death—over a 10-year horizon.
+The goal of cardiometabolic risk stratification is to identify individuals at high risk of major adverse cardiovascular events, including myocardial infarction, stroke, and cardiovascular death, over a time horizon such as 10 years. This is among the most mature applications of genomic risk prediction, with established clinical frameworks like the Framingham Risk Score and ASCVD Risk Estimator providing baselines against which genomic augmentation can be evaluated.
 
-**Inputs:**
+The inputs for such a model combine genotype data from biobank-scale genotyping or whole-genome sequencing with foundation model features and clinical data. Variant effect scores from DNA foundation models like Nucleotide Transformer, HyenaDNA, and GPN provide sequence-based annotations for variants in cardiometabolic risk loci [@dalla-torre_nucleotide_2023; @nguyen_hyenadna_2023; @benegas_gpn_2023]. Polygenic models like Delphi or G2PT produce patient-level genomics embeddings tuned for cardiometabolic outcomes [@georgantas_delphi_2024; @lee_g2pt_2025]. Clinical data including age, sex, body mass index, blood pressure, lipids, smoking status, diabetes status, and current medications provide the non-genomic risk factors that drive most of the predictive signal in traditional risk scores.
 
-- **Genotype**: Biobank-scale genotyping or WGS data.  
-- **GFM features**: Variant effect scores from DNA GFMs (Nucleotide Transformer, HyenaDNA, GPN) [@dalla-torre_nucleotide_2023; @nguyen_hyenadna_2023; @benegas_gpn_2023].  
-- **Polygenic model**: Delphi or G2PT to produce a **polygenic risk embedding** for cardiometabolic traits [@georgantas_delphi_2024; @lee_g2pt_2025].  
-- **Clinical data**: Age, sex, BMI, blood pressure, lipids, smoking, diabetes status, medications (e.g., statins, antihypertensives).
+A model design for this application might proceed in several stages. First, a DNA foundation model computes variant-level annotations such as predicted enhancer disruption in cardiomyocyte or hepatocyte contexts. Second, these annotations and genotypes feed into Delphi or G2PT to obtain a patient-level genomics embedding tuned for cardiometabolic outcomes. Third, an intermediate fusion network combines the genomics embedding with electronic health record covariates. Finally, the fused representation trains to predict 10-year major adverse cardiovascular event risk using survival or discrete-time hazard losses.
 
-**Model design:**
-
-1. Use a DNA GFM to compute variant-level annotations (e.g., predicted enhancer disruption in cardiomyocyte or hepatocyte contexts).  
-2. Feed annotations and genotypes into Delphi or G2PT to obtain a **patient-level genomics embedding** tuned for cardiometabolic outcomes.  
-3. Fuse the genomics embedding with EHR covariates via an intermediate fusion network (e.g., MLP or transformer over structured features).  
-4. Train the model to predict **10-year MACE risk** using survival or discrete-time hazard losses.
-
-**Clinical use:**
-
-- Stratify patients into risk categories (e.g., low, intermediate, high) that inform **statin initiation**, **PCSK9 inhibitor consideration**, or **intensive lifestyle intervention**.  
-- Provide **individual-level explanations**: highlight variants and pathways (via G2PT attention or Delphi variant contributions) that most contributed to risk—bridging Chapters 9 and 15.  
-- Evaluate equity: ensure performance and calibration hold across ancestries and care sites.
+In clinical use, such a model would stratify patients into risk categories that inform statin initiation, consideration of PCSK9 inhibitors, or intensive lifestyle intervention. Individual-level explanations, drawing on G2PT attention weights or Delphi variant contributions, would highlight which variants and pathways most contributed to risk, connecting the prediction to interpretable biology. Equity evaluation would ensure that performance and calibration hold across ancestries and care sites, avoiding the portability failures that plague traditional polygenic scores.
 
 ### Oncology: Risk and Recurrence Prediction
 
-**Goal:** Predict recurrence risk and treatment benefit for patients with solid tumors after surgery or first-line therapy.
+In oncology, the goal is often to predict recurrence risk and treatment benefit for patients with solid tumors after surgery or first-line therapy. Unlike cardiometabolic risk where germline variants dominate, oncology applications must integrate somatic mutation landscapes with germline background and multi-omic tumor characterization.
 
-**Inputs:**
+The inputs combine somatic landscapes from whole-exome or whole-genome tumor sequencing with tumor representations from deep set or transformer architectures such as SetQuence and SetOmic [@jurenaite_setquence_2024]. Multi-omics profiles of tumor expression, methylation, and chromatin can be integrated through frameworks like GLUE and CpGPT [@cao_glue_2022; @camillo_cpgpt_2024]. Graph neural network-based subtyping from models like MoGCN and CGMega provides embeddings or cluster assignments that capture tumor subtype structure [@li_mogcn_2022; @li_cgmega_2024]. Clinical features including stage, grade, performance status, and treatment regimen provide essential prognostic context.
 
-- **Somatic landscapes** from whole-exome or whole-genome tumor sequencing.  
-- **Tumor representations** from deep set or transformer architectures such as SetQuence/SetOmic [@jurenaite_setquence_2024].  
-- **Multi-omics**: tumor expression, methylation, and chromatin accessible from integrated frameworks (GLUE, CpGPT) [@cao_glue_2022; @camillo_cpgpt_2024].  
-- **GNN-based subtyping**: embeddings or cluster assignments from cancer subtyping models like MoGCN and CGMega [@li_mogcn_2022; @li_cgmega_2024].  
-- **Clinical features**: stage, grade, performance status, treatment regimen.
+The model design encodes somatic mutation sets with SetQuence or SetOmic to obtain tumor-variant embeddings. Transcriptomic and epigenomic profiles integrate via GLUE-like latent spaces and CpGPT methylation embeddings. These combine with graph neural network-based subtype embeddings to capture tumor-microenvironment and histopathological context. The fused tumor-level representations join with clinical features in a time-to-recurrence model using flexible deep survival networks.
 
-**Model design:**
-
-1. Encode somatic mutation sets with SetQuence/SetOmic to obtain **tumor-variant embeddings** [@jurenaite_setquence_2024].  
-2. Integrate transcriptomic and epigenomic profiles via GLUE-like latent spaces and CpGPT methylation embeddings [@cao_glue_2022; @camillo_cpgpt_2024].  
-3. Combine these with **GNN-based subtype embeddings** (MoGCN/CGMega) to capture tumor–microenvironment and histopathological context [@li_mogcn_2022; @li_cgmega_2024].  
-4. Fuse tumor-level representations with clinical features in a **time-to-recurrence model** (e.g., flexible deep survival network).
-
-**Clinical use:**
-
-- Provide risk estimates that guide **adjuvant therapy decisions** (e.g., intensifying chemotherapy or adding targeted agents for high-risk patients).  
-- Suggest **candidate biomarkers** or pathways for trial stratification, based on GFM-derived importance scores and attention maps.  
-- Monitor drift as treatment standards evolve; update models to reflect new targeted therapies and immune checkpoint inhibitors.
+Clinical use would provide risk estimates that guide adjuvant therapy decisions, such as intensifying chemotherapy or adding targeted agents for high-risk patients. Candidate biomarkers or pathways identified through foundation model importance scores and attention maps could inform trial stratification. Continuous monitoring would track drift as treatment standards evolve, updating models to reflect new targeted therapies and immune checkpoint inhibitors that change the baseline hazard.
 
 ### Pharmacogenomics and Adverse Drug Reaction Risk
 
-**Goal:** Predict which patients are at high risk of **severe ADRs** (e.g., myopathy on statins, severe cutaneous reactions to certain drugs, cardiotoxicity of oncology agents).
+The goal of pharmacogenomic risk prediction is to identify patients at high risk of severe adverse drug reactions before initiating therapy. Examples include myopathy on statins, severe cutaneous adverse reactions to certain antibiotics and anticonvulsants, and cardiotoxicity from oncology agents. Some pharmacogenomic associations, such as the HLA-B*5701 association with abacavir hypersensitivity, are well-established and already implemented clinically [@mallal_abacavir_2008]. Foundation models offer the potential to extend such predictions to variants and drugs without established single-gene associations.
 
-**Inputs:**
+The inputs include germline variation in pharmacogenes such as the CYP family and HLA alleles, along with variants across the broader genome that might modulate drug metabolism or immune responses. Variant effect scores from both DNA and protein language models provide predictions of how coding and regulatory variants affect drug metabolism and immune genes. Clinical context including co-medications, comorbidities, organ function (particularly liver and kidney), and prior adverse reactions provides essential non-genomic risk factors.
 
-- **Germline variation** in pharmacogenes (e.g., CYP family, HLA alleles) and broader genome.  
-- **Variant effect scores** from both DNA and protein LMs for coding and regulatory variants in drug metabolism and immune genes (see Chapters 2–3, 9–10).  
-- **Clinical context**: co-medications, comorbidities, organ function (liver, kidney), prior adverse reactions.
+The model design uses foundation models to derive mechanistically meaningful features for variants in pharmacogenes, such as predicted impact on protein stability, binding affinity, or gene regulation. These features aggregate across loci into a pharmacogenomic risk embedding, possibly using a G2PT-style transformer restricted to relevant genes [@lee_g2pt_2025]. The genomic embedding combines with electronic health record data in a multi-task classification model that predicts adverse reaction risk for multiple drugs or drug classes simultaneously, sharing representation learning across related prediction tasks.
 
-**Model design:**
-
-1. Use GFMs to derive **mechanistically meaningful features** for variants in pharmacogenes (e.g., predicted impact on protein stability, binding, or gene regulation).  
-2. Aggregate these features across loci into a **pharmacogenomic risk embedding**, possibly using a G2PT-style transformer restricted to relevant genes [@lee_g2pt_2025].  
-3. Combine this with EHR data in a multi-task classification model that predicts ADR risk for multiple drugs or drug classes.  
-
-**Clinical use:**
-
-- Flag patients at high risk **before initiating therapy**, prompting genotype-guided drug choice or dose adjustment.  
-- Generate reports that tie risk back to **specific variants and pharmacogenes**, aligned with existing clinical pharmacogenomics guidelines.  
-- Evaluate performance across ancestries to avoid **exacerbating disparities** in access to safe and effective therapy.
-
----
+Clinical use would flag patients at high risk before initiating therapy, prompting genotype-guided drug choice or dose adjustment. Reports would tie risk predictions back to specific variants and pharmacogenes, aligned with existing clinical pharmacogenomics guidelines from organizations like CPIC and PharmGKB. Cross-ancestry evaluation would ensure that the model does not exacerbate existing disparities in access to safe and effective therapy, a particular concern given the European bias in pharmacogenomics research.
 
 ## Practical Design Patterns and Outlook
 
-Across these examples, several design patterns for GFM-enabled clinical prediction recur:
+Across these case studies, several design patterns for foundation model-enabled clinical prediction recur. Treating foundation models as modular feature extractors, with clear separation between encoders and clinical prediction heads, eases updates and regulatory management. Embracing multi-modal fusion that combines genotype, multi-omics, and electronic health records takes advantage of the integration architectures developed throughout this book. Prioritizing calibration, uncertainty, and fairness as first-class design constraints rather than post-hoc additions ensures that models are suitable for high-stakes decisions. Bridging interpretability and mechanism, using the tools from @sec-interp to connect individual risk predictions to variants, regions, and pathways, enables mechanistic hypotheses and clinician trust. Designing for continual learning and monitoring assumes that clinical practice and data distributions will change and builds pipelines that can adapt responsibly.
 
-- Treat GFMs as **modular feature extractors**:  
-  - Keep a clear separation between **foundation encoders** and **clinical prediction heads**, easing updates and regulatory management.  
-
-- Embrace **multi-modal fusion**:  
-  - Combine genotype, multi-omics, and EHR, taking advantage of architectures discussed in Chapters 10 and 16 [@dalla-torre_nucleotide_2023; @cao_glue_2022].  
-
-- Prioritize **calibration, uncertainty, and fairness** as first-class citizens, not post-hoc add-ons.  
-
-- Bridge **interpretability and mechanism**:  
-  - Use tools from @sec-multi to connect individual risk predictions to variants, regions, and pathways, enabling mechanistic hypotheses and clinician trust.  
-
-- Design for **continual learning and monitoring**:  
-  - Assume that clinical practice and data distributions will change; build pipelines that can adapt responsibly.
-
-In the broader story of this book, clinical risk prediction and decision support represent a key **translation layer**: they connect the representational gains of genomic foundation models to the realities of patient care. The next chapters will extend these ideas to other application domains (e.g., rare disease diagnosis, discovery of pathogenic variants, and drug/biotech innovation), further exploring how GFMs reshape translational genomics.
-
+In the broader arc of this book, clinical risk prediction and decision support represent a key translation layer that connects the representational gains of genomic foundation models to the realities of patient care. The next chapters extend these ideas to other application domains: pathogenic variant discovery in rare disease and cancer workflows (@sec-variants), and drug discovery and biotech applications (@sec-drugs), further exploring how foundation models reshape translational genomics.
