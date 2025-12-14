@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Josh Meehl">
-<meta name="dcterms.date" content="2025-12-01">
 
-<title>Genomic Foundation Models</title>
+<title>Part V: Evaluation &amp; Interpretation – Genomic Foundation Models</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,27 +20,7 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-  margin-bottom: 0em;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -52,7 +30,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./preface.html" rel="next">
+<link href="./p5-ch16-benchmarks.html" rel="next">
+<link href="./p4-ch15-systems.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -271,7 +250,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Introduction</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./p5--eval-interp.html">Part V: Evaluation &amp; Interpretation</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -301,7 +280,7 @@ div.csl-indent {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction</span></a>
   </div>
 </li>
@@ -447,7 +426,7 @@ div.csl-indent {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./p5--eval-interp.html" class="sidebar-item-text sidebar-link">
+            <a href="./p5--eval-interp.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Part V: Evaluation &amp; Interpretation</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -573,36 +552,8 @@ div.csl-indent {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
-  <ul class="collapse">
-  <li><a href="#why-genomic-foundation-models" id="toc-why-genomic-foundation-models" class="nav-link" data-scroll-target="#why-genomic-foundation-models">Why Genomic Foundation Models?</a></li>
-  <li><a href="#recurring-themes" id="toc-recurring-themes" class="nav-link" data-scroll-target="#recurring-themes">Recurring Themes</a>
-  <ul class="collapse">
-  <li><a href="#data-and-architecture-co-evolve" id="toc-data-and-architecture-co-evolve" class="nav-link" data-scroll-target="#data-and-architecture-co-evolve">Data and Architecture Co-evolve</a></li>
-  <li><a href="#context-length-and-genomic-geometry" id="toc-context-length-and-genomic-geometry" class="nav-link" data-scroll-target="#context-length-and-genomic-geometry">Context Length and Genomic Geometry</a></li>
-  <li><a href="#prediction-versus-design" id="toc-prediction-versus-design" class="nav-link" data-scroll-target="#prediction-versus-design">Prediction Versus Design</a></li>
-  <li><a href="#from-benchmarks-to-decisions" id="toc-from-benchmarks-to-decisions" class="nav-link" data-scroll-target="#from-benchmarks-to-decisions">From Benchmarks to Decisions</a></li>
-  <li><a href="#interpretability-and-mechanism" id="toc-interpretability-and-mechanism" class="nav-link" data-scroll-target="#interpretability-and-mechanism">Interpretability and Mechanism</a></li>
-  </ul></li>
-  <li><a href="#how-the-book-is-organized" id="toc-how-the-book-is-organized" class="nav-link" data-scroll-target="#how-the-book-is-organized">How the Book Is Organized</a>
-  <ul class="collapse">
-  <li><a href="#part-i-data-pre-dl-methods" id="toc-part-i-data-pre-dl-methods" class="nav-link" data-scroll-target="#part-i-data-pre-dl-methods">Part I — Data &amp; Pre-DL Methods</a></li>
-  <li><a href="#part-ii-cnn-seq-to-function-models" id="toc-part-ii-cnn-seq-to-function-models" class="nav-link" data-scroll-target="#part-ii-cnn-seq-to-function-models">Part II — CNN Seq-to-Function Models</a></li>
-  <li><a href="#part-iii-transformer-models" id="toc-part-iii-transformer-models" class="nav-link" data-scroll-target="#part-iii-transformer-models">Part III — Transformer Models</a></li>
-  <li><a href="#part-iv-gfms-multi-omics" id="toc-part-iv-gfms-multi-omics" class="nav-link" data-scroll-target="#part-iv-gfms-multi-omics">Part IV — GFMs &amp; Multi-omics</a></li>
-  <li><a href="#part-v-reliability-interpretation" id="toc-part-v-reliability-interpretation" class="nav-link" data-scroll-target="#part-v-reliability-interpretation">Part V — Reliability &amp; Interpretation</a></li>
-  <li><a href="#part-vi-applications" id="toc-part-vi-applications" class="nav-link" data-scroll-target="#part-vi-applications">Part VI — Applications</a></li>
-  <li><a href="#appendices" id="toc-appendices" class="nav-link" data-scroll-target="#appendices">Appendices</a></li>
-  </ul></li>
-  <li><a href="#a-moving-target" id="toc-a-moving-target" class="nav-link" data-scroll-target="#a-moving-target">A Moving Target</a></li>
-  </ul></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -610,26 +561,14 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Genomic Foundation Models</h1>
+<h1 class="title">Part V: Evaluation &amp; Interpretation</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Josh Meehl </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">December 1, 2025</p>
-    </div>
-  </div>
   
     
   </div>
@@ -639,192 +578,9 @@ div.csl-indent {
 </header>
 
 
-<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This book is in active development. Sections and examples may change as the field and my understanding evolve.</p>
-</div>
-</div>
-<section id="introduction" class="level1 unnumbered">
-<h1 class="unnumbered">Introduction</h1>
-<p>We can now sequence a human genome for a few hundred dollars and store millions of genomes in a single biobank. What we cannot yet do, reliably, is tell you what most of those variants mean. The gap between sequencing capacity and interpretive capacity defines the central problem of modern genomics. It is exactly the gap that genomic foundation models aim to close.</p>
-<p>Meanwhile, deep learning has transformed how we represent language, proteins, and now DNA itself. Large models trained on broad sequence data can now be adapted to tasks ranging from variant interpretation to clinical risk prediction, all without retraining from scratch for each new problem.</p>
-<p>This book is about that intersection: <strong>genomic foundation models (GFMs)</strong> - large, reusable models trained on genomic and related data that can be adapted to many downstream tasks. Rather than offering a general introduction to genomics or machine learning, the goal is narrower and more opinionated:</p>
-<blockquote class="blockquote">
-<p>To give you a <em>conceptual and practical map</em> of how modern deep models for DNA, RNA, and proteins are built, what they actually learn, and how they can be used responsibly in research and clinical workflows.</p>
-</blockquote>
-<p>The chapters that follow connect classic genomics pipelines, early deep regulatory models, sequence language models, and multi-omic GFMs into a single narrative arc.</p>
-<hr>
-<section id="why-genomic-foundation-models" class="level2">
-<h2 class="anchored" data-anchor-id="why-genomic-foundation-models">Why Genomic Foundation Models?</h2>
-<p>Traditional genomic modeling has usually been <strong>task-specific</strong>:</p>
-<ul>
-<li>A variant caller tuned to distinguish sequencing errors from true variants.<br>
-</li>
-<li>A supervised CNN trained to predict a fixed set of chromatin marks.<br>
-</li>
-<li>A risk score fit for one trait, in one ancestry group, in one health system.</li>
-</ul>
-<p>These models can work very well in the setting they were designed for, but they often do not transfer gracefully to new assays, tissues, ancestries, or institutions.</p>
-<p>The <strong>foundation model</strong> paradigm takes a different view:</p>
-<ol type="1">
-<li><p><strong>Scale</strong><br>
-Train large models on massive, heterogeneous datasets, across assays, tissues, species, and cohorts, so they learn reusable structure.</p></li>
-<li><p><strong>Self-supervision</strong><br>
-Use objectives such as masked-token prediction, next-token modeling, or contrastive learning that do not require manual labels, allowing us to exploit unlabeled genomes, perturbation screens, and population variation.</p></li>
-<li><p><strong>Reusability</strong><br>
-Treat the model as a <em>backbone</em>: for new tasks, we probe, adapt, or fine-tune the same representation instead of training a new model from scratch.</p></li>
-</ol>
-<p>In genomics, this paradigm is still evolving and far from settled. Some tasks benefit dramatically from pretraining; others barely move beyond strong classical baselines. This book leans into that tension and asking when foundation models actually help, and when simpler approaches suffice <span class="citation" data-cites="bommasani_foundation_2022 guo_foundation_2025">(<a href="references.html#ref-bommasani_foundation_2022" role="doc-biblioref">Bommasani et al. 2022</a>; <a href="references.html#ref-guo_foundation_2025" role="doc-biblioref">Guo et al. 2025</a>)</span>.</p>
-<hr>
-</section>
-<section id="recurring-themes" class="level2">
-<h2 class="anchored" data-anchor-id="recurring-themes">Recurring Themes</h2>
-<p>Several threads run through the book; individual chapters can be read as different views of the same underlying questions.</p>
-<section id="data-and-architecture-co-evolve" class="level3">
-<h3 class="anchored" data-anchor-id="data-and-architecture-co-evolve">Data and Architecture Co-evolve</h3>
-<p>We will see how:</p>
-<ul>
-<li>Early deleteriousness scores built on hand-engineered features and shallow models.<br>
-</li>
-<li>CNNs enabled direct learning of regulatory “motifs” and local grammar from raw sequence.<br>
-</li>
-<li>Transformers and other long-context models opened the door to capturing broader regulatory neighborhoods and chromatin structure.<br>
-</li>
-<li>GFMs push toward representations that span multiple assays, tissues, and even organisms.</li>
-</ul>
-<p>At each stage, the interesting question is not “Is this model fancier?” but “How does the available data constrain what the model can sensibly learn?”</p>
-</section>
-<section id="context-length-and-genomic-geometry" class="level3">
-<h3 class="anchored" data-anchor-id="context-length-and-genomic-geometry">Context Length and Genomic Geometry</h3>
-<p>Many genomic phenomena are intrinsically non-local: enhancers regulating distant genes, looping interactions, polygenic effects spread across the genome. The book returns repeatedly to “how far” a model can see, how it represents long-range dependencies, and what is gained (and lost) as context windows and architectures scale.</p>
-</section>
-<section id="prediction-versus-design" class="level3">
-<h3 class="anchored" data-anchor-id="prediction-versus-design">Prediction Versus Design</h3>
-<p>Most current models are used as <strong>predictors</strong>: given sequence and context, what happens? But the same models can be embedded in <strong>design</strong> and <strong>closed-loop</strong> workflows, from variant prioritization to sequence or library design. We will explore how foundation models change the boundary between analysis and experimental planning, and what new failure modes emerge in the process.</p>
-</section>
-<section id="from-benchmarks-to-decisions" class="level3">
-<h3 class="anchored" data-anchor-id="from-benchmarks-to-decisions">From Benchmarks to Decisions</h3>
-<p>Benchmark scores are seductive and easy to compare. Real biological and clinical decisions are messy, multi-objective, and often constrained by data drift, bias, and poorly specified endpoints. A recurring theme is the gap between “state-of-the-art AUC” and actual impact—and how careful evaluation, confounder analysis, and calibration can narrow that gap.</p>
-</section>
-<section id="interpretability-and-mechanism" class="level3">
-<h3 class="anchored" data-anchor-id="interpretability-and-mechanism">Interpretability and Mechanism</h3>
-<p>Finally, we return often to interpretability, not as optional decoration, but as a design constraint. We will ask when saliency maps, motif extraction, or more mechanistic analyses genuinely deepen understanding, and when they simply provide a veneer of comfort over confounded or brittle models.</p>
-<hr>
-</section>
-</section>
-<section id="how-the-book-is-organized" class="level2">
-<h2 class="anchored" data-anchor-id="how-the-book-is-organized">How the Book Is Organized</h2>
-<p>The book is organized into six parts plus three short appendices. Each part can be read on its own, but they are designed to build on one another.</p>
-<section id="part-i-data-pre-dl-methods" class="level3">
-<h3 class="anchored" data-anchor-id="part-i-data-pre-dl-methods">Part I — Data &amp; Pre-DL Methods</h3>
-<p>Part I lays the <strong>genomic and statistical foundation</strong> that later models rest on.</p>
-<ul>
-<li><p><a href="p1-ch01-ngs.html" class="quarto-xref">Chapter&nbsp;<span>1&nbsp; Sequencing: From Reads to Variants</span></a> introduces next-generation sequencing, alignment, and variant calling, highlighting sources of error and the evolution from hand-crafted pipelines to learned variant callers.</p></li>
-<li><p><a href="p1-ch02-data.html" class="quarto-xref">Chapter&nbsp;<span>2&nbsp; The Genomic Data Landscape</span></a> surveys the core data resources that underlie most modern work: reference genomes, population variation catalogs, clinical variant databases, and functional genomics consortia. It also discusses how they are used as training targets and evaluation benchmarks.</p></li>
-<li><p><a href="p1-ch03-pgs.html" class="quarto-xref">Chapter&nbsp;<span>3&nbsp; GWAS &amp; Polygenic Scores</span></a> reviews genome-wide association studies, linkage disequilibrium, fine-mapping, and polygenic scores, emphasizing what these “variant-to-trait” associations do and do not tell us.</p></li>
-<li><p><a href="p1-ch04-cadd.html" class="quarto-xref">Chapter&nbsp;<span>4&nbsp; Deleteriousness Scores</span></a> covers conservation-based and machine learning-based variant effect predictors such as CADD, including their feature sets, label construction, and issues like circularity and dataset bias.</p></li>
-</ul>
-<p>Together, Part I answers: <em>What data and pre-deep-learning tools form the backdrop that any genomic foundation model must respect, integrate with, or improve upon?</em></p>
-<hr>
-</section>
-<section id="part-ii-cnn-seq-to-function-models" class="level3">
-<h3 class="anchored" data-anchor-id="part-ii-cnn-seq-to-function-models">Part II — CNN Seq-to-Function Models</h3>
-<p>Part II turns to the first wave of <strong>deep sequence-to-function models</strong>, largely built on convolutional neural networks.</p>
-<ul>
-<li><p><a href="p2-ch05-cnn.html#sec-reg" class="quarto-xref">Chapter&nbsp;<span>DeepSEA: Regulatory Prediction from Sequence</span></a> presents CNN-based models that predict chromatin accessibility, histone marks, and related regulatory annotations directly from DNA sequence, and explores what they learn about motifs and regulatory grammar.</p></li>
-<li><p><a href="p2-ch05-cnn.html#sec-trans" class="quarto-xref">Chapter&nbsp;<span>ExPecto: From Chromatin to Expression</span></a> extends from chromatin to gene expression, showing how models combine sequence, regulatory features, and context to predict expression levels and perturbation effects.</p></li>
-<li><p><a href="p2-ch05-cnn.html#sec-splice" class="quarto-xref">Chapter&nbsp;<span>SpliceAI: Splicing Prediction</span></a> focuses on deep models of pre-mRNA splicing and splice-site choice, and how these models can be used to interpret variant effects on splicing in both research and clinical contexts.</p></li>
-</ul>
-<hr>
-</section>
-<section id="part-iii-transformer-models" class="level3">
-<h3 class="anchored" data-anchor-id="part-iii-transformer-models">Part III — Transformer Models</h3>
-<p>Part III introduces <strong>transformer-based and related architectures</strong> for representing biological sequence.</p>
-<ul>
-<li><p><a href="p3-ch10-tokens.html" class="quarto-xref">Chapter&nbsp;<span>10&nbsp; Sequence Representation &amp; Tokens</span></a> examines how we turn genomic and protein sequences into model-compatible tokens, including k-mers, byte-pair encodings, and other schemes, and how these choices shape downstream models.</p></li>
-<li><p><a href="p2-ch06-plm.html" class="quarto-xref">Chapter&nbsp;<span>6&nbsp; Protein Language Models</span></a> describes large protein language models trained on sequence databases, their emergent structure and function representations, and applications to variant effect prediction and protein design.</p></li>
-<li><p><a href="p2-ch07-dna.html" class="quarto-xref">Chapter&nbsp;<span>7&nbsp; Genomic Foundation Models</span></a> surveys DNA language models and other genomic foundation backbones, including their training corpora, objectives, evaluation suites, and limitations.</p></li>
-<li><p><a href="p2-ch09-hybrid.html" class="quarto-xref">Chapter&nbsp;<span>9&nbsp; Long-range Hybrid Models</span></a> covers hybrid CNN/transformer and related architectures designed to handle long genomic contexts, such as models that predict regulatory readouts over tens to hundreds of kilobases.</p></li>
-</ul>
-<hr>
-</section>
-<section id="part-iv-gfms-multi-omics" class="level3">
-<h3 class="anchored" data-anchor-id="part-iv-gfms-multi-omics">Part IV — GFMs &amp; Multi-omics</h3>
-<p>Part IV is the conceptual core of the book, focusing explicitly on <strong>genomic foundation models</strong> and their multi-omic extensions.</p>
-<ul>
-<li><p><a href="p3-ch11-principles.html" class="quarto-xref">Chapter&nbsp;<span>11&nbsp; Genomic FMs: Principles &amp; Practice</span></a> provides a working definition and taxonomy of genomic FMs, design dimensions (architecture, context length, conditioning), and practical guidance for using pretrained backbones in downstream tasks…</p></li>
-<li><p><a href="p3-ch12-vep.html" class="quarto-xref">Chapter&nbsp;<span>12&nbsp; Variant Effect Prediction</span></a> recasts variant effect prediction in the foundation-model era, spanning protein and DNA-based approaches, and discusses calibration, uncertainty, and integration into existing pipelines.</p></li>
-<li><p><a href="p4-ch13-sc-epi.html" class="quarto-xref">Chapter&nbsp;<span>13&nbsp; Single-Cell &amp; Epigenomic Foundation Models</span></a> covers foundation models for epigenomic and single-cell data, from methylation transformers and chromatin contact predictors to single-cell language models and cross-modal alignment methods.</p></li>
-<li><p><a href="p4-ch15-systems.html" class="quarto-xref">Chapter&nbsp;<span>15&nbsp; Multi-Omics Integration &amp; Systems Biology</span></a> broadens the view from isolated sequences to multi-omic and systems-level representations, including models that integrate genomic, transcriptomic, proteomic, and phenotype data.</p></li>
-</ul>
-<hr>
-</section>
-<section id="part-v-reliability-interpretation" class="level3">
-<h3 class="anchored" data-anchor-id="part-v-reliability-interpretation">Part V — Reliability &amp; Interpretation</h3>
-<p>Part V pulls out cross-cutting issues that apply to essentially every model in the book.</p>
-<ul>
-<li><p><a href="p5-ch17-eval.html" class="quarto-xref">Chapter&nbsp;<span>17&nbsp; Model Evaluation &amp; Benchmarks</span></a> develops a unified framework for evaluating models across molecular, variant-level, trait-level, and clinical tasks, and discusses data splitting, metric choice, and the link between benchmarks and real-world decisions.</p></li>
-<li><p><a href="p5-ch18-confound.html" class="quarto-xref">Chapter&nbsp;<span>18&nbsp; Confounders in Model Training</span></a> details sources of confounding and data leakage, from batch effects and ancestry structure to label bias and covariate shift, and offers practical strategies for detection and mitigation.</p></li>
-<li><p><a href="p5-ch19-interp.html" class="quarto-xref">Chapter&nbsp;<span>19&nbsp; Interpretability &amp; Mechanisms</span></a> explores interpretability tools from classical motif discovery and attribution methods to emerging mechanistic approaches, and asks when these tools genuinely reveal biological mechanisms.</p></li>
-</ul>
-<hr>
-</section>
-<section id="part-vi-applications" class="level3">
-<h3 class="anchored" data-anchor-id="part-vi-applications">Part VI — Applications</h3>
-<p>Part VI moves from methods to <strong>end-to-end workflows</strong> in research and clinical practice.</p>
-<ul>
-<li><p><a href="p6-ch20-clinical.html" class="quarto-xref">Chapter&nbsp;<span>20&nbsp; Clinical Risk Prediction</span></a> discusses risk prediction tasks that combine genomic features (including outputs from GFMs) with clinical and environmental data, focusing on discrimination, calibration, fairness, and deployment in health systems.</p></li>
-<li><p><a href="p6-ch21-variants.html" class="quarto-xref">Chapter&nbsp;<span>21&nbsp; Pathogenic Variant Discovery</span></a> examines how models fit into rare disease and cancer workflows, including variant prioritization pipelines, integration with family and tumor-normal data, and lab-in-the-loop validation.</p></li>
-<li><p><a href="p6-ch22-drugs.html" class="quarto-xref">Chapter&nbsp;<span>22&nbsp; Drug Discovery &amp; Biotech</span></a> looks at how GFMs intersect with target discovery, functional genomics screens, biomarker development, and biotech/industry workflows, including build-vs-buy and organizational considerations.</p></li>
-</ul>
-<hr>
-</section>
-<section id="appendices" class="level3">
-<h3 class="anchored" data-anchor-id="appendices">Appendices</h3>
-<p>The appendices provide background and pointers:</p>
-<ul>
-<li><p><a href="app-a-dl.html" class="quarto-xref"><span>Appendix A — Deep Learning Primer</span></a> is a compact introduction to neural networks, CNNs, transformers, training, and evaluation, aimed at genomics-first readers who want enough ML background to engage with the main chapters. :contentReference<span data-index="2">oaicite:2</span></p></li>
-<li><p><a href="app-c-model-list.html" class="quarto-xref"><span>Appendix C — Referenced Models</span></a> is a comprehensive list of models used through the book.</p></li>
-<li><p><a href="app-d-resources.html" class="quarto-xref"><span>Appendix D — Additional Resources</span></a> is a curated set textbooks, courses, software, and papers for deeper dives into genomics, statistical genetics, and deep learning.</p></li>
-<li><p><a href="app-e-glossary.html" class="quarto-xref"><span>Appendix E — Glossary</span></a> is a glossary of key terms.</p></li>
-</ul>
-<hr>
-</section>
-</section>
-<section id="a-moving-target" class="level2">
-<h2 class="anchored" data-anchor-id="a-moving-target">A Moving Target</h2>
-<p>Genomic foundation models are a moving target: architectures, datasets, and evaluation suites are evolving quickly. This book is not intended as a frozen survey of “the state of the art,” but as a framework for reasoning about new models as they appear.</p>
-<p>If it succeeds, you should finish able to:</p>
-<ul>
-<li>Place a new model in the landscape of data, architecture, objective, and application.<br>
-</li>
-<li>Design analyses and experiments that use GFMs as components—features, priors, or simulators—without overclaiming what they can do.<br>
-</li>
-<li>Recognize common pitfalls in training, evaluation, and deployment, especially in clinical and translational settings.<br>
-</li>
-<li>Decide where foundation models are genuinely useful, and where simpler methods or classical baselines are sufficient.</li>
-</ul>
-<p>The next chapter now turns to the foundations: how we get from raw reads to variants, and from variants to the datasets and benchmarks on which all of these models depend.</p>
+<p>This part introduces the data landscape…</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
-<div id="ref-bommasani_foundation_2022" class="csl-entry" role="listitem">
-Bommasani, Rishi, Drew A. Hudson, Ehsan Adeli, Russ Altman, Simran Arora, Sydney von Arx, Michael S. Bernstein, et al. 2022. <span>“On the <span>Opportunities</span> and <span>Risks</span> of <span>Foundation</span> <span>Models</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2108.07258">https://doi.org/10.48550/arXiv.2108.07258</a>.
-</div>
-<div id="ref-guo_foundation_2025" class="csl-entry" role="listitem">
-Guo, Fei, Renchu Guan, Yaohang Li, Qi Liu, Xiaowo Wang, Can Yang, and Jianxin Wang. 2025. <span>“Foundation Models in Bioinformatics.”</span> <em>National Science Review</em> 12 (4): nwaf028. <a href="https://doi.org/10.1093/nsr/nwaf028">https://doi.org/10.1093/nsr/nwaf028</a>.
-</div>
-</div>
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1242,10 +998,13 @@ Guo, Fei, Renchu Guan, Yaohang Li, Qi Liu, Xiaowo Wang, Can Yang, and Jianxin Wa
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./p4-ch15-systems.html" class="pagination-link" aria-label="Multi-Omics Integration &amp; Systems Biology">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Multi-Omics Integration &amp; Systems Biology</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./preface.html" class="pagination-link" aria-label="Preface">
-        <span class="nav-page-text">Preface</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./p5-ch16-benchmarks.html" class="pagination-link" aria-label="p5-ch16-benchmarks.html">
+        <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">p5-ch16-benchmarks.html</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

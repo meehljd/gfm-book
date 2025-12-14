@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Josh Meehl">
-<meta name="dcterms.date" content="2025-12-01">
 
-<title>Genomic Foundation Models</title>
+<title>13&nbsp; Single-Cell &amp; Epigenomic Foundation Models – Genomic Foundation Models</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -52,7 +50,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./preface.html" rel="next">
+<link href="./p4-ch14-networks.html" rel="next">
+<link href="./p4--multi-scale.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -271,7 +270,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Introduction</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./p4--multi-scale.html">Part IV: Multi-Scale Genomics</a></li><li class="breadcrumb-item"><a href="./p4-ch13-sc-epi.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Single-Cell &amp; Epigenomic Foundation Models</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -301,7 +300,7 @@ div.csl-indent {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction</span></a>
   </div>
 </li>
@@ -427,7 +426,7 @@ div.csl-indent {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p4-ch13-sc-epi.html" class="sidebar-item-text sidebar-link">
+  <a href="./p4-ch13-sc-epi.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Single-Cell &amp; Epigenomic Foundation Models</span></span></a>
   </div>
 </li>
@@ -578,29 +577,34 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <li><a href="#cpgpt-a-foundation-model-for-dna-methylation" id="toc-cpgpt-a-foundation-model-for-dna-methylation" class="nav-link active" data-scroll-target="#cpgpt-a-foundation-model-for-dna-methylation"><span class="header-section-number">13.1</span> CpGPT: A Foundation Model for DNA Methylation</a>
   <ul class="collapse">
-  <li><a href="#why-genomic-foundation-models" id="toc-why-genomic-foundation-models" class="nav-link" data-scroll-target="#why-genomic-foundation-models">Why Genomic Foundation Models?</a></li>
-  <li><a href="#recurring-themes" id="toc-recurring-themes" class="nav-link" data-scroll-target="#recurring-themes">Recurring Themes</a>
+  <li><a href="#methylation-as-a-systems-hub" id="toc-methylation-as-a-systems-hub" class="nav-link" data-scroll-target="#methylation-as-a-systems-hub"><span class="header-section-number">13.1.1</span> Methylation as a Systems Hub</a></li>
+  <li><a href="#architecture-and-pretraining" id="toc-architecture-and-pretraining" class="nav-link" data-scroll-target="#architecture-and-pretraining"><span class="header-section-number">13.1.2</span> Architecture and Pretraining</a></li>
+  <li><a href="#downstream-applications" id="toc-downstream-applications" class="nav-link" data-scroll-target="#downstream-applications"><span class="header-section-number">13.1.3</span> Downstream Applications</a></li>
+  </ul></li>
+  <li><a href="#single-cell-foundation-models" id="toc-single-cell-foundation-models" class="nav-link" data-scroll-target="#single-cell-foundation-models"><span class="header-section-number">13.2</span> Single-Cell Foundation Models</a>
   <ul class="collapse">
-  <li><a href="#data-and-architecture-co-evolve" id="toc-data-and-architecture-co-evolve" class="nav-link" data-scroll-target="#data-and-architecture-co-evolve">Data and Architecture Co-evolve</a></li>
-  <li><a href="#context-length-and-genomic-geometry" id="toc-context-length-and-genomic-geometry" class="nav-link" data-scroll-target="#context-length-and-genomic-geometry">Context Length and Genomic Geometry</a></li>
-  <li><a href="#prediction-versus-design" id="toc-prediction-versus-design" class="nav-link" data-scroll-target="#prediction-versus-design">Prediction Versus Design</a></li>
-  <li><a href="#from-benchmarks-to-decisions" id="toc-from-benchmarks-to-decisions" class="nav-link" data-scroll-target="#from-benchmarks-to-decisions">From Benchmarks to Decisions</a></li>
-  <li><a href="#interpretability-and-mechanism" id="toc-interpretability-and-mechanism" class="nav-link" data-scroll-target="#interpretability-and-mechanism">Interpretability and Mechanism</a></li>
+  <li><a href="#the-promise-of-cellular-language-models" id="toc-the-promise-of-cellular-language-models" class="nav-link" data-scroll-target="#the-promise-of-cellular-language-models"><span class="header-section-number">13.2.1</span> The Promise of Cellular Language Models</a></li>
+  <li><a href="#geneformer-network-biology-through-pretraining" id="toc-geneformer-network-biology-through-pretraining" class="nav-link" data-scroll-target="#geneformer-network-biology-through-pretraining"><span class="header-section-number">13.2.2</span> Geneformer: Network Biology Through Pretraining</a></li>
+  <li><a href="#scgpt-generative-pretraining-for-multi-omics" id="toc-scgpt-generative-pretraining-for-multi-omics" class="nav-link" data-scroll-target="#scgpt-generative-pretraining-for-multi-omics"><span class="header-section-number">13.2.3</span> scGPT: Generative Pretraining for Multi-Omics</a></li>
+  <li><a href="#transcriptformer-and-cross-species-modeling" id="toc-transcriptformer-and-cross-species-modeling" class="nav-link" data-scroll-target="#transcriptformer-and-cross-species-modeling"><span class="header-section-number">13.2.4</span> TranscriptFormer and Cross-Species Modeling</a></li>
   </ul></li>
-  <li><a href="#how-the-book-is-organized" id="toc-how-the-book-is-organized" class="nav-link" data-scroll-target="#how-the-book-is-organized">How the Book Is Organized</a>
+  <li><a href="#glue-graph-linked-unified-embedding-for-single-cell-multi-omics" id="toc-glue-graph-linked-unified-embedding-for-single-cell-multi-omics" class="nav-link" data-scroll-target="#glue-graph-linked-unified-embedding-for-single-cell-multi-omics"><span class="header-section-number">13.3</span> GLUE: Graph-Linked Unified Embedding for Single-Cell Multi-Omics</a>
   <ul class="collapse">
-  <li><a href="#part-i-data-pre-dl-methods" id="toc-part-i-data-pre-dl-methods" class="nav-link" data-scroll-target="#part-i-data-pre-dl-methods">Part I — Data &amp; Pre-DL Methods</a></li>
-  <li><a href="#part-ii-cnn-seq-to-function-models" id="toc-part-ii-cnn-seq-to-function-models" class="nav-link" data-scroll-target="#part-ii-cnn-seq-to-function-models">Part II — CNN Seq-to-Function Models</a></li>
-  <li><a href="#part-iii-transformer-models" id="toc-part-iii-transformer-models" class="nav-link" data-scroll-target="#part-iii-transformer-models">Part III — Transformer Models</a></li>
-  <li><a href="#part-iv-gfms-multi-omics" id="toc-part-iv-gfms-multi-omics" class="nav-link" data-scroll-target="#part-iv-gfms-multi-omics">Part IV — GFMs &amp; Multi-omics</a></li>
-  <li><a href="#part-v-reliability-interpretation" id="toc-part-v-reliability-interpretation" class="nav-link" data-scroll-target="#part-v-reliability-interpretation">Part V — Reliability &amp; Interpretation</a></li>
-  <li><a href="#part-vi-applications" id="toc-part-vi-applications" class="nav-link" data-scroll-target="#part-vi-applications">Part VI — Applications</a></li>
-  <li><a href="#appendices" id="toc-appendices" class="nav-link" data-scroll-target="#appendices">Appendices</a></li>
+  <li><a href="#the-unpaired-integration-challenge" id="toc-the-unpaired-integration-challenge" class="nav-link" data-scroll-target="#the-unpaired-integration-challenge"><span class="header-section-number">13.3.1</span> The Unpaired Integration Challenge</a></li>
+  <li><a href="#architecture-and-training" id="toc-architecture-and-training" class="nav-link" data-scroll-target="#architecture-and-training"><span class="header-section-number">13.3.2</span> Architecture and Training</a></li>
+  <li><a href="#applications-and-extensions" id="toc-applications-and-extensions" class="nav-link" data-scroll-target="#applications-and-extensions"><span class="header-section-number">13.3.3</span> Applications and Extensions</a></li>
   </ul></li>
-  <li><a href="#a-moving-target" id="toc-a-moving-target" class="nav-link" data-scroll-target="#a-moving-target">A Moving Target</a></li>
+  <li><a href="#d-genome-prediction-models" id="toc-d-genome-prediction-models" class="nav-link" data-scroll-target="#d-genome-prediction-models"><span class="header-section-number">13.4</span> 3D Genome Prediction Models</a>
+  <ul class="collapse">
+  <li><a href="#the-structural-dimension-of-gene-regulation" id="toc-the-structural-dimension-of-gene-regulation" class="nav-link" data-scroll-target="#the-structural-dimension-of-gene-regulation"><span class="header-section-number">13.4.1</span> The Structural Dimension of Gene Regulation</a></li>
+  <li><a href="#akita-sequence-to-contact-prediction" id="toc-akita-sequence-to-contact-prediction" class="nav-link" data-scroll-target="#akita-sequence-to-contact-prediction"><span class="header-section-number">13.4.2</span> Akita: Sequence-to-Contact Prediction</a></li>
+  <li><a href="#extensions-and-related-models" id="toc-extensions-and-related-models" class="nav-link" data-scroll-target="#extensions-and-related-models"><span class="header-section-number">13.4.3</span> Extensions and Related Models</a></li>
   </ul></li>
+  <li><a href="#design-patterns-and-practical-considerations" id="toc-design-patterns-and-practical-considerations" class="nav-link" data-scroll-target="#design-patterns-and-practical-considerations"><span class="header-section-number">13.5</span> Design Patterns and Practical Considerations</a></li>
+  <li><a href="#practical-challenges" id="toc-practical-challenges" class="nav-link" data-scroll-target="#practical-challenges"><span class="header-section-number">13.6</span> Practical Challenges</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">13.7</span> Summary</a></li>
   </ul>
 </nav>
     </div>
@@ -608,28 +612,16 @@ div.csl-indent {
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./p4--multi-scale.html">Part IV: Multi-Scale Genomics</a></li><li class="breadcrumb-item"><a href="./p4-ch13-sc-epi.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Single-Cell &amp; Epigenomic Foundation Models</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Genomic Foundation Models</h1>
+<h1 class="title"><span id="sec-epi" class="quarto-section-identifier"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Single-Cell &amp; Epigenomic Foundation Models</span></span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Josh Meehl </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">December 1, 2025</p>
-    </div>
-  </div>
   
     
   </div>
@@ -649,181 +641,161 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This book is in active development. Sections and examples may change as the field and my understanding evolve.</p>
+<p><strong>TODO:</strong></p>
+<ul>
+<li>Add figure: CpGPT architecture schematic showing masked modeling objective, sample embeddings, and downstream task adaptation</li>
+<li>Add figure: GLUE framework diagram illustrating modality-specific VAEs, feature graph structure, and alignment objectives</li>
+<li>Add figure: Single-cell foundation model comparison showing scGPT, Geneformer, and scBERT architectures with their tokenization strategies</li>
+<li>Add figure: 3D genome prediction model comparison showing Akita, Orca, and C.Origami encoder-decoder architectures</li>
+<li>Add table: Comparison of single-cell foundation models with columns for pretraining corpus size, tokenization strategy, downstream tasks, and key innovations</li>
+<li>Add table: 3D genome prediction methods comparing input context, output resolution, and validated applications</li>
+</ul>
 </div>
 </div>
-<section id="introduction" class="level1 unnumbered">
-<h1 class="unnumbered">Introduction</h1>
-<p>We can now sequence a human genome for a few hundred dollars and store millions of genomes in a single biobank. What we cannot yet do, reliably, is tell you what most of those variants mean. The gap between sequencing capacity and interpretive capacity defines the central problem of modern genomics. It is exactly the gap that genomic foundation models aim to close.</p>
-<p>Meanwhile, deep learning has transformed how we represent language, proteins, and now DNA itself. Large models trained on broad sequence data can now be adapted to tasks ranging from variant interpretation to clinical risk prediction, all without retraining from scratch for each new problem.</p>
-<p>This book is about that intersection: <strong>genomic foundation models (GFMs)</strong> - large, reusable models trained on genomic and related data that can be adapted to many downstream tasks. Rather than offering a general introduction to genomics or machine learning, the goal is narrower and more opinionated:</p>
-<blockquote class="blockquote">
-<p>To give you a <em>conceptual and practical map</em> of how modern deep models for DNA, RNA, and proteins are built, what they actually learn, and how they can be used responsibly in research and clinical workflows.</p>
-</blockquote>
-<p>The chapters that follow connect classic genomics pipelines, early deep regulatory models, sequence language models, and multi-omic GFMs into a single narrative arc.</p>
-<hr>
-<section id="why-genomic-foundation-models" class="level2">
-<h2 class="anchored" data-anchor-id="why-genomic-foundation-models">Why Genomic Foundation Models?</h2>
-<p>Traditional genomic modeling has usually been <strong>task-specific</strong>:</p>
-<ul>
-<li>A variant caller tuned to distinguish sequencing errors from true variants.<br>
-</li>
-<li>A supervised CNN trained to predict a fixed set of chromatin marks.<br>
-</li>
-<li>A risk score fit for one trait, in one ancestry group, in one health system.</li>
-</ul>
-<p>These models can work very well in the setting they were designed for, but they often do not transfer gracefully to new assays, tissues, ancestries, or institutions.</p>
-<p>The <strong>foundation model</strong> paradigm takes a different view:</p>
-<ol type="1">
-<li><p><strong>Scale</strong><br>
-Train large models on massive, heterogeneous datasets, across assays, tissues, species, and cohorts, so they learn reusable structure.</p></li>
-<li><p><strong>Self-supervision</strong><br>
-Use objectives such as masked-token prediction, next-token modeling, or contrastive learning that do not require manual labels, allowing us to exploit unlabeled genomes, perturbation screens, and population variation.</p></li>
-<li><p><strong>Reusability</strong><br>
-Treat the model as a <em>backbone</em>: for new tasks, we probe, adapt, or fine-tune the same representation instead of training a new model from scratch.</p></li>
-</ol>
-<p>In genomics, this paradigm is still evolving and far from settled. Some tasks benefit dramatically from pretraining; others barely move beyond strong classical baselines. This book leans into that tension and asking when foundation models actually help, and when simpler approaches suffice <span class="citation" data-cites="bommasani_foundation_2022 guo_foundation_2025">(<a href="references.html#ref-bommasani_foundation_2022" role="doc-biblioref">Bommasani et al. 2022</a>; <a href="references.html#ref-guo_foundation_2025" role="doc-biblioref">Guo et al. 2025</a>)</span>.</p>
-<hr>
+<p>The preceding chapters traced how genomic foundation models evolved from sequence-only representations to multi-task predictors of regulatory function. This chapter examines two frontiers where foundation model principles are reshaping our understanding of cellular identity: single-cell transcriptomics and epigenomics, and the three-dimensional organization of chromatin. Both domains present unique challenges for deep learning, from the sparsity and noise of single-cell measurements to the combinatorial complexity of genome folding, yet both have seen rapid progress as foundation model architectures adapt to their particular data characteristics.</p>
+<p>Single-cell sequencing has transformed our view of tissues from averaged bulk profiles to rich landscapes of cellular diversity. Millions of cells across thousands of experiments now populate public repositories, creating training corpora comparable in scale to those that enabled large language models. Epigenomic assays, particularly DNA methylation, occupy a privileged position in the regulatory hierarchy by integrating genetic, developmental, and environmental influences into stable molecular marks that define cellular identity. Meanwhile, the three-dimensional folding of chromatin brings distal regulatory elements into contact with their target genes, creating another layer of regulatory logic that sequence-only models cannot fully capture.</p>
+<p>This chapter surveys foundation models that address these challenges. We examine CpGPT and related methylation models that treat the methylome as a sequence-like object amenable to transformer-based pretraining. We explore single-cell foundation models including scGPT, Geneformer, and related architectures that learn cellular representations from massive transcriptomic corpora. We trace how GLUE and SCGLUE enable integration across modalities when different omics are measured in different cells. Finally, we examine models like Akita, Orca, and C.Origami that predict three-dimensional chromatin contacts from DNA sequence alone.</p>
+<section id="cpgpt-a-foundation-model-for-dna-methylation" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="cpgpt-a-foundation-model-for-dna-methylation"><span class="header-section-number">13.1</span> CpGPT: A Foundation Model for DNA Methylation</h2>
+<section id="methylation-as-a-systems-hub" class="level3" data-number="13.1.1">
+<h3 data-number="13.1.1" class="anchored" data-anchor-id="methylation-as-a-systems-hub"><span class="header-section-number">13.1.1</span> Methylation as a Systems Hub</h3>
+<p>DNA methylation occupies a privileged position in the regulatory hierarchy, sitting at a junction between genotype, environment, and phenotype. Methylation patterns integrate genetic influences, since sequence context affects which CpG sites can be methylated and polymorphisms can create or destroy CpG dinucleotides. They also integrate developmental programs, since methylation landscapes are extensively remodeled during differentiation and establish cell-type-specific regulatory states. Environmental exposures including diet, smoking, toxins, and stress leave lasting methylation signatures that persist long after the exposure ends.</p>
+<p>Beyond serving as an integrative readout, methylation encodes rich information about cellular identity and state. Cell types can be distinguished by their methylation profiles, and within a cell type, methylation captures information about age, health status, and disease risk. Epigenetic clocks built from methylation data predict chronological age with remarkable accuracy, and deviations from predicted age correlate with mortality risk and disease burden <span class="citation" data-cites="camillo_cpgpt_2024">(<a href="references.html#ref-camillo_cpgpt_2024" role="doc-biblioref">Camillo et al. 2024</a>)</span>.</p>
+<p>Traditional methylation models have been task-specific: one model for age prediction, another for mortality risk, another for tissue classification. Each model is trained from scratch on labeled data for its particular task, learning whatever methylation patterns happen to be predictive without necessarily capturing general structure. CpGPT reframes methylation as a foundation modeling problem, using large-scale pretraining to learn representations that transfer across tasks.</p>
 </section>
-<section id="recurring-themes" class="level2">
-<h2 class="anchored" data-anchor-id="recurring-themes">Recurring Themes</h2>
-<p>Several threads run through the book; individual chapters can be read as different views of the same underlying questions.</p>
-<section id="data-and-architecture-co-evolve" class="level3">
-<h3 class="anchored" data-anchor-id="data-and-architecture-co-evolve">Data and Architecture Co-evolve</h3>
-<p>We will see how:</p>
-<ul>
-<li>Early deleteriousness scores built on hand-engineered features and shallow models.<br>
-</li>
-<li>CNNs enabled direct learning of regulatory “motifs” and local grammar from raw sequence.<br>
-</li>
-<li>Transformers and other long-context models opened the door to capturing broader regulatory neighborhoods and chromatin structure.<br>
-</li>
-<li>GFMs push toward representations that span multiple assays, tissues, and even organisms.</li>
-</ul>
-<p>At each stage, the interesting question is not “Is this model fancier?” but “How does the available data constrain what the model can sensibly learn?”</p>
+<section id="architecture-and-pretraining" class="level3" data-number="13.1.2">
+<h3 data-number="13.1.2" class="anchored" data-anchor-id="architecture-and-pretraining"><span class="header-section-number">13.1.2</span> Architecture and Pretraining</h3>
+<p>CpGPT, the Cytosine-phosphate-Guanine Pretrained Transformer, treats methylomes as sequences or sets of CpG sites and uses transformer-style self-attention to model their structure <span class="citation" data-cites="camillo_cpgpt_2024">(<a href="references.html#ref-camillo_cpgpt_2024" role="doc-biblioref">Camillo et al. 2024</a>)</span>. The model was pretrained on over 1,500 DNA methylation datasets encompassing more than 100,000 samples from diverse tissues and conditions.</p>
+<p>Several aspects of methylation structure make it amenable to transformer modeling. Local CpG correlations arise because nearby CpG sites tend to share methylation status, particularly within CpG islands. Long-range coordination reflects the fact that methylation patterns at distant genomic regions can be correlated through shared regulatory programs or chromatin compartmentalization. Global sample-level variation captures the systematic differences between samples that reflect tissue identity, age, disease status, and other biological variables.</p>
+<p>CpGPT uses masked modeling objectives analogous to BERT-style language model pretraining. During training, a fraction of CpG methylation values are masked, and the model learns to predict the masked values from the surrounding context. This objective encourages the model to learn both local correlations between neighboring CpG sites and global patterns that distinguish different tissues or conditions.</p>
+<p>The resulting embeddings capture sample-level representations that summarize methylation state. These embeddings can serve as inputs to downstream predictors, providing rich methylation features for risk scores, prognosis models, or treatment response prediction. They can function as one modality in a shared latent space that also includes expression, proteomics, and other data types. They can inject epigenetic state information into otherwise sequence-centric genomic foundation models, providing context about cellular identity and regulatory status.</p>
 </section>
-<section id="context-length-and-genomic-geometry" class="level3">
-<h3 class="anchored" data-anchor-id="context-length-and-genomic-geometry">Context Length and Genomic Geometry</h3>
-<p>Many genomic phenomena are intrinsically non-local: enhancers regulating distant genes, looping interactions, polygenic effects spread across the genome. The book returns repeatedly to “how far” a model can see, how it represents long-range dependencies, and what is gained (and lost) as context windows and architectures scale.</p>
-</section>
-<section id="prediction-versus-design" class="level3">
-<h3 class="anchored" data-anchor-id="prediction-versus-design">Prediction Versus Design</h3>
-<p>Most current models are used as <strong>predictors</strong>: given sequence and context, what happens? But the same models can be embedded in <strong>design</strong> and <strong>closed-loop</strong> workflows, from variant prioritization to sequence or library design. We will explore how foundation models change the boundary between analysis and experimental planning, and what new failure modes emerge in the process.</p>
-</section>
-<section id="from-benchmarks-to-decisions" class="level3">
-<h3 class="anchored" data-anchor-id="from-benchmarks-to-decisions">From Benchmarks to Decisions</h3>
-<p>Benchmark scores are seductive and easy to compare. Real biological and clinical decisions are messy, multi-objective, and often constrained by data drift, bias, and poorly specified endpoints. A recurring theme is the gap between “state-of-the-art AUC” and actual impact—and how careful evaluation, confounder analysis, and calibration can narrow that gap.</p>
-</section>
-<section id="interpretability-and-mechanism" class="level3">
-<h3 class="anchored" data-anchor-id="interpretability-and-mechanism">Interpretability and Mechanism</h3>
-<p>Finally, we return often to interpretability, not as optional decoration, but as a design constraint. We will ask when saliency maps, motif extraction, or more mechanistic analyses genuinely deepen understanding, and when they simply provide a veneer of comfort over confounded or brittle models.</p>
-<hr>
+<section id="downstream-applications" class="level3" data-number="13.1.3">
+<h3 data-number="13.1.3" class="anchored" data-anchor-id="downstream-applications"><span class="header-section-number">13.1.3</span> Downstream Applications</h3>
+<p>Conceptually, CpGPT exemplifies a single-omic foundation model designed to plug into multi-omics architectures. The pretraining objective learns general methylation structure, and the resulting embeddings can be combined with other modalities for tasks that require systems-level reasoning.</p>
+<p>CpGPT demonstrates strong performance on several downstream tasks through transfer learning. For biological age prediction, fine-tuned CpGPT models match or exceed purpose-built epigenetic clocks while using a more general architecture. For tissue classification, the learned embeddings cluster by tissue type without explicit supervision, suggesting that the pretraining captures biologically meaningful variation. For disease-associated methylation patterns, the model can be adapted to distinguish cases from controls across multiple disease contexts.</p>
+<p>The foundation model paradigm offers advantages over task-specific methylation models. New tasks can be addressed through fine-tuning or linear probing rather than training from scratch. Representations learned from diverse tissues and conditions may generalize better than those learned from narrow disease-specific cohorts. The model can impute missing methylation values, enabling analysis of samples profiled on different array platforms or with different coverage depths.</p>
 </section>
 </section>
-<section id="how-the-book-is-organized" class="level2">
-<h2 class="anchored" data-anchor-id="how-the-book-is-organized">How the Book Is Organized</h2>
-<p>The book is organized into six parts plus three short appendices. Each part can be read on its own, but they are designed to build on one another.</p>
-<section id="part-i-data-pre-dl-methods" class="level3">
-<h3 class="anchored" data-anchor-id="part-i-data-pre-dl-methods">Part I — Data &amp; Pre-DL Methods</h3>
-<p>Part I lays the <strong>genomic and statistical foundation</strong> that later models rest on.</p>
-<ul>
-<li><p><a href="p1-ch01-ngs.html" class="quarto-xref">Chapter&nbsp;<span>1&nbsp; Sequencing: From Reads to Variants</span></a> introduces next-generation sequencing, alignment, and variant calling, highlighting sources of error and the evolution from hand-crafted pipelines to learned variant callers.</p></li>
-<li><p><a href="p1-ch02-data.html" class="quarto-xref">Chapter&nbsp;<span>2&nbsp; The Genomic Data Landscape</span></a> surveys the core data resources that underlie most modern work: reference genomes, population variation catalogs, clinical variant databases, and functional genomics consortia. It also discusses how they are used as training targets and evaluation benchmarks.</p></li>
-<li><p><a href="p1-ch03-pgs.html" class="quarto-xref">Chapter&nbsp;<span>3&nbsp; GWAS &amp; Polygenic Scores</span></a> reviews genome-wide association studies, linkage disequilibrium, fine-mapping, and polygenic scores, emphasizing what these “variant-to-trait” associations do and do not tell us.</p></li>
-<li><p><a href="p1-ch04-cadd.html" class="quarto-xref">Chapter&nbsp;<span>4&nbsp; Deleteriousness Scores</span></a> covers conservation-based and machine learning-based variant effect predictors such as CADD, including their feature sets, label construction, and issues like circularity and dataset bias.</p></li>
-</ul>
-<p>Together, Part I answers: <em>What data and pre-deep-learning tools form the backdrop that any genomic foundation model must respect, integrate with, or improve upon?</em></p>
-<hr>
+<section id="single-cell-foundation-models" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="single-cell-foundation-models"><span class="header-section-number">13.2</span> Single-Cell Foundation Models</h2>
+<section id="the-promise-of-cellular-language-models" class="level3" data-number="13.2.1">
+<h3 data-number="13.2.1" class="anchored" data-anchor-id="the-promise-of-cellular-language-models"><span class="header-section-number">13.2.1</span> The Promise of Cellular Language Models</h3>
+<p>The explosion of single-cell sequencing data has created training corpora of unprecedented scale for modeling cellular biology. Public repositories now contain tens of millions of single-cell transcriptomes spanning diverse tissues, developmental stages, disease states, and species. This scale approaches the data volumes that enabled large language models, motivating researchers to ask whether similar foundation model approaches could work for cellular data.</p>
+<p>The analogy between language and single-cell biology runs deeper than dataset scale. In language, words combine according to grammatical rules to form sentences that convey meaning. In cells, genes combine according to regulatory programs to form expression profiles that define cellular identity and function. Just as language models learn syntax and semantics by predicting masked words, single-cell foundation models might learn regulatory logic by predicting masked genes.</p>
+<p>Several groups have pursued this vision, producing models with different architectures, pretraining objectives, and downstream applications. We examine three prominent examples: Geneformer, scGPT, and related models that collectively establish the paradigm of cellular language models.</p>
 </section>
-<section id="part-ii-cnn-seq-to-function-models" class="level3">
-<h3 class="anchored" data-anchor-id="part-ii-cnn-seq-to-function-models">Part II — CNN Seq-to-Function Models</h3>
-<p>Part II turns to the first wave of <strong>deep sequence-to-function models</strong>, largely built on convolutional neural networks.</p>
-<ul>
-<li><p><a href="p2-ch05-cnn.html#sec-reg" class="quarto-xref">Chapter&nbsp;<span>DeepSEA: Regulatory Prediction from Sequence</span></a> presents CNN-based models that predict chromatin accessibility, histone marks, and related regulatory annotations directly from DNA sequence, and explores what they learn about motifs and regulatory grammar.</p></li>
-<li><p><a href="p2-ch05-cnn.html#sec-trans" class="quarto-xref">Chapter&nbsp;<span>ExPecto: From Chromatin to Expression</span></a> extends from chromatin to gene expression, showing how models combine sequence, regulatory features, and context to predict expression levels and perturbation effects.</p></li>
-<li><p><a href="p2-ch05-cnn.html#sec-splice" class="quarto-xref">Chapter&nbsp;<span>SpliceAI: Splicing Prediction</span></a> focuses on deep models of pre-mRNA splicing and splice-site choice, and how these models can be used to interpret variant effects on splicing in both research and clinical contexts.</p></li>
-</ul>
-<hr>
+<section id="geneformer-network-biology-through-pretraining" class="level3" data-number="13.2.2">
+<h3 data-number="13.2.2" class="anchored" data-anchor-id="geneformer-network-biology-through-pretraining"><span class="header-section-number">13.2.2</span> Geneformer: Network Biology Through Pretraining</h3>
+<p>Geneformer was developed as a context-aware, attention-based model pretrained on approximately 30 million single-cell transcriptomes to enable context-specific predictions in network biology <span class="citation" data-cites="theodoris_geneformer_2023">(<a href="references.html#ref-theodoris_geneformer_2023" role="doc-biblioref">Theodoris et al. 2023</a>)</span>. The model’s key insight is that during pretraining, it gained a fundamental understanding of network dynamics, encoding network hierarchy in attention weights in a completely self-supervised manner.</p>
+<p>The architecture treats each cell as a sentence, with genes serving as tokens. Rather than using raw expression counts, Geneformer ranks genes by their expression level relative to their typical expression across the training corpus. This rank-based encoding emphasizes which genes are unusually active or silent in each cell, capturing the contextual information that defines cell state.</p>
+<p>Pretraining uses a masked gene prediction objective. A fraction of genes are masked in each cell, and the model learns to predict which genes were masked based on the remaining expression context. This forces the model to learn co-expression patterns, regulatory relationships, and the gene combinations that characterize different cell states.</p>
+<p>After pretraining, Geneformer can be fine-tuned for diverse downstream tasks. Cell type annotation achieves high accuracy even with limited labeled examples, leveraging the general biological knowledge acquired during pretraining. Multi-batch integration benefits from representations that capture biological variation while being robust to technical artifacts. Perturbation response prediction uses the model’s implicit understanding of gene networks to anticipate how cells will respond to genetic or chemical perturbations.</p>
+<p>Applied to disease modeling with limited patient data, Geneformer identified candidate therapeutic targets for cardiomyopathy by analyzing how disease-associated genes fit within the learned network structure. This demonstrates the potential for foundation models to accelerate discovery in rare diseases where large datasets are unavailable.</p>
 </section>
-<section id="part-iii-transformer-models" class="level3">
-<h3 class="anchored" data-anchor-id="part-iii-transformer-models">Part III — Transformer Models</h3>
-<p>Part III introduces <strong>transformer-based and related architectures</strong> for representing biological sequence.</p>
-<ul>
-<li><p><a href="p3-ch10-tokens.html" class="quarto-xref">Chapter&nbsp;<span>10&nbsp; Sequence Representation &amp; Tokens</span></a> examines how we turn genomic and protein sequences into model-compatible tokens, including k-mers, byte-pair encodings, and other schemes, and how these choices shape downstream models.</p></li>
-<li><p><a href="p2-ch06-plm.html" class="quarto-xref">Chapter&nbsp;<span>6&nbsp; Protein Language Models</span></a> describes large protein language models trained on sequence databases, their emergent structure and function representations, and applications to variant effect prediction and protein design.</p></li>
-<li><p><a href="p2-ch07-dna.html" class="quarto-xref">Chapter&nbsp;<span>7&nbsp; Genomic Foundation Models</span></a> surveys DNA language models and other genomic foundation backbones, including their training corpora, objectives, evaluation suites, and limitations.</p></li>
-<li><p><a href="p2-ch09-hybrid.html" class="quarto-xref">Chapter&nbsp;<span>9&nbsp; Long-range Hybrid Models</span></a> covers hybrid CNN/transformer and related architectures designed to handle long genomic contexts, such as models that predict regulatory readouts over tens to hundreds of kilobases.</p></li>
-</ul>
-<hr>
+<section id="scgpt-generative-pretraining-for-multi-omics" class="level3" data-number="13.2.3">
+<h3 data-number="13.2.3" class="anchored" data-anchor-id="scgpt-generative-pretraining-for-multi-omics"><span class="header-section-number">13.2.3</span> scGPT: Generative Pretraining for Multi-Omics</h3>
+<p>scGPT extends the foundation model paradigm to single-cell multi-omics, training a generative pretrained transformer on over 33 million cells to learn representations useful across diverse downstream applications <span class="citation" data-cites="cui_scgpt_2024">(<a href="references.html#ref-cui_scgpt_2024" role="doc-biblioref">Cui et al. 2024</a>)</span>.</p>
+<p>The model architecture includes several innovations tailored to single-cell data. Gene tokens are embedded using both learnable embeddings and position encodings that capture genomic location. Expression values are discretized into bins to handle the wide dynamic range and zero-inflation characteristic of single-cell data. Special tokens mark cell boundaries and indicate modality when multi-omic data are available.</p>
+<p>scGPT uses multiple pretraining objectives simultaneously. Masked gene prediction, analogous to BERT, encourages learning of co-expression patterns. Expression value prediction, analogous to regression, provides more graded supervision than binary masking. Cell-type classification, when labels are available during pretraining, provides additional signal about which gene patterns distinguish cell types.</p>
+<p>The combination of objectives and the scale of pretraining enable scGPT to excel across multiple downstream applications. Cell type annotation benefits from the rich representations learned during pretraining. Multi-batch integration aligns cells from different experiments while preserving biological variation. Multi-omic integration learns joint representations when cells have both RNA-seq and ATAC-seq measurements. Perturbation response prediction anticipates transcriptional changes following CRISPR knockouts or drug treatments. Gene network inference extracts regulatory relationships from attention patterns.</p>
 </section>
-<section id="part-iv-gfms-multi-omics" class="level3">
-<h3 class="anchored" data-anchor-id="part-iv-gfms-multi-omics">Part IV — GFMs &amp; Multi-omics</h3>
-<p>Part IV is the conceptual core of the book, focusing explicitly on <strong>genomic foundation models</strong> and their multi-omic extensions.</p>
-<ul>
-<li><p><a href="p3-ch11-principles.html" class="quarto-xref">Chapter&nbsp;<span>11&nbsp; Genomic FMs: Principles &amp; Practice</span></a> provides a working definition and taxonomy of genomic FMs, design dimensions (architecture, context length, conditioning), and practical guidance for using pretrained backbones in downstream tasks…</p></li>
-<li><p><a href="p3-ch12-vep.html" class="quarto-xref">Chapter&nbsp;<span>12&nbsp; Variant Effect Prediction</span></a> recasts variant effect prediction in the foundation-model era, spanning protein and DNA-based approaches, and discusses calibration, uncertainty, and integration into existing pipelines.</p></li>
-<li><p><a href="p4-ch13-sc-epi.html" class="quarto-xref">Chapter&nbsp;<span>13&nbsp; Single-Cell &amp; Epigenomic Foundation Models</span></a> covers foundation models for epigenomic and single-cell data, from methylation transformers and chromatin contact predictors to single-cell language models and cross-modal alignment methods.</p></li>
-<li><p><a href="p4-ch15-systems.html" class="quarto-xref">Chapter&nbsp;<span>15&nbsp; Multi-Omics Integration &amp; Systems Biology</span></a> broadens the view from isolated sequences to multi-omic and systems-level representations, including models that integrate genomic, transcriptomic, proteomic, and phenotype data.</p></li>
-</ul>
-<hr>
-</section>
-<section id="part-v-reliability-interpretation" class="level3">
-<h3 class="anchored" data-anchor-id="part-v-reliability-interpretation">Part V — Reliability &amp; Interpretation</h3>
-<p>Part V pulls out cross-cutting issues that apply to essentially every model in the book.</p>
-<ul>
-<li><p><a href="p5-ch17-eval.html" class="quarto-xref">Chapter&nbsp;<span>17&nbsp; Model Evaluation &amp; Benchmarks</span></a> develops a unified framework for evaluating models across molecular, variant-level, trait-level, and clinical tasks, and discusses data splitting, metric choice, and the link between benchmarks and real-world decisions.</p></li>
-<li><p><a href="p5-ch18-confound.html" class="quarto-xref">Chapter&nbsp;<span>18&nbsp; Confounders in Model Training</span></a> details sources of confounding and data leakage, from batch effects and ancestry structure to label bias and covariate shift, and offers practical strategies for detection and mitigation.</p></li>
-<li><p><a href="p5-ch19-interp.html" class="quarto-xref">Chapter&nbsp;<span>19&nbsp; Interpretability &amp; Mechanisms</span></a> explores interpretability tools from classical motif discovery and attribution methods to emerging mechanistic approaches, and asks when these tools genuinely reveal biological mechanisms.</p></li>
-</ul>
-<hr>
-</section>
-<section id="part-vi-applications" class="level3">
-<h3 class="anchored" data-anchor-id="part-vi-applications">Part VI — Applications</h3>
-<p>Part VI moves from methods to <strong>end-to-end workflows</strong> in research and clinical practice.</p>
-<ul>
-<li><p><a href="p6-ch20-clinical.html" class="quarto-xref">Chapter&nbsp;<span>20&nbsp; Clinical Risk Prediction</span></a> discusses risk prediction tasks that combine genomic features (including outputs from GFMs) with clinical and environmental data, focusing on discrimination, calibration, fairness, and deployment in health systems.</p></li>
-<li><p><a href="p6-ch21-variants.html" class="quarto-xref">Chapter&nbsp;<span>21&nbsp; Pathogenic Variant Discovery</span></a> examines how models fit into rare disease and cancer workflows, including variant prioritization pipelines, integration with family and tumor-normal data, and lab-in-the-loop validation.</p></li>
-<li><p><a href="p6-ch22-drugs.html" class="quarto-xref">Chapter&nbsp;<span>22&nbsp; Drug Discovery &amp; Biotech</span></a> looks at how GFMs intersect with target discovery, functional genomics screens, biomarker development, and biotech/industry workflows, including build-vs-buy and organizational considerations.</p></li>
-</ul>
-<hr>
-</section>
-<section id="appendices" class="level3">
-<h3 class="anchored" data-anchor-id="appendices">Appendices</h3>
-<p>The appendices provide background and pointers:</p>
-<ul>
-<li><p><a href="app-a-dl.html" class="quarto-xref"><span>Appendix A — Deep Learning Primer</span></a> is a compact introduction to neural networks, CNNs, transformers, training, and evaluation, aimed at genomics-first readers who want enough ML background to engage with the main chapters. :contentReference<span data-index="2">oaicite:2</span></p></li>
-<li><p><a href="app-c-model-list.html" class="quarto-xref"><span>Appendix C — Referenced Models</span></a> is a comprehensive list of models used through the book.</p></li>
-<li><p><a href="app-d-resources.html" class="quarto-xref"><span>Appendix D — Additional Resources</span></a> is a curated set textbooks, courses, software, and papers for deeper dives into genomics, statistical genetics, and deep learning.</p></li>
-<li><p><a href="app-e-glossary.html" class="quarto-xref"><span>Appendix E — Glossary</span></a> is a glossary of key terms.</p></li>
-</ul>
-<hr>
+<section id="transcriptformer-and-cross-species-modeling" class="level3" data-number="13.2.4">
+<h3 data-number="13.2.4" class="anchored" data-anchor-id="transcriptformer-and-cross-species-modeling"><span class="header-section-number">13.2.4</span> TranscriptFormer and Cross-Species Modeling</h3>
+<p>TranscriptFormer extends single-cell foundation models across evolutionary time, training on over 112 million cells spanning 1.5 billion years of evolution across 12 species <span class="citation" data-cites="pearce_transcriptformer_2025">(<a href="references.html#ref-pearce_transcriptformer_2025" role="doc-biblioref">Pearce et al. 2025</a>)</span>. This cross-species approach tests whether foundation models can learn regulatory principles that generalize beyond individual organisms.</p>
+<p>The model uses a novel generative architecture that jointly models genes and transcripts, enabling it to function as a virtual instrument for probing cellular biology. In zero-shot settings, TranscriptFormer demonstrates superior performance on both in-distribution and out-of-distribution cell type classification, with robust performance even for species separated by over 685 million years of evolutionary distance.</p>
+<p>Cross-species transfer enables several applications not possible with single-species models. Cell type annotations can be transferred across species boundaries, accelerating atlas construction for less-studied organisms. Disease state identification in human cells benefits from regulatory patterns conserved across evolution. Gene-gene interactions predicted by the model align with independent experimental observations across species.</p>
+<p>The success of cross-species foundation models suggests that core principles of cellular regulation are deeply conserved, and that models trained on diverse organisms can capture these universal patterns more effectively than models trained on any single species.</p>
 </section>
 </section>
-<section id="a-moving-target" class="level2">
-<h2 class="anchored" data-anchor-id="a-moving-target">A Moving Target</h2>
-<p>Genomic foundation models are a moving target: architectures, datasets, and evaluation suites are evolving quickly. This book is not intended as a frozen survey of “the state of the art,” but as a framework for reasoning about new models as they appear.</p>
-<p>If it succeeds, you should finish able to:</p>
-<ul>
-<li>Place a new model in the landscape of data, architecture, objective, and application.<br>
-</li>
-<li>Design analyses and experiments that use GFMs as components—features, priors, or simulators—without overclaiming what they can do.<br>
-</li>
-<li>Recognize common pitfalls in training, evaluation, and deployment, especially in clinical and translational settings.<br>
-</li>
-<li>Decide where foundation models are genuinely useful, and where simpler methods or classical baselines are sufficient.</li>
-</ul>
-<p>The next chapter now turns to the foundations: how we get from raw reads to variants, and from variants to the datasets and benchmarks on which all of these models depend.</p>
+<section id="glue-graph-linked-unified-embedding-for-single-cell-multi-omics" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="glue-graph-linked-unified-embedding-for-single-cell-multi-omics"><span class="header-section-number">13.3</span> GLUE: Graph-Linked Unified Embedding for Single-Cell Multi-Omics</h2>
+<section id="the-unpaired-integration-challenge" class="level3" data-number="13.3.1">
+<h3 data-number="13.3.1" class="anchored" data-anchor-id="the-unpaired-integration-challenge"><span class="header-section-number">13.3.1</span> The Unpaired Integration Challenge</h3>
+<p>Single-cell experiments often profile different modalities in different cells. A typical study might include scRNA-seq data from one set of cells, scATAC-seq data from another set, and perhaps a small subset with both modalities measured simultaneously through multiome protocols. The central challenge is building a unified atlas that aligns these cells in a common space, recovers cell types and trajectories, and infers regulatory networks connecting chromatin to expression <span class="citation" data-cites="cao_glue_2022">(<a href="references.html#ref-cao_glue_2022" role="doc-biblioref">Cao and Gao 2022</a>)</span>.</p>
+<p>This problem is harder than standard data integration because the feature spaces are entirely different. RNA-seq measures gene expression across roughly 20,000 genes. ATAC-seq measures chromatin accessibility across hundreds of thousands of peaks. There is no direct correspondence between features: a gene is not the same object as a peak. Aligning cells across modalities requires reasoning about how features in one modality relate to features in another.</p>
+<p>Previous approaches addressed this through explicit feature conversion, for example by assigning ATAC-seq peaks to nearby genes and treating the resulting gene-level accessibility as comparable to expression. This conversion is straightforward but loses information, since the detailed structure of chromatin accessibility within a gene’s regulatory region is collapsed into a single number. It also introduces arbitrary choices about how to define gene-peak assignments.</p>
+<p>GLUE, Graph-Linked Unified Embedding, addresses this problem by combining modality-specific encoders with a graph of biological prior knowledge linking features across omics.</p>
+</section>
+<section id="architecture-and-training" class="level3" data-number="13.3.2">
+<h3 data-number="13.3.2" class="anchored" data-anchor-id="architecture-and-training"><span class="header-section-number">13.3.2</span> Architecture and Training</h3>
+<p>GLUE consists of three key components that work together to align cells across modalities while respecting biological relationships between features.</p>
+<p>Modality-specific variational autoencoders provide the foundation. Each omic has its own encoder-decoder pair. Encoders map cells to a low-dimensional latent embedding, and decoders reconstruct modality-specific features from these embeddings. The variational structure encourages smooth, interpretable latent spaces.</p>
+<p>The feature graph encodes biological prior knowledge about relationships between features across modalities. Edges connect ATAC peaks to the genes they might regulate based on genomic proximity or evidence from chromatin conformation capture experiments. Edges connect genes to the transcription factors that bind their promoters. The graph structure is provided as input rather than learned, allowing incorporation of external biological knowledge.</p>
+<p>Graph neural network layers propagate information across the feature graph, learning feature embeddings that respect the biological relationships encoded in the graph structure. These feature embeddings help align the latent spaces of different modalities by ensuring that biologically related features have similar representations.</p>
+<p>Adversarial alignment ensures that the latent embeddings from different modalities are truly integrated rather than merely correlated. A discriminator tries to distinguish which modality produced each latent embedding, and the encoders are trained to fool the discriminator. This adversarial objective forces the encoders to produce embeddings that are indistinguishable across modalities.</p>
+</section>
+<section id="applications-and-extensions" class="level3" data-number="13.3.3">
+<h3 data-number="13.3.3" class="anchored" data-anchor-id="applications-and-extensions"><span class="header-section-number">13.3.3</span> Applications and Extensions</h3>
+<p>GLUE enables several applications beyond basic integration. Triple-omics integration combines gene expression, chromatin accessibility, and DNA methylation measured in different cells from the same tissue, producing unified cell type annotations that leverage all three data types. Regulatory inference uses the learned feature embeddings to identify candidate enhancer-gene links that can be validated against chromatin conformation capture data or eQTL evidence. Atlas construction at scale handles millions of cells across many batches and datasets.</p>
+<p>SCGLUE extends the framework specifically for single-cell applications, with optimizations for the scale and sparsity of single-cell data. The adversarial alignment is refined to handle the batch effects common in single-cell experiments, and the graph structure is expanded to include tissue-specific regulatory relationships.</p>
+<p>The success of GLUE demonstrates that graph-guided integration, where biological prior knowledge structures the alignment objective, provides a more principled approach than feature conversion or purely data-driven alignment. The feature graph allows the model to learn biologically meaningful relationships while the adversarial objective ensures genuine integration across modalities.</p>
+</section>
+</section>
+<section id="d-genome-prediction-models" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="d-genome-prediction-models"><span class="header-section-number">13.4</span> 3D Genome Prediction Models</h2>
+<section id="the-structural-dimension-of-gene-regulation" class="level3" data-number="13.4.1">
+<h3 data-number="13.4.1" class="anchored" data-anchor-id="the-structural-dimension-of-gene-regulation"><span class="header-section-number">13.4.1</span> The Structural Dimension of Gene Regulation</h3>
+<p>The linear genome folds into a complex three-dimensional structure that brings distant regulatory elements into spatial proximity with their target genes. This folding is not random: specific sequence features, particularly CTCF binding sites with their characteristic orientation dependence, organize the genome into topologically associating domains (TADs) and create specific chromatin contacts between enhancers and promoters.</p>
+<p>Understanding how sequence encodes 3D structure is crucial for interpreting regulatory variants. A variant might sit far from any gene in linear distance but be brought into contact with a promoter through chromatin looping. Sequence-to-structure models that predict chromatin contacts from DNA sequence can identify such variants and predict how structural variants, which may create or disrupt loops, affect gene regulation.</p>
+</section>
+<section id="akita-sequence-to-contact-prediction" class="level3" data-number="13.4.2">
+<h3 data-number="13.4.2" class="anchored" data-anchor-id="akita-sequence-to-contact-prediction"><span class="header-section-number">13.4.2</span> Akita: Sequence-to-Contact Prediction</h3>
+<p>Akita demonstrated that convolutional neural networks can accurately predict genome folding from DNA sequence alone <span class="citation" data-cites="fudenberg_akita_2020">(<a href="references.html#ref-fudenberg_akita_2020" role="doc-biblioref">Fudenberg, Kelley, and Pollard 2020</a>)</span>. The model takes megabase-scale sequence as input and outputs predicted Hi-C contact maps, capturing the spatial proximity relationships between all pairs of positions in the input window.</p>
+<p>The architecture uses an encoder-decoder structure. Convolutional layers in the encoder extract sequence features at multiple scales, capturing both the local motifs (particularly CTCF sites) that anchor chromatin loops and the broader sequence context that influences compartmentalization. The decoder reconstructs the two-dimensional contact matrix from the encoded sequence representation.</p>
+<p>Akita’s representations underscore the importance of an orientation-specific grammar for CTCF binding sites. The model learns that CTCF sites pointing toward each other tend to anchor chromatin loops, while sites pointing away do not. This orientation dependence, known from molecular biology, emerges automatically from training on Hi-C data without explicit supervision.</p>
+<p>Once trained, Akita enables rapid in silico predictions. Saturation mutagenesis experiments, prohibitively expensive to perform experimentally across megabase regions, can be simulated computationally by predicting the effect of every possible single-nucleotide change on chromatin structure. This reveals which positions are most critical for maintaining normal genome folding and which mutations might cause structural disruption.</p>
+<p>Applications include interpreting eQTLs through the lens of 3D structure, making predictions for structural variants that create or delete CTCF sites, and probing species-specific genome folding by applying models trained on one species to sequences from another.</p>
+</section>
+<section id="extensions-and-related-models" class="level3" data-number="13.4.3">
+<h3 data-number="13.4.3" class="anchored" data-anchor-id="extensions-and-related-models"><span class="header-section-number">13.4.3</span> Extensions and Related Models</h3>
+<p>Several models have extended Akita’s sequence-to-structure paradigm. Orca scales to longer input contexts and higher resolution outputs, enabling prediction of finer structural features. DeepC uses transfer learning to predict 3D folding at megabase scales. C.Origami incorporates additional training data and architectural refinements.</p>
+<p>HiCDiffusion addresses a limitation of encoder-decoder architectures: the tendency to produce blurred contact maps that lack the sharp features of experimental Hi-C data. By combining the encoder-decoder with a diffusion model, HiCDiffusion produces high-resolution matrices that better resemble experimental results while maintaining similar correlation with ground truth.</p>
+<p>These models collectively establish that 3D genome structure can be predicted from sequence, opening new possibilities for understanding how variants affect gene regulation through structural mechanisms that sequence-to-expression models like Enformer capture only indirectly.</p>
+</section>
+</section>
+<section id="design-patterns-and-practical-considerations" class="level2" data-number="13.5">
+<h2 data-number="13.5" class="anchored" data-anchor-id="design-patterns-and-practical-considerations"><span class="header-section-number">13.5</span> Design Patterns and Practical Considerations</h2>
+<p>Several design patterns recur across the models surveyed in this chapter.</p>
+<p>Tokenization strategies for cellular data require careful consideration. Geneformer’s rank-based encoding emphasizes relative expression, while scGPT’s discretization handles the dynamic range of count data. The choice affects what biological signals the model can capture and how well representations transfer across datasets with different technical characteristics.</p>
+<p>Pretraining objectives shape what models learn. Masked prediction encourages learning of co-occurrence patterns. Generative objectives enable sampling and imputation. Contrastive objectives emphasize discriminative features. Multi-task pretraining can combine benefits of multiple objectives.</p>
+<p>Graph structure provides biological grounding. GLUE’s feature graph encodes regulatory relationships that guide integration. Similar graph structures could incorporate protein-protein interactions, pathway membership, or other biological networks to constrain what models learn.</p>
+<p>Scale of pretraining enables generalization. Models trained on tens of millions of cells or hundreds of thousands of samples learn representations that transfer to new contexts better than models trained on smaller datasets. This argues for continued investment in large-scale data generation and aggregation.</p>
+</section>
+<section id="practical-challenges" class="level2" data-number="13.6">
+<h2 data-number="13.6" class="anchored" data-anchor-id="practical-challenges"><span class="header-section-number">13.6</span> Practical Challenges</h2>
+<p>Several challenges complicate the application of single-cell and epigenomic foundation models.</p>
+<p>Batch effects remain pervasive in single-cell data. Technical differences between experiments, protocols, and platforms can dominate biological signal. Foundation models that are robust to batch effects in their training data may struggle when applied to new batches not represented during pretraining.</p>
+<p>Cell type imbalance affects what models learn. Common cell types are overrepresented in training corpora, while rare populations may be poorly captured. Models may excel at identifying well-represented cell types while struggling with rare or novel populations.</p>
+<p>Evaluation complexity increases when ground truth is uncertain. Cell type labels in training data reflect current annotations that may be incomplete or inconsistent. Performance metrics on held-out data conflate model quality with annotation quality.</p>
+<p>Computational requirements for training and inference remain substantial. While smaller than the largest language models, single-cell foundation models still require significant GPU resources that may limit accessibility.</p>
+</section>
+<section id="summary" class="level2" data-number="13.7">
+<h2 data-number="13.7" class="anchored" data-anchor-id="summary"><span class="header-section-number">13.7</span> Summary</h2>
+<p>This chapter has surveyed foundation models for single-cell transcriptomics, DNA methylation, and three-dimensional genome structure. CpGPT demonstrates that methylation can be modeled as a sequence-like object amenable to transformer-based pretraining, with applications spanning biological age prediction, tissue classification, and disease association. Single-cell foundation models including Geneformer, scGPT, and TranscriptFormer learn cellular representations from massive transcriptomic corpora that transfer to diverse downstream tasks including cell type annotation, perturbation response prediction, and cross-species analysis. GLUE shows how graph-linked embeddings can align cells across modalities when different omics are measured in different cells, using biological prior knowledge to guide integration. 3D genome prediction models including Akita and its successors predict chromatin contacts from sequence, revealing how variants affect gene regulation through structural mechanisms.</p>
+<p>These models extend the foundation model paradigm from sequence-only representations to the rich landscape of cellular identity and genome organization. The next chapter examines how these representations can be integrated with multi-omics data and systems-level reasoning for clinical and biological applications.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
-<div id="ref-bommasani_foundation_2022" class="csl-entry" role="listitem">
-Bommasani, Rishi, Drew A. Hudson, Ehsan Adeli, Russ Altman, Simran Arora, Sydney von Arx, Michael S. Bernstein, et al. 2022. <span>“On the <span>Opportunities</span> and <span>Risks</span> of <span>Foundation</span> <span>Models</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2108.07258">https://doi.org/10.48550/arXiv.2108.07258</a>.
+<div id="ref-camillo_cpgpt_2024" class="csl-entry" role="listitem">
+Camillo, Lucas Paulo de Lima, Raghav Sehgal, Jenel Armstrong, Albert T. Higgins-Chen, Steve Horvath, and Bo Wang. 2024. <span>“<span>CpGPT</span>: A <span>Foundation</span> <span>Model</span> for <span>DNA</span> <span>Methylation</span>.”</span> bioRxiv. <a href="https://doi.org/10.1101/2024.10.24.619766">https://doi.org/10.1101/2024.10.24.619766</a>.
 </div>
-<div id="ref-guo_foundation_2025" class="csl-entry" role="listitem">
-Guo, Fei, Renchu Guan, Yaohang Li, Qi Liu, Xiaowo Wang, Can Yang, and Jianxin Wang. 2025. <span>“Foundation Models in Bioinformatics.”</span> <em>National Science Review</em> 12 (4): nwaf028. <a href="https://doi.org/10.1093/nsr/nwaf028">https://doi.org/10.1093/nsr/nwaf028</a>.
+<div id="ref-cao_glue_2022" class="csl-entry" role="listitem">
+Cao, Zhi-Jie, and Ge Gao. 2022. <span>“[<span>GLUE</span>] <span>Multi</span>-Omics Single-Cell Data Integration and Regulatory Inference with Graph-Linked Embedding.”</span> <em>Nature Biotechnology</em> 40 (10): 1458–66. <a href="https://doi.org/10.1038/s41587-022-01284-4">https://doi.org/10.1038/s41587-022-01284-4</a>.
+</div>
+<div id="ref-cui_scgpt_2024" class="csl-entry" role="listitem">
+Cui, Haotian, Chloe Wang, Hassaan Maan, Kuan Pang, Fengning Luo, Nan Duan, and Bo Wang. 2024. <span>“<span class="nocase">scGPT</span>: Toward Building a Foundation Model for Single-Cell Multi-Omics Using Generative <span>AI</span>.”</span> <em>Nature Methods</em> 21 (8): 1470–80. <a href="https://doi.org/10.1038/s41592-024-02201-0">https://doi.org/10.1038/s41592-024-02201-0</a>.
+</div>
+<div id="ref-fudenberg_akita_2020" class="csl-entry" role="listitem">
+Fudenberg, Geoff, David R. Kelley, and Katherine S. Pollard. 2020. <span>“[<span>Akita</span>] <span>Predicting</span> <span>3D</span> Genome Folding from <span>DNA</span> Sequence with <span>Akita</span>.”</span> <em>Nature Methods</em> 17 (11): 1111–17. <a href="https://doi.org/10.1038/s41592-020-0958-x">https://doi.org/10.1038/s41592-020-0958-x</a>.
+</div>
+<div id="ref-pearce_transcriptformer_2025" class="csl-entry" role="listitem">
+Pearce, James D., Sara E. Simmonds, Gita Mahmoudabadi, Lakshmi Krishnan, Giovanni Palla, Ana-Maria Istrate, Alexander Tarashansky, et al. 2025. <span>“[<span>TranscriptFormer</span>] <span>Cross</span>-<span>Species</span> <span>Generative</span> <span>Cell</span> <span>Atlas</span> <span>Across</span> 1.5 <span>Billion</span> <span>Years</span> of <span>Evolution</span>: <span>The</span> <span>TranscriptFormer</span> <span>Single</span>-Cell <span>Model</span>.”</span> bioRxiv. <a href="https://doi.org/10.1101/2025.04.25.650731">https://doi.org/10.1101/2025.04.25.650731</a>.
+</div>
+<div id="ref-theodoris_geneformer_2023" class="csl-entry" role="listitem">
+Theodoris, Christina V., Ling Xiao, Anant Chopra, Mark D. Chaffin, Zeina R. Al Sayed, Matthew C. Hill, Helene Mantineo, et al. 2023. <span>“[<span>Geneformer</span>] <span>Transfer</span> Learning Enables Predictions in Network Biology.”</span> <em>Nature</em> 618 (7965): 616–24. <a href="https://doi.org/10.1038/s41586-023-06139-9">https://doi.org/10.1038/s41586-023-06139-9</a>.
 </div>
 </div>
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -1242,10 +1214,13 @@ Guo, Fei, Renchu Guan, Yaohang Li, Qi Liu, Xiaowo Wang, Can Yang, and Jianxin Wa
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./p4--multi-scale.html" class="pagination-link" aria-label="Part IV: Multi-Scale Genomics">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Part IV: Multi-Scale Genomics</span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./preface.html" class="pagination-link" aria-label="Preface">
-        <span class="nav-page-text">Preface</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./p4-ch14-networks.html" class="pagination-link" aria-label="p4-ch14-networks.html">
+        <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">p4-ch14-networks.html</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
