@@ -20,6 +20,19 @@ NOTES:
 - Consider adding schematic of foundation model evaluation regimes (zero-shot → probing → fine-tuning)
 :::
 
+::: {.callout-warning .content-visible when-profile="draft"}
+**ADD EmbedGEM:**
+**What to say (conceptually):**
+- Mukherjee *et al.* introduce **EmbedGEM**, a framework to evaluate multivariate traits or ML-derived embeddings specifically for **genetic discovery** along two axes:  
+  1. **Heritability** – measured by the number of LD-clumped genome-wide significant hits and the mean/median χ² at those loci.  
+  2. **Disease relevance** – measured by PRSs built from embedding-associated variants and their incremental predictive value for a downstream trait in an independent cohort. :contentReference[oaicite:0]{index=0}  
+
+- Technically, they:
+  - Orthogonalize multivariate traits/embedding dimensions using PCA.  
+  - Run **univariate GWAS on PCs**, then combine Wald Z-statistics into a multivariate χ² test for each SNP.  
+  - Perform LD-based clumping to get independent loci.  
+  - Build **per-PC PRSs** and compare full (PRS + covariates) vs reduced (covariates only) GLMs using AUROC/AUPRC (for binary traits) or \(R^2\)/MAE (for continuous traits), with permutation + bootstrap to get P-values. 
+:::
 
 # Evaluation of Models {#sec-eval}
 

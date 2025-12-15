@@ -1,3 +1,25 @@
+::: {.callout-warning .content-visible when-profile="draft"}
+(@ma_bingo-large_2023)
+Many GNN applications in genomics use PPIs or gene–gene networks, but PPIs are:
+sparse and noisy,
+inconsistent across organisms,
+missing for many non-model species. 
+Ma et al. sidestep this by:
+using ESM-2 to predict protein contact maps,
+treating each residue as a node and contacts as edges,
+then running a GNN over the structural graph to predict gene essentiality.
+
+2.2. Choosing a GNN architecture: empirical comparison on protein graphs
+Bingo is one of the few genomics papers that systematically compares GAT, GCN, GraphSAGE, and GIN on the same biological graph and explains why they differ. 
+You can mine:
+Result: GAT has the highest mean AUC/AUPR and lowest variance across species; GraphSAGE > GCN; GIN is clearly worst (Figure 4G, page 8).
+Interpretation:
+GIN’s isomorphism-invariance causes it to give very similar graph embeddings to proteins with similar contact maps, making it hard to distinguish essential vs non-essential proteins that are structurally similar but functionally different.
+GAT’s neighbor weighting via attention better exploits subtle residue-embedding differences, making it a better choice for edge-sparse, subtle-signal biological graphs. 
+That’s a great 2–3 sentence “design note” in a “Which GNN should I pick?” subsection.
+:::
+
+
 # Graphs, Networks, and Biology {#sec-networks}
 
 ## Introduction
