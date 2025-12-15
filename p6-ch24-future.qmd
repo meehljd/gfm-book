@@ -1,93 +1,243 @@
 # Future Work & Ethics {#sec-future}
 
 ## Introduction
-Brief framing: GFMs as a rapidly evolving field; chapter synthesizes open questions raised throughout the book and looks forward.
+
+Genomic foundation models (GFMs) sit at an unusual moment in their lifecycle. In only a few years, we have gone from task-specific convolutional networks and sequence models to large, pre-trained architectures that can score variants, predict regulatory effects, infer structure, and even design new sequences across many biological modalities. Yet most of the results in this book live in carefully curated benchmarks and controlled experimental settings. The gap between what is technically possible in silico and what is safely deployable in health systems, biotechnology, or public health remains wide.
+
+This closing chapter looks forward. Rather than trying to predict a single future, we synthesize recurring themes from earlier chapters into a set of open technical problems, translational challenges, and ethical questions that will shape the trajectory of GFMs. The goal is less to forecast concrete milestones and more to equip you with a conceptual framework: what kinds of advances would really matter, what pitfalls to watch for, and what kinds of guardrails and institutions will be needed to realize benefits while minimizing harms.
+
+Throughout, we assume familiarity with the architectures (Part II), principles of pretraining and adaptation (Part III), multi-scale modeling (Part IV), and evaluation and interpretation (Part V). Here we step back and ask: if we take all of these ingredients seriously, what does a responsible future for genomic foundation models look like?
 
 ---
 
 ## Technical Frontiers
 
 ### Unified Multi-omic Foundation Models
-- Current fragmentation: DNA-only, protein-only, single-cell, etc.
-- Vision: joint models spanning DNA → RNA → protein → phenotype
-- Cross-modal queries and interpretable causal chains
-- Early work (Omni-DNA, G2PT) and remaining gaps
+
+Most models in this book are still specialized. We have models pre-trained on genomic sequence, models for proteins, models for single-cell transcriptomes or chromatin accessibility, and models tuned for particular experimental assays. Even "multi-omic" systems often stitch together separate encoders rather than learning a single representation over the whole central dogma.
+
+A major frontier is *unified* multi-omic foundation models that can ingest and generate across DNA, RNA, proteins, chromatin state, and higher-level phenotypes. Such models could answer cross-modal questions directly. For instance, one might ask "What regulatory variants are most likely to disrupt this cell-type–specific enhancer?" or "How would editing this promoter alter downstream protein abundance in a given tissue?" In the ideal case, a single representation would capture a causal chain from nucleotide changes to molecular and cellular phenotypes, constrained by physical and evolutionary priors.
+
+Early cross-modal models (including systems like Omni-DNA, G2PT, and related architectures discussed in Chapters @sec-dna, @sec-rna, and @sec-systems) hint at what is possible, but they remain limited in scope, scale, and biological coverage. Open questions include how to:
+
+- Learn coherent representations when training data are sparse or missing for many modalities.
+- Balance supervised and self-supervised objectives across modalities with very different noise characteristics and scales.
+- Maintain interpretability of cross-modal reasoning, so that paths from variant to phenotype remain auditable rather than opaque.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Multi-panel schematic showing unified multi-omic modeling: (1) diverse data types (DNA, chromatin, RNA, protein, phenotype) entering a shared backbone; (2) a joint embedding space; (3) cross-modal queries (e.g., variant → expression, expression → pathway). Label panels with example tasks.
+:::
 
 ### Long-Context and Whole-Genome Modeling
-- Context length limitations (512k vs. 3B bp genome)
-- Chromosome-scale and 3D genome structure integration
-- Efficient architectures: linear attention, state-space models, sparse attention
+
+Even the largest sequence models for DNA and RNA operate on chunks: kilobases, sometimes megabases. Yet the human genome spans ~3 billion base pairs, and many regulatory phenomena (chromatin domains, structural variants, long-range enhancer–promoter loops) unfold at scales far beyond current context windows.
+
+Scaling GFMs to chromosome- or genome-length contexts raises fundamental questions about representation and computation. Architectures based on linear attention, state-space models, or sparse and hierarchical attention promise near-linear scaling in sequence length, but we still lack a principled understanding of what biological information requires truly global context versus local context plus learned summaries.
+
+Open problems include:
+
+- Designing architectures that integrate 1D sequence with 3D genome conformation and nuclear organization.
+- Developing curriculum strategies that grow context length without catastrophic forgetting of local patterns.
+- Creating benchmarks that explicitly probe long-range reasoning (e.g., structural variants, multi-enhancer regulation, chromatin domain effects) rather than simple motif recognition.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Cartoon of different context scales: (1) local motif-level modeling (tens of bp), (2) regulatory element modeling (hundreds–thousands of bp), (3) chromatin domain / chromosome-scale (megabases). Overlay example tasks and indicate approximate context lengths needed for each.
+:::
 
 ### Generative and Design-Oriented Models
-- From prediction to generation: synthetic regulatory elements, protein design
-- Controllable generation and safety considerations
-- Laboratory validation loops
+
+Earlier chapters emphasized predictive tasks: variant effect prediction, splicing, regulatory element activity, structure prediction. Increasingly, however, GFMs are being used as *generators*. They propose new regulatory sequences, protein variants, or RNA structures that satisfy user-defined constraints and then validate them experimentally (@sec-design).
+
+Generative GFMs raise opportunities and questions that differ from their predictive cousins:
+
+- How do we specify constraints and objectives (expression in a particular cell type, safety profiles, manufacturability) so that the model explores useful parts of sequence space rather than adversarial corners?
+- How do we design closed-loop "design–build–test–learn" cycles where experimental feedback is used to refine generative models without overfitting to a narrow set of assays?
+- How do we evaluate generative success beyond simple enrichment metrics, recognizing that even a small fraction of high-impact designs may justify application?
+
+Safety and robustness are particularly salient here. Generative models that can produce highly active regulatory elements or functional protein domains must be developed with guardrails: screening for off-target effects, restricting capability where appropriate, and integrating domain-specific safety checks into the design pipeline.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Pipeline diagram of a closed-loop design system: (1) generative GFM proposes sequences, (2) high-throughput assay tests a subset, (3) results feed back into fine-tuning or reward modeling, (4) iterative improvement. Highlight spots where safety filters or domain constraints can be applied.
+:::
 
 ### Causal and Mechanistic Integration
-- Moving beyond correlation: causal representation learning
-- Incorporating gene regulatory network priors
-- Counterfactual reasoning for perturbation prediction
+
+Most GFMs today are powerful correlational machines. They exploit statistical regularities in training data to predict labels or masked tokens, but they do not explicitly encode causal structure. For genomic applications, this distinction matters: clinical decisions often require reasoning about interventions ("What if we knock out this gene?") rather than passive prediction.
+
+The next generation of GFMs will need to integrate causal and mechanistic information in several ways:
+
+- Leveraging interventional datasets (CRISPR screens, perturb-seq, drug treatments) to disentangle cause and effect.
+- Incorporating mechanistic priors such as gene regulatory networks, metabolic pathways, and structural constraints into model architectures or training objectives.
+- Supporting counterfactual reasoning: simulating perturbations or edits and quantifying uncertainty in predicted outcomes.
+
+Mechanistic interpretability, discussed in @sec-interp, takes on new urgency in this context. If GFMs are to inform experimental design or clinical decisions, it will not be enough to know *that* a model predicts a given effect; we will need to understand *why*, at least at the level of testable hypotheses about regulatory logic or pathway structure.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Conceptual diagram connecting (1) an interventional dataset (e.g., CRISPR perturbations), (2) a GFM that learns a latent representation, and (3) a causal graph or gene regulatory network derived from that representation. Use arrows to distinguish observational vs. interventional edges.
+:::
 
 ---
 
 ## Deployment & Translation Considerations
 
 ### Prospective Validation and Regulatory Pathways
-- Gap between benchmark performance and clinical utility
-- FDA/CE-IVD pathways for genomic AI
-- Post-market surveillance and model updates
+
+As emphasized in Chapters @sec-benchmarks and @sec-eval, strong retrospective performance on benchmarks is only a starting point. For clinical and public health use, GFMs must be evaluated prospectively in the settings where they will be deployed, on populations that resemble the intended users, and with endpoints that matter (clinical outcomes, time to diagnosis, cost-effectiveness).
+
+This kind of validation is resource-intensive: it often requires multi-site collaborations, carefully designed trials or observational studies, and governance structures that can monitor performance over time. Regulatory frameworks such as those used by the FDA or European notified bodies treat many GFM-based tools as software as a medical device (SaMD), triggering requirements for documentation, quality management, and post-market surveillance.
+
+Open questions include:
+
+- How to define clinically meaningful endpoints for GFM-enabled tools that may play only a small part in a larger diagnostic or therapeutic workflow.
+- How to handle "learning systems" whose parameters evolve over time as they ingest new data.
+- How to share evidence and best practices across institutions without compromising privacy or competitive advantage.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Flowchart of the path from proof-of-concept GFM to deployed tool: (1) model development, (2) retrospective validation, (3) prospective studies, (4) regulatory review, (5) deployment and monitoring. Annotate each stage with example evidence and stakeholders.
+:::
 
 ### Infrastructure and Accessibility
-- Compute requirements vs. research lab realities
-- Distillation, quantization, edge deployment
-- Build-vs-buy decisions for health systems
+
+The largest GFMs require massive compute for training and nontrivial resources for inference. Many clinical laboratories, public health agencies, and research groups cannot host such models locally, especially if they must process data within strict privacy or residency constraints.
+
+Several strategies have emerged and will likely intensify:
+
+- **Model compression and distillation** to produce smaller, task-optimized models that retain most of the performance of their larger parents.
+- **Quantization and hardware-aware optimization** to enable inference on accelerators or even CPUs in resource-constrained settings.
+- **Hybrid deployment models** where sensitive preprocessing happens locally, while more generic parts of the computation are offloaded to secure cloud services.
+
+These technical choices intersect with equity: tools that require expensive infrastructure may exacerbate global disparities in access to genomic medicine, whereas lightweight or open models can help narrow the gap.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Table comparing deployment strategies (on-prem large model, distilled local model, cloud API, federated inference) with columns for pros, cons, typical use cases, and equity implications.
+:::
 
 ### Interoperability and Standards
-- Variant representation (VCF, HGVS, SPDI)
-- Model card standards and documentation requirements
-- Reproducibility and versioning challenges
+
+GFMs rarely operate in isolation. They ingest variant calls, clinical data, assay results, and metadata; they output scores, annotations, or design candidates that must feed into existing laboratory information systems, electronic health records, or downstream analysis pipelines.
+
+Interoperability challenges arise at multiple levels:
+
+- **Data formats and nomenclature**, such as variant representation (VCF, HGVS, SPDI) and consistent gene or transcript identifiers.
+- **Metadata standards**, including provenance, consent status, and assay details.
+- **Model documentation**, including standardized model cards, versioning, and changelogs that make it clear what a given model is suitable for and what its limitations are.
+
+Community standards efforts around genomic data models, ontologies, and clinical interoperability (e.g., FHIR, OMOP) provide a starting point, but they often need to be extended or adapted for GFM-specific considerations, such as documenting training data composition or known failure modes.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Schematic stack diagram: bottom layer = raw genomic data and variant formats; middle layer = standards/ontologies; top layer = GFM models and applications. Use arrows to show where mismatches or gaps in standards can cause failures.
+:::
 
 ---
 
 ## Ethical Dimensions
 
 ### Equity and Representation
-- Ancestry bias in training data and performance disparities
-- Strategies: diverse pretraining corpora, ancestry-stratified evaluation, recalibration
-- Who benefits from GFMs? Global health considerations
+
+An enduring concern throughout this book has been the mismatch between the diversity of global populations and the composition of training datasets. Many genomic and transcriptomic resources are heavily skewed toward individuals of European ancestry or toward well-funded health systems. GFMs trained on such data can encode and amplify these biases, leading to systematically worse performance for underrepresented groups.
+
+Mitigating these disparities involves both *upstream* and *downstream* interventions:
+
+- Investing in diverse, community-engaged cohorts and biobanks that reflect global genetic and environmental diversity.
+- Designing pretraining and evaluation pipelines that explicitly track performance across ancestry groups, disease subtypes, and care settings.
+- Developing recalibration and adaptation methods that can correct systematic biases without masking underlying data gaps.
+
+At a deeper level, equity also concerns *who benefits* from GFM capabilities. If models trained on globally sourced data are deployed primarily in high-resource settings, the communities who contributed data may not see commensurate improvements in care. Addressing this imbalance requires governance structures, benefit-sharing mechanisms, and funding models that extend beyond technical fixes.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Bar chart or conceptual graphic showing performance disparities across ancestry groups or institutions, paired with a panel illustrating strategies to close these gaps (data diversification, recalibration, domain adaptation).
+:::
 
 ### Privacy, Consent, and Data Governance
-- Genomic data sensitivity and re-identification risk
-- Consent models for large-scale pretraining
-- Federated learning and synthetic data as potential solutions
+
+Genomic data are uniquely identifying and richly informative. Even when obvious identifiers are removed, linkage attacks can often re-identify individuals by connecting genomic data to public genealogy or demographic resources. Foundation model pretraining, which typically relies on massive centralized datasets, raises additional questions about how information is stored and reused.
+
+Key challenges include:
+
+- **Consent at scale**: moving from narrow, study-specific consent to models that can justify long-term, multi-use pretraining on genomic and clinical data.
+- **Dynamic and granular consent**: mechanisms that allow participants to update preferences, opt out of certain uses, or specify conditions (e.g., no commercial use, restrictions on specific applications).
+- **Novel governance models** such as data trusts, cooperative biobanks, or federated learning frameworks that keep raw data local while enabling collective model training.
+
+Synthetic data and privacy-preserving training techniques (differential privacy, secure aggregation, homomorphic encryption) offer promising tools but are not panaceas. They must be evaluated rigorously in the genomic context, where both privacy and utility stakes are unusually high.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Governance diagram contrasting centralized data lake + GFM training vs. federated or data-trust approaches. Include participants (researchers, data stewards, contributors) and flows of data, models, and consent.
+:::
 
 ### Dual Use and Biosecurity
-- Potential misuse: pathogen enhancement, privacy attacks
-- Responsible disclosure practices
-- Community governance models
+
+Like many powerful technologies, GFMs have dual-use potential. Tools that can design highly active regulatory elements, optimize viral proteins, or suggest edits with large phenotypic effects could, in principle, be misused to enhance pathogens, evade diagnostics, or undermine privacy.
+
+Managing dual-use risks will require a mix of technical, institutional, and cultural responses:
+
+- **Access controls and graduated release**, including staged sharing of models, filtered APIs, or restricted capabilities for the most sensitive applications.
+- **Red-teaming and risk assessment**, where independent experts probe models for misuse potential and help prioritize mitigations.
+- **Norms for responsible publication and disclosure**, including pre-publication risk review for work that significantly advances capabilities with unclear benefits.
+
+Importantly, many dual-use concerns are speculative and context-dependent. A balanced approach recognizes genuine risks without overstating them, and engages diverse stakeholders (biosecurity experts, ethicists, scientists, and affected communities) in setting acceptable boundaries.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Risk matrix with axes "benefit" and "misuse potential," placing example applications (variant interpretation, diagnostic support, pathogen design) in different quadrants. Use this to illustrate when stronger safeguards may be justified.
+:::
 
 ### Transparency and Accountability
-- Black-box concerns in clinical decision support
-- Right to explanation in healthcare contexts
-- Liability and responsibility when models err
+
+When GFM outputs inform medical or public health decisions, transparency and accountability become central. Patients, clinicians, and regulators may reasonably ask:
+
+- What data were used to train this model?
+- How often does it fail, and for whom?
+- How is responsibility shared when model recommendations contribute to errors?
+
+Answers will likely involve layered transparency. At one layer, model cards, data statements, and benchmark reports provide technical documentation. At another, user-facing interfaces convey uncertainty, intended use, and limitations in accessible language. Interpretability tools from @sec-interp can help connect internal model behavior to human-understandable patterns, though they are not sufficient on their own.
+
+Accountability mechanisms will range from institutional policies (e.g., requiring human oversight or second opinions for certain decisions) to legal frameworks that clarify liability when model-assisted care goes wrong. The challenge is to foster trust without creating unrealistic expectations of infallibility.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Two-level diagram: (1) technical transparency artifacts (model cards, evaluation reports, interpretability analyses) and (2) user-facing artifacts (clinician dashboards, patient explanations). Show how information flows between them.
+:::
 
 ---
 
 ## The Shifting Research Landscape
 
 ### Benchmark Culture and Incentives
-- Overfitting to narrow benchmarks
-- Moving toward clinically meaningful endpoints
-- Value of negative results and failure mode documentation
+
+Benchmarks have been essential to progress in GFMs, providing common reference points and enabling rapid comparison of methods (@sec-benchmarks). But an overemphasis on leaderboard performance can distort incentives, encouraging incremental gains on narrow tasks rather than broader advances in robustness, generalization, or clinical impact.
+
+Future work must broaden both *what* we measure and *how* we reward success:
+
+- Designing benchmarks that better approximate real-world settings, including noisy labels, distribution shifts, and rare conditions.
+- Incorporating robustness, fairness, and calibration into standard evaluation suites, not just accuracy or AUROC.
+- Valuing negative results and careful ablation studies that reveal limitations and failure modes, even when they do not produce a new state-of-the-art score.
+
+There is also a social dimension: funding agencies, conferences, and journals shape what is rewarded. Explicit support for benchmark maintenance, community challenges that prioritize clinically meaningful endpoints, and recognition for infrastructure and dataset curation will all influence the trajectory of the field.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Illustration of two "leaderboards": one traditional (single metric, sorted by AUROC) and one multi-dimensional (axes for performance, robustness, fairness, interpretability). Use this to motivate richer evaluation cultures.
+:::
 
 ### Open Science vs. Industrial Scale
-- Tension between reproducibility and compute requirements
-- Role of academic labs in GFM development
-- Data and model sharing norms
+
+As models grow larger and datasets more complex, the resources required to train state-of-the-art GFMs increasingly reside in a small number of well-funded institutions and companies. This concentrates power and raises questions about who sets research agendas, who controls access to high-performing models, and how the broader community can scrutinize and improve them.
+
+Yet genomics has a strong tradition of open data and collaborative science. Future work will have to navigate this tension, exploring models such as:
+
+- **Public–private partnerships** that support large-scale training while committing to open or tiered access policies.
+- **"Public option" GFMs**: high-quality, openly licensed models that provide a baseline of capability for research and public health.
+- **API-mediated access with transparency requirements**, where even closed models must disclose evaluation results, limitations, and basic training data characteristics.
+
+Open science does not always mean fully open weights. In some cases, privacy or dual-use concerns may justify restricted access. The challenge is to align openness with responsibility, so that the benefits of GFMs are widely shared while risks are managed proactively.
+
+::: {.callout-warning .content-visible when-profile="draft"}
+**Visual suggestion:** Landscape diagram situating different model access strategies along axes of openness (open weights → closed API) and governance (individual lab → consortia → public agency). Annotate with example pros/cons.
+:::
 
 ---
 
 ## Conclusion
-- Synthesis of key uncertainties
-- Framework for evaluating future developments
-- Call for interdisciplinary engagement (genomics, ML, ethics, policy)
+
+Genomic foundation models offer an extraordinary toolkit: the ability to learn from massive, heterogeneous biological datasets; to generalize across tasks and domains; and to generate new hypotheses and designs at scales no human could match. But they are not magic. Their behavior is constrained by the data they see, the objectives they optimize, the architectures we design, and the social and institutional contexts in which they operate.
+
+This chapter has outlined several intertwined frontiers: technical challenges around multi-omic integration, long-context modeling, generative design, and causal reasoning; translational issues of validation, infrastructure, and interoperability; ethical questions of equity, privacy, dual use, and accountability; and a shifting research landscape shaped by benchmarks, openness, and industrial scale. None of these topics is unique to genomics, but the combination of high stakes, deep personal information, and rapidly advancing technology makes their intersection especially urgent.
+
+Ultimately, the future of GFMs will be determined less by any single model or benchmark and more by the norms, institutions, and collaborations we build around them. Realizing the benefits of genomic foundation models (while avoiding predictable harms) will require sustained engagement across disciplines: genomic scientists, machine learning researchers, clinicians, ethicists, policy-makers, patient advocates, and communities worldwide. If this book has a single thesis, it is that technical sophistication must go hand-in-hand with responsibility. The open problems we face are as much social and ethical as they are algorithmic.

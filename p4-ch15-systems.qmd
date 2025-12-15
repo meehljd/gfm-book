@@ -1,139 +1,8 @@
-::: {.callout-warning .content-visible when-profile="draft"}
-**TODO:**
-
-- Add figure: Multi-omics integration strategies diagram showing early, intermediate, and late fusion approaches with representative models
-- Add figure: GNN-based cancer subtyping comparison showing MoGCN patient-level graphs vs. CGMega gene-level modules
-- Add figure: DeepRVAT set-based architecture showing variant aggregation into gene-level impairment scores
-- Add figure: G2PT hierarchical structure from variants → genes → systems → phenotypes
-- Add figure: Deep PGS architecture comparison showing Delphi and related approaches
-- Add table: Comparison of multi-omics integration methods (GLUE, MoGCN, CGMega, etc.) with columns for input modalities, graph type, primary use case, and scalability
-- Add table: Design patterns summary showing the five key patterns with representative methods and typical applications
-- Consider adding conceptual diagram showing the trajectory from single-omic models toward whole-patient foundation models
-:::
-
-
 # Multi-Omics & Systems Biology  {#sec-systems}
 
 The preceding chapter examined foundation models for individual data types: single-cell transcriptomics, DNA methylation, and three-dimensional genome structure. Real biological systems, however, do not respect these modality boundaries. Complex traits arise from systems-level interactions where genetic variants perturb molecular networks, networks span multiple omics layers, and these layers interact with environment, development, and clinical context. A model that sees only one layer rarely captures the full story.
 
-This chapter surveys how deep learning extends beyond single-omics to integrate multiple data types into unified representations. We examine integration strategies that differ in when and how modalities are combined. We explore graph neural network approaches that use patient similarity networks and gene-level graphs for cancer subtyping and biomarker discovery. We address rare variants and epistasis through set-based architectures and hierarchical modeling that capture effects linear polygenic scores miss. We consider deep learning frameworks for polygenic risk and fine-mapping that extend the traditional PGS paradigm with nonlinear architectures and foundation model features. Throughout, the emphasis is on design patterns that recur across methods and on the trajectory toward whole-patient foundation models that jointly encode multiple omics and clinical data.# Chapter 15: Multi-Omics Integration and Systems Biology {#sec-systems}
-
-## Introduction
-- Why single-omics models are insufficient
-- The promise of integrated multi-modal representations
-- Chapter scope: integration strategies, hierarchy, systems principles
-
-## Multi-Omics Integration Strategies
-### Early Fusion
-- Feature-level concatenation
-- Challenges: scale, dimensionality, missing data
-
-### Intermediate Fusion
-- Modality-specific encoders with shared latent spaces
-- Reconstruction and contrastive alignment
-- GLUE as exemplar
-
-### Late Fusion
-- Ensemble and meta-model approaches
-- Independence and robustness to missing modalities
-
-### Choosing Integration Strategies
-- When to use each approach
-- Hybrid strategies in practice
-
-## Cross-Modal Foundation Models
-### Principles of Cross-Modal Learning
-- Contrastive objectives across modalities
-- Translation between data types
-- Shared vs. modality-specific representations
-
-### Examples: GLUE, Life-Code, and Related Models
-- Multi-omic encoders and guidance graphs
-- Central dogma-inspired architectures
-- Handling unpaired and mosaic data
-
-## Hierarchical and Multi-Scale Modeling
-### Biological Hierarchy
-- Variants → genes → pathways → systems → phenotypes
-- Multi-resolution regulatory organization
-
-### G2PT: Hierarchical Genotype-to-Phenotype
-- Transformer blocks at each hierarchy level
-- Prior knowledge as structural constraints
-- Interpretable attention over biological systems
-
-### Multi-Scale Regulatory Models
-- Seq2PRINT and multi-scale footprinting
-- Cell type to tissue to organism scales
-
-## Rare Variants in Systems Context
-### The Challenge of Rare Variants
-- Individual rarity, collective importance
-- Limitations of per-variant statistics
-
-### DeepRVAT: Set-Based Burden Modeling
-- Variants as unordered sets within genes
-- Permutation-invariant aggregation
-- Gene-level impairment scores
-
-### From Burden to Systems-Level Risk
-- Connecting gene impairment to pathways
-- Aggregating across biological systems
-
-## Systems Biology Principles for Deep Learning
-### Network Motifs and Regulatory Logic
-- Feedforward loops, autoregulation, feedback
-- Alon's design principles in gene circuits
-- Learning motif structure from data
-
-### Robustness and Canalization
-- Why biological networks are robust
-- Implications for model generalization
-- Redundancy and compensation
-
-### Dynamical Systems Perspectives
-- Attractor states and cell identity
-- State transitions and differentiation
-- Time-series modeling in systems context
-
-## Systems Medicine and Clinical Integration
-### From Molecular Networks to Patient Phenotypes
-- Disease as network perturbation
-- Personal omics profiles
-
-### Multi-Omic Risk Scores
-- Delphi and deep PGS frameworks
-- Beyond linear polygenic scores
-- Cross-ancestry generalization
-
-### Fine-Mapping in Systems Context
-- MIFM and foundation model features
-- Integrating functional annotations with GWAS
-
-## Practical Challenges
-### Batch Effects Across Modalities
-- Platform and laboratory variation
-- Harmonization strategies
-
-### Sample Size and Missing Modalities
-- Imputation and partial observations
-- Transfer learning across cohorts
-
-### Population Diversity
-- Non-European representation in multi-omics
-- Equity considerations in systems models
-
-### Evaluation Complexity
-- Proxy metrics vs. clinical utility
-- Multi-level validation strategies
-
-## Toward Whole-Patient Foundation Models
-- Vision: unified patient representations
-- Integrating genotype, epigenome, transcriptome, proteome, EHR
-- Challenges: privacy, scale, causality
-- The path forward
-
-## Summary
+This chapter surveys how deep learning extends beyond single-omics to integrate multiple data types into unified representations. We examine integration strategies that differ in when and how modalities are combined. We explore graph neural network approaches that use patient similarity networks and gene-level graphs for cancer subtyping and biomarker discovery. We address rare variants and epistasis through set-based architectures and hierarchical modeling that capture effects linear polygenic scores miss. We consider deep learning frameworks for polygenic risk and fine-mapping that extend the traditional PGS paradigm with nonlinear architectures and foundation model features. Throughout, the emphasis is on design patterns that recur across methods and on the trajectory toward whole-patient foundation models that jointly encode multiple omics and clinical data.
 
 ## Why Single-Omics Models Are Not Enough
 
@@ -269,15 +138,15 @@ By incorporating foundation model embeddings, MIFM can leverage the rich sequenc
 
 Several design patterns provide conceptual vocabulary for understanding existing methods and designing new ones.
 
-**Modality-specific encoders with shared latent spaces** appear in GLUE, CpGPT, and many multi-omics subtyping models. Each omic has its own encoder architecture tailored to its data characteristics, whether that involves treating methylation as a sequence, using variational autoencoders for scRNA-seq, or applying graph convolutions to patient similarity networks. These modality-specific encoders map into a common embedding space where downstream tasks operate. This design supports flexible inference with missing modalities, since only the available encoders need to fire, and allows incremental addition of new data types by training new encoders without retraining existing components.
+Modality-specific encoders with shared latent spaces appear in GLUE, CpGPT, and many multi-omics subtyping models. Each omic has its own encoder architecture tailored to its data characteristics, whether that involves treating methylation as a sequence, using variational autoencoders for scRNA-seq, or applying graph convolutions to patient similarity networks. These modality-specific encoders map into a common embedding space where downstream tasks operate. This design supports flexible inference with missing modalities, since only the available encoders need to fire, and allows incremental addition of new data types by training new encoders without retraining existing components.
 
-**Graph-guided integration** structures learning through biological prior knowledge. GLUE's feature graph links peaks to genes and transcription factors. CGMega's gene-level graphs encode multi-omic relationships. NeEDL's epistasis networks capture pathway structure and protein interactions. Graph neural networks, graph transformers, and attention mechanisms over graph edges provide natural tools for encoding these biological networks and learning representations that respect network structure.
+Graph-guided integration structures learning through biological prior knowledge. GLUE's feature graph links peaks to genes and transcription factors. CGMega's gene-level graphs encode multi-omic relationships. NeEDL's epistasis networks capture pathway structure and protein interactions. Graph neural networks, graph transformers, and attention mechanisms over graph edges provide natural tools for encoding these biological networks and learning representations that respect network structure.
 
-**Hierarchical modeling** captures the organization of biological systems across scales. G2PT formalizes the hierarchy from variants to genes to systems to phenotypes. Similar hierarchies can be defined for omics layers: sequence gives rise to chromatin state, which influences methylation patterns, which affect transcription, which determines protein levels, which ultimately connect to clinical traits. Architectures that respect this hierarchy can learn more interpretable and generalizable representations than flat models that treat all features equivalently.
+Hierarchical modeling captures the organization of biological systems across scales. G2PT formalizes the hierarchy from variants to genes to systems to phenotypes. Similar hierarchies can be defined for omics layers: sequence gives rise to chromatin state, which influences methylation patterns, which affect transcription, which determines protein levels, which ultimately connect to clinical traits. Architectures that respect this hierarchy can learn more interpretable and generalizable representations than flat models that treat all features equivalently.
 
-**Set-based and bag-based learning** handles collections of variants or features that lack natural ordering. DeepRVAT treats variants within a gene as an unordered set, using permutation-invariant architectures to aggregate them into gene-level scores. MIFM treats variants within a fine-mapping locus as a bag, learning to identify causal variants without explicit per-variant labels. This pattern is crucial when sample sizes are large, labels are sparse, and biological order is meaningless.
+Set-based and bag-based learning handles collections of variants or features that lack natural ordering. DeepRVAT treats variants within a gene as an unordered set, using permutation-invariant architectures to aggregate them into gene-level scores. MIFM treats variants within a fine-mapping locus as a bag, learning to identify causal variants without explicit per-variant labels. This pattern is crucial when sample sizes are large, labels are sparse, and biological order is meaningless.
 
-**Foundation pretraining with task-specific adaptation** follows the broader paradigm that defines foundation models. CpGPT is pretrained on massive methylation datasets covering diverse tissues and conditions, then adapted through fine-tuning or linear probing to specific tasks like age prediction or mortality risk. This pattern could extend to multi-omics pretraining, where models learn joint representations of sequence, chromatin, methylation, expression, and clinical data before specialization for particular applications.
+Foundation pretraining with task-specific adaptation follows the broader paradigm that defines foundation models. CpGPT is pretrained on massive methylation datasets covering diverse tissues and conditions, then adapted through fine-tuning or linear probing to specific tasks like age prediction or mortality risk. This pattern could extend to multi-omics pretraining, where models learn joint representations of sequence, chromatin, methylation, expression, and clinical data before specialization for particular applications.
 
 ## Practical Challenges
 

@@ -1,97 +1,227 @@
-# Sequence Design {#sec-design}
+# Sequence design and bioengineering with genomic foundation models
 
-## Introduction
-- From prediction to generation: the shift toward design
-- Foundation models as design oracles vs. generative engines
-- Overview of design targets: proteins, regulatory elements, therapeutic constructs
+Foundation models have transformed our ability to **predict** the consequences of genetic and protein variation. In this chapter, we flip the direction of inference: instead of asking what a sequence does, we ask **what sequence should we build** to achieve a desired function.
 
-## Protein Engineering Workflows {#sec-protein-engineering}
+We focus on three complementary views:
 
-### Fitness Landscape Navigation
-- Sequence-function relationships and rugged landscapes
-- Using ESM/variant effect predictors to map local optima
-- Zero-shot prediction vs. fine-tuned fitness models
+1. **Protein design** using protein language models and structure-aware models for generating and optimizing amino acid sequences.
+2. **Regulatory and noncoding sequence design** for creating promoters, enhancers, splice sites, and RNAs with genomic foundation models as oracles.
+3. **Closed-loop design–build–test–learn (DBTL)** approaches that integrate models with experimental platforms, optimization strategies, and safety constraints.
 
-### Design Strategies
-- Directed mutagenesis guided by predicted effects
-- Constrained generation with masked language models
-- Combining structure prediction (AlphaFold) with sequence design (ProteinMPNN)
+---
 
-### Case Studies
-- Enzyme optimization for industrial applications
-- Antibody engineering and affinity maturation
-- De novo protein design pipelines
+::: {.callout-warning .content-visible when-profile="draft"}
+FIGURE SUGGESTION: Conceptual figure contrasting *prediction* (sequence → function) vs *design* (desired function → sequence) with a loop showing design–build–test–learn. This could reuse iconography from earlier chapters for "model", "experiment", and "sequence".
+:::
 
-## Enhancer and Promoter Design {#sec-regulatory-design}
+---
 
-### Regulatory Element Engineering
-- Designing cell-type-specific enhancers
-- Synthetic promoter libraries with tunable expression
-- Enformer/Sei for predicting regulatory activity
+## From prediction to design
 
-### Generative Approaches
-- Diffusion models for regulatory sequence generation
-- Optimization in latent space
-- Balancing specificity vs. activity tradeoffs
+Most chapters in this book assume a **forward mapping**: given a DNA, RNA, or protein sequence, a model predicts structure, activity, or phenotype. Design inverts this relationship. We specify a **target** (a structure, expression level, binding affinity, or multi-objective profile), then search over the astronomical space of sequences to find candidates predicted to satisfy that target. We experimentally test and iteratively refine both the sequences and the model.
 
-### Therapeutic Applications
-- AAV promoter design for gene therapy
-- Tissue-specific expression cassettes
-- Avoiding off-target regulatory effects
+Formally, if $f_\theta(x)$ is a foundation model that predicts properties of a sequence $x$, design problems can be posed as:
 
-## Directed Evolution with ML Guidance {#sec-directed-evolution}
+- **Optimization:** find $x^\star = \arg\max_x f_\theta(x)$ for some scalar objective (e.g., predicted activity).
+- **Conditional generation:** sample $x \sim p_\theta(x \mid y)$ given a desired property or condition $y$ (e.g., a structure, binding partner, or cell type).
+- **Constrained design:** optimize subject to constraints $c(x) \leq 0$ (e.g., GC content, off-target scores, immunogenicity).
 
-### Traditional vs. ML-Augmented Approaches
-- Limitations of random mutagenesis
-- Model-guided library design
-- Adaptive sampling strategies
+The central challenge is **searching enormous combinatorial spaces** (e.g., $20^{200}$ for a 200-residue protein) while staying within the regime where model predictions are reliable.
 
-### Active Learning Frameworks
-- Acquisition functions for sequence selection
-- Balancing exploration vs. exploitation
-- Batch selection for experimental efficiency
+---
 
-### Bayesian Optimization in Sequence Space
-- Surrogate models from foundation model embeddings
-- Uncertainty quantification for design decisions
-- Multi-objective optimization (activity, stability, specificity)
+::: {.callout-warning .content-visible when-profile="draft"}
+FIGURE SUGGESTION: Cartoon of a high-dimensional fitness landscape. Show a foundation model approximating the landscape and different design strategies (gradient ascent, MCMC, evolutionary search) climbing toward high-fitness regions.
+:::
 
-## Experimental Validation Loops {#sec-validation-loops}
+---
 
-### Design-Build-Test-Learn Cycles
-- Integration points for computational predictions
-- High-throughput screening compatibility
-- Feedback mechanisms for model refinement
+## Protein design with foundation models
 
-### Validation Assays
-- Massively parallel reporter assays (MPRAs)
-- Deep mutational scanning for validation
-- Cell-based functional assays
+Protein design pre-dates foundation models, but large-scale **protein language models (PLMs)** and structure-aware models have made it possible to generate and optimize sequences with minimal or no task-specific data.
 
-### Iterative Refinement
-- Updating models with experimental results
-- Transfer learning from validation data
-- Closing the loop: from prediction to validated design
+### Sequence-only generative models
 
-## Biosafety Considerations {#sec-biosafety}
+Protein language models trained with masked-token or autoregressive objectives (e.g., ESM, ProGen, ProtGPT-like models) learn rich priors over amino acid sequences [@rao2019tape; @madani2023progen]. These priors can be used for design in multiple ways. **Unconditional sampling** generates novel, foldable proteins by sampling from the model. **Latent-space optimization** encodes sequences into embeddings, then optimizes in latent space for desired downstream scores. **Conditional prompting or steering** biases generation with prompts, control tokens, or guidance signals (e.g., family, subcellular localization).
 
-### Dual-Use Concerns
-- Potential misuse of generative capabilities
-- Toxin and pathogen sequence screening
-- Community guidelines and responsible disclosure
+Key advantages include **data efficiency** (models can exploit vast unlabeled sequence corpora), **diversity** (generative sampling naturally explores multiple modes of sequence space), and **transferability** (the same PLM can support many downstream tasks including prediction, design, and annotation).
 
-### Safeguards in Practice
-- Sequence screening databases and tools
-- Institutional review and oversight
-- Model access controls and API restrictions
+Limitations remain. These models provide weak or indirect control over **structure and function**. They may regenerate or minimally modify training data, raising data leakage concerns. Additionally, the correspondence between "knobs" in latent space and functional properties remains poorly understood, limiting interpretability.
 
-### Ethical Frameworks
-- Balancing openness with security
-- International coordination on biosafety
-- Future governance challenges
+---
 
-## Summary and Key Takeaways
+::: {.callout-warning .content-visible when-profile="draft"}
+FIGURE SUGGESTION: Diagram of a protein language model used for design. Left: training on large sequence corpus. Right: using the trained model to sample new sequences, optionally conditioned on family or simple attributes.
+:::
 
-## Exercises
+---
 
-## Glossary Terms
+### Structure-aware and diffusion-based design
+
+Structure-aware models like AlphaFold2 [@jumper2021alphafold] and related architectures provide accurate mappings from sequence to structure. Building on these, **diffusion models** and **structure-conditioned generative models** now enable direct design of sequences that fold into desired 3D structures [@watson2023rfdiffusion; @dauparas2022proteinmpnn].
+
+Design strategies include **backbone-conditioned sequence design**, where a fixed backbone (natural or imagined) guides generation of sequences predicted to fold onto that backbone (e.g., ProteinMPNN). **Hallucination of novel folds** diffuses in the space of structures or sequence–structure pairs to generate entirely new topologies (e.g., RFdiffusion). **Interface and binder design** conditions generation on a target protein to create binding partners with specific affinity or epitope geometry.
+
+These models often operate in a **joint space of sequence and structure**, coupling three components: (1) a model for structural consistency (e.g., diffusion in backbone coordinates), (2) a sequence-conditional model for structural plausibility and stability, and (3) a downstream oracle (binding, stability, catalytic activity) used during scoring or optimization.
+
+---
+
+::: {.callout-warning .content-visible when-profile="draft"}
+FIGURE SUGGESTION: Multi-panel schematic of structure-aware design. Panel A: target backbone or target protein. Panel B: diffusion trajectory producing a new binder. Panel C: predicted structure overlay of designed vs. target complex.
+:::
+
+---
+
+### Functional conditioning and multi-objective design
+
+In real applications, we rarely want "anything that folds". We want proteins that are stable, expressible, and soluble; functional (enzymatic activity, binding, signaling); and safe and manufacturable (low aggregation, low immunogenicity, good developability).
+
+To capture this, design pipelines combine foundation models with **multi-objective optimization**. A **generative prior** (PLM or diffusion model) proposes candidates. These candidates are then evaluated with **oracles**, which may be in silico (structure predictors, stability models, developability scores) or experimental (deep mutational scanning, binding assays, functional screens). Strategies like **Bayesian optimization**, **evolutionary algorithms**, or **gradient-based editing** iteratively improve proposals.
+
+Multi-objective design often produces a **Pareto frontier** of solutions trading off properties (e.g., activity vs. stability). Genomic foundation models contribute by providing **cheap, differentiable oracles** for properties linked to sequence (e.g., localization motifs, PTM sites) and encoding **evolutionary constraints** that discourage unrealistic sequences.
+
+---
+
+::: {.callout-warning .content-visible when-profile="draft"}
+FIGURE SUGGESTION: 2D scatter plot mock-up of designed proteins along two axes (e.g., predicted stability vs. binding score), highlighting a Pareto frontier. Overlay different design strategies as colored point sets.
+:::
+
+---
+
+## Regulatory and noncoding sequence design
+
+Most genomic foundation models in this book learn mappings from **noncoding DNA or RNA** to regulatory activities: expression, chromatin state, splicing patterns, or transcription factor binding. These models can be inverted to design regulatory sequences with desired behaviors.
+
+### Promoter and enhancer design
+
+Models trained on massive datasets (e.g., MPRA, ChIP–seq, ATAC–seq, CAGE) can predict regulatory activity from local sequence context [@deboer2020deciphering]. Design tasks include **promoter optimization** (maximize expression of a gene in a specific cell type or condition), **cell-type-specific enhancers** (high activity in a target cell/tissue and low activity elsewhere), and **minimal regulatory elements** (short synthetic enhancers with robust and tunable activity).
+
+Two broad approaches exist for regulatory sequence design. **Gradient-based sequence editing** treats a sequence-to-function model as differentiable with respect to input embeddings. We compute gradients of the desired objective with respect to nucleotides, apply projected gradient steps or "soft token" optimization, then project back to discrete bases. This leverages the same models used for interpretation (saliency maps, in silico mutagenesis) but runs gradients "in reverse" for design.
+
+**Generative regulatory models** take an alternative approach. These models train autoregressive or diffusion models directly on genomic regulatory regions, condition on metadata (cell type, histone marks, accessibility), and sample synthetic enhancers/promoters with targeted activity profiles before filtering using oracles.
+
+### Splicing and RNA processing
+
+Models like SpliceAI and RNA-focused FMs (@sec-rna-language-models) can predict splicing outcomes from local sequence context. Design applications include **therapeutic splice modulation** (design antisense oligos or CRISPR base edits that restore normal splicing), **alternative isoform tuning** (adjust splicing of specific exons to modulate protein isoforms), and **RNA processing elements** (design polyadenylation signals, UTRs, and RNA stability motifs).
+
+Design strategies mirror the promoter/enhancer setting: gradient-based editing, enumerative search guided by saliency maps, and generative sequence models trained on splicing-competent regions.
+
+### RNA structure and functional RNA design
+
+RNA foundation models that jointly capture sequence and secondary/tertiary structure enable design of riboswitches and aptamers, guide RNAs with precise on-/off-target profiles, and synthetic RNAs for sensing and actuation (e.g., toehold switches). Here, the design objective blends **structure**, **thermodynamics**, and **interaction propensity** with genomic-context constraints (e.g., avoiding cryptic splice sites or immune-stimulatory motifs).
+
+---
+
+::: {.callout-warning .content-visible when-profile="draft"}
+FIGURE SUGGESTION: Schematic of regulatory sequence design. Panel A: model predicts expression from promoter/enhancer sequence. Panel B: gradients or an optimization loop propose sequence edits. Panel C: synthetic sequences tested in an MPRA assay.
+:::
+
+---
+
+## Design–build–test–learn loops
+
+Foundation models realize their full potential in **closed-loop DBTL workflows**. In the **design** phase, we use generative or optimization algorithms to propose sequences. During **build**, we synthesize DNA/RNA or construct libraries (pooled or array-based). The **test** phase assays function using high-throughput methods (e.g., MPRA, DMS, functional genomics screens). Finally, we **learn** by updating model parameters or retraining with new data, focusing on regimes where model uncertainty was high.
+
+### Active learning and adaptive experiments
+
+Active learning aims to select the **most informative experiments** given limited budget. **Uncertainty sampling** chooses sequences where the model is uncertain (e.g., high entropy over outputs). **Bayesian optimization** balances exploration (uncertainty) and exploitation (predicted high fitness). **Diversity-aware selection** enforces coverage over sequence and function space to avoid local optima.
+
+Genomic foundation models are especially well-suited for active learning. They provide **calibrated uncertainty estimates** (e.g., via ensembles, MC dropout, or explicit probabilistic outputs). They can be **fine-tuned** on task-specific data from each DBTL cycle, gradually shifting from a generic prior to a task-adapted model.
+
+### High-throughput assays as feedback
+
+Several assay modalities naturally pair with foundation models. **MPRA / STARR-seq** provides parallel readouts of regulatory element activity for hundreds of thousands of sequences. **Deep mutational scanning** enables systematic exploration of mutational neighborhoods around proteins or regulatory elements. **CRISPR screens** introduce perturbations to regulatory regions or coding genes, with phenotypic readouts (e.g., proliferation, expression).
+
+These assays generate **dense local maps** of function within specific sequence neighborhoods. Foundation models can interpolate across unmeasured variants, extrapolate to new regions by combining assay data with global priors, and suggest where to expand measurements next.
+
+---
+
+::: {.callout-warning .content-visible when-profile="draft"}
+FIGURE SUGGESTION: Flowchart of a DBTL cycle specific to regulatory sequence design: model → library design → DNA synthesis → cellular assay → sequencing → model update. Use consistent design language with Chapter 20 (clinical) and Chapter 22 (drugs).
+:::
+
+---
+
+## Practical considerations and pitfalls
+
+Design with genomic foundation models introduces a distinct set of **practical challenges** compared to prediction-only use.
+
+### Constraints, safety, and manufacturability
+
+Real-world designs must satisfy numerous constraints beyond the primary objective. **Sequence-level constraints** include GC content, repeats, restriction sites, and synthesis compatibility, as well as coding vs. noncoding frame integrity and avoiding unwanted ORFs. **Contextual constraints** encompass the chromatin environment, genomic integration site, neighboring regulatory elements, and species- and tissue-specific sequence biases. **Safety and biosecurity** considerations require avoiding sequences with known pathogenic motifs or virulence determinants and controlling dual-use risks (see @sec-responsible-genomics for broader discussion).
+
+Design algorithms must either **hard-encode constraints** (e.g., only sample from constrained spaces) or use **penalty terms** in objective functions, ideally with interpretable trade-offs.
+
+### Model failure modes in the design regime
+
+Many pitfalls from @sec-confounding-and-leakage become amplified in design. **Mode collapse toward training data** occurs when generative models reproduce or minimally modify sequences seen during training, undermining novelty. **Off-manifold proposals** arise when aggressive optimization (e.g., many gradient steps) pushes sequences into regions where model predictions are unreliable. **Reward hacking** happens when optimization objectives only reflect surrogate scores (e.g., model-predicted activity), allowing the system to exploit quirks of the model rather than true biology.
+
+Mitigation strategies include regularizing designs toward realistic priors (e.g., KL penalties against the PLM prior), enforcing **novelty thresholds** relative to training sequences, and using **ensembles or multi-model agreement** to guard against idiosyncratic failures.
+
+---
+
+::: {.callout-warning .content-visible when-profile="draft"}
+FIGURE SUGGESTION: Small panel illustrating "reward hacking" in sequence design: sequences optimized to extreme model scores that are actually biologically implausible (e.g., bizarre motifs, impossible structures).
+:::
+
+---
+
+## Design paradigms and algorithmic toolkits
+
+Although implementation details vary, design workflows tend to fall into a few algorithmic patterns.
+
+**Gradient-based design** uses differentiable models and surrogate continuous relaxations of discrete sequences. We apply gradient ascent with regularization and projection. This approach is efficient in high-dimensional spaces but can produce off-manifold, adversarial sequences.
+
+**Evolutionary and genetic algorithms** maintain populations of sequences, applying mutation, crossover, and selection based on model or assay scores. This approach provides a natural fit for multi-objective optimization and discrete constraints.
+
+**Bayesian optimization and bandits** treat the sequence-to-fitness mapping as an unknown function, using a surrogate (e.g., Gaussian process, neural surrogate) to guide sampling. This strategy is particularly powerful when experimental budgets are small and assays are expensive.
+
+**Reinforcement learning (RL)** formulates design as a sequential decision problem (e.g., build sequence token-by-token), using rewards based on foundation model predictions or assay outcomes. RL can leverage **policy constraints** to maintain similarity to natural sequences.
+
+**Diffusion and flow-based generative models** learn to map noise to sequences (or sequence–structure pairs), optionally conditioned on design targets. These models support sampling diverse sets of candidates with controllable properties.
+
+---
+
+::: {.callout-warning .content-visible when-profile="draft"}
+FIGURE SUGGESTION: Table summarizing design algorithm families (gradient-based, evolutionary, Bayesian optimization, RL, diffusion) with columns for "pros", "cons", "typical use cases", and "interaction with foundation models".
+:::
+
+---
+
+## Case studies and applications
+
+Below are representative application areas where genomic foundation model-enabled design is already making impact.
+
+### Therapeutic protein and antibody design
+
+**De novo enzymes** represent designed catalysts for specific chemical transformations, guided by structural and stability models. **Antibodies and binders** include synthetic binders targeting viral proteins, oncogenic receptors, or immune checkpoints, where FMs help optimize binding affinity and developability. **Cytokines and signaling proteins** comprise designed variants with tuned half-lives, receptor specificities, and signaling strength.
+
+Foundation models serve multiple roles in these applications. They provide priors over plausible sequences and interfaces. They act as oracles for properties such as stability, aggregation, and PTM patterns. They function as feature extractors for downstream models that predict pharmacokinetics or immunogenicity.
+
+### Synthetic regulatory circuits and cell engineering
+
+**Synthetic promoters and enhancers** drive precise expression programs in CAR-T cells, stem cells, or engineered tissues. **Logic-gated regulatory elements** integrate multiple transcription factor inputs. **Safety switches** (kill switches, inducible expression) are embedded in therapeutic constructs.
+
+Genomic FMs are crucial for predicting how designed elements behave **within real genomic and epigenomic contexts**, not just in isolated plasmid systems.
+
+### Genome-scale perturbation libraries
+
+Even when individual sequences are not used as products, design methods power saturation mutagenesis libraries for functional genomics, tiled CRISPR perturbation libraries targeting regulatory landscapes, and Perturb-seq designs that multiplex many regulatory variants across cell types.
+
+Here, the goal is to **maximize information content** of experiments rather than optimize a single construct, but the same models and algorithms apply.
+
+---
+
+::: {.callout-warning .content-visible when-profile="draft"}
+FIGURE SUGGESTION: Multi-panel "applications" figure with small icons or schematic vignettes for (A) therapeutic proteins, (B) regulatory circuits, and (C) functional genomics libraries. Reuse iconography from previous chapters for coherence.
+:::
+
+---
+
+## Outlook
+
+Design sits at the intersection of **modeling, optimization, and experimental biology**. Genomic foundation models are rapidly shifting design from artisanal, hand-crafted processes to **principled, data-driven workflows** that can propose novel proteins and regulatory elements beyond natural evolution, exploit massive unlabeled sequence corpora as priors on what biology "allows", and close loops between **in silico** hypotheses and **in vitro/in vivo** measurements.
+
+However, the same capabilities that enable beneficial applications also raise **epistemic risks** (overconfidence in models, especially out-of-distribution) and **ethical and governance challenges** (dual-use potential, unequal access, and misuse).
+
+These themes connect directly to @sec-clinical-translation, @sec-drug-discovery, and @sec-responsible-genomics. Together, they suggest that the future of genomic design will depend not only on better models, but also on **careful integration with experimental design, rigorous evaluation, and robust norms for safe and equitable use**.
