@@ -75,6 +75,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -557,40 +586,37 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">23.1</span> Introduction</a></li>
-  <li><a href="#sec-protein-engineering" id="toc-sec-protein-engineering" class="nav-link" data-scroll-target="#sec-protein-engineering"><span class="header-section-number">23.2</span> Protein Engineering Workflows</a>
+  <li><a href="#from-prediction-to-design" id="toc-from-prediction-to-design" class="nav-link active" data-scroll-target="#from-prediction-to-design"><span class="header-section-number">23.1</span> From prediction to design</a></li>
+  <li><a href="#protein-design-with-foundation-models" id="toc-protein-design-with-foundation-models" class="nav-link" data-scroll-target="#protein-design-with-foundation-models"><span class="header-section-number">23.2</span> Protein design with foundation models</a>
   <ul class="collapse">
-  <li><a href="#fitness-landscape-navigation" id="toc-fitness-landscape-navigation" class="nav-link" data-scroll-target="#fitness-landscape-navigation"><span class="header-section-number">23.2.1</span> Fitness Landscape Navigation</a></li>
-  <li><a href="#design-strategies" id="toc-design-strategies" class="nav-link" data-scroll-target="#design-strategies"><span class="header-section-number">23.2.2</span> Design Strategies</a></li>
-  <li><a href="#case-studies" id="toc-case-studies" class="nav-link" data-scroll-target="#case-studies"><span class="header-section-number">23.2.3</span> Case Studies</a></li>
+  <li><a href="#sequence-only-generative-models" id="toc-sequence-only-generative-models" class="nav-link" data-scroll-target="#sequence-only-generative-models"><span class="header-section-number">23.2.1</span> Sequence-only generative models</a></li>
+  <li><a href="#structure-aware-and-diffusion-based-design" id="toc-structure-aware-and-diffusion-based-design" class="nav-link" data-scroll-target="#structure-aware-and-diffusion-based-design"><span class="header-section-number">23.2.2</span> Structure-aware and diffusion-based design</a></li>
+  <li><a href="#functional-conditioning-and-multi-objective-design" id="toc-functional-conditioning-and-multi-objective-design" class="nav-link" data-scroll-target="#functional-conditioning-and-multi-objective-design"><span class="header-section-number">23.2.3</span> Functional conditioning and multi-objective design</a></li>
   </ul></li>
-  <li><a href="#sec-regulatory-design" id="toc-sec-regulatory-design" class="nav-link" data-scroll-target="#sec-regulatory-design"><span class="header-section-number">23.3</span> Enhancer and Promoter Design</a>
+  <li><a href="#regulatory-and-noncoding-sequence-design" id="toc-regulatory-and-noncoding-sequence-design" class="nav-link" data-scroll-target="#regulatory-and-noncoding-sequence-design"><span class="header-section-number">23.3</span> Regulatory and noncoding sequence design</a>
   <ul class="collapse">
-  <li><a href="#regulatory-element-engineering" id="toc-regulatory-element-engineering" class="nav-link" data-scroll-target="#regulatory-element-engineering"><span class="header-section-number">23.3.1</span> Regulatory Element Engineering</a></li>
-  <li><a href="#generative-approaches" id="toc-generative-approaches" class="nav-link" data-scroll-target="#generative-approaches"><span class="header-section-number">23.3.2</span> Generative Approaches</a></li>
-  <li><a href="#therapeutic-applications" id="toc-therapeutic-applications" class="nav-link" data-scroll-target="#therapeutic-applications"><span class="header-section-number">23.3.3</span> Therapeutic Applications</a></li>
+  <li><a href="#promoter-and-enhancer-design" id="toc-promoter-and-enhancer-design" class="nav-link" data-scroll-target="#promoter-and-enhancer-design"><span class="header-section-number">23.3.1</span> Promoter and enhancer design</a></li>
+  <li><a href="#splicing-and-rna-processing" id="toc-splicing-and-rna-processing" class="nav-link" data-scroll-target="#splicing-and-rna-processing"><span class="header-section-number">23.3.2</span> Splicing and RNA processing</a></li>
+  <li><a href="#rna-structure-and-functional-rna-design" id="toc-rna-structure-and-functional-rna-design" class="nav-link" data-scroll-target="#rna-structure-and-functional-rna-design"><span class="header-section-number">23.3.3</span> RNA structure and functional RNA design</a></li>
   </ul></li>
-  <li><a href="#sec-directed-evolution" id="toc-sec-directed-evolution" class="nav-link" data-scroll-target="#sec-directed-evolution"><span class="header-section-number">23.4</span> Directed Evolution with ML Guidance</a>
+  <li><a href="#designbuildtestlearn-loops" id="toc-designbuildtestlearn-loops" class="nav-link" data-scroll-target="#designbuildtestlearn-loops"><span class="header-section-number">23.4</span> Design–build–test–learn loops</a>
   <ul class="collapse">
-  <li><a href="#traditional-vs.-ml-augmented-approaches" id="toc-traditional-vs.-ml-augmented-approaches" class="nav-link" data-scroll-target="#traditional-vs.-ml-augmented-approaches"><span class="header-section-number">23.4.1</span> Traditional vs.&nbsp;ML-Augmented Approaches</a></li>
-  <li><a href="#active-learning-frameworks" id="toc-active-learning-frameworks" class="nav-link" data-scroll-target="#active-learning-frameworks"><span class="header-section-number">23.4.2</span> Active Learning Frameworks</a></li>
-  <li><a href="#bayesian-optimization-in-sequence-space" id="toc-bayesian-optimization-in-sequence-space" class="nav-link" data-scroll-target="#bayesian-optimization-in-sequence-space"><span class="header-section-number">23.4.3</span> Bayesian Optimization in Sequence Space</a></li>
+  <li><a href="#active-learning-and-adaptive-experiments" id="toc-active-learning-and-adaptive-experiments" class="nav-link" data-scroll-target="#active-learning-and-adaptive-experiments"><span class="header-section-number">23.4.1</span> Active learning and adaptive experiments</a></li>
+  <li><a href="#high-throughput-assays-as-feedback" id="toc-high-throughput-assays-as-feedback" class="nav-link" data-scroll-target="#high-throughput-assays-as-feedback"><span class="header-section-number">23.4.2</span> High-throughput assays as feedback</a></li>
   </ul></li>
-  <li><a href="#sec-validation-loops" id="toc-sec-validation-loops" class="nav-link" data-scroll-target="#sec-validation-loops"><span class="header-section-number">23.5</span> Experimental Validation Loops</a>
+  <li><a href="#practical-considerations-and-pitfalls" id="toc-practical-considerations-and-pitfalls" class="nav-link" data-scroll-target="#practical-considerations-and-pitfalls"><span class="header-section-number">23.5</span> Practical considerations and pitfalls</a>
   <ul class="collapse">
-  <li><a href="#design-build-test-learn-cycles" id="toc-design-build-test-learn-cycles" class="nav-link" data-scroll-target="#design-build-test-learn-cycles"><span class="header-section-number">23.5.1</span> Design-Build-Test-Learn Cycles</a></li>
-  <li><a href="#validation-assays" id="toc-validation-assays" class="nav-link" data-scroll-target="#validation-assays"><span class="header-section-number">23.5.2</span> Validation Assays</a></li>
-  <li><a href="#iterative-refinement" id="toc-iterative-refinement" class="nav-link" data-scroll-target="#iterative-refinement"><span class="header-section-number">23.5.3</span> Iterative Refinement</a></li>
+  <li><a href="#constraints-safety-and-manufacturability" id="toc-constraints-safety-and-manufacturability" class="nav-link" data-scroll-target="#constraints-safety-and-manufacturability"><span class="header-section-number">23.5.1</span> Constraints, safety, and manufacturability</a></li>
+  <li><a href="#model-failure-modes-in-the-design-regime" id="toc-model-failure-modes-in-the-design-regime" class="nav-link" data-scroll-target="#model-failure-modes-in-the-design-regime"><span class="header-section-number">23.5.2</span> Model failure modes in the design regime</a></li>
   </ul></li>
-  <li><a href="#sec-biosafety" id="toc-sec-biosafety" class="nav-link" data-scroll-target="#sec-biosafety"><span class="header-section-number">23.6</span> Biosafety Considerations</a>
+  <li><a href="#design-paradigms-and-algorithmic-toolkits" id="toc-design-paradigms-and-algorithmic-toolkits" class="nav-link" data-scroll-target="#design-paradigms-and-algorithmic-toolkits"><span class="header-section-number">23.6</span> Design paradigms and algorithmic toolkits</a></li>
+  <li><a href="#case-studies-and-applications" id="toc-case-studies-and-applications" class="nav-link" data-scroll-target="#case-studies-and-applications"><span class="header-section-number">23.7</span> Case studies and applications</a>
   <ul class="collapse">
-  <li><a href="#dual-use-concerns" id="toc-dual-use-concerns" class="nav-link" data-scroll-target="#dual-use-concerns"><span class="header-section-number">23.6.1</span> Dual-Use Concerns</a></li>
-  <li><a href="#safeguards-in-practice" id="toc-safeguards-in-practice" class="nav-link" data-scroll-target="#safeguards-in-practice"><span class="header-section-number">23.6.2</span> Safeguards in Practice</a></li>
-  <li><a href="#ethical-frameworks" id="toc-ethical-frameworks" class="nav-link" data-scroll-target="#ethical-frameworks"><span class="header-section-number">23.6.3</span> Ethical Frameworks</a></li>
+  <li><a href="#therapeutic-protein-and-antibody-design" id="toc-therapeutic-protein-and-antibody-design" class="nav-link" data-scroll-target="#therapeutic-protein-and-antibody-design"><span class="header-section-number">23.7.1</span> Therapeutic protein and antibody design</a></li>
+  <li><a href="#synthetic-regulatory-circuits-and-cell-engineering" id="toc-synthetic-regulatory-circuits-and-cell-engineering" class="nav-link" data-scroll-target="#synthetic-regulatory-circuits-and-cell-engineering"><span class="header-section-number">23.7.2</span> Synthetic regulatory circuits and cell engineering</a></li>
+  <li><a href="#genome-scale-perturbation-libraries" id="toc-genome-scale-perturbation-libraries" class="nav-link" data-scroll-target="#genome-scale-perturbation-libraries"><span class="header-section-number">23.7.3</span> Genome-scale perturbation libraries</a></li>
   </ul></li>
-  <li><a href="#summary-and-key-takeaways" id="toc-summary-and-key-takeaways" class="nav-link" data-scroll-target="#summary-and-key-takeaways"><span class="header-section-number">23.7</span> Summary and Key Takeaways</a></li>
-  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">23.8</span> Exercises</a></li>
-  <li><a href="#glossary-terms" id="toc-glossary-terms" class="nav-link" data-scroll-target="#glossary-terms"><span class="header-section-number">23.9</span> Glossary Terms</a></li>
+  <li><a href="#outlook" id="toc-outlook" class="nav-link" data-scroll-target="#outlook"><span class="header-section-number">23.8</span> Outlook</a></li>
   </ul>
 </nav>
     </div>
@@ -600,7 +626,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./p6--translation.html">Part VI — Translation and Application</a></li><li class="breadcrumb-item"><a href="./p6-ch23-design.html"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Sequence Design</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-design" class="quarto-section-identifier"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Sequence Design</span></span></h1>
+<h1 class="title"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Sequence Design</span></h1>
 </div>
 
 
@@ -617,157 +643,276 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="introduction" class="level2" data-number="23.1">
-<h2 data-number="23.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">23.1</span> Introduction</h2>
+<p>Foundation models have transformed our ability to <strong>predict</strong> the consequences of genetic and protein variation. In this chapter, we flip the direction of inference: instead of asking what a sequence does, we ask <strong>what sequence should we build</strong> to achieve a desired function.</p>
+<p>We focus on three complementary views:</p>
+<ol type="1">
+<li><strong>Protein design</strong> using protein language models and structure-aware models for generating and optimizing amino acid sequences.</li>
+<li><strong>Regulatory and noncoding sequence design</strong> for creating promoters, enhancers, splice sites, and RNAs with genomic foundation models as oracles.</li>
+<li><strong>Closed-loop design–build–test–learn (DBTL)</strong> approaches that integrate models with experimental platforms, optimization strategies, and safety constraints.</li>
+</ol>
+<hr>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>FIGURE SUGGESTION: Conceptual figure contrasting <em>prediction</em> (sequence → function) vs <em>design</em> (desired function → sequence) with a loop showing design–build–test–learn. This could reuse iconography from earlier chapters for “model”, “experiment”, and “sequence”.</p>
+</div>
+</div>
+<hr>
+<section id="from-prediction-to-design" class="level2" data-number="23.1">
+<h2 data-number="23.1" class="anchored" data-anchor-id="from-prediction-to-design"><span class="header-section-number">23.1</span> From prediction to design</h2>
+<p>Most chapters in this book assume a <strong>forward mapping</strong>: given a DNA, RNA, or protein sequence, a model predicts structure, activity, or phenotype. Design inverts this relationship. We specify a <strong>target</strong> (a structure, expression level, binding affinity, or multi-objective profile), then search over the astronomical space of sequences to find candidates predicted to satisfy that target. We experimentally test and iteratively refine both the sequences and the model.</p>
+<p>Formally, if <span class="math inline">\(f_\theta(x)\)</span> is a foundation model that predicts properties of a sequence <span class="math inline">\(x\)</span>, design problems can be posed as:</p>
 <ul>
-<li>From prediction to generation: the shift toward design</li>
-<li>Foundation models as design oracles vs.&nbsp;generative engines</li>
-<li>Overview of design targets: proteins, regulatory elements, therapeutic constructs</li>
+<li><strong>Optimization:</strong> find <span class="math inline">\(x^\star = \arg\max_x f_\theta(x)\)</span> for some scalar objective (e.g., predicted activity).</li>
+<li><strong>Conditional generation:</strong> sample <span class="math inline">\(x \sim p_\theta(x \mid y)\)</span> given a desired property or condition <span class="math inline">\(y\)</span> (e.g., a structure, binding partner, or cell type).</li>
+<li><strong>Constrained design:</strong> optimize subject to constraints <span class="math inline">\(c(x) \leq 0\)</span> (e.g., GC content, off-target scores, immunogenicity).</li>
 </ul>
+<p>The central challenge is <strong>searching enormous combinatorial spaces</strong> (e.g., <span class="math inline">\(20^{200}\)</span> for a 200-residue protein) while staying within the regime where model predictions are reliable.</p>
+<hr>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>FIGURE SUGGESTION: Cartoon of a high-dimensional fitness landscape. Show a foundation model approximating the landscape and different design strategies (gradient ascent, MCMC, evolutionary search) climbing toward high-fitness regions.</p>
+</div>
+</div>
+<hr>
 </section>
-<section id="sec-protein-engineering" class="level2" data-number="23.2">
-<h2 data-number="23.2" class="anchored" data-anchor-id="sec-protein-engineering"><span class="header-section-number">23.2</span> Protein Engineering Workflows</h2>
-<section id="fitness-landscape-navigation" class="level3" data-number="23.2.1">
-<h3 data-number="23.2.1" class="anchored" data-anchor-id="fitness-landscape-navigation"><span class="header-section-number">23.2.1</span> Fitness Landscape Navigation</h3>
-<ul>
-<li>Sequence-function relationships and rugged landscapes</li>
-<li>Using ESM/variant effect predictors to map local optima</li>
-<li>Zero-shot prediction vs.&nbsp;fine-tuned fitness models</li>
-</ul>
+<section id="protein-design-with-foundation-models" class="level2" data-number="23.2">
+<h2 data-number="23.2" class="anchored" data-anchor-id="protein-design-with-foundation-models"><span class="header-section-number">23.2</span> Protein design with foundation models</h2>
+<p>Protein design pre-dates foundation models, but large-scale <strong>protein language models (PLMs)</strong> and structure-aware models have made it possible to generate and optimize sequences with minimal or no task-specific data.</p>
+<section id="sequence-only-generative-models" class="level3" data-number="23.2.1">
+<h3 data-number="23.2.1" class="anchored" data-anchor-id="sequence-only-generative-models"><span class="header-section-number">23.2.1</span> Sequence-only generative models</h3>
+<p>Protein language models trained with masked-token or autoregressive objectives (e.g., ESM, ProGen, ProtGPT-like models) learn rich priors over amino acid sequences <span class="citation" data-cites="rao2019tape madani2023progen">(<a href="references.html#ref-rao2019tape" role="doc-biblioref"><strong>rao2019tape?</strong></a>; <a href="references.html#ref-madani2023progen" role="doc-biblioref"><strong>madani2023progen?</strong></a>)</span>. These priors can be used for design in multiple ways. <strong>Unconditional sampling</strong> generates novel, foldable proteins by sampling from the model. <strong>Latent-space optimization</strong> encodes sequences into embeddings, then optimizes in latent space for desired downstream scores. <strong>Conditional prompting or steering</strong> biases generation with prompts, control tokens, or guidance signals (e.g., family, subcellular localization).</p>
+<p>Key advantages include <strong>data efficiency</strong> (models can exploit vast unlabeled sequence corpora), <strong>diversity</strong> (generative sampling naturally explores multiple modes of sequence space), and <strong>transferability</strong> (the same PLM can support many downstream tasks including prediction, design, and annotation).</p>
+<p>Limitations remain. These models provide weak or indirect control over <strong>structure and function</strong>. They may regenerate or minimally modify training data, raising data leakage concerns. Additionally, the correspondence between “knobs” in latent space and functional properties remains poorly understood, limiting interpretability.</p>
+<hr>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>FIGURE SUGGESTION: Diagram of a protein language model used for design. Left: training on large sequence corpus. Right: using the trained model to sample new sequences, optionally conditioned on family or simple attributes.</p>
+</div>
+</div>
+<hr>
 </section>
-<section id="design-strategies" class="level3" data-number="23.2.2">
-<h3 data-number="23.2.2" class="anchored" data-anchor-id="design-strategies"><span class="header-section-number">23.2.2</span> Design Strategies</h3>
-<ul>
-<li>Directed mutagenesis guided by predicted effects</li>
-<li>Constrained generation with masked language models</li>
-<li>Combining structure prediction (AlphaFold) with sequence design (ProteinMPNN)</li>
-</ul>
+<section id="structure-aware-and-diffusion-based-design" class="level3" data-number="23.2.2">
+<h3 data-number="23.2.2" class="anchored" data-anchor-id="structure-aware-and-diffusion-based-design"><span class="header-section-number">23.2.2</span> Structure-aware and diffusion-based design</h3>
+<p>Structure-aware models like AlphaFold2 <span class="citation" data-cites="jumper2021alphafold">(<a href="references.html#ref-jumper2021alphafold" role="doc-biblioref"><strong>jumper2021alphafold?</strong></a>)</span> and related architectures provide accurate mappings from sequence to structure. Building on these, <strong>diffusion models</strong> and <strong>structure-conditioned generative models</strong> now enable direct design of sequences that fold into desired 3D structures <span class="citation" data-cites="watson2023rfdiffusion dauparas2022proteinmpnn">(<a href="references.html#ref-watson2023rfdiffusion" role="doc-biblioref"><strong>watson2023rfdiffusion?</strong></a>; <a href="references.html#ref-dauparas2022proteinmpnn" role="doc-biblioref"><strong>dauparas2022proteinmpnn?</strong></a>)</span>.</p>
+<p>Design strategies include <strong>backbone-conditioned sequence design</strong>, where a fixed backbone (natural or imagined) guides generation of sequences predicted to fold onto that backbone (e.g., ProteinMPNN). <strong>Hallucination of novel folds</strong> diffuses in the space of structures or sequence–structure pairs to generate entirely new topologies (e.g., RFdiffusion). <strong>Interface and binder design</strong> conditions generation on a target protein to create binding partners with specific affinity or epitope geometry.</p>
+<p>These models often operate in a <strong>joint space of sequence and structure</strong>, coupling three components: (1) a model for structural consistency (e.g., diffusion in backbone coordinates), (2) a sequence-conditional model for structural plausibility and stability, and (3) a downstream oracle (binding, stability, catalytic activity) used during scoring or optimization.</p>
+<hr>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>FIGURE SUGGESTION: Multi-panel schematic of structure-aware design. Panel A: target backbone or target protein. Panel B: diffusion trajectory producing a new binder. Panel C: predicted structure overlay of designed vs.&nbsp;target complex.</p>
+</div>
+</div>
+<hr>
 </section>
-<section id="case-studies" class="level3" data-number="23.2.3">
-<h3 data-number="23.2.3" class="anchored" data-anchor-id="case-studies"><span class="header-section-number">23.2.3</span> Case Studies</h3>
-<ul>
-<li>Enzyme optimization for industrial applications</li>
-<li>Antibody engineering and affinity maturation</li>
-<li>De novo protein design pipelines</li>
-</ul>
-</section>
-</section>
-<section id="sec-regulatory-design" class="level2" data-number="23.3">
-<h2 data-number="23.3" class="anchored" data-anchor-id="sec-regulatory-design"><span class="header-section-number">23.3</span> Enhancer and Promoter Design</h2>
-<section id="regulatory-element-engineering" class="level3" data-number="23.3.1">
-<h3 data-number="23.3.1" class="anchored" data-anchor-id="regulatory-element-engineering"><span class="header-section-number">23.3.1</span> Regulatory Element Engineering</h3>
-<ul>
-<li>Designing cell-type-specific enhancers</li>
-<li>Synthetic promoter libraries with tunable expression</li>
-<li>Enformer/Sei for predicting regulatory activity</li>
-</ul>
-</section>
-<section id="generative-approaches" class="level3" data-number="23.3.2">
-<h3 data-number="23.3.2" class="anchored" data-anchor-id="generative-approaches"><span class="header-section-number">23.3.2</span> Generative Approaches</h3>
-<ul>
-<li>Diffusion models for regulatory sequence generation</li>
-<li>Optimization in latent space</li>
-<li>Balancing specificity vs.&nbsp;activity tradeoffs</li>
-</ul>
-</section>
-<section id="therapeutic-applications" class="level3" data-number="23.3.3">
-<h3 data-number="23.3.3" class="anchored" data-anchor-id="therapeutic-applications"><span class="header-section-number">23.3.3</span> Therapeutic Applications</h3>
-<ul>
-<li>AAV promoter design for gene therapy</li>
-<li>Tissue-specific expression cassettes</li>
-<li>Avoiding off-target regulatory effects</li>
-</ul>
-</section>
-</section>
-<section id="sec-directed-evolution" class="level2" data-number="23.4">
-<h2 data-number="23.4" class="anchored" data-anchor-id="sec-directed-evolution"><span class="header-section-number">23.4</span> Directed Evolution with ML Guidance</h2>
-<section id="traditional-vs.-ml-augmented-approaches" class="level3" data-number="23.4.1">
-<h3 data-number="23.4.1" class="anchored" data-anchor-id="traditional-vs.-ml-augmented-approaches"><span class="header-section-number">23.4.1</span> Traditional vs.&nbsp;ML-Augmented Approaches</h3>
-<ul>
-<li>Limitations of random mutagenesis</li>
-<li>Model-guided library design</li>
-<li>Adaptive sampling strategies</li>
-</ul>
-</section>
-<section id="active-learning-frameworks" class="level3" data-number="23.4.2">
-<h3 data-number="23.4.2" class="anchored" data-anchor-id="active-learning-frameworks"><span class="header-section-number">23.4.2</span> Active Learning Frameworks</h3>
-<ul>
-<li>Acquisition functions for sequence selection</li>
-<li>Balancing exploration vs.&nbsp;exploitation</li>
-<li>Batch selection for experimental efficiency</li>
-</ul>
-</section>
-<section id="bayesian-optimization-in-sequence-space" class="level3" data-number="23.4.3">
-<h3 data-number="23.4.3" class="anchored" data-anchor-id="bayesian-optimization-in-sequence-space"><span class="header-section-number">23.4.3</span> Bayesian Optimization in Sequence Space</h3>
-<ul>
-<li>Surrogate models from foundation model embeddings</li>
-<li>Uncertainty quantification for design decisions</li>
-<li>Multi-objective optimization (activity, stability, specificity)</li>
-</ul>
-</section>
-</section>
-<section id="sec-validation-loops" class="level2" data-number="23.5">
-<h2 data-number="23.5" class="anchored" data-anchor-id="sec-validation-loops"><span class="header-section-number">23.5</span> Experimental Validation Loops</h2>
-<section id="design-build-test-learn-cycles" class="level3" data-number="23.5.1">
-<h3 data-number="23.5.1" class="anchored" data-anchor-id="design-build-test-learn-cycles"><span class="header-section-number">23.5.1</span> Design-Build-Test-Learn Cycles</h3>
-<ul>
-<li>Integration points for computational predictions</li>
-<li>High-throughput screening compatibility</li>
-<li>Feedback mechanisms for model refinement</li>
-</ul>
-</section>
-<section id="validation-assays" class="level3" data-number="23.5.2">
-<h3 data-number="23.5.2" class="anchored" data-anchor-id="validation-assays"><span class="header-section-number">23.5.2</span> Validation Assays</h3>
-<ul>
-<li>Massively parallel reporter assays (MPRAs)</li>
-<li>Deep mutational scanning for validation</li>
-<li>Cell-based functional assays</li>
-</ul>
-</section>
-<section id="iterative-refinement" class="level3" data-number="23.5.3">
-<h3 data-number="23.5.3" class="anchored" data-anchor-id="iterative-refinement"><span class="header-section-number">23.5.3</span> Iterative Refinement</h3>
-<ul>
-<li>Updating models with experimental results</li>
-<li>Transfer learning from validation data</li>
-<li>Closing the loop: from prediction to validated design</li>
-</ul>
+<section id="functional-conditioning-and-multi-objective-design" class="level3" data-number="23.2.3">
+<h3 data-number="23.2.3" class="anchored" data-anchor-id="functional-conditioning-and-multi-objective-design"><span class="header-section-number">23.2.3</span> Functional conditioning and multi-objective design</h3>
+<p>In real applications, we rarely want “anything that folds”. We want proteins that are stable, expressible, and soluble; functional (enzymatic activity, binding, signaling); and safe and manufacturable (low aggregation, low immunogenicity, good developability).</p>
+<p>To capture this, design pipelines combine foundation models with <strong>multi-objective optimization</strong>. A <strong>generative prior</strong> (PLM or diffusion model) proposes candidates. These candidates are then evaluated with <strong>oracles</strong>, which may be in silico (structure predictors, stability models, developability scores) or experimental (deep mutational scanning, binding assays, functional screens). Strategies like <strong>Bayesian optimization</strong>, <strong>evolutionary algorithms</strong>, or <strong>gradient-based editing</strong> iteratively improve proposals.</p>
+<p>Multi-objective design often produces a <strong>Pareto frontier</strong> of solutions trading off properties (e.g., activity vs.&nbsp;stability). Genomic foundation models contribute by providing <strong>cheap, differentiable oracles</strong> for properties linked to sequence (e.g., localization motifs, PTM sites) and encoding <strong>evolutionary constraints</strong> that discourage unrealistic sequences.</p>
+<hr>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>FIGURE SUGGESTION: 2D scatter plot mock-up of designed proteins along two axes (e.g., predicted stability vs.&nbsp;binding score), highlighting a Pareto frontier. Overlay different design strategies as colored point sets.</p>
+</div>
+</div>
+<hr>
 </section>
 </section>
-<section id="sec-biosafety" class="level2" data-number="23.6">
-<h2 data-number="23.6" class="anchored" data-anchor-id="sec-biosafety"><span class="header-section-number">23.6</span> Biosafety Considerations</h2>
-<section id="dual-use-concerns" class="level3" data-number="23.6.1">
-<h3 data-number="23.6.1" class="anchored" data-anchor-id="dual-use-concerns"><span class="header-section-number">23.6.1</span> Dual-Use Concerns</h3>
-<ul>
-<li>Potential misuse of generative capabilities</li>
-<li>Toxin and pathogen sequence screening</li>
-<li>Community guidelines and responsible disclosure</li>
-</ul>
+<section id="regulatory-and-noncoding-sequence-design" class="level2" data-number="23.3">
+<h2 data-number="23.3" class="anchored" data-anchor-id="regulatory-and-noncoding-sequence-design"><span class="header-section-number">23.3</span> Regulatory and noncoding sequence design</h2>
+<p>Most genomic foundation models in this book learn mappings from <strong>noncoding DNA or RNA</strong> to regulatory activities: expression, chromatin state, splicing patterns, or transcription factor binding. These models can be inverted to design regulatory sequences with desired behaviors.</p>
+<section id="promoter-and-enhancer-design" class="level3" data-number="23.3.1">
+<h3 data-number="23.3.1" class="anchored" data-anchor-id="promoter-and-enhancer-design"><span class="header-section-number">23.3.1</span> Promoter and enhancer design</h3>
+<p>Models trained on massive datasets (e.g., MPRA, ChIP–seq, ATAC–seq, CAGE) can predict regulatory activity from local sequence context <span class="citation" data-cites="deboer2020deciphering">(<a href="references.html#ref-deboer2020deciphering" role="doc-biblioref"><strong>deboer2020deciphering?</strong></a>)</span>. Design tasks include <strong>promoter optimization</strong> (maximize expression of a gene in a specific cell type or condition), <strong>cell-type-specific enhancers</strong> (high activity in a target cell/tissue and low activity elsewhere), and <strong>minimal regulatory elements</strong> (short synthetic enhancers with robust and tunable activity).</p>
+<p>Two broad approaches exist for regulatory sequence design. <strong>Gradient-based sequence editing</strong> treats a sequence-to-function model as differentiable with respect to input embeddings. We compute gradients of the desired objective with respect to nucleotides, apply projected gradient steps or “soft token” optimization, then project back to discrete bases. This leverages the same models used for interpretation (saliency maps, in silico mutagenesis) but runs gradients “in reverse” for design.</p>
+<p><strong>Generative regulatory models</strong> take an alternative approach. These models train autoregressive or diffusion models directly on genomic regulatory regions, condition on metadata (cell type, histone marks, accessibility), and sample synthetic enhancers/promoters with targeted activity profiles before filtering using oracles.</p>
 </section>
-<section id="safeguards-in-practice" class="level3" data-number="23.6.2">
-<h3 data-number="23.6.2" class="anchored" data-anchor-id="safeguards-in-practice"><span class="header-section-number">23.6.2</span> Safeguards in Practice</h3>
-<ul>
-<li>Sequence screening databases and tools</li>
-<li>Institutional review and oversight</li>
-<li>Model access controls and API restrictions</li>
-</ul>
+<section id="splicing-and-rna-processing" class="level3" data-number="23.3.2">
+<h3 data-number="23.3.2" class="anchored" data-anchor-id="splicing-and-rna-processing"><span class="header-section-number">23.3.2</span> Splicing and RNA processing</h3>
+<p>Models like SpliceAI and RNA-focused FMs (<a href="p2-ch08-rna.html" class="quarto-xref"><span>Chapter 8</span></a>) can predict splicing outcomes from local sequence context. Design applications include <strong>therapeutic splice modulation</strong> (design antisense oligos or CRISPR base edits that restore normal splicing), <strong>alternative isoform tuning</strong> (adjust splicing of specific exons to modulate protein isoforms), and <strong>RNA processing elements</strong> (design polyadenylation signals, UTRs, and RNA stability motifs).</p>
+<p>Design strategies mirror the promoter/enhancer setting: gradient-based editing, enumerative search guided by saliency maps, and generative sequence models trained on splicing-competent regions.</p>
 </section>
-<section id="ethical-frameworks" class="level3" data-number="23.6.3">
-<h3 data-number="23.6.3" class="anchored" data-anchor-id="ethical-frameworks"><span class="header-section-number">23.6.3</span> Ethical Frameworks</h3>
-<ul>
-<li>Balancing openness with security</li>
-<li>International coordination on biosafety</li>
-<li>Future governance challenges</li>
-</ul>
+<section id="rna-structure-and-functional-rna-design" class="level3" data-number="23.3.3">
+<h3 data-number="23.3.3" class="anchored" data-anchor-id="rna-structure-and-functional-rna-design"><span class="header-section-number">23.3.3</span> RNA structure and functional RNA design</h3>
+<p>RNA foundation models that jointly capture sequence and secondary/tertiary structure enable design of riboswitches and aptamers, guide RNAs with precise on-/off-target profiles, and synthetic RNAs for sensing and actuation (e.g., toehold switches). Here, the design objective blends <strong>structure</strong>, <strong>thermodynamics</strong>, and <strong>interaction propensity</strong> with genomic-context constraints (e.g., avoiding cryptic splice sites or immune-stimulatory motifs).</p>
+<hr>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>FIGURE SUGGESTION: Schematic of regulatory sequence design. Panel A: model predicts expression from promoter/enhancer sequence. Panel B: gradients or an optimization loop propose sequence edits. Panel C: synthetic sequences tested in an MPRA assay.</p>
+</div>
+</div>
+<hr>
 </section>
 </section>
-<section id="summary-and-key-takeaways" class="level2" data-number="23.7">
-<h2 data-number="23.7" class="anchored" data-anchor-id="summary-and-key-takeaways"><span class="header-section-number">23.7</span> Summary and Key Takeaways</h2>
+<section id="designbuildtestlearn-loops" class="level2" data-number="23.4">
+<h2 data-number="23.4" class="anchored" data-anchor-id="designbuildtestlearn-loops"><span class="header-section-number">23.4</span> Design–build–test–learn loops</h2>
+<p>Foundation models realize their full potential in <strong>closed-loop DBTL workflows</strong>. In the <strong>design</strong> phase, we use generative or optimization algorithms to propose sequences. During <strong>build</strong>, we synthesize DNA/RNA or construct libraries (pooled or array-based). The <strong>test</strong> phase assays function using high-throughput methods (e.g., MPRA, DMS, functional genomics screens). Finally, we <strong>learn</strong> by updating model parameters or retraining with new data, focusing on regimes where model uncertainty was high.</p>
+<section id="active-learning-and-adaptive-experiments" class="level3" data-number="23.4.1">
+<h3 data-number="23.4.1" class="anchored" data-anchor-id="active-learning-and-adaptive-experiments"><span class="header-section-number">23.4.1</span> Active learning and adaptive experiments</h3>
+<p>Active learning aims to select the <strong>most informative experiments</strong> given limited budget. <strong>Uncertainty sampling</strong> chooses sequences where the model is uncertain (e.g., high entropy over outputs). <strong>Bayesian optimization</strong> balances exploration (uncertainty) and exploitation (predicted high fitness). <strong>Diversity-aware selection</strong> enforces coverage over sequence and function space to avoid local optima.</p>
+<p>Genomic foundation models are especially well-suited for active learning. They provide <strong>calibrated uncertainty estimates</strong> (e.g., via ensembles, MC dropout, or explicit probabilistic outputs). They can be <strong>fine-tuned</strong> on task-specific data from each DBTL cycle, gradually shifting from a generic prior to a task-adapted model.</p>
 </section>
-<section id="exercises" class="level2" data-number="23.8">
-<h2 data-number="23.8" class="anchored" data-anchor-id="exercises"><span class="header-section-number">23.8</span> Exercises</h2>
+<section id="high-throughput-assays-as-feedback" class="level3" data-number="23.4.2">
+<h3 data-number="23.4.2" class="anchored" data-anchor-id="high-throughput-assays-as-feedback"><span class="header-section-number">23.4.2</span> High-throughput assays as feedback</h3>
+<p>Several assay modalities naturally pair with foundation models. <strong>MPRA / STARR-seq</strong> provides parallel readouts of regulatory element activity for hundreds of thousands of sequences. <strong>Deep mutational scanning</strong> enables systematic exploration of mutational neighborhoods around proteins or regulatory elements. <strong>CRISPR screens</strong> introduce perturbations to regulatory regions or coding genes, with phenotypic readouts (e.g., proliferation, expression).</p>
+<p>These assays generate <strong>dense local maps</strong> of function within specific sequence neighborhoods. Foundation models can interpolate across unmeasured variants, extrapolate to new regions by combining assay data with global priors, and suggest where to expand measurements next.</p>
+<hr>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>FIGURE SUGGESTION: Flowchart of a DBTL cycle specific to regulatory sequence design: model → library design → DNA synthesis → cellular assay → sequencing → model update. Use consistent design language with Chapter 20 (clinical) and Chapter 22 (drugs).</p>
+</div>
+</div>
+<hr>
 </section>
-<section id="glossary-terms" class="level2" data-number="23.9">
-<h2 data-number="23.9" class="anchored" data-anchor-id="glossary-terms"><span class="header-section-number">23.9</span> Glossary Terms</h2>
+</section>
+<section id="practical-considerations-and-pitfalls" class="level2" data-number="23.5">
+<h2 data-number="23.5" class="anchored" data-anchor-id="practical-considerations-and-pitfalls"><span class="header-section-number">23.5</span> Practical considerations and pitfalls</h2>
+<p>Design with genomic foundation models introduces a distinct set of <strong>practical challenges</strong> compared to prediction-only use.</p>
+<section id="constraints-safety-and-manufacturability" class="level3" data-number="23.5.1">
+<h3 data-number="23.5.1" class="anchored" data-anchor-id="constraints-safety-and-manufacturability"><span class="header-section-number">23.5.1</span> Constraints, safety, and manufacturability</h3>
+<p>Real-world designs must satisfy numerous constraints beyond the primary objective. <strong>Sequence-level constraints</strong> include GC content, repeats, restriction sites, and synthesis compatibility, as well as coding vs.&nbsp;noncoding frame integrity and avoiding unwanted ORFs. <strong>Contextual constraints</strong> encompass the chromatin environment, genomic integration site, neighboring regulatory elements, and species- and tissue-specific sequence biases. <strong>Safety and biosecurity</strong> considerations require avoiding sequences with known pathogenic motifs or virulence determinants and controlling dual-use risks (see <a href="p6-ch24-future.html" class="quarto-xref"><span>Chapter 24</span></a> for broader discussion).</p>
+<p>Design algorithms must either <strong>hard-encode constraints</strong> (e.g., only sample from constrained spaces) or use <strong>penalty terms</strong> in objective functions, ideally with interpretable trade-offs.</p>
+</section>
+<section id="model-failure-modes-in-the-design-regime" class="level3" data-number="23.5.2">
+<h3 data-number="23.5.2" class="anchored" data-anchor-id="model-failure-modes-in-the-design-regime"><span class="header-section-number">23.5.2</span> Model failure modes in the design regime</h3>
+<p>Many pitfalls from <span class="quarto-unresolved-ref">?sec-confounding</span> become amplified in design. <strong>Mode collapse toward training data</strong> occurs when generative models reproduce or minimally modify sequences seen during training, undermining novelty. <strong>Off-manifold proposals</strong> arise when aggressive optimization (e.g., many gradient steps) pushes sequences into regions where model predictions are unreliable. <strong>Reward hacking</strong> happens when optimization objectives only reflect surrogate scores (e.g., model-predicted activity), allowing the system to exploit quirks of the model rather than true biology.</p>
+<p>Mitigation strategies include regularizing designs toward realistic priors (e.g., KL penalties against the PLM prior), enforcing <strong>novelty thresholds</strong> relative to training sequences, and using <strong>ensembles or multi-model agreement</strong> to guard against idiosyncratic failures.</p>
+<hr>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>FIGURE SUGGESTION: Small panel illustrating “reward hacking” in sequence design: sequences optimized to extreme model scores that are actually biologically implausible (e.g., bizarre motifs, impossible structures).</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="design-paradigms-and-algorithmic-toolkits" class="level2" data-number="23.6">
+<h2 data-number="23.6" class="anchored" data-anchor-id="design-paradigms-and-algorithmic-toolkits"><span class="header-section-number">23.6</span> Design paradigms and algorithmic toolkits</h2>
+<p>Although implementation details vary, design workflows tend to fall into a few algorithmic patterns.</p>
+<p><strong>Gradient-based design</strong> uses differentiable models and surrogate continuous relaxations of discrete sequences. We apply gradient ascent with regularization and projection. This approach is efficient in high-dimensional spaces but can produce off-manifold, adversarial sequences.</p>
+<p><strong>Evolutionary and genetic algorithms</strong> maintain populations of sequences, applying mutation, crossover, and selection based on model or assay scores. This approach provides a natural fit for multi-objective optimization and discrete constraints.</p>
+<p><strong>Bayesian optimization and bandits</strong> treat the sequence-to-fitness mapping as an unknown function, using a surrogate (e.g., Gaussian process, neural surrogate) to guide sampling. This strategy is particularly powerful when experimental budgets are small and assays are expensive.</p>
+<p><strong>Reinforcement learning (RL)</strong> formulates design as a sequential decision problem (e.g., build sequence token-by-token), using rewards based on foundation model predictions or assay outcomes. RL can leverage <strong>policy constraints</strong> to maintain similarity to natural sequences.</p>
+<p><strong>Diffusion and flow-based generative models</strong> learn to map noise to sequences (or sequence–structure pairs), optionally conditioned on design targets. These models support sampling diverse sets of candidates with controllable properties.</p>
+<hr>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>FIGURE SUGGESTION: Table summarizing design algorithm families (gradient-based, evolutionary, Bayesian optimization, RL, diffusion) with columns for “pros”, “cons”, “typical use cases”, and “interaction with foundation models”.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="case-studies-and-applications" class="level2" data-number="23.7">
+<h2 data-number="23.7" class="anchored" data-anchor-id="case-studies-and-applications"><span class="header-section-number">23.7</span> Case studies and applications</h2>
+<p>Below are representative application areas where genomic foundation model-enabled design is already making impact.</p>
+<section id="therapeutic-protein-and-antibody-design" class="level3" data-number="23.7.1">
+<h3 data-number="23.7.1" class="anchored" data-anchor-id="therapeutic-protein-and-antibody-design"><span class="header-section-number">23.7.1</span> Therapeutic protein and antibody design</h3>
+<p><strong>De novo enzymes</strong> represent designed catalysts for specific chemical transformations, guided by structural and stability models. <strong>Antibodies and binders</strong> include synthetic binders targeting viral proteins, oncogenic receptors, or immune checkpoints, where FMs help optimize binding affinity and developability. <strong>Cytokines and signaling proteins</strong> comprise designed variants with tuned half-lives, receptor specificities, and signaling strength.</p>
+<p>Foundation models serve multiple roles in these applications. They provide priors over plausible sequences and interfaces. They act as oracles for properties such as stability, aggregation, and PTM patterns. They function as feature extractors for downstream models that predict pharmacokinetics or immunogenicity.</p>
+</section>
+<section id="synthetic-regulatory-circuits-and-cell-engineering" class="level3" data-number="23.7.2">
+<h3 data-number="23.7.2" class="anchored" data-anchor-id="synthetic-regulatory-circuits-and-cell-engineering"><span class="header-section-number">23.7.2</span> Synthetic regulatory circuits and cell engineering</h3>
+<p><strong>Synthetic promoters and enhancers</strong> drive precise expression programs in CAR-T cells, stem cells, or engineered tissues. <strong>Logic-gated regulatory elements</strong> integrate multiple transcription factor inputs. <strong>Safety switches</strong> (kill switches, inducible expression) are embedded in therapeutic constructs.</p>
+<p>Genomic FMs are crucial for predicting how designed elements behave <strong>within real genomic and epigenomic contexts</strong>, not just in isolated plasmid systems.</p>
+</section>
+<section id="genome-scale-perturbation-libraries" class="level3" data-number="23.7.3">
+<h3 data-number="23.7.3" class="anchored" data-anchor-id="genome-scale-perturbation-libraries"><span class="header-section-number">23.7.3</span> Genome-scale perturbation libraries</h3>
+<p>Even when individual sequences are not used as products, design methods power saturation mutagenesis libraries for functional genomics, tiled CRISPR perturbation libraries targeting regulatory landscapes, and Perturb-seq designs that multiplex many regulatory variants across cell types.</p>
+<p>Here, the goal is to <strong>maximize information content</strong> of experiments rather than optimize a single construct, but the same models and algorithms apply.</p>
+<hr>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>FIGURE SUGGESTION: Multi-panel “applications” figure with small icons or schematic vignettes for (A) therapeutic proteins, (B) regulatory circuits, and (C) functional genomics libraries. Reuse iconography from previous chapters for coherence.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="outlook" class="level2" data-number="23.8">
+<h2 data-number="23.8" class="anchored" data-anchor-id="outlook"><span class="header-section-number">23.8</span> Outlook</h2>
+<p>Design sits at the intersection of <strong>modeling, optimization, and experimental biology</strong>. Genomic foundation models are rapidly shifting design from artisanal, hand-crafted processes to <strong>principled, data-driven workflows</strong> that can propose novel proteins and regulatory elements beyond natural evolution, exploit massive unlabeled sequence corpora as priors on what biology “allows”, and close loops between <strong>in silico</strong> hypotheses and <strong>in vitro/in vivo</strong> measurements.</p>
+<p>However, the same capabilities that enable beneficial applications also raise <strong>epistemic risks</strong> (overconfidence in models, especially out-of-distribution) and <strong>ethical and governance challenges</strong> (dual-use potential, unequal access, and misuse).</p>
+<p>These themes connect directly to <a href="p6-ch20-clinical.html" class="quarto-xref"><span>Chapter 20</span></a> and <span class="quarto-unresolved-ref">?sec-drug</span>, and <a href="p6-ch24-future.html" class="quarto-xref"><span>Chapter 24</span></a>. Together, they suggest that the future of genomic design will depend not only on better models, but also on <strong>careful integration with experimental design, rigorous evaluation, and robust norms for safe and equitable use</strong>.</p>
 
 
 </section>

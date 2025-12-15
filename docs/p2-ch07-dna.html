@@ -615,16 +615,7 @@ window.Quarto = {
   <li><a href="#caduceus-bidirectional-modeling-with-reverse-complement-equivariance" id="toc-caduceus-bidirectional-modeling-with-reverse-complement-equivariance" class="nav-link" data-scroll-target="#caduceus-bidirectional-modeling-with-reverse-complement-equivariance"><span class="header-section-number">7.7</span> Caduceus: Bidirectional Modeling with Reverse-Complement Equivariance</a></li>
   <li><a href="#grover-generative-regulatory-foundation-models" id="toc-grover-generative-regulatory-foundation-models" class="nav-link" data-scroll-target="#grover-generative-regulatory-foundation-models"><span class="header-section-number">7.8</span> GROVER: Generative Regulatory Foundation Models</a></li>
   <li><a href="#genslms-codon-tokenization-and-whole-genome-modeling" id="toc-genslms-codon-tokenization-and-whole-genome-modeling" class="nav-link" data-scroll-target="#genslms-codon-tokenization-and-whole-genome-modeling"><span class="header-section-number">7.9</span> GenSLMs: Codon Tokenization and Whole-Genome Modeling</a></li>
-  <li><a href="#evo-2-genome-scale-language-modeling-across-all-life" id="toc-evo-2-genome-scale-language-modeling-across-all-life" class="nav-link" data-scroll-target="#evo-2-genome-scale-language-modeling-across-all-life"><span class="header-section-number">7.10</span> Evo 2: Genome-Scale Language Modeling Across All Life</a>
-  <ul class="collapse">
-  <li><a href="#scale-and-training-corpus" id="toc-scale-and-training-corpus" class="nav-link" data-scroll-target="#scale-and-training-corpus"><span class="header-section-number">7.10.1</span> Scale and Training Corpus</a></li>
-  <li><a href="#architecture-stripedhyena-2" id="toc-architecture-stripedhyena-2" class="nav-link" data-scroll-target="#architecture-stripedhyena-2"><span class="header-section-number">7.10.2</span> Architecture: StripedHyena 2</a></li>
-  <li><a href="#emergent-biological-knowledge" id="toc-emergent-biological-knowledge" class="nav-link" data-scroll-target="#emergent-biological-knowledge"><span class="header-section-number">7.10.3</span> Emergent Biological Knowledge</a></li>
-  <li><a href="#zero-shot-variant-effect-prediction" id="toc-zero-shot-variant-effect-prediction" class="nav-link" data-scroll-target="#zero-shot-variant-effect-prediction"><span class="header-section-number">7.10.4</span> Zero-Shot Variant Effect Prediction</a></li>
-  <li><a href="#cross-species-applications" id="toc-cross-species-applications" class="nav-link" data-scroll-target="#cross-species-applications"><span class="header-section-number">7.10.5</span> Cross-Species Applications</a></li>
-  <li><a href="#generative-capabilities" id="toc-generative-capabilities" class="nav-link" data-scroll-target="#generative-capabilities"><span class="header-section-number">7.10.6</span> Generative Capabilities</a></li>
-  <li><a href="#limitations-and-trade-offs" id="toc-limitations-and-trade-offs" class="nav-link" data-scroll-target="#limitations-and-trade-offs"><span class="header-section-number">7.10.7</span> Limitations and Trade-offs</a></li>
-  </ul></li>
+  <li><a href="#evo-2-genome-scale-language-modeling-across-all-life" id="toc-evo-2-genome-scale-language-modeling-across-all-life" class="nav-link" data-scroll-target="#evo-2-genome-scale-language-modeling-across-all-life"><span class="header-section-number">7.10</span> Evo 2: Genome-Scale Language Modeling Across All Life</a></li>
   <li><a href="#central-dogma-aware-and-annotation-enriched-models" id="toc-central-dogma-aware-and-annotation-enriched-models" class="nav-link" data-scroll-target="#central-dogma-aware-and-annotation-enriched-models"><span class="header-section-number">7.11</span> Central-Dogma-Aware and Annotation-Enriched Models</a>
   <ul class="collapse">
   <li><a href="#life-code-the-central-dogma-as-inductive-bias" id="toc-life-code-the-central-dogma-as-inductive-bias" class="nav-link" data-scroll-target="#life-code-the-central-dogma-as-inductive-bias"><span class="header-section-number">7.11.1</span> Life-Code: The Central Dogma as Inductive Bias</a></li>
@@ -664,6 +655,8 @@ window.Quarto = {
 </header>
 
 
+<p>Genomic language models extend the ideas of protein language models (<a href="p2-ch06-plm.html" class="quarto-xref"><span>Chapter 6</span></a>) to the DNA level. They treat genomes themselves as a corpus, learn statistical regularities through self-supervision, and reuse those representations for many downstream tasks. Where Chapters 5–7 focused on supervised sequence-to-function CNNs and specialized architectures, and <a href="p3-ch10-tokens.html" class="quarto-xref"><span>Chapter 10</span></a> focused on representation and tokenization, this chapter turns to genomic foundation models: large, often transformer-based or hybrid architectures trained on unlabeled genomic sequence at scale.</p>
+<p>These models aim to provide a single, reusable backbone for tasks ranging from regulatory annotation and variant effect prediction to cross-species transfer and clinical prioritization. They mark the transition from building one model per dataset to constructing general-purpose genomic backbones analogous to BERT, GPT, and ESM in natural and protein language modeling.</p>
 <div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -677,8 +670,6 @@ Warning
 <p><strong>TODO:</strong> - Flesh-out Evo-2 section - Add figure: timeline of genomic language model development (DNABERT → Nucleotide Transformer → HyenaDNA → Caduceus → GROVER) - Add figure: architecture comparison diagram showing transformer vs Hyena vs Mamba approaches - Add figure: context length evolution visualization showing the dramatic expansion from 512 bp to 1 Mb - Add visualization: benchmark performance comparison across Nucleotide Transformer tasks - Add figure: conceptual diagram of in-context learning in genomics (HyenaDNA) - Add table: comprehensive model comparison with parameters, training data, context length, and key innovations - Citations: verify all citations are in bibliography</p>
 </div>
 </div>
-<p>Genomic language models extend the ideas of protein language models (<a href="p2-ch06-plm.html" class="quarto-xref"><span>Chapter 6</span></a>) to the DNA level. They treat genomes themselves as a corpus, learn statistical regularities through self-supervision, and reuse those representations for many downstream tasks. Where Chapters 5–7 focused on supervised sequence-to-function CNNs and specialized architectures, and <a href="p3-ch10-tokens.html" class="quarto-xref"><span>Chapter 10</span></a> focused on representation and tokenization, this chapter turns to genomic foundation models: large, often transformer-based or hybrid architectures trained on unlabeled genomic sequence at scale.</p>
-<p>These models aim to provide a single, reusable backbone for tasks ranging from regulatory annotation and variant effect prediction to cross-species transfer and clinical prioritization. They mark the transition from building one model per dataset to constructing general-purpose genomic backbones analogous to BERT, GPT, and ESM in natural and protein language modeling.</p>
 <section id="from-supervised-cnns-to-self-supervised-genomic-language-models" class="level2" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="from-supervised-cnns-to-self-supervised-genomic-language-models"><span class="header-section-number">7.1</span> From Supervised CNNs to Self-Supervised Genomic Language Models</h2>
 <p>The CNN era represented by DeepSEA, ExPecto, and SpliceAI (Chapters 5–7) shared a common pattern. Models took one-hot encoded DNA sequence around a locus as input, predicted task-specific labels such as chromatin marks, expression levels, or splice junctions, and optimized supervised loss functions against those labels. This approach achieved remarkable performance but suffered from three fundamental constraints.</p>
@@ -687,6 +678,19 @@ Warning
 <p>The third constraint was limited reuse. Features learned for one problem did not automatically transfer to others. A model trained to predict chromatin accessibility might learn representations of regulatory motifs, but those representations were not directly accessible for other tasks like variant effect prediction or gene expression modeling without substantial re-engineering.</p>
 <p>Protein language models showed a different route: self-supervised learning on unlabeled sequences, with downstream tasks solved by probing or fine-tuning. Genomic language models import this recipe to DNA. The training data comprises large collections of genomic sequences across species, individuals, or functional regions. The training objectives include masked language modeling, where the model predicts masked bases or tokens from surrounding context, and next-token or sequence modeling, where the model predicts the next token in a sequence. Some models combine these self-supervised objectives with auxiliary tasks such as predicting known annotations.</p>
 <p>These pretrained models can be used in multiple ways. The simplest approach freezes the model and trains lightweight probes for specific tasks. Fine-tuning updates the entire model or uses adapter modules for specialized downstream applications. Zero-shot or few-shot scoring compares log-likelihoods of alternative sequences or alleles without any task-specific training. The promise is that once a sufficiently powerful backbone is trained, it becomes the default starting point for nearly any DNA-level prediction problem.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Figure suggestion:</strong> Side-by-side comparison showing the supervised CNN paradigm (left panel: fixed architecture trained for specific chromatin prediction task) versus the self-supervised language model paradigm (right panel: general backbone pretrained on unlabeled sequence, then adapted to multiple downstream tasks with lightweight heads).</p>
+</div>
+</div>
 </section>
 <section id="dnabert-bert-for-k-merized-dna" class="level2" data-number="7.2">
 <h2 data-number="7.2" class="anchored" data-anchor-id="dnabert-bert-for-k-merized-dna"><span class="header-section-number">7.2</span> DNABERT: BERT for K-merized DNA</h2>
@@ -709,6 +713,17 @@ Warning
 <p>The Nucleotide Transformer work contributed several important ideas to the field. Cross-species pretraining, where training spans many genomes rather than a single reference, exposes the model to diverse sequence patterns, different regulatory architectures, and evolutionary constraints that recur across lineages. This mirrors the use of large multi-species multiple sequence alignments in protein language models but operates at the raw DNA level.</p>
 <p>To quantify representation quality, the Nucleotide Transformer introduced a benchmark panel of genomic tasks that has become a standard yardstick for subsequent DNA language models. Typical tasks include promoter and enhancer classification, histone mark and chromatin accessibility prediction, variant and pathogenicity proxies, and regulatory element type classification. Models are evaluated via linear probes, shallow classifiers, or light fine-tuning.</p>
 <p>As with protein and natural-language models, performance improved predictably with larger models, more pretraining data, and longer context windows. These scaling trends help forecast the returns from investing in even larger genomic language models.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Table suggestion:</strong> Comparison table showing key model characteristics:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -745,6 +760,8 @@ Warning
 </tr>
 </tbody>
 </table>
+</div>
+</div>
 </section>
 <section id="gpn-cross-species-pretraining-for-variant-effect-prediction" class="level2" data-number="7.5">
 <h2 data-number="7.5" class="anchored" data-anchor-id="gpn-cross-species-pretraining-for-variant-effect-prediction"><span class="header-section-number">7.5</span> GPN: Cross-Species Pretraining for Variant Effect Prediction</h2>
@@ -764,6 +781,19 @@ Warning
 <p>Despite its long context, HyenaDNA maintains base-level resolution by using single-nucleotide tokens. This means single-nucleotide variants can be evaluated in the context of megabases of surrounding sequence without the ambiguity introduced by k-mer tokenization.</p>
 <p>On Nucleotide Transformer benchmarks and additional tasks, HyenaDNA demonstrated in-context learning behaviors that had not previously been observed in genomic models. Performance improved when examples were included in the input context without updating model weights, suggesting that at sufficient scale, DNA models can adapt to new tasks or distributions via prompts rather than fine-tuning. This mirrors phenomena observed in large natural language models.</p>
 <p>On GenomicBenchmarks and related evaluations, HyenaDNA achieved state-of-the-art results on the majority of tasks, often by substantial margins. These results illustrated that architectural innovations enabling longer context can simultaneously provide both extended range and improved predictive accuracy.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Figure suggestion:</strong> Visualization showing the dramatic expansion of context length across genomic language models, with representative regulatory phenomena (TF binding sites, enhancer-promoter loops, TAD boundaries) marked at their characteristic length scales. Models plotted chronologically from DNABERT (512 bp) through Nucleotide Transformer (6 kb) to HyenaDNA (1 Mb).</p>
+</div>
+</div>
 </section>
 <section id="caduceus-bidirectional-modeling-with-reverse-complement-equivariance" class="level2" data-number="7.7">
 <h2 data-number="7.7" class="anchored" data-anchor-id="caduceus-bidirectional-modeling-with-reverse-complement-equivariance"><span class="header-section-number">7.7</span> Caduceus: Bidirectional Modeling with Reverse-Complement Equivariance</h2>
@@ -782,19 +812,6 @@ Warning
 </section>
 <section id="genslms-codon-tokenization-and-whole-genome-modeling" class="level2" data-number="7.9">
 <h2 data-number="7.9" class="anchored" data-anchor-id="genslms-codon-tokenization-and-whole-genome-modeling"><span class="header-section-number">7.9</span> GenSLMs: Codon Tokenization and Whole-Genome Modeling</h2>
-<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>MAKE MUCH MORE CONSISE</strong></p>
-</div>
-</div>
 <p>The DNA language models discussed thus far, including DNABERT, Nucleotide Transformer, HyenaDNA, and Caduceus, were designed primarily for human and multi-species genomics applications such as regulatory prediction and variant effect estimation. GenSLMs (Genome-scale Language Models) represents a distinct design point that targets pathogen surveillance and viral evolution rather than human regulatory genomics <span class="citation" data-cites="zvyagin_genslms_2022">(<a href="references.html#ref-zvyagin_genslms_2022" role="doc-biblioref">Zvyagin et al. 2022</a>)</span>. The model illustrates how different biological applications motivate different architectural and tokenization choices, even within the broader family of genomic foundation models.</p>
 <p>GenSLMs operates at the codon level rather than the nucleotide level. Where most DNA language models tokenize sequences into nucleotides, k-mers, or BPE-derived subwords, GenSLMs treats each three-nucleotide codon as a single token. This choice reflects an explicit alignment with the central dogma of molecular biology: codons are the fundamental units of translation from nucleic acid to protein, and mutations at the codon level determine amino acid changes that drive phenotypic evolution. The approach yields a vocabulary of 64 codon tokens (plus special tokens for noncoding regions and frame shifts), intermediate in size between character-level tokenization (4 tokens) and typical BPE vocabularies (4,096 to 32,000 tokens).</p>
 <p>The codon-level tokenization enables GenSLMs to model entire viral genomes as sequences of manageable length. A SARS-CoV-2 genome spans approximately 30,000 nucleotides, which translates to roughly 10,000 codons. This places whole-genome modeling within reach of standard transformer context windows, avoiding the architectural innovations required to handle megabase-scale human sequences. The approach trades single-nucleotide resolution for the ability to capture genome-wide patterns and cross-protein dependencies that would be difficult to model at nucleotide resolution.</p>
@@ -817,72 +834,30 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>UPDATE THIS SECTION</strong></p>
+<p><strong>TODO:</strong> Flesh out this section with more detail on architecture, training corpus composition, benchmark performance, and generative capabilities. Add discussion of zero-shot variant scoring methodology and cross-species transfer results.</p>
 </div>
 </div>
-<section id="scale-and-training-corpus" class="level3" data-number="7.10.1">
-<h3 data-number="7.10.1" class="anchored" data-anchor-id="scale-and-training-corpus"><span class="header-section-number">7.10.1</span> Scale and Training Corpus</h3>
-<ul>
-<li>9.3 trillion DNA tokens from OpenGenome2 dataset</li>
-<li>Pan-species: bacteria, archaea, eukaryotes, phages, organelles</li>
-<li>7B and 40B parameter variants</li>
-<li>Fully open (weights, code, training data)</li>
-</ul>
-</section>
-<section id="architecture-stripedhyena-2" class="level3" data-number="7.10.2">
-<h3 data-number="7.10.2" class="anchored" data-anchor-id="architecture-stripedhyena-2"><span class="header-section-number">7.10.2</span> Architecture: StripedHyena 2</h3>
-<ul>
-<li>Hybrid convolutional-attention design</li>
-<li>1 million token context window at single-nucleotide resolution</li>
-<li>Subquadratic scaling enabling megabase processing</li>
-<li>Autoregressive training objective (next-base prediction)</li>
-</ul>
-</section>
-<section id="emergent-biological-knowledge" class="level3" data-number="7.10.3">
-<h3 data-number="7.10.3" class="anchored" data-anchor-id="emergent-biological-knowledge"><span class="header-section-number">7.10.3</span> Emergent Biological Knowledge</h3>
-<ul>
-<li>Learns exon-intron boundaries without supervision</li>
-<li>Discovers TF binding site patterns</li>
-<li>Captures protein structural elements</li>
-<li>Identifies prophage genomic regions</li>
-<li>Mechanistic interpretability analyses reveal breadth of learned features</li>
-</ul>
-</section>
-<section id="zero-shot-variant-effect-prediction" class="level3" data-number="7.10.4">
-<h3 data-number="7.10.4" class="anchored" data-anchor-id="zero-shot-variant-effect-prediction"><span class="header-section-number">7.10.4</span> Zero-Shot Variant Effect Prediction</h3>
-<ul>
-<li>Likelihood-based scoring: compare P(ref) vs P(alt)</li>
-<li>Competitive pathogenic/benign classification without variant-specific training</li>
-<li>BRCA1 VUS classification via simple classifiers on embeddings</li>
-<li>Noncoding and coding variants in a single framework</li>
-</ul>
-</section>
-<section id="cross-species-applications" class="level3" data-number="7.10.5">
-<h3 data-number="7.10.5" class="anchored" data-anchor-id="cross-species-applications"><span class="header-section-number">7.10.5</span> Cross-Species Applications</h3>
-<ul>
-<li>Variant interpretation in non-model organisms (livestock, crops)</li>
-<li>Mutation load quantification for breeding programs</li>
-<li>Genome editing design across species</li>
-<li>Trade-off: generality vs human-specific optimization</li>
-</ul>
-</section>
-<section id="generative-capabilities" class="level3" data-number="7.10.6">
-<h3 data-number="7.10.6" class="anchored" data-anchor-id="generative-capabilities"><span class="header-section-number">7.10.6</span> Generative Capabilities</h3>
-<ul>
-<li>Mitochondrial, prokaryotic, eukaryotic sequence generation</li>
-<li>Genome-scale coherence exceeding prior methods</li>
-<li>Inference-time search for controllable generation</li>
-<li>First inference-time scaling results in biology (epigenomic structure)</li>
-</ul>
-</section>
-<section id="limitations-and-trade-offs" class="level3" data-number="7.10.7">
-<h3 data-number="7.10.7" class="anchored" data-anchor-id="limitations-and-trade-offs"><span class="header-section-number">7.10.7</span> Limitations and Trade-offs</h3>
-<ul>
-<li>Generalist vs specialist: AlphaMissense/AlphaGenome may outperform on human-specific tasks</li>
-<li>Cross-ref to VEP chapter (<a href="p3-ch12-vep.html" class="quarto-xref"><span>Chapter 12</span></a>) for benchmarking details</li>
-<li>Calibration requirements before clinical use</li>
-</ul>
-</section>
+<p>Evo 2 represents the next frontier in genomic foundation models: training at truly genome-scale across the full diversity of life. While previous models either focused on specific organisms (DNABERT on human, GPN on plants, GenSLMs on viruses) or trained on multi-species corpora at more limited scale (Nucleotide Transformer), Evo 2 aims to learn universal genomic patterns that span bacteria, archaea, eukaryotes, and phages.</p>
+<p>The training corpus for Evo 2 draws from the OpenGenome2 dataset, comprising 9.3 trillion DNA tokens across all domains of life. This massive scale exposes the model to the full spectrum of genomic organization, from compact prokaryotic gene arrangements to sprawling eukaryotic regulatory landscapes with extensive noncoding sequence. The model comes in two sizes: a 7 billion parameter variant suitable for most applications and a 40 billion parameter version for maximum capacity.</p>
+<p>The architecture builds on StripedHyena 2, a hybrid design that combines convolutional operations with selective attention mechanisms. This enables the model to process sequences up to 1 million tokens (nucleotides) in length while maintaining computational tractability. The autoregressive training objective, predicting the next base given all previous bases, differs from the masked language modeling used in DNABERT and related models, potentially providing complementary strengths for sequence generation and likelihood-based scoring.</p>
+<p>Evo 2 exhibits several forms of emergent biological knowledge despite training only on raw sequence. The model learns to identify exon-intron boundaries without explicit annotation, discovers transcription factor binding site patterns that match known motifs, captures aspects of protein secondary and tertiary structure when processing coding sequences, and even identifies prophage insertion regions in bacterial genomes. These capabilities emerge from pure sequence statistics, demonstrating that genome-scale pretraining captures fundamental biological organization.</p>
+<p>For variant effect prediction, Evo 2 enables zero-shot scoring via likelihood ratios. By comparing the model’s probability for sequences containing reference versus alternative alleles, variants can be scored for their consistency with learned genomic patterns. On benchmarks of pathogenic versus benign variants, Evo 2’s zero-shot scores achieve competitive performance with specialized supervised methods, though careful calibration remains necessary before clinical application. The model also supports classification of variants of uncertain significance in genes like BRCA1 through simple classifiers trained on its embeddings.</p>
+<p>The pan-species training enables several cross-species applications. Variant interpretation extends naturally to non-model organisms, supporting conservation genomics and agricultural breeding programs where labeled training data is scarce. The model’s learned representations cluster sequences by phylogenetic relationships even without explicit evolutionary modeling. This makes Evo 2 particularly valuable for applications in livestock genomics, crop improvement, and wildlife conservation where human-trained models provide limited guidance.</p>
+<p>Beyond discriminative tasks, Evo 2 demonstrates generative capabilities. The model can synthesize plausible mitochondrial genomes, prokaryotic operons, and eukaryotic regulatory regions with coherence across kilobase to megabase scales. Inference-time search procedures enable controllable generation with specified properties, such as desired GC content or regulatory motif composition. Recent work has shown that inference-time scaling, where additional computation at test time improves generation quality, applies to genomic generation tasks including prediction of epigenomic structure.</p>
+<p>The trade-off inherent in Evo 2’s design is generality versus specialization. As a generalist model spanning all life, it may be outperformed by human-specific models like AlphaMissense or tissue-specific models on narrow benchmarks. However, its breadth enables applications beyond the scope of specialized models, particularly in organisms and genomic contexts where training data is limited. The model represents a bet that the shared principles of genome organization across life provide sufficient signal for a single foundation to support diverse applications.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Figure suggestion:</strong> Multi-panel figure showing (A) training corpus composition across the tree of life, (B) StripedHyena 2 architecture schematic highlighting hybrid attention-convolution blocks, (C) t-SNE projection of sequence embeddings colored by taxonomic group, and (D) zero-shot variant effect scores compared to experimental pathogenicity labels.</p>
+</div>
+</div>
 </section>
 <section id="central-dogma-aware-and-annotation-enriched-models" class="level2" data-number="7.11">
 <h2 data-number="7.11" class="anchored" data-anchor-id="central-dogma-aware-and-annotation-enriched-models"><span class="header-section-number">7.11</span> Central-Dogma-Aware and Annotation-Enriched Models</h2>
@@ -900,6 +875,19 @@ Warning
 <p>This design moves toward fully structured genomic language models where the input is not only DNA bases but also position-specific metadata. The resulting representations can directly integrate sequence, structure, and functional annotations in a unified framework.</p>
 <p>The associated model BioFM, built on BioToken, achieves competitive or superior results relative to specialized models like Enformer and SpliceAI across genomic benchmarks including noncoding pathogenicity prediction, expression modulation, sQTL prediction, and long-range genomic interactions. Notably, BioFM achieves state-of-the-art performance with significantly fewer parameters (265M), substantially reducing training costs and computational requirements compared to larger models.</p>
 <p>Life-Code and BioToken foreshadow the multi-modal, multi-omic foundation models discussed in Part IV, where sequence is only one of many integrated information streams.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Figure suggestion:</strong> Comparative diagram showing three tokenization approaches for the same genomic locus: (top) standard nucleotide tokenization, (middle) Life-Code with region-specific codon and subword tokens, (bottom) BioToken composite tokens encoding sequence, variants, and functional annotations.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="using-genomic-language-models-in-practice" class="level2" data-number="7.12">
@@ -929,13 +917,15 @@ Warning
 <p>Self-supervision provides a viable path to general genomic representations. Models trained purely on the statistical structure of DNA sequence, without any functional labels, learn representations that transfer to diverse downstream tasks. This validates the foundation model paradigm for genomics and suggests continued scaling will yield further improvements.</p>
 <p>Scale and diversity matter substantially for model quality. Performance improves predictably with model size, training data volume, and training data diversity. Including multiple species, populations, and genomic contexts yields more robust representations than training on a single reference genome.</p>
 <p>Long-range context is biologically necessary for many applications. Regulatory phenomena operate at tens to hundreds of kilobases, and the development of efficient architectures like HyenaDNA and Caduceus finally allows modeling these interactions at single-base resolution. The progression from 512 bp to 1 Mb context lengths represents a fundamental capability improvement.</p>
+<p>Biological inductive biases can substitute for scale in some applications. Reverse-complement equivariance in Caduceus, central dogma awareness in Life-Code, and variant encoding in BioToken all demonstrate that incorporating domain knowledge into model architecture improves data efficiency and often matches or exceeds the performance of larger generic models.</p>
 <p>Self-supervision and supervision are complementary rather than competing approaches. Self-supervised language models excel at learning broad, reusable features, but they do not automatically solve every downstream problem. Specialized architectures and supervised objectives, such as Enformer and related models discussed in <a href="p2-ch09-hybrid.html" class="quarto-xref"><span>Chapter 9</span></a>, remain crucial for accurate quantitative prediction of complex genomic readouts.</p>
 <p>Several important limitations remain. Current models struggle with complex variant patterns beyond single-nucleotide changes, including indels, structural variants, and epistatic interactions across distant loci. Training data and labels remain skewed toward certain ancestries, raising concerns about performance and calibration in underrepresented populations. Interpretability is limited, as it remains difficult to explain why a model assigns a particular score to a variant in terms that connect to biological mechanism. Integration with other data modalities (chromatin, expression, 3D genome structure, clinical phenotypes) is still in its early stages.</p>
+<p>The evaluation of these models also presents challenges. Benchmarks often focus on classification tasks with clear labels (promoter versus nonpromoter, pathogenic versus benign), but many real applications involve continuous regulatory effects or context-dependent outcomes that are harder to assess. The field would benefit from standardized evaluation protocols that better capture the diversity of genomic applications and the nuances of regulatory prediction. These evaluation challenges are explored in depth in <a href="p5-ch16-benchmarks.html" class="quarto-xref"><span>Chapter 16</span></a> and <a href="p5-ch17-eval.html" class="quarto-xref"><span>Chapter 17</span></a>.</p>
 </section>
 <section id="summary" class="level2" data-number="7.14">
 <h2 data-number="7.14" class="anchored" data-anchor-id="summary"><span class="header-section-number">7.14</span> Summary</h2>
-<p>This chapter surveyed the landscape of genomic language models, from early proof-of-concept systems like DNABERT through scaled models like Nucleotide Transformer to architectural innovations enabling megabase context in HyenaDNA and Caduceus. We examined how models like GROVER complement sequence-based approaches by learning from regulatory tracks, and how annotation-enriched architectures like Life-Code and BioToken incorporate biological structure directly into the modeling framework.</p>
-<p>The key lessons are that self-supervised pretraining transfers effectively to genomics, that architectural choices enabling long-range context provide both efficiency and accuracy improvements, and that biological inductive biases (reverse-complement equivariance, central dogma awareness, variant encoding) can substitute for raw scale in some applications.</p>
+<p>This chapter surveyed the landscape of genomic language models, from early proof-of-concept systems like DNABERT through scaled models like Nucleotide Transformer to architectural innovations enabling megabase context in HyenaDNA and Caduceus. We examined how models like GROVER complement sequence-based approaches by learning from regulatory tracks, how GenSLMs demonstrated domain-specific tokenization for viral surveillance, and how Evo 2 pushed toward universal genome-scale modeling across all life. Finally, we explored annotation-enriched architectures like Life-Code and BioToken that incorporate biological structure directly into the modeling framework.</p>
+<p>The key lessons are that self-supervised pretraining transfers effectively to genomics, that architectural choices enabling long-range context provide both efficiency and accuracy improvements, and that biological inductive biases (reverse-complement equivariance, central dogma awareness, variant encoding) can substitute for raw scale in some applications. These models establish a foundation for the field but leave important gaps in our ability to predict quantitative molecular readouts, integrate multi-omic context, and provide mechanistic explanations of their predictions.</p>
 <p>In <a href="p2-ch09-hybrid.html" class="quarto-xref"><span>Chapter 9</span></a>, we turn to Enformer and related long-range sequence-to-function models that explicitly predict molecular readouts from sequence. These models close the loop between self-supervised sequence understanding and supervised functional prediction, addressing a key limitation of pure language models: their indirect relationship to quantitative molecular phenotypes.</p>
 
 

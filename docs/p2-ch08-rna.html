@@ -95,6 +95,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -577,20 +606,49 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#proposed-position" id="toc-proposed-position" class="nav-link active" data-scroll-target="#proposed-position"><span class="header-section-number">8.1</span> Proposed Position</a></li>
-  <li><a href="#chapter-outline" id="toc-chapter-outline" class="nav-link" data-scroll-target="#chapter-outline"><span class="header-section-number">8.2</span> Chapter Outline</a>
+  <li><a href="#why-rna-modeling-is-different" id="toc-why-rna-modeling-is-different" class="nav-link active" data-scroll-target="#why-rna-modeling-is-different"><span class="header-section-number">8.1</span> Why RNA Modeling Is Different</a>
   <ul class="collapse">
-  <li><a href="#introduction-why-rna-modeling-is-different" id="toc-introduction-why-rna-modeling-is-different" class="nav-link" data-scroll-target="#introduction-why-rna-modeling-is-different"><span class="header-section-number">8.2.1</span> 8.1 Introduction: Why RNA Modeling Is Different</a></li>
-  <li><a href="#rna-secondary-structure-prediction" id="toc-rna-secondary-structure-prediction" class="nav-link" data-scroll-target="#rna-secondary-structure-prediction"><span class="header-section-number">8.2.2</span> 8.2 RNA Secondary Structure Prediction</a></li>
-  <li><a href="#rna-foundation-models" id="toc-rna-foundation-models" class="nav-link" data-scroll-target="#rna-foundation-models"><span class="header-section-number">8.2.3</span> 8.3 RNA Foundation Models</a></li>
-  <li><a href="#codon-level-models" id="toc-codon-level-models" class="nav-link" data-scroll-target="#codon-level-models"><span class="header-section-number">8.2.4</span> 8.4 Codon-Level Models</a></li>
-  <li><a href="#mrna-design-optimization" id="toc-mrna-design-optimization" class="nav-link" data-scroll-target="#mrna-design-optimization"><span class="header-section-number">8.2.5</span> 8.5 mRNA Design &amp; Optimization</a></li>
-  <li><a href="#non-coding-rna-classification-function" id="toc-non-coding-rna-classification-function" class="nav-link" data-scroll-target="#non-coding-rna-classification-function"><span class="header-section-number">8.2.6</span> 8.6 Non-coding RNA Classification &amp; Function</a></li>
-  <li><a href="#clinical-applications" id="toc-clinical-applications" class="nav-link" data-scroll-target="#clinical-applications"><span class="header-section-number">8.2.7</span> 8.7 Clinical Applications</a></li>
+  <li><a href="#rna-as-molecule-versus-transcriptome-readout" id="toc-rna-as-molecule-versus-transcriptome-readout" class="nav-link" data-scroll-target="#rna-as-molecule-versus-transcriptome-readout"><span class="header-section-number">8.1.1</span> RNA as molecule versus transcriptome readout</a></li>
+  <li><a href="#the-role-of-secondary-structure-and-modifications" id="toc-the-role-of-secondary-structure-and-modifications" class="nav-link" data-scroll-target="#the-role-of-secondary-structure-and-modifications"><span class="header-section-number">8.1.2</span> The role of secondary structure and modifications</a></li>
+  <li><a href="#data-sources-and-biases" id="toc-data-sources-and-biases" class="nav-link" data-scroll-target="#data-sources-and-biases"><span class="header-section-number">8.1.3</span> Data sources and biases</a></li>
   </ul></li>
-  <li><a href="#overlap-with-other-chapters" id="toc-overlap-with-other-chapters" class="nav-link" data-scroll-target="#overlap-with-other-chapters"><span class="header-section-number">8.3</span> Overlap with Other Chapters</a></li>
-  <li><a href="#key-references-already-in-bibliography" id="toc-key-references-already-in-bibliography" class="nav-link" data-scroll-target="#key-references-already-in-bibliography"><span class="header-section-number">8.4</span> Key References Already in Bibliography</a></li>
-  <li><a href="#needed-references" id="toc-needed-references" class="nav-link" data-scroll-target="#needed-references"><span class="header-section-number">8.5</span> Needed References</a></li>
+  <li><a href="#rna-secondary-structure-prediction" id="toc-rna-secondary-structure-prediction" class="nav-link" data-scroll-target="#rna-secondary-structure-prediction"><span class="header-section-number">8.2</span> RNA Secondary Structure Prediction</a>
+  <ul class="collapse">
+  <li><a href="#classical-approaches" id="toc-classical-approaches" class="nav-link" data-scroll-target="#classical-approaches"><span class="header-section-number">8.2.1</span> Classical approaches</a></li>
+  <li><a href="#deep-learning-for-structure-prediction" id="toc-deep-learning-for-structure-prediction" class="nav-link" data-scroll-target="#deep-learning-for-structure-prediction"><span class="header-section-number">8.2.2</span> Deep learning for structure prediction</a></li>
+  <li><a href="#toward-structure-aware-representations" id="toc-toward-structure-aware-representations" class="nav-link" data-scroll-target="#toward-structure-aware-representations"><span class="header-section-number">8.2.3</span> Toward structure-aware representations</a></li>
+  </ul></li>
+  <li><a href="#rna-foundation-models" id="toc-rna-foundation-models" class="nav-link" data-scroll-target="#rna-foundation-models"><span class="header-section-number">8.3</span> RNA Foundation Models</a>
+  <ul class="collapse">
+  <li><a href="#pretraining-corpora-and-tokenization" id="toc-pretraining-corpora-and-tokenization" class="nav-link" data-scroll-target="#pretraining-corpora-and-tokenization"><span class="header-section-number">8.3.1</span> Pretraining corpora and tokenization</a></li>
+  <li><a href="#architectures-and-objectives" id="toc-architectures-and-objectives" class="nav-link" data-scroll-target="#architectures-and-objectives"><span class="header-section-number">8.3.2</span> Architectures and objectives</a></li>
+  <li><a href="#downstream-tasks" id="toc-downstream-tasks" class="nav-link" data-scroll-target="#downstream-tasks"><span class="header-section-number">8.3.3</span> Downstream tasks</a></li>
+  </ul></li>
+  <li><a href="#codon-level-models-for-mrna" id="toc-codon-level-models-for-mrna" class="nav-link" data-scroll-target="#codon-level-models-for-mrna"><span class="header-section-number">8.4</span> Codon-Level Models for mRNA</a>
+  <ul class="collapse">
+  <li><a href="#codon-tokenization-and-central-dogma-consistency" id="toc-codon-tokenization-and-central-dogma-consistency" class="nav-link" data-scroll-target="#codon-tokenization-and-central-dogma-consistency"><span class="header-section-number">8.4.1</span> Codon tokenization and central dogma consistency</a></li>
+  <li><a href="#what-codon-level-models-add-beyond-protein-language-models" id="toc-what-codon-level-models-add-beyond-protein-language-models" class="nav-link" data-scroll-target="#what-codon-level-models-add-beyond-protein-language-models"><span class="header-section-number">8.4.2</span> What codon-level models add beyond protein language models</a></li>
+  <li><a href="#training-data-and-biases" id="toc-training-data-and-biases" class="nav-link" data-scroll-target="#training-data-and-biases"><span class="header-section-number">8.4.3</span> Training data and biases</a></li>
+  </ul></li>
+  <li><a href="#mrna-design-and-optimization" id="toc-mrna-design-and-optimization" class="nav-link" data-scroll-target="#mrna-design-and-optimization"><span class="header-section-number">8.5</span> mRNA Design and Optimization</a>
+  <ul class="collapse">
+  <li><a href="#design-objectives" id="toc-design-objectives" class="nav-link" data-scroll-target="#design-objectives"><span class="header-section-number">8.5.1</span> Design objectives</a></li>
+  <li><a href="#model-based-optimization" id="toc-model-based-optimization" class="nav-link" data-scroll-target="#model-based-optimization"><span class="header-section-number">8.5.2</span> Model-based optimization</a></li>
+  <li><a href="#utrs-and-regulatory-elements" id="toc-utrs-and-regulatory-elements" class="nav-link" data-scroll-target="#utrs-and-regulatory-elements"><span class="header-section-number">8.5.3</span> UTRs and regulatory elements</a></li>
+  </ul></li>
+  <li><a href="#noncoding-rna-classification-and-function" id="toc-noncoding-rna-classification-and-function" class="nav-link" data-scroll-target="#noncoding-rna-classification-and-function"><span class="header-section-number">8.6</span> Noncoding RNA Classification and Function</a>
+  <ul class="collapse">
+  <li><a href="#classic-feature-based-approaches" id="toc-classic-feature-based-approaches" class="nav-link" data-scroll-target="#classic-feature-based-approaches"><span class="header-section-number">8.6.1</span> Classic feature-based approaches</a></li>
+  <li><a href="#foundation-model-based-classification" id="toc-foundation-model-based-classification" class="nav-link" data-scroll-target="#foundation-model-based-classification"><span class="header-section-number">8.6.2</span> Foundation model-based classification</a></li>
+  <li><a href="#target-prediction-and-interaction-modeling" id="toc-target-prediction-and-interaction-modeling" class="nav-link" data-scroll-target="#target-prediction-and-interaction-modeling"><span class="header-section-number">8.6.3</span> Target prediction and interaction modeling</a></li>
+  </ul></li>
+  <li><a href="#clinical-and-translational-applications" id="toc-clinical-and-translational-applications" class="nav-link" data-scroll-target="#clinical-and-translational-applications"><span class="header-section-number">8.7</span> Clinical and Translational Applications</a>
+  <ul class="collapse">
+  <li><a href="#variant-interpretation-at-the-rna-level" id="toc-variant-interpretation-at-the-rna-level" class="nav-link" data-scroll-target="#variant-interpretation-at-the-rna-level"><span class="header-section-number">8.7.1</span> Variant interpretation at the RNA level</a></li>
+  <li><a href="#rna-therapeutics-and-biomarkers" id="toc-rna-therapeutics-and-biomarkers" class="nav-link" data-scroll-target="#rna-therapeutics-and-biomarkers"><span class="header-section-number">8.7.2</span> RNA therapeutics and biomarkers</a></li>
+  <li><a href="#regulatory-and-ethical-considerations" id="toc-regulatory-and-ethical-considerations" class="nav-link" data-scroll-target="#regulatory-and-ethical-considerations"><span class="header-section-number">8.7.3</span> Regulatory and ethical considerations</a></li>
+  </ul></li>
+  <li><a href="#relationship-to-other-chapters" id="toc-relationship-to-other-chapters" class="nav-link" data-scroll-target="#relationship-to-other-chapters"><span class="header-section-number">8.8</span> Relationship to Other Chapters</a></li>
   </ul>
 </nav>
     </div>
@@ -617,89 +675,156 @@ div.csl-indent {
 </header>
 
 
-<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Main decision point: keep this focused on RNA as a molecule (structure, sequence models, ncRNA) vs.&nbsp;the existing DNA→RNA prediction content in Ch 7/9. The cleanest split treats splicing as a DNA-sequence prediction problem (Ch 7) and RNA-seq/expression as a hybrid model output (Ch 9), while this new chapter covers models that operate on RNA sequences directly.</p>
-</div>
-</div>
-<section id="proposed-position" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="proposed-position"><span class="header-section-number">8.1</span> Proposed Position</h2>
-<p>Part II, Chapter 8 (after Splicing, before Tokens chapter)</p>
-<hr>
+<p>RNA sits in the middle of the central dogma as both an information bottleneck and a structured biochemical object. It carries sequence-level constraints inherited from DNA, codon-level constraints imposed by the genetic code, and structural constraints from base pairing and tertiary packing. At the same time, the transcriptome we observe in RNA-seq is a dynamic readout of cellular state, shaped by transcription, splicing, degradation, and translation.</p>
+<p>This chapter focuses on models that operate directly on RNA sequences. These include models of RNA secondary structure, RNA foundation models pretrained on large corpora of noncoding RNA, codon-level foundation models for mRNA, and applications in mRNA design and noncoding RNA function. Models that treat RNA primarily as a readout of DNA (for example, DNA-to-RNA-seq hybrid models such as Borzoi) are covered in the Hybrid and Long-Range Models chapter, which we explicitly cross-reference when appropriate.</p>
+<section id="why-rna-modeling-is-different" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="why-rna-modeling-is-different"><span class="header-section-number">8.1</span> Why RNA Modeling Is Different</h2>
+<section id="rna-as-molecule-versus-transcriptome-readout" class="level3" data-number="8.1.1">
+<h3 data-number="8.1.1" class="anchored" data-anchor-id="rna-as-molecule-versus-transcriptome-readout"><span class="header-section-number">8.1.1</span> RNA as molecule versus transcriptome readout</h3>
+<p>It is useful to distinguish two complementary views of RNA. The first treats RNA as a molecule. Individual RNA molecules have a primary sequence over an alphabet of A, C, G, U (or T in sequencing data). They form secondary structure through intramolecular base pairing, creating stems, loops, and bulges. These secondary structures organize into tertiary structure that positions helices and loops in three-dimensional space. RNA molecules also carry chemical modifications such as m⁶A, pseudouridine (Ψ), m⁵C, and dozens of others. In this molecular view, modeling goals include secondary structure prediction, RNA-protein binding prediction, RNA-RNA interaction modeling, and the design of synthetic RNAs with desired structural and functional properties.</p>
+<p>The second view treats RNA as a transcriptome readout. At the level of an RNA-seq experiment, we measure coverage profiles along the genome, splice junction usage and isoform abundances, and cell-type-specific expression patterns and responses to perturbations. Here, the modeling goal is to explain how genomic sequence and chromatin state give rise to these readouts. Borzoi and related hybrid models treat this as a sequence-to-signal problem and are covered in the hybrid chapter. This RNA chapter focuses on models whose input is RNA sequence itself.</p>
+<p>This distinction mirrors the difference between protein language models (which see protein sequences) and models that predict proteomics readouts. Both are important, but they live at different levels of the modeling stack.</p>
 </section>
-<section id="chapter-outline" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="chapter-outline"><span class="header-section-number">8.2</span> Chapter Outline</h2>
-<section id="introduction-why-rna-modeling-is-different" class="level3" data-number="8.2.1">
-<h3 data-number="8.2.1" class="anchored" data-anchor-id="introduction-why-rna-modeling-is-different"><span class="header-section-number">8.2.1</span> 8.1 Introduction: Why RNA Modeling Is Different</h3>
-<ul>
-<li>RNA as molecule vs.&nbsp;transcript annotation</li>
-<li>Secondary structure as a first-class constraint</li>
-<li>The gap between DNA-centric models and RNA-specific biology</li>
-</ul>
+<section id="the-role-of-secondary-structure-and-modifications" class="level3" data-number="8.1.2">
+<h3 data-number="8.1.2" class="anchored" data-anchor-id="the-role-of-secondary-structure-and-modifications"><span class="header-section-number">8.1.2</span> The role of secondary structure and modifications</h3>
+<p>Compared with DNA and protein, RNA is unusually structure-sensitive. Many noncoding RNAs (tRNAs, rRNAs, snRNAs, ribozymes) are defined as much by their secondary structure motifs as by their sequence. Local base pairing creates long-range dependencies: a base at position <span class="math inline">\(i\)</span> may pair with one hundreds of nucleotides away. Epitranscriptomic modifications alter pairing preferences, stability, and protein binding, often in a context-dependent manner.</p>
+<p>Any realistic RNA representation must at least acknowledge that sequence alone is an incomplete description of RNA behavior. This has led to models that either explicitly predict secondary structure and use it as an input feature, or learn representations from sequence that implicitly encode structure, often supervised by structure probing data or known structural motifs. The tension between sequence-only models (which are simpler to train and apply) and structure-aware models (which better capture RNA’s physical reality) runs throughout this chapter.</p>
 </section>
-<section id="rna-secondary-structure-prediction" class="level3" data-number="8.2.2">
-<h3 data-number="8.2.2" class="anchored" data-anchor-id="rna-secondary-structure-prediction"><span class="header-section-number">8.2.2</span> 8.2 RNA Secondary Structure Prediction</h3>
-<ul>
-<li>Classical approaches (thermodynamic folding, comparative)</li>
-<li>Deep learning methods (SPOT-RNA, etc.)</li>
-<li>Structure-aware attention mechanisms</li>
-</ul>
-</section>
-<section id="rna-foundation-models" class="level3" data-number="8.2.3">
-<h3 data-number="8.2.3" class="anchored" data-anchor-id="rna-foundation-models"><span class="header-section-number">8.2.3</span> 8.3 RNA Foundation Models</h3>
-<ul>
-<li>RNA-FM: self-supervised pretraining on 23M ncRNA sequences</li>
-<li>RNAErnie, RNA-MSM, and related models</li>
-<li>Downstream tasks: structure prediction, protein-RNA binding, expression regulation</li>
-</ul>
-</section>
-<section id="codon-level-models" class="level3" data-number="8.2.4">
-<h3 data-number="8.2.4" class="anchored" data-anchor-id="codon-level-models"><span class="header-section-number">8.2.4</span> 8.4 Codon-Level Models</h3>
-<ul>
-<li>cdsFM (EnCodon/DeCodon): synonymous codon context</li>
-<li>Life-Code: central dogma unification with codon tokenization</li>
-<li>Why protein LMs miss codon usage signals</li>
-</ul>
-</section>
-<section id="mrna-design-optimization" class="level3" data-number="8.2.5">
-<h3 data-number="8.2.5" class="anchored" data-anchor-id="mrna-design-optimization"><span class="header-section-number">8.2.5</span> 8.5 mRNA Design &amp; Optimization</h3>
-<ul>
-<li>Codon optimization for expression</li>
-<li>UTR design for stability and translation efficiency</li>
-<li>Applications: vaccine design, mRNA therapeutics</li>
-</ul>
-</section>
-<section id="non-coding-rna-classification-function" class="level3" data-number="8.2.6">
-<h3 data-number="8.2.6" class="anchored" data-anchor-id="non-coding-rna-classification-function"><span class="header-section-number">8.2.6</span> 8.6 Non-coding RNA Classification &amp; Function</h3>
-<ul>
-<li>lncRNA, miRNA, circRNA classification</li>
-<li>Target prediction for regulatory RNAs</li>
-</ul>
-</section>
-<section id="clinical-applications" class="level3" data-number="8.2.7">
-<h3 data-number="8.2.7" class="anchored" data-anchor-id="clinical-applications"><span class="header-section-number">8.2.7</span> 8.7 Clinical Applications</h3>
-<ul>
-<li>Splice-altering variant interpretation (cross-ref to Ch 7)</li>
-<li>RNA-based therapeutics target identification</li>
-</ul>
-<hr>
+<section id="data-sources-and-biases" class="level3" data-number="8.1.3">
+<h3 data-number="8.1.3" class="anchored" data-anchor-id="data-sources-and-biases"><span class="header-section-number">8.1.3</span> Data sources and biases</h3>
+<p>RNA foundation models are trained on diverse corpora, but these corpora reflect systematic biases. Noncoding RNA databases such as Rfam contain well-characterized structural RNA families, but coverage is uneven. tRNAs, rRNAs, and snRNAs are abundant and well-annotated, while many classes of long noncoding RNAs remain poorly characterized. The massive expansion of RNA-seq data has provided sequence-level coverage of coding transcripts, but annotation of isoform-specific functions and structures lags behind. Structure probing experiments (SHAPE, DMS-seq, icSHAPE) provide valuable supervision but are limited to a small fraction of RNAs and cellular contexts.</p>
+<p>These biases have practical consequences. Models trained predominantly on structured housekeeping RNAs may not generalize well to regulatory lncRNAs, which often lack stable secondary structures. Conversely, models trained on coding sequences may struggle with the structural constraints of ncRNAs. Awareness of training data composition is essential when interpreting model predictions and choosing appropriate tools for specific tasks.</p>
 </section>
 </section>
-<section id="overlap-with-other-chapters" class="level2" data-number="8.3">
-<h2 data-number="8.3" class="anchored" data-anchor-id="overlap-with-other-chapters"><span class="header-section-number">8.3</span> Overlap with Other Chapters</h2>
+<section id="rna-secondary-structure-prediction" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="rna-secondary-structure-prediction"><span class="header-section-number">8.2</span> RNA Secondary Structure Prediction</h2>
+<p>Before the arrival of deep learning and RNA foundation models, RNA secondary structure prediction was its own mature field with decades of work. Understanding this history clarifies what modern models actually add.</p>
+<section id="classical-approaches" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="classical-approaches"><span class="header-section-number">8.2.1</span> Classical approaches</h3>
+<p>Classical RNA structure prediction methods relied on two main strategies. Thermodynamic folding models used algorithms like Mfold and ViennaRNA with experimentally calibrated nearest-neighbor energy parameters to evaluate the free energy of candidate secondary structures. Dynamic programming algorithms such as Zuker’s algorithm identified minimum free energy (MFE) structures or computed partition functions over the ensemble of possible structures. These methods were physically grounded and interpretable, but their accuracy was limited by the completeness of the energy parameter sets and by the complexity of real cellular environments.</p>
+<p>Comparative or covariation approaches took a different route. For aligned homologous RNAs, compensatory mutations (for example, G-C to A-U) that preserve base pairing suggest structural constraints. Databases such as Rfam capture these consensus structures. Comparative methods are powerful but require multiple sequence alignments, which are not always available for novel or highly diverged RNAs. They also assume that structure is conserved across the homologous set, an assumption that breaks down for rapidly evolving regulatory RNAs or RNAs with condition-specific alternative structures.</p>
+<p>These classical methods succeeded for well-studied RNA families and short, structured molecules. Their performance was limited for long RNAs with many alternative structures, RNAs embedded in complex cellular environments, and cases where modifications and protein binding dramatically reshape folding.</p>
+</section>
+<section id="deep-learning-for-structure-prediction" class="level3" data-number="8.2.2">
+<h3 data-number="8.2.2" class="anchored" data-anchor-id="deep-learning-for-structure-prediction"><span class="header-section-number">8.2.2</span> Deep learning for structure prediction</h3>
+<p>Modern deep learning approaches bring RNA structure prediction into the sequence-to-structure modeling paradigm. Models such as SPOT-RNA [REF] and related architectures use convolutional or attention-based networks to predict base pairing probabilities or contact maps from sequence. Some methods treat structure as a dense matrix prediction problem, similar to protein contact maps, while others output per-nucleotide pairing states or structural profiles.</p>
+<p>Integration of structure probing data as supervision allows models to learn patterns that go beyond thermodynamic rules. High-throughput SHAPE, DMS-seq, and icSHAPE experiments provide genome-wide or transcriptome-wide measurements of nucleotide flexibility or solvent accessibility. These data, while noisy and condition-specific, offer direct experimental constraints on structure. Models trained on such data can learn to predict structure in contexts (cell types, conditions, binding states) where classical energy models have no calibrated parameters.</p>
+<p>Deep learning models often outperform classical methods on benchmark datasets, particularly for long RNAs or RNAs with complex pseudoknots. However, they typically require task-specific supervision and do not yet offer the broad, reusable representations that foundation models provide. The gap between these specialized structure predictors and general-purpose RNA foundation models is a current research frontier.</p>
+</section>
+<section id="toward-structure-aware-representations" class="level3" data-number="8.2.3">
+<h3 data-number="8.2.3" class="anchored" data-anchor-id="toward-structure-aware-representations"><span class="header-section-number">8.2.3</span> Toward structure-aware representations</h3>
+<p>RNA secondary structure prediction is also a natural downstream task for RNA foundation models. Pretrained sequence encoders can be fine-tuned to predict pairing probabilities or local structural contexts from per-nucleotide embeddings. Some models incorporate explicit structure tokens or graphs, representing stems and loops as nodes and edges and learning jointly over sequence and structure. Others rely purely on sequence pretraining and show that learned representations implicitly encode structural preferences when probed with downstream tasks.</p>
+<p>The key idea is that structure is both an objective and a prior. RNA models should learn representations that make structural predictions easy, and structural tasks provide a strong constraint on what good representations must capture. This dual role of structure (as supervision and as emergent property) distinguishes RNA modeling from DNA and protein modeling, where structure plays a less central role in sequence-level tasks.</p>
+</section>
+</section>
+<section id="rna-foundation-models" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="rna-foundation-models"><span class="header-section-number">8.3</span> RNA Foundation Models</h2>
+<p>RNA foundation models aim to do for RNA what protein language models did for proteins: learn general-purpose representations from large unlabeled corpora that can be reused across many tasks.</p>
+<section id="pretraining-corpora-and-tokenization" class="level3" data-number="8.3.1">
+<h3 data-number="8.3.1" class="anchored" data-anchor-id="pretraining-corpora-and-tokenization"><span class="header-section-number">8.3.1</span> Pretraining corpora and tokenization</h3>
+<p>Typical RNA foundation model corpora include noncoding RNA databases (Rfam families, lncRNA catalogs, miRNA repositories), curated sets of structured RNAs such as tRNAs, rRNAs, snRNAs, and ribozymes, and sometimes coding sequences, though many models reserve these for codon-level approaches (Section 8.4). The composition of training corpora reflects trade-offs between diversity and quality. Large-scale inclusion of unannotated transcripts increases corpus size but introduces noise from splicing artifacts, degradation products, and genomic DNA contamination. Restriction to well-curated families improves data quality but risks overfitting to well-studied RNA classes.</p>
+<p>Most RNA foundation models use simple nucleotide-level tokenization with an alphabet of A, C, G, U (or T). Some augment this with special tokens for unknown bases, gaps, or masked positions. A few explore k-mer tokenization to increase effective context length while keeping sequence lengths manageable, or joint sequence-structure tokens where tokens encode both base identity and structural state (paired versus unpaired) when such annotations are available. The choice of tokenization reflects a trade-off between resolution (single nucleotides) and context length or efficiency (k-mers), echoing similar design decisions in DNA models.</p>
+</section>
+<section id="architectures-and-objectives" class="level3" data-number="8.3.2">
+<h3 data-number="8.3.2" class="anchored" data-anchor-id="architectures-and-objectives"><span class="header-section-number">8.3.2</span> Architectures and objectives</h3>
+<p>Most current RNA foundation models follow the masked language modeling (MLM) paradigm. RNA-FM uses a transformer encoder pretrained on tens of millions of ncRNA sequences with an MLM objective, learning contextual embeddings for each nucleotide <span class="citation" data-cites="chen_rna-fm_2022">Chen et al. (<a href="references.html#ref-chen_rna-fm_2022" role="doc-biblioref">2022</a>)</span>. Related models such as RNAErnie and RNA-MSM [REF] explore variations on the transformer architecture, multi-task learning, or MSA-style inputs for homologous RNAs.</p>
+<p>Common pretraining objectives include masked token prediction at the nucleotide level, span masking to encourage modeling of longer motifs, contrastive objectives distinguishing real sequences from shuffled or decoy sequences, and in some cases multi-task auxiliary heads for structural features (pairing probability, accessibility) or family classification. The goal is to learn embedding spaces in which structurally or functionally related RNAs cluster together, providing a basis for transfer learning.</p>
+<p>Architectural choices vary in how they handle long-range structure. Standard transformers with self-attention have quadratic complexity in sequence length, limiting context windows. Some models use sparse attention patterns (local windows plus global tokens) or linear-complexity attention variants. Others incorporate graph neural networks or message-passing layers that operate on predicted or known secondary structure graphs. These hybrid sequence-structure architectures remain an active area of development.</p>
+</section>
+<section id="downstream-tasks" class="level3" data-number="8.3.3">
+<h3 data-number="8.3.3" class="anchored" data-anchor-id="downstream-tasks"><span class="header-section-number">8.3.3</span> Downstream tasks</h3>
+<p>RNA foundation models are evaluated and fine-tuned on a wide range of tasks. Secondary structure prediction fine-tunes per-nucleotide embeddings to predict pairing status, contact maps, or SHAPE reactivity profiles. RNA-protein binding prediction uses high-throughput CLIP-seq datasets to predict binding preferences of RNA-binding proteins (RBPs). Expression and stability tasks predict transcript stability or steady-state expression from UTR sequences, poly(A) signals, and other regulatory motifs. Family and function classification assign RNAs to Rfam families or functional classes (tRNA, rRNA, miRNA, lncRNA), often outperforming handcrafted features.</p>
+<p>While still young compared to protein language models, RNA foundation models show promising zero-shot and few-shot transfer, especially for structurally constrained RNAs where sequence motifs are highly informative. Benchmarking is complicated by the diversity of RNA types and tasks. A model that excels at ncRNA family classification may not generalize to mRNA stability prediction or codon optimization. Task-specific evaluation remains essential, but broad pretrained representations offer a useful starting point across the RNA modeling landscape.</p>
+</section>
+</section>
+<section id="codon-level-models-for-mrna" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="codon-level-models-for-mrna"><span class="header-section-number">8.4</span> Codon-Level Models for mRNA</h2>
+<p>Coding sequences occupy a special niche. Each triplet of nucleotides encodes an amino acid, but synonymous codons differ in tRNA availability, translation speed, co-translational folding effects, and mRNA stability. Pure protein language models, which see only amino acid sequences, cannot capture these codon-level signals.</p>
+<section id="codon-tokenization-and-central-dogma-consistency" class="level3" data-number="8.4.1">
+<h3 data-number="8.4.1" class="anchored" data-anchor-id="codon-tokenization-and-central-dogma-consistency"><span class="header-section-number">8.4.1</span> Codon tokenization and central dogma consistency</h3>
+<p>Codon-level foundation models treat mRNA as a sequence over a 61-codon alphabet (excluding the three stop codons), or combine codon tokens with context from surrounding UTRs. Models such as cdsFM, EnCodon, and DeCodon tokenize coding sequences into codons and pretrain using masked codon prediction and related objectives <span class="citation" data-cites="naghipourfar_cdsfm_2024">Naghipourfar et al. (<a href="references.html#ref-naghipourfar_cdsfm_2024" role="doc-biblioref">2024</a>)</span>. Life-Code extends this idea into a central-dogma-wide framework, linking DNA, RNA, and protein representations via shared or aligned embedding spaces <span class="citation" data-cites="liu_life-code_2025">Liu et al. (<a href="references.html#ref-liu_life-code_2025" role="doc-biblioref">2025</a>)</span>.</p>
+<p>This codon view allows models to capture codon usage bias and its relationship to expression levels, model translation elongation dynamics and co-translational folding, and distinguish between synonymous variants that are neutral at the protein level but strongly affect expression. The transition from nucleotide tokenization to codon tokenization is not merely a change in alphabet size. It encodes a biological prior: that the fundamental units of coding sequence are codons, not individual nucleotides.</p>
+</section>
+<section id="what-codon-level-models-add-beyond-protein-language-models" class="level3" data-number="8.4.2">
+<h3 data-number="8.4.2" class="anchored" data-anchor-id="what-codon-level-models-add-beyond-protein-language-models"><span class="header-section-number">8.4.2</span> What codon-level models add beyond protein language models</h3>
+<p>Compared with protein language models, codon-level models can directly model mRNA design problems where the amino acid sequence is fixed but codon choice is variable. They provide more faithful representations for tasks dependent on translation efficiency, ribosome pausing, or mRNA stability. They bridge RNA and protein spaces, especially in frameworks like Life-Code that jointly model DNA, RNA, and protein sequences.</p>
+<p>However, codon models still typically ignore secondary structure and modifications. An mRNA’s local structure can affect ribosome access and translation rate, and modifications like m⁶A influence transcript stability and localization. Combining codon-aware tokenization with structure-aware embeddings is an important open direction. Some recent work has begun to explore joint codon-structure models, but these remain in early stages compared to the mature protein structure prediction models.</p>
+</section>
+<section id="training-data-and-biases" class="level3" data-number="8.4.3">
+<h3 data-number="8.4.3" class="anchored" data-anchor-id="training-data-and-biases"><span class="header-section-number">8.4.3</span> Training data and biases</h3>
+<p>Codon-level models are trained on coding sequences, often from model organisms with abundant expression data. This creates a bias toward highly expressed, well-characterized genes. Rare codon combinations, tissue-specific isoforms, and synthetic constructs outside natural codon usage distributions may be underrepresented. Transfer learning to non-model organisms or synthetic biology applications requires careful validation.</p>
+<p>Expression-supervised training (using RNA-seq or ribosome profiling data as targets) helps models learn codon optimality, but introduces the confound that expression is influenced by many factors beyond codon choice: promoter strength, chromatin state, RNA processing, and post-transcriptional regulation. Disentangling codon effects from these other factors remains a challenge in both model training and downstream interpretation.</p>
+</section>
+</section>
+<section id="mrna-design-and-optimization" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="mrna-design-and-optimization"><span class="header-section-number">8.5</span> mRNA Design and Optimization</h2>
+<p>One of the most direct applications of RNA and codon-level models is mRNA sequence design: choosing nucleotide sequences that encode a desired protein while optimizing expression, stability, safety, and manufacturability.</p>
+<section id="design-objectives" class="level3" data-number="8.5.1">
+<h3 data-number="8.5.1" class="anchored" data-anchor-id="design-objectives"><span class="header-section-number">8.5.1</span> Design objectives</h3>
+<p>Key objectives for mRNA design include high protein expression in a target cell type or tissue, mRNA stability in vivo and during manufacturing, controlled translation kinetics that influence co-translational folding and post-translational modifications, and low immunogenicity and safety, especially for vaccine or therapeutic applications. Some of these objectives are local (avoiding splice-like cryptic motifs in the CDS or UTRs), while others are global (codon adaptation across the whole transcript, global GC content). Trade-offs are common: increasing GC content may improve stability but can introduce unwanted secondary structure or innate immune activation.</p>
+<p>The COVID-19 mRNA vaccines provided a high-profile demonstration of mRNA design principles [REF]. Optimization included pseudouridine modification to reduce innate immune activation, codon optimization for high expression in human cells, UTR design to enhance stability and translation, and careful control of secondary structure to avoid aggregation during manufacturing. These design choices were informed by decades of basic research and empirical optimization, but recent models offer the possibility of more systematic, data-driven design.</p>
+</section>
+<section id="model-based-optimization" class="level3" data-number="8.5.2">
+<h3 data-number="8.5.2" class="anchored" data-anchor-id="model-based-optimization"><span class="header-section-number">8.5.2</span> Model-based optimization</h3>
+<p>RNA and codon foundation models enable several model-based design strategies. Scoring and screening use pretrained models to score large candidate sets for expression or stability and select top designs. Gradient-based editing, when models are differentiable with respect to input embeddings, allows approximate gradients to guide codon substitutions or UTR edits. Generative design combines language-model-style generation with constraints (for example, fixed amino acid sequence) to sample diverse, high-scoring mRNAs.</p>
+<p>Empirically, data-driven codon optimization can outperform classical codon adaptation indices, especially when trained on context-specific expression data. Classical indices like CAI or tAI rely on genome-wide codon frequencies or tRNA abundances but do not capture local context effects, co-translational folding, or regulatory motifs. Deep models trained on high-throughput reporter assays or ribosome profiling data can learn these context-dependent effects, though they require substantial training data and may not generalize across distant organisms or synthetic contexts.</p>
+</section>
+<section id="utrs-and-regulatory-elements" class="level3" data-number="8.5.3">
+<h3 data-number="8.5.3" class="anchored" data-anchor-id="utrs-and-regulatory-elements"><span class="header-section-number">8.5.3</span> UTRs and regulatory elements</h3>
+<p>Beyond coding regions, 5′ and 3′ UTRs play crucial roles. The 5′ UTR influences translation initiation, ribosome scanning, and upstream open reading frames. The 3′ UTR affects stability, localization, and miRNA-mediated regulation. RNA foundation models can embed UTR sequences and support tasks like predicting translation efficiency from 5′ UTR sequence, predicting mRNA half-life from 3′ UTR motifs, and designing UTRs that tune expression to desired levels.</p>
+<p>UTR design is particularly challenging because UTRs harbor regulatory elements (AU-rich elements, miRNA binding sites, protein binding motifs) that interact with cellular context in complex ways. A UTR that works well in one cell type may fail in another due to differential expression of RNA-binding proteins or miRNAs. Context-specific training or fine-tuning is often necessary, and validation in relevant cell types remains essential.</p>
+<p>These design tasks link naturally to the Design and Engineering chapter, where sequence generative models are discussed in more detail. Here we emphasize that RNA-specific representations are crucial when the design target is an mRNA, because design constraints (structure, codon usage, regulatory motifs) differ fundamentally from those in DNA or protein design.</p>
+</section>
+</section>
+<section id="noncoding-rna-classification-and-function" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="noncoding-rna-classification-and-function"><span class="header-section-number">8.6</span> Noncoding RNA Classification and Function</h2>
+<p>RNA that does not encode protein (ncRNA) spans a wide spectrum: housekeeping RNAs like tRNAs, rRNAs, snRNAs, and snoRNAs; regulatory RNAs like miRNAs, siRNAs, piRNAs, and lncRNAs; structural and catalytic RNAs including ribozymes and riboswitches; and circular RNAs (circRNAs) and other noncanonical species. Each class has characteristic length ranges, structural motifs, genomic contexts, and functional mechanisms.</p>
+<section id="classic-feature-based-approaches" class="level3" data-number="8.6.1">
+<h3 data-number="8.6.1" class="anchored" data-anchor-id="classic-feature-based-approaches"><span class="header-section-number">8.6.1</span> Classic feature-based approaches</h3>
+<p>Historically, ncRNA classification relied on manually engineered sequence features (k-mers, motif counts, GC content), secondary structure features (minimum free energy, base-pairing probabilities, structural motif counts), and genomic context features (proximity to coding genes, conservation patterns, chromatin marks). These features fed into conventional classifiers like support vector machines, random forests, or shallow neural networks. Performance was reasonable for well-studied classes like miRNAs and tRNAs, where strong sequence and structure signatures exist, but did not generalize well to new RNA classes or underrepresented families like lncRNAs, which often lack stable secondary structures and conserved motifs.</p>
+<p>The challenge of lncRNA classification illustrates the limits of handcrafted features. LncRNAs are defined partly by what they lack (no long open reading frame) rather than what they possess (conserved structure or motif). Their functions are diverse: chromatin scaffolding, transcriptional regulation, post-transcriptional control, and more. Many lncRNAs are lineage-specific or poorly conserved. Distinguishing functional lncRNAs from transcriptional noise remains an open problem, and classical feature sets often collapse to generic statistics like length and GC content, which provide little discriminative power.</p>
+</section>
+<section id="foundation-model-based-classification" class="level3" data-number="8.6.2">
+<h3 data-number="8.6.2" class="anchored" data-anchor-id="foundation-model-based-classification"><span class="header-section-number">8.6.2</span> Foundation model-based classification</h3>
+<p>RNA foundation models offer a more flexible approach. Per-nucleotide embeddings can be pooled (via mean pooling, attention pooling, or CLS tokens) into fixed-dimensional representations. Simple classifiers on top of these embeddings can distinguish RNA classes, often with better robustness and transfer to new datasets. For circRNAs or lncRNAs, which may lack strong sequence motifs, foundation models can exploit subtle distributional patterns learned during pretraining.</p>
+<p>Embedding-based methods also support few-shot learning. Given a handful of newly discovered RNAs with known function, their embeddings can seed new clusters in representation space, guiding functional annotation. This is particularly valuable for emerging RNA classes or organism-specific ncRNAs that are underrepresented in training data. However, few-shot performance depends critically on whether the new RNA class shares distributional properties with training data, a condition that is difficult to verify without extensive validation.</p>
+</section>
+<section id="target-prediction-and-interaction-modeling" class="level3" data-number="8.6.3">
+<h3 data-number="8.6.3" class="anchored" data-anchor-id="target-prediction-and-interaction-modeling"><span class="header-section-number">8.6.3</span> Target prediction and interaction modeling</h3>
+<p>For regulatory ncRNAs, function often depends on interactions: miRNA-mRNA targeting via seed matches and context features, lncRNA-protein or lncRNA-DNA interactions, and RNA-RNA base pairing in antisense regulation. Extensions of RNA foundation models to paired inputs (for example, bi-encoder or cross-encoder architectures) can model these interactions, though training data is sparse and noisy.</p>
+<p>MiRNA target prediction has benefited from large-scale CLIP experiments and reporter assays, providing supervised training data for interaction models. However, context-specific effects (differential expression of competing RNAs, cellular localization, RNA modifications) remain difficult to capture. LncRNA-protein interactions are even less well characterized, with most interactions inferred from proximity or co-immunoprecipitation rather than direct binding assays. Foundation models can provide useful priors for these tasks, but they do not yet replace experimental validation.</p>
+<p>This area of interaction modeling intersects with network and systems-level modeling in later chapters, where ncRNAs are often represented as nodes in regulatory networks. The challenge is to integrate sequence-level representations from RNA foundation models with network-level constraints from expression data, perturbation experiments, and pathway annotations.</p>
+</section>
+</section>
+<section id="clinical-and-translational-applications" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="clinical-and-translational-applications"><span class="header-section-number">8.7</span> Clinical and Translational Applications</h2>
+<p>RNA-level models are already entering clinical and translational workflows, often in combination with DNA- and protein-level models.</p>
+<section id="variant-interpretation-at-the-rna-level" class="level3" data-number="8.7.1">
+<h3 data-number="8.7.1" class="anchored" data-anchor-id="variant-interpretation-at-the-rna-level"><span class="header-section-number">8.7.1</span> Variant interpretation at the RNA level</h3>
+<p>Even when a variant is defined at the DNA level, its effects often manifest through RNA. Splice-altering variants create or destroy splice sites, influence exon inclusion, or activate cryptic exons (cross-reference to the Splicing chapter for detailed treatment of splice prediction models). Variants in UTRs alter stability, translation efficiency, or miRNA binding. Synonymous coding variants modify codon usage, affecting translation or co-translational folding.</p>
+<p>RNA and codon foundation models can contribute by scoring synonymous and UTR variants for predicted effects on expression or stability, providing prior probabilities or embeddings used by integrated variant effect predictors (covered in the Variant Effect Prediction chapter), and helping prioritize variants for functional RNA assays such as massively parallel reporter assays of UTRs or codon variants.</p>
+<p>The challenge in variant interpretation is integrating these RNA-level predictions with DNA-level conservation, protein-level constraint, and clinical outcome data. A variant may have minimal effects on mRNA expression but large effects on protein function, or vice versa. Comprehensive variant effect prediction requires multi-level models that propagate uncertainty from DNA to RNA to protein to phenotype.</p>
+</section>
+<section id="rna-therapeutics-and-biomarkers" class="level3" data-number="8.7.2">
+<h3 data-number="8.7.2" class="anchored" data-anchor-id="rna-therapeutics-and-biomarkers"><span class="header-section-number">8.7.2</span> RNA therapeutics and biomarkers</h3>
+<p>Beyond vaccines, RNA models are relevant to siRNA and antisense oligonucleotide design, where off-target effects and secondary structure influence efficacy and safety; RNA-based biomarkers such as expression signatures in oncology or immune profiling, where latent RNA representations can support better clustering and risk stratification; and gene therapy and base editing, where guide RNAs are designed with sequence and structure constraints.</p>
+<p>In many of these cases, RNA foundation models serve as building blocks in larger pipelines that also integrate protein, DNA, and clinical features. For example, cancer expression signatures often combine RNA-based subtype classification with DNA-based mutation profiles and protein-based pathway activation scores. RNA models provide one component of this multi-modal architecture, aligning with the multi-scale narratives of later chapters.</p>
+<p>RNA biomarkers face particular challenges in clinical translation. Expression levels are sensitive to sample handling, batch effects, and population stratification. Reference-free normalization methods (TPM, RPKM) partially address these issues but do not eliminate them. Models trained on one cohort may not generalize to other hospitals, sequencing platforms, or demographic groups. Careful validation on held-out cohorts and diverse populations is essential before clinical deployment.</p>
+</section>
+<section id="regulatory-and-ethical-considerations" class="level3" data-number="8.7.3">
+<h3 data-number="8.7.3" class="anchored" data-anchor-id="regulatory-and-ethical-considerations"><span class="header-section-number">8.7.3</span> Regulatory and ethical considerations</h3>
+<p>RNA therapeutics raise regulatory questions around stability, immunogenicity, and long-term effects. Models that optimize these properties must be validated against regulatory standards, which are still evolving. Ethical considerations include equitable access to RNA-based diagnostics and therapeutics, particularly in low-resource settings where sequencing infrastructure is limited. Model interpretability is also critical: clinicians need to understand why a model recommends a particular codon choice or UTR design, not just that it achieves high performance on a benchmark.</p>
+<p>These considerations extend beyond RNA to all genomic foundation models, but they are particularly acute for RNA therapeutics because of the rapid pace of clinical translation and the high stakes of vaccine and gene therapy applications.</p>
+</section>
+</section>
+<section id="relationship-to-other-chapters" class="level2" data-number="8.8">
+<h2 data-number="8.8" class="anchored" data-anchor-id="relationship-to-other-chapters"><span class="header-section-number">8.8</span> Relationship to Other Chapters</h2>
+<p>Because RNA sits at the center of the central dogma, this chapter naturally overlaps with others. The table below summarizes those relationships and guides the reader to more detailed discussions elsewhere.</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 30%">
-<col style="width: 30%">
-<col style="width: 40%">
+<col style="width: 27%">
+<col style="width: 31%">
+<col style="width: 41%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -711,44 +836,37 @@ Warning
 <tbody>
 <tr class="odd">
 <td><strong>Ch 7 (Splicing)</strong></td>
-<td>SpliceAI, sQTL prediction, cryptic splice variants</td>
-<td>Keep splice-site models in Ch 7; this chapter focuses on RNA as molecule/transcript, not pre-mRNA processing</td>
+<td>SpliceAI, sQTL prediction, cryptic splice site activation, and other pre-mRNA processing tasks all involve RNA.</td>
+<td>The Splicing chapter focuses on models whose inputs are genomic sequence around splice junctions and whose targets are splicing outcomes. This RNA chapter focuses on models that treat mature RNA sequences (including structured ncRNAs and mRNAs) as the primary input. Cross-reference SpliceAI and related models here only at a high level.</td>
 </tr>
 <tr class="even">
-<td><strong>Ch 9 (Hybrid)</strong></td>
-<td>Borzoi predicts RNA-seq coverage, splicing, polyA</td>
-<td>Brief cross-reference; Borzoi stays in Ch 9 as a “sequence-to-transcriptome” hybrid model</td>
+<td><strong>Ch 9 (Hybrid / Long-range)</strong></td>
+<td>Models like Borzoi predict RNA-seq coverage, splicing patterns, and other transcriptomic signals directly from DNA <span class="citation" data-cites="linder_borzoi_2025">Linder et al. (<a href="references.html#ref-linder_borzoi_2025" role="doc-biblioref">2025</a>)</span>.</td>
+<td>Hybrid models take DNA as input and RNA-level readouts as output. They remain in the Hybrid chapter as exemplars of long-context sequence-to-signal modeling. This RNA chapter instead focuses on RNA-input models; we cross-reference Borzoi when discussing transcriptome readouts but do not re-explain its architecture.</td>
 </tr>
 <tr class="odd">
-<td><strong>Ch 10 (DNA FMs)</strong></td>
-<td>Some DNA LMs trained on transcripts</td>
-<td>DNA chapter focuses on genomic DNA; RNA chapter covers RNA-specific pretraining</td>
+<td><strong>Ch 7 (DNA &amp; Genomic FMs)</strong></td>
+<td>Some DNA foundation models are pretrained, evaluated, or supervised using transcript-based signals (RNA-seq coverage, splicing scores).</td>
+<td>The DNA chapter emphasizes models whose primary pretraining data are genomic sequences, even if some objectives involve RNA-derived labels. Here we emphasize models whose primary input is RNA or codonized mRNA. When a model blurs the line, describe it once in detail (usually in the DNA or Hybrid chapter) and reference it here briefly.</td>
 </tr>
 <tr class="even">
-<td><strong>Ch 14 (Multi-omics)</strong></td>
-<td>RNA in multi-omic integration</td>
-<td>Ch 14 covers cross-modal integration; this chapter covers RNA-specific foundation models</td>
+<td><strong>Ch 14 (Networks &amp; Multi-omics)</strong></td>
+<td>RNA is a central modality in many multi-omic integration and network models (for example, gene expression as one node type or view).</td>
+<td>The multi-omics chapter treats RNA mostly as a continuous vector of expression values. This chapter treats RNA as a discrete sequence with structure. When discussing multi-omics models, we refer readers to Chapter 14 and focus here on the sequence-level representations that may feed into those systems.</td>
+</tr>
+<tr class="odd">
+<td><strong>Ch X (Variant Effect Prediction)</strong></td>
+<td>RNA-level variant effects (UTR variants, synonymous variants, splice variants) contribute to overall variant pathogenicity scoring.</td>
+<td>The Variant Effect Prediction chapter integrates predictions from multiple levels (DNA conservation, protein constraint, splicing effects, expression changes). This chapter provides the RNA-level component of that integration. We cross-reference the VEP chapter when discussing how RNA models fit into comprehensive variant interpretation pipelines.</td>
+</tr>
+<tr class="even">
+<td><strong>Ch X (Design &amp; Engineering)</strong></td>
+<td>mRNA design and codon optimization are central design tasks in synthetic biology.</td>
+<td>The Design chapter covers generative models and optimization strategies across DNA, RNA, and protein. This chapter focuses specifically on RNA design constraints (structure, codon usage, UTR regulation) and RNA-specific tools. We cross-reference the Design chapter for broader context on generative modeling and in silico directed evolution.</td>
 </tr>
 </tbody>
 </table>
-<hr>
-</section>
-<section id="key-references-already-in-bibliography" class="level2" data-number="8.4">
-<h2 data-number="8.4" class="anchored" data-anchor-id="key-references-already-in-bibliography"><span class="header-section-number">8.4</span> Key References Already in Bibliography</h2>
-<ul>
-<li><span class="citation" data-cites="chen_rna-fm_2022">Chen et al. (<a href="references.html#ref-chen_rna-fm_2022" role="doc-biblioref">2022</a>)</span> (RNA-FM)</li>
-<li><span class="citation" data-cites="naghipourfar_cdsfm_2024">Naghipourfar et al. (<a href="references.html#ref-naghipourfar_cdsfm_2024" role="doc-biblioref">2024</a>)</span> (cdsFM/EnCodon/DeCodon)</li>
-<li><span class="citation" data-cites="liu_life-code_2025">Liu et al. (<a href="references.html#ref-liu_life-code_2025" role="doc-biblioref">2025</a>)</span> (Life-Code)</li>
-<li><span class="citation" data-cites="linder_borzoi_2025">Linder et al. (<a href="references.html#ref-linder_borzoi_2025" role="doc-biblioref">2025</a>)</span> (cross-ref only)</li>
-</ul>
-</section>
-<section id="needed-references" class="level2" data-number="8.5">
-<h2 data-number="8.5" class="anchored" data-anchor-id="needed-references"><span class="header-section-number">8.5</span> Needed References</h2>
-<ul>
-<li>RNAErnie, RNA-MSM, SPOT-RNA</li>
-<li>mRNA optimization/vaccine design papers</li>
-<li>ncRNA classification benchmarks</li>
-</ul>
+<p>This chapter has established RNA as a distinct modeling domain with its own architectures (RNA foundation models, codon-level models), training paradigms (structure-supervised learning, codon-masked modeling), and applications (mRNA design, ncRNA classification, RNA therapeutic design). The next chapters will explore how genomic models extend to longer contexts and integrate multiple genomic signals, building toward the multi-scale and multi-omic perspectives of later sections.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">

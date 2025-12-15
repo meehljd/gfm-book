@@ -683,25 +683,46 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>TODO:</strong></p>
+<p><strong>TODO:</strong> …</p>
+</div>
+</div>
+<p>The deep learning revolution in genomics began with convolutional neural networks (CNNs) that learned to predict molecular function directly from DNA sequence. Between 2015 and 2019, a series of models established paradigms that would shape the field for years to come. Rather than hand-crafting motif features, these models learn them directly from data, treating DNA as a signal to be processed by learnable filters.</p>
+<p>This chapter focuses on three landmark 1D convolutional models that established the sequence-to-function paradigm:</p>
 <ul>
-<li>Citations: verify all citations are in bibliography</li>
-<li>Add figure showing DeepSEA architecture</li>
-<li>Add figure showing ExPecto modular architecture</li>
-<li>Add figure showing SpliceAI residual block design</li>
-<li>Consider adding comparative architecture diagram across all three models</li>
+<li><strong>DeepSEA</strong>: predicting chromatin marks and transcription factor binding from sequence <span class="citation" data-cites="zhou_deepsea_2015">(<a href="references.html#ref-zhou_deepsea_2015" role="doc-biblioref">Zhou and Troyanskaya 2015</a>)</span>.</li>
+<li><strong>ExPecto</strong>: extending DeepSEA-style CNNs into a modular system that predicts gene expression across hundreds of tissues <span class="citation" data-cites="zhou_expecto_2018">(<a href="references.html#ref-zhou_expecto_2018" role="doc-biblioref">Zhou et al. 2018</a>)</span>.</li>
+<li><strong>SpliceAI</strong>: using very deep, dilated convolutional architectures for splice site prediction <span class="citation" data-cites="jaganathan_spliceai_2019">(<a href="references.html#ref-jaganathan_spliceai_2019" role="doc-biblioref">Jaganathan et al. 2019</a>)</span>.</li>
 </ul>
+<p>Though DeepVariant (<a href="p1-ch01-ngs.html#sec-deepvar" class="quarto-xref"><span>Section 1.8</span></a>) demonstrated that CNNs could outperform hand-crafted pipelines for variant calling by treating read pileups as images <span class="citation" data-cites="poplin_deepvariant_2018">(<a href="references.html#ref-poplin_deepvariant_2018" role="doc-biblioref">Poplin et al. 2018</a>)</span>, the models examined here solve a fundamentally different problem. Variant calling asks “is this a true variant?” while effect prediction asks “what does this variant do?” Yet they share a common lesson: learned representations can replace the hand-crafted features and heuristics that dominated earlier computational genomics.</p>
+<p>At a high level, the CNN sequence-to-function lineage established four key ideas:</p>
+<ol type="1">
+<li><strong>Raw sequence as input</strong>: one-hot encoded nucleotides are sufficient to learn complex regulatory signals.</li>
+<li><strong>Multi-task training</strong>: jointly predicting hundreds or thousands of related assays improves both accuracy and generalization.</li>
+<li><strong>Variant scoring via in silico perturbation</strong>: differences in model predictions under allele changes approximate variant effects.</li>
+<li><strong>Task specialization</strong>: models tailored to narrow problem domains can achieve high performance and clinical impact, even without being “foundation models.”</li>
+</ol>
+<p>Together these models demonstrate how increasing architectural depth and context length enable capture of progressively longer-range biological dependencies: from the kilobase-scale regulatory elements recognized by DeepSEA, through the tens of kilobases of promoter-proximal sequence integrated by ExPecto, to the 10 kb windows required for accurate splice prediction by SpliceAI. Understanding these models provides essential context for the transformer-based foundation models in Part III, which extend and generalize many of the principles established here.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
 </div>
 </div>
-<p>The deep learning revolution in genomics began with convolutional neural networks (CNNs) that learned to predict molecular function directly from DNA sequence. Between 2015 and 2019, a series of models established paradigms that would shape the field. DeepVariant demonstrated that CNNs could outperform hand-crafted pipelines for variant calling by treating read pileups as images (<a href="p1-ch01-ngs.html#sec-deepvar" class="quarto-xref"><span>Section 1.8</span></a>; <span class="citation" data-cites="poplin_deepvariant_2018">Poplin et al. (<a href="references.html#ref-poplin_deepvariant_2018" role="doc-biblioref">2018</a>)</span>). DeepSEA showed that 1D convolutions over raw sequence could predict chromatin state without manual feature engineering <span class="citation" data-cites="zhou_deepsea_2015">(<a href="references.html#ref-zhou_deepsea_2015" role="doc-biblioref">Zhou and Troyanskaya 2015</a>)</span>. ExPecto extended this approach to gene expression prediction <span class="citation" data-cites="zhou_expecto_2018">(<a href="references.html#ref-zhou_expecto_2018" role="doc-biblioref">Zhou et al. 2018</a>)</span>, and SpliceAI achieved remarkable accuracy in splice site recognition <span class="citation" data-cites="jaganathan_spliceai_2019">(<a href="references.html#ref-jaganathan_spliceai_2019" role="doc-biblioref">Jaganathan et al. 2019</a>)</span>.</p>
-<p>Though DeepVariant and the sequence-to-function models solve fundamentally different problems (variant calling asks “is this a true variant?” while effect prediction asks “what does this variant do?”), they share a common lesson: learned representations can replace the hand-crafted features and heuristics that dominated earlier computational genomics. Where DeepVariant learns to recognize true variant patterns from pileup tensors, DeepSEA and its successors learn to recognize regulatory grammar from nucleotide sequences.</p>
-<p>This chapter focuses on the sequence-to-function lineage. DeepSEA, ExPecto, and SpliceAI each addressed a distinct biological question, yet they shared a common architectural foundation: treat DNA as a signal to be processed by learnable filters, and let the network discover relevant sequence patterns from data. Together they demonstrate how increasing architectural depth and context length enable capture of progressively longer-range biological dependencies, from the kilobase-scale regulatory elements recognized by DeepSEA, through the tens of kilobases of promoter-proximal sequence integrated by ExPecto, to the 10 kb windows required for accurate splice prediction by SpliceAI. Understanding these models provides essential context for the transformer-based foundation models in Part III, which extend and generalize many of the principles established here.</p>
+<div class="callout-body-container callout-body">
+<p><strong>VISUAL SUGGESTION: Chapter overview</strong></p>
+<p>Timeline or schematic showing DeepSEA (regulation), ExPecto (chromatin → expression), and SpliceAI (splicing) along a horizontal axis, with key innovations (multi-task learning, modular modeling, dilated convolutions, long-range context) annotated.</p>
+</div>
+</div>
 <section id="sec-reg" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="sec-reg"><span class="header-section-number">5.1</span> DeepSEA: Regulatory Prediction from Sequence</h2>
 <section id="the-noncoding-variant-challenge" class="level3" data-number="5.1.1">
 <h3 data-number="5.1.1" class="anchored" data-anchor-id="the-noncoding-variant-challenge"><span class="header-section-number">5.1.1</span> The Noncoding Variant Challenge</h3>
 <p>The vast majority of disease-associated variants identified by GWAS lie in noncoding regions of the genome. Across thousands of loci mapped to complex traits, only a small minority directly alter protein-coding sequences; the remainder fall in introns, intergenic regions, and putative regulatory elements where their functional consequences are far less obvious. This presents both an interpretive challenge and an opportunity. If we could predict how noncoding variants affect gene regulation, we would have a powerful tool for moving from statistical association to biological mechanism.</p>
-<p>Yet in 2015, the field lacked systematic methods to predict how noncoding variants affect regulatory activity. Existing approaches relied on overlap with known annotations: if a variant fell within a ChIP-seq peak or DNase hypersensitive site, it might be flagged as potentially functional. This strategy had obvious appeal, since it grounded predictions in experimental observations, but it suffered from fundamental limitations. Overlap-based annotation offered no mechanism for predicting the direction or magnitude of a variant’s effect on regulatory activity. A variant might fall within an enhancer, but would it strengthen or weaken the enhancer? By how much? These questions could not be answered by checking whether genomic coordinates intersected. Furthermore, overlap-based methods could not score variants in regions lacking experimental coverage, which was problematic given that functional genomics experiments, despite their scale, still covered only a fraction of cell types and conditions.</p>
+<p>Yet in 2015, the field lacked systematic methods to predict how noncoding variants affect regulatory activity. Existing approaches relied on overlap with known annotations: if a variant fell within a ChIP-seq peak or DNase hypersensitive site, it might be flagged as potentially functional. This strategy had obvious appeal since it grounded predictions in experimental observations, but it suffered from fundamental limitations. Overlap-based annotation offered no mechanism for predicting the direction or magnitude of a variant’s effect on regulatory activity. A variant might fall within an enhancer, but would it strengthen or weaken the enhancer? By how much? These questions could not be answered by checking whether genomic coordinates intersected.</p>
+<p>Furthermore, overlap-based methods could not score variants in regions lacking experimental coverage, which was problematic given that functional genomics experiments, despite their scale, still covered only a fraction of cell types and conditions. At the same time, large-scale epigenomic consortia such as ENCODE and Roadmap Epigenomics were generating thousands of transcription factor ChIP-seq, histone ChIP-seq, and DNase/ATAC-seq profiles across many cell types <span class="citation" data-cites="kundaje_roadmap_2015 kagda_encode_2025">(<a href="references.html#ref-kundaje_roadmap_2015" role="doc-biblioref">Kundaje et al. 2015</a>; <a href="references.html#ref-kagda_encode_2025" role="doc-biblioref">Kagda et al. 2025</a>)</span>. DeepSEA asked a simple but transformative question: can we learn regulatory grammar directly from DNA sequence to predict these assays?</p>
 <p>DeepSEA, introduced by Zhou and Troyanskaya in 2015, fundamentally changed this paradigm by learning to predict chromatin features directly from DNA sequence <span class="citation" data-cites="zhou_deepsea_2015">(<a href="references.html#ref-zhou_deepsea_2015" role="doc-biblioref">Zhou and Troyanskaya 2015</a>)</span>. Rather than asking “does this variant overlap a known regulatory element?”, DeepSEA asks “what regulatory activities does this sequence encode, and how would a mutation change them?” This shift from annotation lookup to sequence-based prediction opened a new chapter in computational genomics, one where deep neural networks could learn the relationship between DNA sequence and molecular function without requiring hand-crafted features or explicit motif definitions.</p>
 </section>
 <section id="learning-regulatory-code-from-sequence" class="level3" data-number="5.1.2">
@@ -712,9 +733,23 @@ Warning
 <h4 data-number="5.1.2.1" class="anchored" data-anchor-id="architecture"><span class="header-section-number">5.1.2.1</span> Architecture</h4>
 <p>The original DeepSEA architecture was deliberately simple by modern standards, comprising a stack of convolutional layers followed by fully connected layers that integrate information across the sequence.</p>
 <p>The input to the network is a 1000 bp DNA sequence, one-hot encoded into a binary matrix with four channels (one per nucleotide) and 1000 positions. This representation treats sequence as a signal to be processed by convolution, analogous to how image recognition networks process pixel values. Each position in the sequence is represented by exactly one active channel, encoding which nucleotide (A, C, G, or T) is present.</p>
-<p>The network processes this input through three convolutional layers, each followed by ReLU activation and max pooling. The first convolutional layer uses 320 filters of width 8, scanning the sequence for local patterns roughly the size of transcription factor binding sites. Max pooling after each convolution reduces the spatial dimension, progressively compressing the 1000-position input into a more compact representation. The second and third convolutional layers use 480 and 960 filters respectively, with narrower widths (8 and 8) applied to the already-pooled representation. These deeper layers can learn combinations of the patterns detected by earlier layers, building increasingly abstract representations of sequence features.</p>
+<p>The network processes this input through three convolutional layers, each followed by ReLU activation and max pooling. The first convolutional layer uses 320 filters of width 8, scanning the sequence for local patterns roughly the size of transcription factor binding sites. Max pooling after each convolution reduces the spatial dimension, progressively compressing the 1000-position input into a more compact representation. The second and third convolutional layers use 480 and 960 filters respectively, with narrower widths applied to the already-pooled representation. These deeper layers can learn combinations of the patterns detected by earlier layers, building increasingly abstract representations of sequence features.</p>
 <p>After the convolutional stack, a fully connected layer with 925 units integrates information across all positions in the compressed representation. This layer allows the network to learn relationships between sequence features at different positions, capturing spatial dependencies that pure convolution cannot represent. Finally, an output layer with 919 sigmoid units produces independent probability predictions for each chromatin profile.</p>
 <p>The total number of parameters is modest by contemporary standards (approximately 60 million) but was substantial for genomics applications at the time. Training used stochastic gradient descent with momentum on sequences sampled from the human genome, with chromosome 8 held out for testing.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>VISUAL SUGGESTION: DeepSEA architecture</strong></p>
+<p>Compact diagram illustrating: (1) 1 kb one-hot sequence input; (2) convolution + pooling stack; (3) fully connected layer; (4) 919-task output vector with example labels (e.g., “H3K27ac, liver”, “CTCF, GM12878”).</p>
+</div>
+</div>
 </section>
 <section id="training-data" class="level4" data-number="5.1.2.2">
 <h4 data-number="5.1.2.2" class="anchored" data-anchor-id="training-data"><span class="header-section-number">5.1.2.2</span> Training Data</h4>
@@ -722,7 +757,7 @@ Warning
 <p>Transcription factor binding profiles, numbering 690 in total, captured the genomic locations where specific proteins bind DNA. These were derived from ChIP-seq experiments targeting factors like CTCF (a ubiquitous insulator protein), p53 (a tumor suppressor), and GATA1 (a hematopoietic transcription factor). Each profile represents a binary classification problem: for a given sequence, is the central region bound by this factor in this cell type?</p>
 <p>Histone modification profiles, numbering 104, captured the locations of specific chemical modifications to histone proteins. Marks like H3K4me3 (trimethylation of lysine 4 on histone H3) are associated with active promoters, while H3K27ac (acetylation of lysine 27) marks active enhancers. H3K27me3 marks repressed regions through Polycomb-mediated silencing. These modifications do not directly encode regulatory logic but reflect the functional state of chromatin and correlate with gene expression.</p>
 <p>DNase I hypersensitivity profiles, numbering 125, captured regions of open chromatin across cell types. DNase hypersensitive sites mark regions where DNA is accessible to regulatory proteins, identifying potential regulatory elements regardless of which specific factors bind there. Unlike transcription factor ChIP-seq, DNase-seq provides a relatively unbiased view of regulatory potential.</p>
-<p>For each 1000 bp input sequence, the model predicts the probability that the central 200 bp region exhibits each of these 919 chromatin features. The narrower prediction window relative to the input window allows the network to use flanking sequence as context for predicting the central region’s activity. Training used sequences sampled from the human genome, excluding chromosome 8 which was reserved for evaluation. This chromosome-level holdout prevents overfitting to sequence homology or LD patterns that might leak between training and test sets.</p>
+<p>For each 1000 bp input sequence, the model predicts the probability that the central 200 bp region exhibits each of these 919 chromatin features. The narrower prediction window relative to the input window allows the network to use flanking sequence as context for predicting the central region’s activity. Training used sequences sampled from the human genome, excluding chromosome 8 which was reserved for evaluation. This chromosome-level holdout prevents overfitting to sequence homology or linkage disequilibrium patterns that might leak between training and test sets.</p>
 </section>
 <section id="multi-task-learning" class="level4" data-number="5.1.2.3">
 <h4 data-number="5.1.2.3" class="anchored" data-anchor-id="multi-task-learning"><span class="header-section-number">5.1.2.3</span> Multi-Task Learning</h4>
@@ -747,6 +782,20 @@ Warning
 <h4 data-number="5.1.3.2" class="anchored" data-anchor-id="in-silico-saturation-mutagenesis"><span class="header-section-number">5.1.3.2</span> In Silico Saturation Mutagenesis</h4>
 <p>Beyond scoring individual variants, DeepSEA enables a powerful computational experiment: in silico saturation mutagenesis (ISM). By systematically predicting effects of all possible single-nucleotide substitutions within a sequence, one can identify which positions are most critical for regulatory function. At each position, three alternative nucleotides can be substituted, and the predicted change in chromatin profiles can be computed for each. Positions where substitutions produce large predicted effects are presumably functionally constrained, while positions tolerant of substitution are less critical.</p>
 <p>ISM analysis of regulatory elements reveals sequence positions where mutations would most strongly perturb function. These critical positions often correspond to transcription factor binding motifs learned by the model. When the predicted effects are visualized along a regulatory sequence, clear patterns emerge: core motif positions show strong predicted effects, while flanking positions are more tolerant. This provides a form of motif discovery that emerges from the model’s learned representations rather than from explicit motif searching.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>VISUAL SUGGESTION: Saturation mutagenesis</strong></p>
+<p>Heatmap for an enhancer region: x-axis = sequence position, y-axis = alternative allele; color = change in predicted DNase signal. Overlay motif logo to highlight correspondence between learned and known motifs.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="functional-variant-prioritization" class="level3" data-number="5.1.4">
@@ -802,11 +851,25 @@ Warning
 </section>
 <section id="limitations" class="level3" data-number="5.1.7">
 <h3 data-number="5.1.7" class="anchored" data-anchor-id="limitations"><span class="header-section-number">5.1.7</span> Limitations</h3>
-<p>DeepSEA represents a major advance, but understanding its limitations is essential for appropriate application. The model predicts chromatin profiles for specific cell types included in training, but the same sequence may have different regulatory activity in cell types not represented. The model treats each input sequence independently, without considering three-dimensional chromatin structure, the current transcriptional state of the cell, or other variants in the same individual. While DeepSEA accurately predicts the binary presence or absence of chromatin features, its quantitative predictions of signal strength are less reliable.</p>
+<p>DeepSEA represents a major advance, but understanding its limitations is essential for appropriate application. The model predicts chromatin profiles for specific cell types included in training, but the same sequence may have different regulatory activity in cell types not represented. The model treats each input sequence independently, without considering three-dimensional chromatin structure, the current transcriptional state of the cell, or other variants in the same individual. While DeepSEA accurately predicts the binary presence or absence of chromatin features, its quantitative predictions of signal strength are less reliable. Finally, the 1 kb context window cannot capture distal enhancers tens of kilobases away from their target promoters.</p>
 </section>
 <section id="significance" class="level3" data-number="5.1.8">
 <h3 data-number="5.1.8" class="anchored" data-anchor-id="significance"><span class="header-section-number">5.1.8</span> Significance</h3>
 <p>DeepSEA established several paradigms that shaped subsequent genomic deep learning. The “sequence-in, function-out” paradigm treats DNA sequence as the sole input and molecular function as the output, learning the mapping without hand-engineered features. Multi-task chromatin prediction, jointly modeling many related tasks, proved both more efficient and more effective than training separate models. Variant effect prediction via sequence comparison provided a general framework for interpreting genetic variation. The approach demonstrated that deep learning could extract biologically meaningful patterns from raw sequence data at scale.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>VISUAL SUGGESTION: DeepSEA summary panel</strong></p>
+<p>Multi-panel figure summarizing: (A) architecture schematic; (B) example saturation mutagenesis plot; (C) GWAS enrichment or ROC curves comparing DeepSEA scores to earlier feature-based methods.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="sec-trans" class="level2" data-number="5.2">
@@ -815,11 +878,25 @@ Warning
 <h3 data-number="5.2.1" class="anchored" data-anchor-id="the-expression-prediction-challenge"><span class="header-section-number">5.2.1</span> The Expression Prediction Challenge</h3>
 <p>DeepSEA demonstrated that deep learning could predict chromatin features from DNA sequence alone. Yet chromatin accessibility and transcription factor binding are intermediate phenotypes. The ultimate functional readout for most regulatory variants is their effect on gene expression. A variant might disrupt a transcription factor binding site, but does that binding site actually regulate a nearby gene? In which tissues? By how much?</p>
 <p>ExPecto, introduced by Zhou et al.&nbsp;in 2018, addressed these questions by extending the sequence-to-chromatin paradigm to predict tissue-specific gene expression levels <span class="citation" data-cites="zhou_expecto_2018">(<a href="references.html#ref-zhou_expecto_2018" role="doc-biblioref">Zhou et al. 2018</a>)</span>. The framework’s name reflects its core capability: expression prediction. Rather than stopping at chromatin predictions, ExPecto integrates predicted regulatory signals across a 40 kb promoter-proximal region to predict absolute expression levels in 218 tissues and cell types.</p>
-<p>Critically, ExPecto predicts expression effects ab initio from sequence, without training on any variant data. This enables scoring of rare variants, de novo mutations, and even hypothetical mutations never observed in any population.</p>
+<p>Critically, ExPecto predicts expression effects ab initio from sequence, without training on any variant data. This enables scoring of rare variants, de novo mutations, and even hypothetical mutations never observed in any population. In effect, ExPecto builds a modular pipeline: sequence to predicted chromatin features (Beluga CNN), spatial aggregation of chromatin features relative to each transcription start site (TSS), and tissue-specific linear models for gene expression.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>VISUAL SUGGESTION: ExPecto pipeline</strong></p>
+<p>Three-box diagram: (1) Beluga CNN over a 40 kb window; (2) distance-binned feature aggregation; (3) per-tissue linear model outputting expression for that gene.</p>
+</div>
+</div>
 </section>
 <section id="the-modular-architecture" class="level3" data-number="5.2.2">
 <h3 data-number="5.2.2" class="anchored" data-anchor-id="the-modular-architecture"><span class="header-section-number">5.2.2</span> The Modular Architecture</h3>
-<p>ExPecto comprises three sequential components, each addressing a distinct computational challenge.</p>
+<p>ExPecto comprises three sequential components, each addressing a distinct computational challenge: learning regulatory sequence features, connecting them to promoters over genomic distance, and modeling tissue-specific expression programs.</p>
 <section id="component-1-epigenomic-effects-model-beluga-cnn" class="level4" data-number="5.2.2.1">
 <h4 data-number="5.2.2.1" class="anchored" data-anchor-id="component-1-epigenomic-effects-model-beluga-cnn"><span class="header-section-number">5.2.2.1</span> Component 1: Epigenomic Effects Model (Beluga CNN)</h4>
 <p>The first component is an enhanced version of DeepSEA, predicting 2,002 chromatin profiles across more than 200 cell types. Key architectural improvements over the original DeepSEA include expanded chromatin targets (from 919 to 2,002), a wider input window (from 1,000 bp to 2,000 bp), deeper architecture (six convolutional layers with residual connections rather than three), and broader cell type coverage.</p>
@@ -863,11 +940,12 @@ Warning
 <p><span class="math display">\[
 \text{expression} = \sum_{i,k} \left( \beta_{ik}^{\text{up}} \cdot \mathbf{1}(t_d &lt; 0) + \beta_{ik}^{\text{down}} \cdot \mathbf{1}(t_d &gt; 0) \right) \cdot \sum_{d \in D} p_{id} \cdot e^{-a_k \cdot |t_d|}
 \]</span></p>
-<p>where <span class="math inline">\(p_{id}\)</span> is the predicted probability for chromatin feature <span class="math inline">\(i\)</span> at spatial bin <span class="math inline">\(d\)</span>, <span class="math inline">\(t_d\)</span> is the mean distance to TSS for bin <span class="math inline">\(d\)</span>, and <span class="math inline">\(a_k\)</span> represents decay constants (0.01, 0.02, 0.05, 0.1, 0.2). This transformation reduces dimensionality 20-fold (to 20,020 features) while preserving spatial information.</p>
+<p>where <span class="math inline">\(p_{id}\)</span> is the predicted probability for chromatin feature <span class="math inline">\(i\)</span> at spatial bin <span class="math inline">\(d\)</span>, <span class="math inline">\(t_d\)</span> is the mean distance to TSS for bin <span class="math inline">\(d\)</span>, and <span class="math inline">\(a_k\)</span> represents decay constants (0.01, 0.02, 0.05, 0.1, 0.2). This transformation reduces dimensionality 20-fold (to 20,020 features) while preserving spatial information and encoding the prior belief that nearby elements contribute more than distant ones.</p>
 </section>
 <section id="component-3-tissue-specific-linear-models" class="level4" data-number="5.2.2.3">
 <h4 data-number="5.2.2.3" class="anchored" data-anchor-id="component-3-tissue-specific-linear-models"><span class="header-section-number">5.2.2.3</span> Component 3: Tissue-Specific Linear Models</h4>
 <p>The final component comprises 218 L2-regularized linear regression models (one per tissue), each predicting log RPKM expression from spatially-transformed features. Linear models were chosen deliberately: they provide interpretability, prevent overfitting given the high-dimensional feature space, and enable straightforward coefficient analysis to identify which chromatin features drive expression in each tissue.</p>
+<p>Because the upstream Beluga CNN is tissue-agnostic, the combination of a shared sequence-to-chromatin model with separate tissue-specific linear heads provides a clean separation between sequence-level regulatory grammar and tissue-specific regulatory programs.</p>
 </section>
 </section>
 <section id="expression-prediction-performance" class="level3" data-number="5.2.3">
@@ -875,6 +953,22 @@ Warning
 <p>ExPecto achieved 0.819 median Spearman correlation between predicted and observed expression (log RPKM) across 218 tissues and cell types, a substantial improvement over prior sequence-based expression models, which were typically limited to narrower regulatory regions (&lt;2 kb) and fewer cell types.</p>
 <p>Beyond predicting absolute expression levels, ExPecto captures tissue-specific expression patterns. Analysis of model coefficients reveals automatic learning of cell-type-relevant features without explicit tissue labels. The liver expression model assigns top weights to transcription factors profiled in HepG2 (liver-derived) cells. The breast tissue model weights estrogen receptor and glucocorticoid receptor features from breast cancer cell lines most heavily among its positive coefficients. These patterns emerge purely from learning to predict expression, without any tissue identity information provided to the chromatin features.</p>
 <p>Model coefficients also reveal the relative contributions of different chromatin feature types. Transcription factors and histone marks receive consistently higher weights, reflecting their direct mechanistic roles in transcriptional regulation. DNase I features receive significantly lower weights despite indicating regulatory activity. This discrepancy likely reflects that DNase hypersensitivity marks the presence of regulatory activity without specifying its type or causal relationship to expression.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>VISUAL SUGGESTION: ExPecto performance</strong></p>
+<ol type="1">
+<li>Scatter plot of predicted vs.&nbsp;observed expression for a representative tissue; (2) bar chart of per-tissue correlation; (3) example delta-expression scores for variants near a gene with multiple nearby regulatory elements.</li>
+</ol>
+</div>
+</div>
 </section>
 <section id="variant-effect-prediction-1" class="level3" data-number="5.2.4">
 <h3 data-number="5.2.4" class="anchored" data-anchor-id="variant-effect-prediction-1"><span class="header-section-number">5.2.4</span> Variant Effect Prediction</h3>
@@ -948,6 +1042,20 @@ Warning
 <section id="significance-1" class="level3" data-number="5.2.9">
 <h3 data-number="5.2.9" class="anchored" data-anchor-id="significance-1"><span class="header-section-number">5.2.9</span> Significance</h3>
 <p>ExPecto established several paradigms that influenced subsequent genomic deep learning. The modular sequence-to-expression prediction architecture demonstrated the value of decomposing the problem into chromatin prediction, spatial integration, and expression modeling. Ab initio variant effect prediction, achieved by training without variant data, avoids LD confounding and enables causal inference rather than mere association. The framework demonstrated that deep learning could move beyond predicting intermediate molecular phenotypes to predict cellular phenotypes directly from sequence.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>VISUAL SUGGESTION: ExPecto interpretability</strong></p>
+<p>Heatmap of linear model coefficients for a single tissue, with y-axis = chromatin marks, x-axis = distance bins relative to TSS, showing which marks and distances drive expression.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="sec-splice" class="level2" data-number="5.3">
@@ -960,7 +1068,7 @@ Warning
 </section>
 <section id="prior-approaches-and-limitations" class="level3" data-number="5.3.2">
 <h3 data-number="5.3.2" class="anchored" data-anchor-id="prior-approaches-and-limitations"><span class="header-section-number">5.3.2</span> Prior Approaches and Limitations</h3>
-<p>Before SpliceAI, splice site prediction relied on methods with limited sequence context. MaxEntScan models core splice motifs using maximum entropy, limited to approximately 9 bp context around donor/acceptor sites <span class="citation" data-cites="yeo_maxentscan_2004">(<a href="references.html#ref-yeo_maxentscan_2004" role="doc-biblioref"><strong>yeo_maxentscan_2004?</strong></a>)</span>. GeneSplicer combines Markov models with decision trees. NNSplice represents an early neural network approach with narrow receptive fields. These methods captured the essential GT (donor) and AG (acceptor) dinucleotides and surrounding consensus sequences, but could not model the long-range determinants that contribute to splicing specificity.</p>
+<p>Before SpliceAI, splice site prediction relied on methods with limited sequence context. MaxEntScan models core splice motifs using maximum entropy, limited to approximately 9 bp context around donor/acceptor sites <span class="citation" data-cites="yeo_maxentscan_2004">(<a href="references.html#ref-yeo_maxentscan_2004" role="doc-biblioref">Yeo and Burge 2004</a>)</span>. GeneSplicer combines Markov models with decision trees. NNSplice represents an early neural network approach with narrow receptive fields. These methods captured the essential GT (donor) and AG (acceptor) dinucleotides and surrounding consensus sequences, but could not model the long-range determinants that contribute to splicing specificity.</p>
 <p>The limitations parallel those of pre-deep-learning variant effect predictors like CADD (<a href="p1-ch04-cadd.html" class="quarto-xref"><span>Chapter 4</span></a>), which aggregate many annotation features but lack the capacity to learn complex sequence dependencies. Prior methods produced many false positive predictions and missed variants acting through distal mechanisms.</p>
 </section>
 <section id="the-spliceai-architecture" class="level3" data-number="5.3.3">
@@ -985,6 +1093,20 @@ Warning
 <section id="output-predictions" class="level4" data-number="5.3.3.4">
 <h4 data-number="5.3.3.4" class="anchored" data-anchor-id="output-predictions"><span class="header-section-number">5.3.3.4</span> Output Predictions</h4>
 <p>For each position in the pre-mRNA sequence, SpliceAI outputs three probabilities summing to one: the probability of being a splice acceptor, splice donor, or neither. This per-position classification enables fine-grained predictions across entire transcripts.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>VISUAL SUGGESTION: SpliceAI architecture</strong></p>
+<p>Diagram showing: (1) 10 kb one-hot input; (2) stack of residual blocks with increasing dilation; (3) per-position output track with donor/acceptor probabilities, highlighting canonical and cryptic sites.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="training-and-performance" class="level3" data-number="5.3.4">
@@ -1095,7 +1217,7 @@ Warning
 </section>
 <section id="clinical-impact-de-novo-mutations-in-rare-disease" class="level3" data-number="5.3.7">
 <h3 data-number="5.3.7" class="anchored" data-anchor-id="clinical-impact-de-novo-mutations-in-rare-disease"><span class="header-section-number">5.3.7</span> Clinical Impact: De Novo Mutations in Rare Disease</h3>
-<p>The central clinical finding of SpliceAI is that cryptic splice mutations constitute a major, previously underappreciated cause of rare genetic disorders.</p>
+<p>The central clinical finding of SpliceAI is that cryptic splice mutations constitute a major, previously underappreciated cause of rare genetic disorders. This represents one of SpliceAI’s most compelling applications: exome or genome sequencing often reveals no obvious coding variant explaining a patient’s phenotype, but re-examining intronic and synonymous variants with SpliceAI can reveal strong splice-disrupting candidates.</p>
 <p>The authors analyzed de novo mutations in 4,293 individuals with intellectual disability and 3,953 individuals with autism spectrum disorders, compared to 2,073 unaffected sibling controls. De novo mutations predicted to disrupt splicing (Δ ≥ 0.1) were significantly enriched in affected individuals:</p>
 <table class="caption-top table">
 <thead>
@@ -1120,6 +1242,20 @@ Warning
 </table>
 <p>Based on the excess of de novo mutations in cases versus controls, approximately 9% of pathogenic de novo mutations in intellectual disability and 11% in autism act through cryptic splicing. In absolute terms, approximately 250 cases across the cohorts could be explained by de novo cryptic splice mutations.</p>
 <p>Including cryptic splice mutations in gene discovery analyses identified 5 additional candidate genes for intellectual disability and 2 additional genes for autism that would have fallen below discovery thresholds when considering only protein-coding mutations.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>VISUAL SUGGESTION: SpliceAI clinical example</strong></p>
+<p>Case-style figure showing: (A) patient variant deep within an intron; (B) SpliceAI delta score track; (C) RNA-seq sashimi plot illustrating the predicted aberrant splice junction.</p>
+</div>
+</div>
 </section>
 <section id="what-spliceai-learned" class="level3" data-number="5.3.8">
 <h3 data-number="5.3.8" class="anchored" data-anchor-id="what-spliceai-learned"><span class="header-section-number">5.3.8</span> What SpliceAI Learned</h3>
@@ -1128,7 +1264,7 @@ Warning
 </section>
 <section id="limitations-2" class="level3" data-number="5.3.9">
 <h3 data-number="5.3.9" class="anchored" data-anchor-id="limitations-2"><span class="header-section-number">5.3.9</span> Limitations</h3>
-<p>SpliceAI predicts splice sites based on sequence alone, without modeling tissue-specific alternative splicing. Many cryptic splice variants produce partial shifts rather than complete disruption, and the Δ score correlates with penetrance but does not precisely quantify isoform ratios. While substantially better than prior methods, sensitivity for deep intronic variants (41% at Δ ≥ 0.5) remains lower than for variants near exons.</p>
+<p>SpliceAI predicts splice sites based on sequence alone, without modeling tissue-specific alternative splicing. Many cryptic splice variants produce partial shifts rather than complete disruption, and the Δ score correlates with penetrance but does not precisely quantify isoform ratios. While substantially better than prior methods, sensitivity for deep intronic variants (41% at Δ ≥ 0.5) remains lower than for variants near exons. Subsequent work has explored tissue-specific splicing models, transformer-based architectures, and integration of RNA-seq directly into training, themes we revisit in <a href="p2-ch08-rna.html" class="quarto-xref"><span>Chapter 8</span></a> and <a href="p3-ch12-vep.html" class="quarto-xref"><span>Chapter 12</span></a>.</p>
 </section>
 </section>
 <section id="sec-cnn-summary" class="level2" data-number="5.4">
@@ -1206,6 +1342,20 @@ Warning
 <p>All three models contribute to modern variant interpretation pipelines. DeepSEA and Sei scores indicate regulatory potential. ExPecto predictions prioritize expression-altering variants. SpliceAI Δ scores support splicing evidence in ACMG/AMP classification. These predictions complement protein-effect predictors and provide independent evidence types for clinical interpretation (<a href="p3-ch12-vep.html" class="quarto-xref"><span>Chapter 12</span></a>).</p>
 <p>The models also established expectations for the field: public web servers, downloadable code and weights, rigorous validation against orthogonal data sources, and clear articulation of limitations. These norms have persisted as genomic deep learning has grown in scope and ambition.</p>
 <p>Part III turns to transformer-based architectures and self-supervised learning, approaches that aim to learn general-purpose sequence representations applicable across many tasks rather than optimizing for single prediction targets. The CNN models examined here provide essential context for understanding what transformers must improve upon and what accuracy standards they must meet.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>VISUAL SUGGESTION: Comparative summary</strong></p>
+<p>Table or figure comparing DeepSEA, ExPecto, and SpliceAI along axes such as: input context length, architecture depth, primary output (chromatin, expression, splicing), multi-task targets, typical clinical/research use cases, and key limitations.</p>
+</div>
+</div>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
@@ -1226,6 +1376,9 @@ Kundaje, Anshul, Wouter Meuleman, Jason Ernst, Misha Bilenky, Angela Yen, Alirez
 </div>
 <div id="ref-poplin_deepvariant_2018" class="csl-entry" role="listitem">
 Poplin, Ryan, Pi-Chuan Chang, David Alexander, Scott Schwartz, Thomas Colthurst, Alexander Ku, Dan Newburger, et al. 2018. <span>“[<span>DeepVariant</span>] <span>A</span> Universal <span>SNP</span> and Small-Indel Variant Caller Using Deep Neural Networks.”</span> <em>Nature Biotechnology</em> 36 (10): 983–87. <a href="https://doi.org/10.1038/nbt.4235">https://doi.org/10.1038/nbt.4235</a>.
+</div>
+<div id="ref-yeo_maxentscan_2004" class="csl-entry" role="listitem">
+Yeo, Gene, and Christopher B. Burge. 2004. <span>“Maximum <span>Entropy</span> <span>Modeling</span> of <span>Short</span> <span>Sequence</span> <span>Motifs</span> with <span>Applications</span> to <span>RNA</span> <span>Splicing</span> <span>Signals</span>.”</span> <em>Journal of Computational Biology</em> 11 (2-3): 377–94. <a href="https://doi.org/10.1089/1066527041410418">https://doi.org/10.1089/1066527041410418</a>.
 </div>
 <div id="ref-zhou_expecto_2018" class="csl-entry" role="listitem">
 Zhou, Jian, Chandra L. Theesfeld, Kevin Yao, Kathleen M. Chen, Aaron K. Wong, and Olga G. Troyanskaya. 2018. <span>“[<span>Expecto</span>] <span>Deep</span> Learning Sequence-Based Ab Initio Prediction of Variant Effects on Expression and Disease Risk.”</span> <em>Nature Genetics</em> 50 (8): 1171–79. <a href="https://doi.org/10.1038/s41588-018-0160-6">https://doi.org/10.1038/s41588-018-0160-6</a>.

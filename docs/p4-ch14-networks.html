@@ -20,27 +20,7 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-  margin-bottom: 0em;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -95,6 +75,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -577,39 +586,41 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">14.1</span> Introduction</a></li>
-  <li><a href="#graph-neural-network-fundamentals" id="toc-graph-neural-network-fundamentals" class="nav-link" data-scroll-target="#graph-neural-network-fundamentals"><span class="header-section-number">14.2</span> Graph Neural Network Fundamentals</a></li>
-  <li><a href="#biological-graph-types" id="toc-biological-graph-types" class="nav-link" data-scroll-target="#biological-graph-types"><span class="header-section-number">14.3</span> Biological Graph Types</a>
+  <li><a href="#graph-neural-network-fundamentals" id="toc-graph-neural-network-fundamentals" class="nav-link active" data-scroll-target="#graph-neural-network-fundamentals"><span class="header-section-number">14.1</span> Graph Neural Network Fundamentals</a>
   <ul class="collapse">
-  <li><a href="#protein-protein-interaction-networks" id="toc-protein-protein-interaction-networks" class="nav-link" data-scroll-target="#protein-protein-interaction-networks"><span class="header-section-number">14.3.1</span> Protein-Protein Interaction Networks</a></li>
-  <li><a href="#gene-regulatory-networks" id="toc-gene-regulatory-networks" class="nav-link" data-scroll-target="#gene-regulatory-networks"><span class="header-section-number">14.3.2</span> Gene Regulatory Networks</a></li>
-  <li><a href="#pathway-and-ontology-graphs" id="toc-pathway-and-ontology-graphs" class="nav-link" data-scroll-target="#pathway-and-ontology-graphs"><span class="header-section-number">14.3.3</span> Pathway and Ontology Graphs</a></li>
-  <li><a href="#knowledge-graphs-in-biomedicine" id="toc-knowledge-graphs-in-biomedicine" class="nav-link" data-scroll-target="#knowledge-graphs-in-biomedicine"><span class="header-section-number">14.3.4</span> Knowledge Graphs in Biomedicine</a></li>
+  <li><a href="#graphs-as-data-structures" id="toc-graphs-as-data-structures" class="nav-link" data-scroll-target="#graphs-as-data-structures"><span class="header-section-number">14.1.1</span> Graphs as Data Structures</a></li>
+  <li><a href="#message-passing-and-neighborhood-aggregation" id="toc-message-passing-and-neighborhood-aggregation" class="nav-link" data-scroll-target="#message-passing-and-neighborhood-aggregation"><span class="header-section-number">14.1.2</span> Message Passing and Neighborhood Aggregation</a></li>
+  <li><a href="#canonical-gnn-architectures" id="toc-canonical-gnn-architectures" class="nav-link" data-scroll-target="#canonical-gnn-architectures"><span class="header-section-number">14.1.3</span> Canonical GNN Architectures</a></li>
   </ul></li>
-  <li><a href="#gnns-for-protein-structure-and-interaction" id="toc-gnns-for-protein-structure-and-interaction" class="nav-link" data-scroll-target="#gnns-for-protein-structure-and-interaction"><span class="header-section-number">14.4</span> GNNs for Protein Structure and Interaction</a>
+  <li><a href="#biological-graph-types" id="toc-biological-graph-types" class="nav-link" data-scroll-target="#biological-graph-types"><span class="header-section-number">14.2</span> Biological Graph Types</a>
   <ul class="collapse">
-  <li><a href="#protein-structure-as-graphs" id="toc-protein-structure-as-graphs" class="nav-link" data-scroll-target="#protein-structure-as-graphs"><span class="header-section-number">14.4.1</span> Protein Structure as Graphs</a></li>
-  <li><a href="#protein-protein-interface-prediction" id="toc-protein-protein-interface-prediction" class="nav-link" data-scroll-target="#protein-protein-interface-prediction"><span class="header-section-number">14.4.2</span> Protein-Protein Interface Prediction</a></li>
-  <li><a href="#drug-target-interaction" id="toc-drug-target-interaction" class="nav-link" data-scroll-target="#drug-target-interaction"><span class="header-section-number">14.4.3</span> Drug-Target Interaction</a></li>
+  <li><a href="#protein-protein-interaction-networks" id="toc-protein-protein-interaction-networks" class="nav-link" data-scroll-target="#protein-protein-interaction-networks"><span class="header-section-number">14.2.1</span> Protein-Protein Interaction Networks</a></li>
+  <li><a href="#gene-regulatory-networks" id="toc-gene-regulatory-networks" class="nav-link" data-scroll-target="#gene-regulatory-networks"><span class="header-section-number">14.2.2</span> Gene Regulatory Networks</a></li>
+  <li><a href="#pathway-and-metabolic-networks" id="toc-pathway-and-metabolic-networks" class="nav-link" data-scroll-target="#pathway-and-metabolic-networks"><span class="header-section-number">14.2.3</span> Pathway and Metabolic Networks</a></li>
+  <li><a href="#spatial-and-cell-cell-interaction-graphs" id="toc-spatial-and-cell-cell-interaction-graphs" class="nav-link" data-scroll-target="#spatial-and-cell-cell-interaction-graphs"><span class="header-section-number">14.2.4</span> Spatial and Cell-Cell Interaction Graphs</a></li>
+  <li><a href="#molecular-association-graphs" id="toc-molecular-association-graphs" class="nav-link" data-scroll-target="#molecular-association-graphs"><span class="header-section-number">14.2.5</span> Molecular Association Graphs</a></li>
+  <li><a href="#variant-gene-phenotype-graphs" id="toc-variant-gene-phenotype-graphs" class="nav-link" data-scroll-target="#variant-gene-phenotype-graphs"><span class="header-section-number">14.2.6</span> Variant-Gene-Phenotype Graphs</a></li>
   </ul></li>
-  <li><a href="#gnns-for-gene-level-analysis" id="toc-gnns-for-gene-level-analysis" class="nav-link" data-scroll-target="#gnns-for-gene-level-analysis"><span class="header-section-number">14.5</span> GNNs for Gene-Level Analysis</a>
+  <li><a href="#key-applications" id="toc-key-applications" class="nav-link" data-scroll-target="#key-applications"><span class="header-section-number">14.3</span> Key Applications</a>
   <ul class="collapse">
-  <li><a href="#regulatory-network-inference" id="toc-regulatory-network-inference" class="nav-link" data-scroll-target="#regulatory-network-inference"><span class="header-section-number">14.5.1</span> Regulatory Network Inference</a></li>
-  <li><a href="#gene-function-prediction" id="toc-gene-function-prediction" class="nav-link" data-scroll-target="#gene-function-prediction"><span class="header-section-number">14.5.2</span> Gene Function Prediction</a></li>
-  <li><a href="#graf-and-multi-network-fusion" id="toc-graf-and-multi-network-fusion" class="nav-link" data-scroll-target="#graf-and-multi-network-fusion"><span class="header-section-number">14.5.3</span> GRAF and Multi-Network Fusion</a></li>
+  <li><a href="#disease-gene-prioritization" id="toc-disease-gene-prioritization" class="nav-link" data-scroll-target="#disease-gene-prioritization"><span class="header-section-number">14.3.1</span> Disease Gene Prioritization</a></li>
+  <li><a href="#pathway-and-module-discovery" id="toc-pathway-and-module-discovery" class="nav-link" data-scroll-target="#pathway-and-module-discovery"><span class="header-section-number">14.3.2</span> Pathway and Module Discovery</a></li>
+  <li><a href="#integration-with-sequence-foundation-models" id="toc-integration-with-sequence-foundation-models" class="nav-link" data-scroll-target="#integration-with-sequence-foundation-models"><span class="header-section-number">14.3.3</span> Integration with Sequence Foundation Models</a></li>
   </ul></li>
-  <li><a href="#patient-level-and-sample-level-graphs" id="toc-patient-level-and-sample-level-graphs" class="nav-link" data-scroll-target="#patient-level-and-sample-level-graphs"><span class="header-section-number">14.6</span> Patient-Level and Sample-Level Graphs</a>
+  <li><a href="#architecture-patterns-for-biological-gnns" id="toc-architecture-patterns-for-biological-gnns" class="nav-link" data-scroll-target="#architecture-patterns-for-biological-gnns"><span class="header-section-number">14.4</span> Architecture Patterns for Biological GNNs</a>
   <ul class="collapse">
-  <li><a href="#patient-similarity-networks" id="toc-patient-similarity-networks" class="nav-link" data-scroll-target="#patient-similarity-networks"><span class="header-section-number">14.6.1</span> Patient Similarity Networks</a></li>
-  <li><a href="#gene-level-module-graphs" id="toc-gene-level-module-graphs" class="nav-link" data-scroll-target="#gene-level-module-graphs"><span class="header-section-number">14.6.2</span> Gene-Level Module Graphs</a></li>
+  <li><a href="#heterogeneous-and-multi-relational-graphs" id="toc-heterogeneous-and-multi-relational-graphs" class="nav-link" data-scroll-target="#heterogeneous-and-multi-relational-graphs"><span class="header-section-number">14.4.1</span> Heterogeneous and Multi-Relational Graphs</a></li>
+  <li><a href="#hierarchical-pooling-and-coarsening" id="toc-hierarchical-pooling-and-coarsening" class="nav-link" data-scroll-target="#hierarchical-pooling-and-coarsening"><span class="header-section-number">14.4.2</span> Hierarchical Pooling and Coarsening</a></li>
+  <li><a href="#dynamic-and-temporal-graphs" id="toc-dynamic-and-temporal-graphs" class="nav-link" data-scroll-target="#dynamic-and-temporal-graphs"><span class="header-section-number">14.4.3</span> Dynamic and Temporal Graphs</a></li>
   </ul></li>
-  <li><a href="#epistasis-and-variant-interaction-networks" id="toc-epistasis-and-variant-interaction-networks" class="nav-link" data-scroll-target="#epistasis-and-variant-interaction-networks"><span class="header-section-number">14.7</span> Epistasis and Variant Interaction Networks</a>
+  <li><a href="#practical-considerations" id="toc-practical-considerations" class="nav-link" data-scroll-target="#practical-considerations"><span class="header-section-number">14.5</span> Practical Considerations</a>
   <ul class="collapse">
-  <li><a href="#network-guided-epistasis-detection" id="toc-network-guided-epistasis-detection" class="nav-link" data-scroll-target="#network-guided-epistasis-detection"><span class="header-section-number">14.7.1</span> Network-Guided Epistasis Detection</a></li>
-  <li><a href="#variant-gene-phenotype-graphs" id="toc-variant-gene-phenotype-graphs" class="nav-link" data-scroll-target="#variant-gene-phenotype-graphs"><span class="header-section-number">14.7.2</span> Variant-Gene-Phenotype Graphs</a></li>
+  <li><a href="#graph-construction-and-quality" id="toc-graph-construction-and-quality" class="nav-link" data-scroll-target="#graph-construction-and-quality"><span class="header-section-number">14.5.1</span> Graph Construction and Quality</a></li>
+  <li><a href="#scalability-and-efficiency" id="toc-scalability-and-efficiency" class="nav-link" data-scroll-target="#scalability-and-efficiency"><span class="header-section-number">14.5.2</span> Scalability and Efficiency</a></li>
+  <li><a href="#robustness-to-noise-and-incompleteness" id="toc-robustness-to-noise-and-incompleteness" class="nav-link" data-scroll-target="#robustness-to-noise-and-incompleteness"><span class="header-section-number">14.5.3</span> Robustness to Noise and Incompleteness</a></li>
+  <li><a href="#interpretability-and-biological-insight" id="toc-interpretability-and-biological-insight" class="nav-link" data-scroll-target="#interpretability-and-biological-insight"><span class="header-section-number">14.5.4</span> Interpretability and Biological Insight</a></li>
   </ul></li>
-  <li><a href="#practical-considerations" id="toc-practical-considerations" class="nav-link" data-scroll-target="#practical-considerations"><span class="header-section-number">14.8</span> Practical Considerations</a></li>
-  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">14.9</span> Summary</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">14.6</span> Summary</a></li>
   </ul>
 </nav>
     </div>
@@ -636,178 +647,188 @@ div.csl-indent {
 </header>
 
 
-<section id="introduction" class="level2" data-number="14.1">
-<h2 data-number="14.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">14.1</span> Introduction</h2>
+<p>The foundation models explored in earlier chapters treat genomic data as sequences: DNA bases arranged in chromosomal order, amino acids forming protein chains, or RNA transcripts as linear strings of nucleotides. This sequential view has proven remarkably powerful for tasks ranging from variant effect prediction to protein structure modeling. Yet biology is fundamentally relational. Genes regulate one another through transcription factor networks, proteins assemble into functional complexes, metabolites flow through biochemical pathways, and cells coordinate across tissues through spatial signaling. These relationships are not well captured by sequences alone.</p>
+<p>Graphs provide a natural mathematical framework for representing such relational structure. In a graph, biological entities become <strong>nodes</strong> and their interactions become <strong>edges</strong>. A protein-protein interaction network represents proteins as nodes with edges denoting physical binding or functional association. A gene regulatory network encodes transcription factors and their targets with directed edges indicating regulatory control. Spatial transcriptomics data can be modeled as a graph where cells are nodes and edges capture physical proximity or inferred cell-cell communication. This graph perspective allows us to ask questions that sequence models cannot easily address: How does a perturbation in one gene propagate through regulatory cascades? Which protein complexes are enriched in disease-associated genes? How do spatial neighborhoods of cells influence tissue-level phenotypes?</p>
+<p>Graph neural networks (GNNs) extend deep learning to operate directly on graph-structured data. Rather than sliding convolutional filters across a regular grid or attending over a fixed-length sequence, GNNs perform <strong>message passing</strong> along edges: each node iteratively aggregates information from its neighbors to refine its representation. This allows models to incorporate both node-level features (such as gene expression or sequence embeddings) and edge-level structure (such as known interactions or spatial relationships) in a unified framework. GNNs have achieved state-of-the-art results across diverse domains including molecular property prediction, recommendation systems, and social network analysis, and are increasingly central to genomic and multi-omic applications.</p>
+<p>This chapter introduces graphs and graph neural networks as tools for genomic foundation modeling. We begin by reviewing core GNN concepts and architectures, then survey major classes of biological graphs, from protein interaction networks to spatial cell graphs to variant-gene-phenotype hierarchies. We discuss how GNNs can be integrated with sequence-based foundation models, highlight key applications in disease gene prioritization and pathway analysis, and examine practical challenges in graph construction, scalability, and interpretability. This chapter establishes foundational concepts that will be extended in <a href="p4-ch15-systems.html" class="quarto-xref"><span>Chapter 15</span></a>, where we consider multi-omics integration and systems-level modeling, and connects to evaluation themes in <a href="p5-ch16-benchmarks.html" class="quarto-xref"><span>Chapter 16</span></a> and <a href="p5-ch17-eval.html" class="quarto-xref"><span>Chapter 17</span></a> regarding robustness and generalization on graph-structured tasks.</p>
+<section id="graph-neural-network-fundamentals" class="level2" data-number="14.1">
+<h2 data-number="14.1" class="anchored" data-anchor-id="graph-neural-network-fundamentals"><span class="header-section-number">14.1</span> Graph Neural Network Fundamentals</h2>
+<section id="graphs-as-data-structures" class="level3" data-number="14.1.1">
+<h3 data-number="14.1.1" class="anchored" data-anchor-id="graphs-as-data-structures"><span class="header-section-number">14.1.1</span> Graphs as Data Structures</h3>
+<p>A graph <span class="math inline">\(G = (V, E)\)</span> consists of a set of <strong>nodes</strong> (or vertices) <span class="math inline">\(V\)</span> and a set of <strong>edges</strong> <span class="math inline">\(E\)</span> connecting pairs of nodes. In biological contexts, nodes typically represent molecular or cellular entities such as genes, proteins, metabolites, regulatory elements, cells, or even higher-level abstractions like pathways or phenotypes. Edges encode relationships between these entities: physical binding between proteins, regulatory influence from a transcription factor to a target gene, metabolic reactions linking substrates to products, spatial proximity between cells, or co-expression patterns across conditions.</p>
+<p>Edges may be <strong>undirected</strong> when the relationship is symmetric (such as physical protein-protein interactions or mutual co-expression) or <strong>directed</strong> when the relationship is asymmetric (such as transcriptional regulation where a factor activates or represses a target). Edges can also carry <strong>weights</strong> representing interaction strength, confidence scores, or distances. In many biological applications, graphs are <strong>heterogeneous</strong>, meaning they contain multiple node types (genes, proteins, cells) and multiple edge types (physical interaction, regulation, co-localization), each potentially requiring different treatment by the model.</p>
+<p>Both nodes and edges can be associated with <strong>features</strong>. Node features might include gene expression levels, protein sequence embeddings from foundation models (<a href="p2-ch06-plm.html" class="quarto-xref"><span>Chapter 6</span></a>), chromatin accessibility scores, or cell type annotations. Edge features could encode binding affinities, tissue specificity, or experimental evidence codes. These features provide the raw material that GNNs will integrate with graph structure to produce task-relevant representations.</p>
+<p>Traditional graph algorithms operate directly on this structure to compute properties such as shortest paths, centrality measures, or network communities. While these classical methods remain valuable for exploratory analysis, they typically require hand-crafted features and do not learn from data in an end-to-end fashion. Graph neural networks instead learn task-specific transformations of graph structure and features, enabling more flexible and powerful modeling.</p>
+</section>
+<section id="message-passing-and-neighborhood-aggregation" class="level3" data-number="14.1.2">
+<h3 data-number="14.1.2" class="anchored" data-anchor-id="message-passing-and-neighborhood-aggregation"><span class="header-section-number">14.1.2</span> Message Passing and Neighborhood Aggregation</h3>
+<p>The core operation in modern GNNs is <strong>message passing</strong>, a local information exchange mechanism where each node updates its representation by aggregating information from its neighbors. At layer <span class="math inline">\(\ell\)</span>, each node <span class="math inline">\(i\)</span> maintains a hidden state <span class="math inline">\(\mathbf{h}_i^{(\ell)}\)</span>. A generic message passing layer proceeds in two conceptual steps.</p>
+<p>First, for each edge <span class="math inline">\((i, j)\)</span> connecting node <span class="math inline">\(i\)</span> to its neighbor <span class="math inline">\(j\)</span>, the model computes a <strong>message</strong> from <span class="math inline">\(j\)</span> to <span class="math inline">\(i\)</span>: <span class="math display">\[
+\mathbf{m}_{ij}^{(\ell)} = \phi_m\left(\mathbf{h}_i^{(\ell)}, \mathbf{h}_j^{(\ell)}, \mathbf{e}_{ij}\right),
+\]</span> where <span class="math inline">\(\phi_m\)</span> is a learned function (typically a small neural network) and <span class="math inline">\(\mathbf{e}_{ij}\)</span> represents edge features. This message captures how neighbor <span class="math inline">\(j\)</span> should influence node <span class="math inline">\(i\)</span> given their current states and their relationship.</p>
+<p>Second, node <span class="math inline">\(i\)</span> <strong>aggregates</strong> messages from all its neighbors and updates its own state: <span class="math display">\[
+\mathbf{h}_i^{(\ell+1)} = \phi_h\left(\mathbf{h}_i^{(\ell)}, \square_{j \in \mathcal{N}(i)} \mathbf{m}_{ij}^{(\ell)}\right),
+\]</span> where <span class="math inline">\(\mathcal{N}(i)\)</span> denotes the neighbors of node <span class="math inline">\(i\)</span>, <span class="math inline">\(\square\)</span> is a permutation-invariant aggregation operation (such as summation, mean, max, or attention-weighted sum), and <span class="math inline">\(\phi_h\)</span> is an update function that combines the aggregated messages with the node’s previous state.</p>
+<p>By stacking multiple message passing layers, information can propagate across multiple hops in the graph. A node’s representation at layer <span class="math inline">\(\ell\)</span> incorporates information from all nodes within <span class="math inline">\(\ell\)</span> hops. For biological networks, this means that a gene’s learned representation can reflect not only its own features but also signals from its immediate interaction partners, their partners, and so on. This multi-hop aggregation allows the model to capture pathways, cascades, and communities that influence downstream tasks.</p>
+<p>The aggregation function <span class="math inline">\(\square\)</span> must be permutation-invariant because the set of neighbors has no inherent ordering. Simple choices like summation or averaging work well in many settings, while more sophisticated options like attention mechanisms allow the model to weight neighbors differentially based on their relevance. The expressiveness of a GNN is closely tied to the expressiveness of these aggregation and update functions, with connections to the Weisfeiler-Lehman graph isomorphism test suggesting inherent limitations for certain graph structures.</p>
+</section>
+<section id="canonical-gnn-architectures" class="level3" data-number="14.1.3">
+<h3 data-number="14.1.3" class="anchored" data-anchor-id="canonical-gnn-architectures"><span class="header-section-number">14.1.3</span> Canonical GNN Architectures</h3>
+<p>Several standard GNN architectures have emerged as workhorses for biological applications, each with distinct design choices for message passing and aggregation.</p>
+<p><strong>Graph Convolutional Networks (GCN)</strong> <span class="citation" data-cites="kipf_semi-supervised_2017">(<a href="references.html#ref-kipf_semi-supervised_2017" role="doc-biblioref"><strong>kipf_semi-supervised_2017?</strong></a>)</span> perform a simple neighborhood averaging operation, where each node’s new representation is a normalized weighted sum of its neighbors’ representations followed by a linear transformation and nonlinearity. GCNs are conceptually straightforward and computationally efficient, making them popular for initial explorations. However, they can suffer from over-smoothing when many layers are stacked, as repeated averaging causes node representations to become increasingly similar regardless of their position in the graph.</p>
+<p><strong>GraphSAGE</strong> <span class="citation" data-cites="hamilton_inductive_2017">(<a href="references.html#ref-hamilton_inductive_2017" role="doc-biblioref"><strong>hamilton_inductive_2017?</strong></a>)</span> addresses scalability by learning aggregation functions that operate on sampled neighborhoods rather than the full set of neighbors. This enables mini-batch training on large graphs where full-batch methods would be infeasible. GraphSAGE supports multiple aggregation strategies including mean pooling, max pooling, and LSTM-based aggregation, and can generalize to unseen nodes by applying learned aggregators to new neighborhoods. This inductive capability is particularly valuable for biological networks that grow over time as new genes or proteins are characterized.</p>
+<p><strong>Graph Attention Networks (GAT)</strong> <span class="citation" data-cites="velickovic_graph_2018">(<a href="references.html#ref-velickovic_graph_2018" role="doc-biblioref"><strong>velickovic_graph_2018?</strong></a>)</span> introduce attention mechanisms to weight neighbors differently based on their relevance to the target node. Rather than treating all neighbors equally, GAT computes attention coefficients for each edge using a learned compatibility function, allowing the model to focus on the most informative interactions. In biological contexts, attention weights are often interpreted as highlighting key regulatory relationships, critical protein partners, or important cell-cell communications, providing a degree of interpretability beyond black-box aggregation.</p>
+<p><strong>Graph Transformers</strong> extend the transformer architecture to graphs by replacing local message passing with global or structured attention over nodes. Some variants use full attention over all nodes with structural encodings (such as shortest path distances or Laplacian eigenvectors) injected as positional information. Others restrict attention to k-hop neighborhoods or learned sparse patterns. Graph transformers blur the boundary between sequence models and GNNs, and are increasingly applied to large heterogeneous biological graphs where capturing long-range dependencies is important.</p>
+<p>Beyond these canonical architectures, many specialized variants exist for specific graph properties. Heterogeneous GNNs handle multiple node and edge types with type-specific parameters. Temporal GNNs model dynamic graphs where edges appear or disappear over time, relevant for modeling development or disease progression. Hierarchical GNNs incorporate multi-scale structure through pooling operations that coarsen graphs into super-nodes representing modules or communities. The choice of architecture depends on the structure of the biological graph, the nature of the task, and computational constraints.</p>
+</section>
+</section>
+<section id="biological-graph-types" class="level2" data-number="14.2">
+<h2 data-number="14.2" class="anchored" data-anchor-id="biological-graph-types"><span class="header-section-number">14.2</span> Biological Graph Types</h2>
+<p>Biological systems can be represented as graphs at multiple scales and with diverse semantics. This section surveys major classes of biological graphs encountered in genomic foundation modeling, highlighting their structure, typical applications, and connections to other chapters.</p>
+<section id="protein-protein-interaction-networks" class="level3" data-number="14.2.1">
+<h3 data-number="14.2.1" class="anchored" data-anchor-id="protein-protein-interaction-networks"><span class="header-section-number">14.2.1</span> Protein-Protein Interaction Networks</h3>
+<p>Protein-protein interaction (PPI) networks represent one of the most extensively studied biological graph types. Nodes correspond to proteins, and edges denote physical binding or stable complex formation. Interactions are typically derived from curated databases such as BioGRID, STRING, or IntAct, which aggregate evidence from yeast two-hybrid screens, affinity purification mass spectrometry, co-crystallization studies, and computational predictions. Edges may be weighted by confidence scores reflecting the strength and reliability of experimental evidence.</p>
+<p>PPI networks provide a natural substrate for disease gene prioritization. The premise is that genes causing similar diseases or participating in related biological processes tend to cluster in network neighborhoods. Graph neural networks trained on PPI networks can learn to propagate disease labels or expression signatures across the interactome, identifying candidate disease genes whose neighbors exhibit characteristic patterns even if the genes themselves lack direct annotations. This approach has been applied to prioritize cancer drivers, Mendelian disease genes, and drug targets.</p>
+<p>PPI networks also support function prediction tasks. By training GNNs to predict Gene Ontology terms, KEGG pathways, or subcellular localizations from network context, models can transfer functional knowledge from well-studied proteins to poorly characterized ones. This is particularly valuable for non-model organisms or tissue-specific contexts where experimental annotations are sparse. The learned embeddings often reveal modular structure corresponding to protein complexes, signaling cascades, or metabolic pathways, providing interpretable intermediate representations.</p>
+<p>A common pattern is to initialize node features using protein sequence foundation models such as ESM (<a href="p2-ch06-plm.html" class="quarto-xref"><span>Chapter 6</span></a>), then refine these embeddings with GNN layers that incorporate interaction context. This two-stage approach leverages the strong inductive bias of sequence models while allowing network structure to adjust representations for relational tasks. The resulting embeddings can be used for downstream applications ranging from variant effect prediction to drug-target interaction screening.</p>
+</section>
+<section id="gene-regulatory-networks" class="level3" data-number="14.2.2">
+<h3 data-number="14.2.2" class="anchored" data-anchor-id="gene-regulatory-networks"><span class="header-section-number">14.2.2</span> Gene Regulatory Networks</h3>
+<p>Gene regulatory networks (GRNs) encode the control logic of gene expression. Nodes represent genes or regulatory elements, and directed edges indicate regulatory relationships such as transcription factor binding to target promoters, enhancer-promoter loops, or microRNA-mediated silencing. Unlike PPI networks, GRNs are inherently directed and often context-specific, varying across cell types, developmental stages, and environmental conditions.</p>
+<p>Constructing GRNs typically involves integrating multiple data sources. Chromatin immunoprecipitation followed by sequencing (ChIP-seq) identifies direct transcription factor binding sites. Chromatin accessibility assays (ATAC-seq, DNase-seq) reveal open regulatory regions likely to be active. Chromosome conformation capture techniques (Hi-C, promoter capture Hi-C) map physical contacts between enhancers and promoters. Single-cell RNA-seq provides expression correlations that can suggest regulatory relationships. Computational tools combine these signals with sequence motifs and conservation to infer GRN edges, though the resulting networks remain incomplete and noisy.</p>
+<p>Graph neural networks applied to GRNs can learn to predict context-specific gene expression from regulatory architecture and chromatin state. For example, a GNN might take as input a graph where nodes represent genes with features from chromatin accessibility models (<a href="p4-ch13-sc-epi.html" class="quarto-xref"><span>Chapter 13</span></a>) and edges represent inferred regulatory connections, then predict cell-type-specific expression levels. By training across many cell types, the model can learn which regulatory motifs and network motifs are associated with active or repressed states.</p>
+<p>GRNs are also valuable for modeling perturbation effects. Given a CRISPR knockout or transcription factor overexpression, one can simulate how signals propagate through the regulatory network to predict changes in downstream targets. This connects to the perturbation prediction models discussed in <a href="p4-ch13-sc-epi.html" class="quarto-xref"><span>Chapter 13</span></a> and provides a systems-level complement to sequence-based variant effect prediction (<a href="p3-ch12-vep.html" class="quarto-xref"><span>Chapter 12</span></a>).</p>
+</section>
+<section id="pathway-and-metabolic-networks" class="level3" data-number="14.2.3">
+<h3 data-number="14.2.3" class="anchored" data-anchor-id="pathway-and-metabolic-networks"><span class="header-section-number">14.2.3</span> Pathway and Metabolic Networks</h3>
+<p>Biochemical pathways represent chains of enzymatic reactions, where metabolites are converted from substrates to products through catalysis by proteins. Pathway databases such as KEGG, Reactome, and BioCyc organize this knowledge into hierarchical graphs where nodes can represent genes, proteins, metabolites, or reactions, and edges denote substrate-product relationships, catalytic roles, or regulatory influences.</p>
+<p>Graph neural networks on pathway networks enable several applications. One is pathway activity inference: given gene expression or proteomic measurements, a GNN can propagate signals through the pathway graph to estimate activity levels of metabolic or signaling pathways. This provides more robust and interpretable summaries than gene set enrichment approaches that treat pathways as flat lists of members. Another application is drug mechanism prediction, where GNNs trained on compound-target-pathway graphs can predict off-target effects or suggest repurposing opportunities by identifying drugs that modulate similar network neighborhoods.</p>
+<p>Pathway graphs also support mechanistic interpretation of genome-wide association studies (GWAS). Rather than treating associated variants independently, one can map variants to genes, genes to pathways, and train GNNs to identify which pathway modules are enriched for risk variants. This network-based view can reveal convergent effects of multiple low-frequency variants that would be missed by single-variant tests.</p>
+<p>Hierarchical pathway graphs, such as the Reactome hierarchy, provide multi-scale structure where higher-level nodes represent broad processes (such as metabolism or immune response) and lower-level nodes represent specific reactions. GNNs with hierarchical pooling (<a href="p4-ch15-systems.html" class="quarto-xref"><span>Chapter 15</span></a>) can learn representations at multiple levels of granularity, aligning with biological intuition that complex traits involve perturbations at multiple scales.</p>
+</section>
+<section id="spatial-and-cell-cell-interaction-graphs" class="level3" data-number="14.2.4">
+<h3 data-number="14.2.4" class="anchored" data-anchor-id="spatial-and-cell-cell-interaction-graphs"><span class="header-section-number">14.2.4</span> Spatial and Cell-Cell Interaction Graphs</h3>
+<p>Spatial transcriptomics and multiplexed imaging assays measure gene expression or protein abundance while preserving spatial coordinates in tissue sections. These data naturally give rise to spatial graphs where nodes represent cells or spatial spots and edges encode physical proximity, shared boundaries, or inferred cell-cell communication.</p>
+<p>Constructing spatial graphs typically involves first segmenting cells or tiles from imaging data, then connecting nodes based on distance thresholds, Delaunay triangulation, or k-nearest neighbors in spatial coordinates. Node features can include gene expression profiles, morphological descriptors from imaging, or embeddings from single-cell foundation models (<a href="p4-ch13-sc-epi.html" class="quarto-xref"><span>Chapter 13</span></a>). Edge features might encode distances, shared membrane area, or predicted ligand-receptor interactions inferred from expression of known communication pairs.</p>
+<p>Graph neural networks on spatial graphs have been applied to diverse tasks. One is tissue region classification, where the goal is to label regions as tumor, stroma, immune-infiltrated, or necrotic based on the spatial organization of cells. Another is cell state prediction, where spatial context (such as proximity to blood vessels or immune cells) influences cell behavior in ways not captured by expression alone. Spatial GNNs have also been used to identify tissue niches, such as tertiary lymphoid structures in tumors or stem cell niches in developmental systems, by learning embeddings that cluster spatially coherent functional regions.</p>
+<p>A key advantage of spatial graphs over purely expression-based models is the ability to capture emergent tissue-level properties. For example, a tumor’s response to immunotherapy may depend not just on the abundance of immune cells but on their spatial distribution and proximity to tumor cells. GNNs can integrate expression and spatial signals to predict such higher-order phenotypes.</p>
+<p>Spatial graphs connect naturally to other graph types: cells can be linked not only by physical proximity but also by shared pathways (constructing a hybrid spatial-molecular graph) or by temporal trajectories (linking spatial snapshots across developmental time or disease progression). This multi-graph view is explored further in <a href="p4-ch15-systems.html" class="quarto-xref"><span>Chapter 15</span></a>.</p>
+</section>
+<section id="molecular-association-graphs" class="level3" data-number="14.2.5">
+<h3 data-number="14.2.5" class="anchored" data-anchor-id="molecular-association-graphs"><span class="header-section-number">14.2.5</span> Molecular Association Graphs</h3>
+<p>Beyond protein-coding genes, many studies construct graphs over non-coding RNAs (microRNAs, long non-coding RNAs, circular RNAs) and their associations with diseases, drugs, or other molecular entities. In a typical molecular association graph, nodes represent molecules and diseases, and edges indicate known associations or similarities. For example, a microRNA-disease graph might connect miRNAs to diseases they regulate, with additional edges connecting similar miRNAs (based on sequence or target overlap) or related diseases (based on phenotypic similarity or shared genetic architecture).</p>
+<p>Graph neural networks on these heterogeneous molecular association graphs have become a popular approach for predicting novel associations. The premise is that if a miRNA is connected to diseases A and B, and disease B shares many associations with disease C, then the miRNA is a plausible candidate for disease C. GNNs formalize this transitive reasoning by propagating embeddings across the graph, learning to weigh different paths and evidence types.</p>
+<p>However, molecular association graphs also illustrate important pitfalls. If similarity edges are constructed using features derived from the same data used for training (such as sequence similarity computed from sequences also used as node features), this can introduce <strong>information leakage</strong> where the model exploits shortcuts rather than learning generalizable patterns. Additionally, if train-test splits are performed naively without accounting for graph connectivity, the model may have indirect access to test labels through neighboring nodes. These issues are discussed extensively in <a href="p5-ch18-confound.html" class="quarto-xref"><span>Chapter 18</span></a> regarding confounding and leakage, and underscore the importance of careful experimental design when evaluating GNNs on biological graphs.</p>
+</section>
+<section id="variant-gene-phenotype-graphs" class="level3" data-number="14.2.6">
+<h3 data-number="14.2.6" class="anchored" data-anchor-id="variant-gene-phenotype-graphs"><span class="header-section-number">14.2.6</span> Variant-Gene-Phenotype Graphs</h3>
+<p>Clinical variant interpretation often relies on structured knowledge linking variants to genes, genes to pathways or protein complexes, and genes to phenotypes. Resources such as the Gene2Phenotype (G2P) database curate variant-gene-phenotype relationships for Mendelian disorders, providing a graph backbone for diagnostic filtering. More broadly, one can construct graphs where nodes represent variants (or haplotypes), genes, molecular functions, tissue contexts, and clinical phenotypes, with edges encoding relationships like “variant disrupts gene,” “gene participates in pathway,” or “pathway perturbation causes phenotype.”</p>
+<p>Graph neural networks on such hierarchical graphs enable several applications. One is <strong>variant prioritization</strong>: given a patient’s genotype and clinical phenotype (represented as a set of Human Phenotype Ontology terms), a GNN can propagate phenotype information backward through the gene and pathway layers to score which variants are most likely causal. This connects to variant effect prediction (<a href="p3-ch12-vep.html" class="quarto-xref"><span>Chapter 12</span></a>) but extends it to consider not just the molecular impact of each variant in isolation but also how variants interact through shared genes, pathways, or phenotypic consequences.</p>
+<p>Another application is <strong>phenotype prediction from genotype</strong>: given a set of variants, propagate their effects forward through genes and pathways to predict clinical outcomes. This is related to polygenic risk scores (<a href="p1-ch03-pgs.html" class="quarto-xref"><span>Chapter 3</span></a>) but leverages network structure to model non-additive effects and pathway-level perturbations. Hierarchical graphs provide natural interpretability, as attention weights or activation patterns at each layer can highlight which genes, pathways, or tissues mediate risk.</p>
+<p>Variant-gene-phenotype graphs also support <strong>knowledge graph completion</strong>: predicting missing edges such as uncharacterized gene-disease associations or novel variant-phenotype links. This is particularly valuable in rare diseases where direct evidence is limited but indirect evidence from related genes or pathways can guide discovery.</p>
+<p>These applications illustrate a general pattern where GNNs bridge molecular and clinical scales by reasoning over multi-level biological graphs. This theme is expanded in <a href="p4-ch15-systems.html" class="quarto-xref"><span>Chapter 15</span></a>, where we consider how such graphs integrate with multi-omic data, and in <a href="p6-ch20-clinical.html" class="quarto-xref"><span>Chapter 20</span></a>, where we discuss deployment in diagnostic workflows.</p>
+</section>
+</section>
+<section id="key-applications" class="level2" data-number="14.3">
+<h2 data-number="14.3" class="anchored" data-anchor-id="key-applications"><span class="header-section-number">14.3</span> Key Applications</h2>
+<section id="disease-gene-prioritization" class="level3" data-number="14.3.1">
+<h3 data-number="14.3.1" class="anchored" data-anchor-id="disease-gene-prioritization"><span class="header-section-number">14.3.1</span> Disease Gene Prioritization</h3>
+<p>One of the earliest and most successful applications of GNNs in genomics is disease gene prioritization. The task is to rank genes by their likelihood of being involved in a disease, given known disease-associated genes and features such as expression, sequence, and network context. Traditional approaches relied on guilt-by-association heuristics: genes connected to known disease genes in PPI or co-expression networks were ranked higher. GNNs formalize and extend this intuition by learning how to propagate and weight signals across networks.</p>
+<p>A typical workflow involves constructing a PPI or multi-omic network, initializing node features with gene expression or sequence embeddings, labeling known disease genes as positive examples, and training a GNN to classify nodes as disease-associated or not. The trained model can then score genes lacking direct annotations. Early studies demonstrated that GNN-based prioritization outperforms simpler network diffusion methods and can identify candidate genes that are later validated experimentally.</p>
+<p>More sophisticated variants use heterogeneous graphs that integrate multiple evidence types. For example, one might combine PPI networks, gene co-expression networks, shared pathway membership, and sequence similarity into a multi-layer graph, then train a heterogeneous GNN that learns type-specific transformations for each edge type. This allows the model to flexibly combine complementary signals: expression correlations might be most informative for regulatory relationships, while physical interactions are key for complex membership.</p>
+<p>Disease gene prioritization connects to variant effect prediction by providing a complementary lens. While variant effect models (<a href="p3-ch12-vep.html" class="quarto-xref"><span>Chapter 12</span></a>) score the impact of individual genetic changes, disease gene prioritization scores whether a gene, if perturbed, is likely to contribute to disease. Integrating both can improve clinical interpretation: a variant with a high deleteriousness score in a highly prioritized disease gene is a stronger candidate than one in a gene with no network or functional support.</p>
+</section>
+<section id="pathway-and-module-discovery" class="level3" data-number="14.3.2">
+<h3 data-number="14.3.2" class="anchored" data-anchor-id="pathway-and-module-discovery"><span class="header-section-number">14.3.2</span> Pathway and Module Discovery</h3>
+<p>Understanding complex diseases often requires moving beyond individual genes to identify dysregulated pathways, modules, or processes. Graph neural networks provide a natural framework for learning such modular structure. By training GNNs with regularization that encourages sparsity or community structure, one can extract subgraphs or clusters of nodes that coherently contribute to a phenotype.</p>
+<p>For example, consider a GNN trained to predict cancer subtype from multi-omic node features on a pathway graph. After training, attention weights or gradient-based attribution can highlight edges and nodes that are most informative for the classification. These may correspond to known cancer pathways (such as cell cycle or apoptosis) or novel modules whose coherence was not previously appreciated. Hierarchical GNNs that pool nodes into super-nodes at intermediate layers provide an explicit mechanism for discovering such modules.</p>
+<p>Another approach is unsupervised or self-supervised training, where GNNs are trained to reconstruct graph structure, predict masked node features, or align multi-omic embeddings (as in GLUE; <a href="p4-ch13-sc-epi.html" class="quarto-xref"><span>Chapter 13</span></a>). The learned embeddings can then be clustered to identify modules. This has been applied to single-cell data to discover cell types and states, to spatial data to identify tissue niches, and to molecular networks to find functional modules that are perturbed in disease.</p>
+<p>Pathway and module discovery is particularly valuable for rare diseases and precision medicine, where patient-specific perturbations may affect unique combinations of pathways. Rather than relying solely on population-level pathway enrichment, GNN-based methods can score pathway activity for individual patients, enabling more personalized interpretation of multi-omic profiles.</p>
+</section>
+<section id="integration-with-sequence-foundation-models" class="level3" data-number="14.3.3">
+<h3 data-number="14.3.3" class="anchored" data-anchor-id="integration-with-sequence-foundation-models"><span class="header-section-number">14.3.3</span> Integration with Sequence Foundation Models</h3>
+<p>A recurring theme in biological GNN applications is the integration of sequence-based foundation models with graph structure. Sequence models such as protein language models (<a href="p2-ch06-plm.html" class="quarto-xref"><span>Chapter 6</span></a>), DNA foundation models (<a href="p2-ch07-dna.html" class="quarto-xref"><span>Chapter 7</span></a>), or single-cell foundation models (<a href="p4-ch13-sc-epi.html" class="quarto-xref"><span>Chapter 13</span></a>) provide rich, context-aware embeddings of biological sequences. However, these models typically operate on individual sequences without explicit relational information. Graph neural networks provide a natural way to augment sequence embeddings with network context.</p>
+<p>The typical workflow is a two-stage process. First, a sequence foundation model is applied to each entity in the graph (such as proteins in a PPI network or genes in a regulatory network) to generate node features. These embeddings already capture a wealth of information, such as protein structure propensity, regulatory motifs, or cell type-specific expression patterns. Second, a GNN is trained on top of these embeddings, using the graph structure to propagate and refine information. The GNN layers are often relatively shallow (two to four layers), as the heavy lifting of feature extraction has already been done by the sequence model.</p>
+<p>This approach yields several benefits. It improves sample efficiency, as the sequence model is pretrained on large datasets and transfers to the graph task with limited labeled examples. It provides modularity, allowing practitioners to swap in better sequence models as they become available without retraining the entire pipeline. It also enhances interpretability, as one can separately analyze what the sequence model captures versus what the graph structure adds.</p>
+<p>For example, in variant effect prediction, one might use a DNA foundation model to embed sequence context around a variant, then use a GNN over a variant-gene-regulatory element graph to aggregate effects across multiple variants or regulatory sites. In protein function prediction, one might use ESM embeddings as initial node features in a PPI network GNN, allowing the model to reason about both intrinsic sequence properties and extrinsic network roles.</p>
+<p>This integration strategy connects to the multi-modal foundation models discussed in <a href="p4-ch15-systems.html" class="quarto-xref"><span>Chapter 15</span></a>, where sequence, network, and other data types are jointly modeled. It also illustrates a broader principle: foundation models need not be monolithic end-to-end systems but can serve as modular components in larger pipelines that incorporate structured biological knowledge.</p>
+</section>
+</section>
+<section id="architecture-patterns-for-biological-gnns" class="level2" data-number="14.4">
+<h2 data-number="14.4" class="anchored" data-anchor-id="architecture-patterns-for-biological-gnns"><span class="header-section-number">14.4</span> Architecture Patterns for Biological GNNs</h2>
+<section id="heterogeneous-and-multi-relational-graphs" class="level3" data-number="14.4.1">
+<h3 data-number="14.4.1" class="anchored" data-anchor-id="heterogeneous-and-multi-relational-graphs"><span class="header-section-number">14.4.1</span> Heterogeneous and Multi-Relational Graphs</h3>
+<p>Most biological systems involve multiple types of entities and relationships. A gene regulatory network might include nodes for transcription factors, target genes, enhancers, and chromatin loops, with edges representing binding, activation, repression, and physical contact. A disease network might include nodes for genes, variants, pathways, and phenotypes, with edges encoding causal relationships, pathway membership, and phenotypic associations. Standard GNNs that treat all nodes and edges homogeneously may miss important distinctions between these types.</p>
+<p>Heterogeneous GNNs address this by maintaining type-specific parameters. For each node type, there is a separate embedding lookup or encoder. For each edge type, there is a separate message function. Aggregation functions may also be type-aware, combining messages from different relation types using learned weights or hierarchical attention. This allows the model to learn, for example, that physical protein interactions should be aggregated differently from co-expression correlations, or that activating regulatory edges should have opposite effects from repressing edges.</p>
+<p>Multi-relational graph convolutional networks and relational GCNs provide canonical architectures for this setting. These models extend message passing to operate separately on each edge type, then combine the resulting embeddings. Attention-based variants learn to weight different relation types dynamically based on the task and node context. Heterogeneous graph transformers further generalize this by allowing cross-type attention, enabling reasoning about indirect relationships (such as a variant affecting a gene that participates in a pathway that influences a phenotype).</p>
+<p>Designing heterogeneous GNNs requires careful thought about which distinctions matter. Too many node or edge types can fragment training data and lead to overfitting, while too few can obscure important biological differences. Domain knowledge and exploratory analysis are essential for choosing an appropriate level of granularity.</p>
+</section>
+<section id="hierarchical-pooling-and-coarsening" class="level3" data-number="14.4.2">
+<h3 data-number="14.4.2" class="anchored" data-anchor-id="hierarchical-pooling-and-coarsening"><span class="header-section-number">14.4.2</span> Hierarchical Pooling and Coarsening</h3>
+<p>Many biological questions involve reasoning at multiple scales. Individual proteins assemble into complexes, complexes participate in pathways, and pathways coordinate in tissues to produce organismal phenotypes. Similarly, cells cluster into tissue regions, regions into organs, and organs into systems. Hierarchical GNNs provide a natural way to model such multi-scale structure.</p>
+<p>The core idea is to iteratively coarsen the graph by grouping nodes into super-nodes. At each level of the hierarchy, a pooling operation selects which nodes to merge, and a readout operation computes features for the new super-nodes. The resulting coarser graph becomes the input to the next layer, allowing the model to reason at progressively higher levels of abstraction.</p>
+<p>Several pooling strategies exist. Top-k pooling selects the most important nodes based on learned scores, discarding the rest. Differentiable pooling learns soft cluster assignments and produces super-nodes as weighted combinations of original nodes. Graph U-Net architectures alternate between coarsening (pooling) and refining (unpooling), enabling information to flow both bottom-up and top-down.</p>
+<p>In biological applications, pooling often incorporates prior knowledge. For example, in a gene-pathway-disease graph, one might pool genes into their annotated pathways, then pathways into broader biological processes, creating a hierarchy aligned with Gene Ontology or Reactome. In spatial transcriptomics, cells might be pooled into tissue regions based on spatial clustering, then regions into anatomical structures. This biologically informed pooling provides both computational efficiency and interpretability, as each level of the hierarchy corresponds to a meaningful biological unit.</p>
+<p>Hierarchical models connect naturally to the multi-omics integration strategies discussed in <a href="p4-ch15-systems.html" class="quarto-xref"><span>Chapter 15</span></a>, where molecular measurements at different scales (variants, genes, pathways, phenotypes) need to be coherently combined.</p>
+</section>
+<section id="dynamic-and-temporal-graphs" class="level3" data-number="14.4.3">
+<h3 data-number="14.4.3" class="anchored" data-anchor-id="dynamic-and-temporal-graphs"><span class="header-section-number">14.4.3</span> Dynamic and Temporal Graphs</h3>
+<p>Biological systems are dynamic. Gene regulatory networks change during development and in response to stimuli. Protein-protein interactions are context-dependent and temporally regulated. Disease progression involves evolving states of cells and tissues. Static graph models that assume a fixed topology may miss crucial temporal dynamics.</p>
+<p>Dynamic GNNs extend standard architectures to handle time-varying graphs. One approach is to snapshot the graph at different time points, train independent GNNs on each snapshot, and link them through recurrent connections or temporal smoothing. Another is to explicitly model edge appearance and disappearance, treating the graph as a temporal point process. Continuous-time dynamic graphs use neural ODEs or other differential equation solvers to model smooth trajectories of node embeddings over time.</p>
+<p>In genomics, dynamic GNNs have been applied to model cell state transitions during differentiation, cancer progression through treatment and relapse, and longitudinal disease trajectories in patients. For example, one might model patient health records as a temporal graph where nodes represent clinical events (diagnoses, treatments, lab results) and edges represent temporal dependencies, then train a dynamic GNN to predict future outcomes or treatment responses.</p>
+<p>Temporal modeling is particularly relevant for integrating multi-omic snapshots (such as baseline and post-treatment biopsies) or longitudinal single-cell data. The combination of single-cell foundation models (<a href="p4-ch13-sc-epi.html" class="quarto-xref"><span>Chapter 13</span></a>) for embedding cell states and dynamic GNNs for modeling trajectories is an active area of development.</p>
+</section>
+</section>
+<section id="practical-considerations" class="level2" data-number="14.5">
+<h2 data-number="14.5" class="anchored" data-anchor-id="practical-considerations"><span class="header-section-number">14.5</span> Practical Considerations</h2>
+<section id="graph-construction-and-quality" class="level3" data-number="14.5.1">
+<h3 data-number="14.5.1" class="anchored" data-anchor-id="graph-construction-and-quality"><span class="header-section-number">14.5.1</span> Graph Construction and Quality</h3>
+<p>Constructing the graph is often the most consequential modeling choice, as it encodes strong inductive biases about what relationships matter. Several considerations arise.</p>
+<p><strong>Source selection</strong>: Biological networks can be derived from curated databases, computational predictions, or data-driven inference. Curated databases (such as STRING for PPIs or Reactome for pathways) provide high-confidence interactions but are incomplete and biased toward well-studied genes. Computational predictions (such as co-expression networks or sequence-based interaction predictions) are more comprehensive but noisy. The choice depends on the task: high-precision curated networks may be preferable for disease gene prioritization, while high-recall predicted networks may be better for exploratory analysis.</p>
+<p><strong>Thresholding</strong>: Many potential edges have associated confidence scores or distances. Choosing a threshold determines the graph’s density and structure. Too sparse a graph may fragment the network and prevent information propagation. Too dense a graph may introduce noise and obscure meaningful structure. Cross-validation or principled selection criteria (such as targeting a specific edge density or ensuring graph connectivity) are typically needed.</p>
+<p><strong>Directionality and symmetry</strong>: Whether to treat edges as directed or undirected affects both model architecture and interpretation. Gene regulatory networks are inherently directed (transcription factors regulate targets, not vice versa), while PPI networks are often treated as undirected. In practice, many biological relationships have asymmetric strength even if conceptually bidirectional, and directed models can capture this nuance.</p>
+<p><strong>Handling missing data</strong>: Biological networks are incomplete. Important interactions may be unmeasured, especially in less-studied contexts or organisms. Models should be robust to missing edges, which can be encouraged through edge dropout during training or by treating the graph as partially observed and jointly learning to predict missing edges alongside the primary task.</p>
+<p>Graph construction often requires domain expertise and iterative refinement. Exploratory analyses of graph statistics (degree distributions, clustering coefficients, shortest path lengths) can reveal issues such as disconnected components or implausibly dense hubs that suggest artifacts.</p>
+</section>
+<section id="scalability-and-efficiency" class="level3" data-number="14.5.2">
+<h3 data-number="14.5.2" class="anchored" data-anchor-id="scalability-and-efficiency"><span class="header-section-number">14.5.2</span> Scalability and Efficiency</h3>
+<p>Biological graphs can be enormous: millions of cells in spatial transcriptomics datasets, hundreds of thousands of genomic bins in 3D genome contact maps, or comprehensive multi-omic patient cohorts. Full-batch training on such graphs is often infeasible due to memory constraints and computational cost.</p>
+<p>Several strategies address scalability. <strong>Neighborhood sampling</strong> (as in GraphSAGE) restricts message passing to a fixed-size sample of neighbors per node, enabling mini-batch training. The sampling can be uniform or biased toward high-degree or high-confidence edges. <strong>Subgraph sampling</strong> trains on induced subgraphs corresponding to biologically meaningful units (such as patients, tissues, or pathways), then combines predictions or embeddings across subgraphs. <strong>Cluster-based training</strong> partitions the graph into clusters, trains on each cluster independently, and uses cross-cluster edges only for fine-tuning.</p>
+<p>Efficient implementations matter. Sparse matrix operations, GPU-accelerated GNN libraries (such as PyTorch Geometric or DGL), and specialized kernels for graph operations can provide significant speedups. For extremely large graphs, distributed training or pre-aggregation of neighborhood features may be necessary.</p>
+<p>An orthogonal consideration is whether the graph structure is static or needs to be learned or updated during training. Learning sparse or adaptive graphs via differentiable graph structure learning can improve performance but adds computational overhead. For many biological applications, using a fixed graph derived from prior knowledge is a reasonable and efficient starting point.</p>
+</section>
+<section id="robustness-to-noise-and-incompleteness" class="level3" data-number="14.5.3">
+<h3 data-number="14.5.3" class="anchored" data-anchor-id="robustness-to-noise-and-incompleteness"><span class="header-section-number">14.5.3</span> Robustness to Noise and Incompleteness</h3>
+<p>All biological networks are noisy and incomplete. Experimental methods for detecting interactions (such as yeast two-hybrid or co-immunoprecipitation for PPIs) have false positive and false negative rates. Computational predictions rely on proxies (such as co-expression or sequence similarity) that imperfectly reflect true biological relationships. Even curated databases are biased toward well-studied genes and processes.</p>
+<p>GNNs must be robust to these imperfections. Several strategies help:</p>
 <ul>
-<li>Biology as networks: why graphs are a natural representation</li>
-<li>From sequence models to relational models</li>
-<li>Chapter scope: GNN architectures, biological graph types, applications</li>
+<li><strong>Edge dropout</strong>: Randomly dropping edges during training forces the model to not rely on any single edge, improving robustness to missing or false interactions.</li>
+<li><strong>Node dropout</strong>: Randomly masking node features or entire nodes similarly encourages robustness and prevents overfitting to well-connected hubs.</li>
+<li><strong>Adversarial training</strong>: Perturbing edge weights or adding noise to node features during training, then optimizing worst-case performance, can improve robustness.</li>
+<li><strong>Uncertainty quantification</strong>: Using Bayesian GNNs or ensembles to estimate prediction uncertainty allows the model to flag low-confidence predictions for manual review.</li>
+<li><strong>Multi-view graphs</strong>: Constructing multiple graphs from different data sources and training models that reason over all of them can compensate for noise in any single view.</li>
 </ul>
+<p>Evaluation on nodes or edges with varying connectivity and annotation quality is essential. Models should not simply perform well on highly connected, well-studied hubs but also generalize to peripheral and novel nodes.</p>
 </section>
-<section id="graph-neural-network-fundamentals" class="level2" data-number="14.2">
-<h2 data-number="14.2" class="anchored" data-anchor-id="graph-neural-network-fundamentals"><span class="header-section-number">14.2</span> Graph Neural Network Fundamentals</h2>
-<ul>
-<li>Graphs as data structures: nodes, edges, features</li>
-<li>Message passing and neighborhood aggregation</li>
-<li>Graph convolutional networks (GCN)</li>
-<li>Graph attention networks (GAT)</li>
-<li>Expressive power and limitations (Weisfeiler-Lehman hierarchy)</li>
-</ul>
-</section>
-<section id="biological-graph-types" class="level2" data-number="14.3">
-<h2 data-number="14.3" class="anchored" data-anchor-id="biological-graph-types"><span class="header-section-number">14.3</span> Biological Graph Types</h2>
-<section id="protein-protein-interaction-networks" class="level3" data-number="14.3.1">
-<h3 data-number="14.3.1" class="anchored" data-anchor-id="protein-protein-interaction-networks"><span class="header-section-number">14.3.1</span> Protein-Protein Interaction Networks</h3>
-<ul>
-<li>STRING, BioGRID, and curated interaction databases</li>
-<li>Physical vs.&nbsp;functional interactions</li>
-<li>Network topology and hub genes</li>
-</ul>
-<p>Traditional approaches to protein-protein interaction prediction rely on sequence features, domain annotations, or curated databases, but these methods often fail to capture the hierarchical organization inherent in interaction networks. A protein exists both as an individual molecular entity with internal structure and as a node in the larger interactome.</p>
-<p>HIGH-PPI addresses this scale mismatch through a double-viewed hierarchical graph learning model <span class="citation" data-cites="gao_high-ppi_2023">(<a href="references.html#ref-gao_high-ppi_2023" role="doc-biblioref">Gao et al. 2023</a>)</span>. The architecture constructs a hierarchical graph where each node in the PPI network (representing a protein at the outside-of-protein view) is itself a graph (representing the protein’s structure at the inside-of-protein view). At the bottom level, chemically relevant descriptors rather than raw sequences capture the structure-function relationship of each protein, enabling better generalization to novel proteins or interaction contexts.</p>
-<p>This hierarchical design offers several advantages for interaction prediction. At the outside-of-protein level, the model learns network topology features that capture functional context (proteins interacting with similar partners may have related functions). At the inside-of-protein level, the model learns structural features relevant to binding interfaces. The attention mechanisms that connect these levels can identify which internal structural features matter for which network-level relationships, providing interpretability that standard sequence-based predictors lack.</p>
-<p>Beyond binary interaction prediction, HIGH-PPI demonstrates capacity for mechanistic interpretation by identifying binding and catalytic sites that drive specific interactions. This interpretability addresses a persistent criticism of deep learning for interaction prediction: that models learn to exploit dataset biases rather than genuine binding determinants. The hierarchical attention provides evidence for which structural features contribute to each prediction.</p>
-</section>
-<section id="gene-regulatory-networks" class="level3" data-number="14.3.2">
-<h3 data-number="14.3.2" class="anchored" data-anchor-id="gene-regulatory-networks"><span class="header-section-number">14.3.2</span> Gene Regulatory Networks</h3>
-<ul>
-<li>Transcription factor-target relationships</li>
-<li>Chromatin accessibility and enhancer-gene links</li>
-<li>Inferred vs.&nbsp;experimentally validated edges</li>
-</ul>
-</section>
-<section id="pathway-and-ontology-graphs" class="level3" data-number="14.3.3">
-<h3 data-number="14.3.3" class="anchored" data-anchor-id="pathway-and-ontology-graphs"><span class="header-section-number">14.3.3</span> Pathway and Ontology Graphs</h3>
-<ul>
-<li>KEGG, Reactome, GO hierarchies</li>
-<li>Pathway membership as prior knowledge</li>
-<li>Gene-pathway bipartite graphs</li>
-</ul>
-</section>
-<section id="knowledge-graphs-in-biomedicine" class="level3" data-number="14.3.4">
-<h3 data-number="14.3.4" class="anchored" data-anchor-id="knowledge-graphs-in-biomedicine"><span class="header-section-number">14.3.4</span> Knowledge Graphs in Biomedicine</h3>
-<ul>
-<li>Drug-gene-disease relationships</li>
-<li>Heterogeneous biomedical graphs</li>
-<li>Link prediction and knowledge completion</li>
-</ul>
-<p>Knowledge graphs provide a powerful abstraction for biomedical data that naturally captures the heterogeneous relationships between genes, diseases, drugs, and biological processes. Unlike homogeneous graphs where all edges represent the same relationship type, knowledge graphs encode multiple relationship types within a single structure, enabling richer reasoning about indirect connections and multi-hop paths.</p>
-<p>PrimeKG exemplifies modern biomedical knowledge graph construction at scale <span class="citation" data-cites="chandak_primekg_2023">(<a href="references.html#ref-chandak_primekg_2023" role="doc-biblioref">Chandak, Huang, and Zitnik 2023</a>)</span>. The resource integrates 20 high-quality databases to describe over 17,000 diseases through more than 4 million relationships spanning ten biological scales, from disease-associated protein perturbations through biological processes and pathways to anatomical and phenotypic levels. Critically, PrimeKG includes the full range of approved drugs with their therapeutic actions, providing comprehensive coverage of drug-disease relationships including indications, contraindications, and off-label uses that remain sparse in other knowledge graphs.</p>
-<p>What distinguishes PrimeKG from earlier efforts is its multimodal design philosophy. Beyond the graph structure itself, PrimeKG supplements edges with natural language descriptions of clinical guidelines, enabling multimodal analyses that combine graph-based reasoning with language model approaches. This design anticipates the convergence of graph neural networks and language models that characterizes modern foundation model architectures.</p>
-<p>Graph neural networks operating on PrimeKG and similar knowledge graphs can propagate information across relationship types, allowing known disease associations to inform prioritization of novel candidate genes. A typical workflow constructs a multi-relational graph with genes as nodes and edges representing protein interactions, pathway co-membership, regulatory relationships, and phenotype associations. Node features can be initialized using foundation model outputs: aggregated variant effect scores, expression embeddings, and constraint metrics. The GNN then learns to combine local node features with propagated neighborhood information to predict labels such as disease association, drug target potential, or therapeutic indication.</p>
+<section id="interpretability-and-biological-insight" class="level3" data-number="14.5.4">
+<h3 data-number="14.5.4" class="anchored" data-anchor-id="interpretability-and-biological-insight"><span class="header-section-number">14.5.4</span> Interpretability and Biological Insight</h3>
+<p>A key advantage of graph-based models is interpretability: the graph structure itself provides a scaffold for understanding model predictions. Several techniques extract biological insight from trained GNNs:</p>
+<p><strong>Attention weight analysis</strong>: When using attention-based GNNs (such as GAT), attention coefficients indicate which neighbors most influenced each node’s prediction. Aggregating attention across nodes and predictions can highlight critical edges or subgraphs.</p>
+<p><strong>Gradient-based attribution</strong>: Computing gradients of predictions with respect to node or edge features identifies which parts of the graph are most important. Integrated gradients or GradCAM-style methods extend this to provide smoother, more reliable attributions.</p>
+<p><strong>Counterfactual interventions</strong>: Systematically removing edges, masking nodes, or perturbing features and observing changes in predictions reveals which parts of the graph are necessary or sufficient for a prediction. This can identify vulnerabilities in network structure or suggest therapeutic targets.</p>
+<p><strong>Embedding analysis</strong>: Visualizing learned node or edge embeddings (via dimensionality reduction) can reveal clusters or gradients corresponding to biological categories such as pathways, cell types, or disease subtypes. Comparing embeddings across conditions or perturbations can identify context-specific rewiring.</p>
+<p><strong>Module extraction</strong>: For hierarchical models, examining intermediate-layer representations or pooled super-nodes can identify emergent modules. These modules often correspond to known pathways or complexes but can also suggest novel functional groupings.</p>
+<p>Interpretability is not an afterthought but a central goal for biological GNN applications. The most impactful models are those that not only improve predictions but also generate testable hypotheses and reveal new biological relationships.</p>
 </section>
 </section>
-<section id="gnns-for-protein-structure-and-interaction" class="level2" data-number="14.4">
-<h2 data-number="14.4" class="anchored" data-anchor-id="gnns-for-protein-structure-and-interaction"><span class="header-section-number">14.4</span> GNNs for Protein Structure and Interaction</h2>
-<section id="protein-structure-as-graphs" class="level3" data-number="14.4.1">
-<h3 data-number="14.4.1" class="anchored" data-anchor-id="protein-structure-as-graphs"><span class="header-section-number">14.4.1</span> Protein Structure as Graphs</h3>
-<ul>
-<li>Residue contact graphs and distance matrices</li>
-<li>Geometric deep learning on protein surfaces</li>
-</ul>
-</section>
-<section id="protein-protein-interface-prediction" class="level3" data-number="14.4.2">
-<h3 data-number="14.4.2" class="anchored" data-anchor-id="protein-protein-interface-prediction"><span class="header-section-number">14.4.2</span> Protein-Protein Interface Prediction</h3>
-<ul>
-<li>DeepRank and DeepRank-GNN</li>
-<li>DOVE-GNN for docking evaluation</li>
-<li>Graphein for structural graph construction</li>
-</ul>
-</section>
-<section id="drug-target-interaction" class="level3" data-number="14.4.3">
-<h3 data-number="14.4.3" class="anchored" data-anchor-id="drug-target-interaction"><span class="header-section-number">14.4.3</span> Drug-Target Interaction</h3>
-<ul>
-<li>Graph representations of molecules and proteins</li>
-<li>Binding affinity prediction</li>
-</ul>
-</section>
-</section>
-<section id="gnns-for-gene-level-analysis" class="level2" data-number="14.5">
-<h2 data-number="14.5" class="anchored" data-anchor-id="gnns-for-gene-level-analysis"><span class="header-section-number">14.5</span> GNNs for Gene-Level Analysis</h2>
-<section id="regulatory-network-inference" class="level3" data-number="14.5.1">
-<h3 data-number="14.5.1" class="anchored" data-anchor-id="regulatory-network-inference"><span class="header-section-number">14.5.1</span> Regulatory Network Inference</h3>
-<ul>
-<li>GLUE’s guidance graphs for multi-omics</li>
-<li>Learning edge weights from data</li>
-<li>Graph-guided latent spaces</li>
-</ul>
-</section>
-<section id="gene-function-prediction" class="level3" data-number="14.5.2">
-<h3 data-number="14.5.2" class="anchored" data-anchor-id="gene-function-prediction"><span class="header-section-number">14.5.2</span> Gene Function Prediction</h3>
-<ul>
-<li>Node classification on PPI networks</li>
-<li>GO term prediction</li>
-<li>Disease gene prioritization</li>
-</ul>
-</section>
-<section id="graf-and-multi-network-fusion" class="level3" data-number="14.5.3">
-<h3 data-number="14.5.3" class="anchored" data-anchor-id="graf-and-multi-network-fusion"><span class="header-section-number">14.5.3</span> GRAF and Multi-Network Fusion</h3>
-<ul>
-<li>Attention-aware network fusion</li>
-<li>Handling heterogeneous biological networks</li>
-<li>Node-level and association-level attention</li>
-</ul>
-</section>
-</section>
-<section id="patient-level-and-sample-level-graphs" class="level2" data-number="14.6">
-<h2 data-number="14.6" class="anchored" data-anchor-id="patient-level-and-sample-level-graphs"><span class="header-section-number">14.6</span> Patient-Level and Sample-Level Graphs</h2>
-<section id="patient-similarity-networks" class="level3" data-number="14.6.1">
-<h3 data-number="14.6.1" class="anchored" data-anchor-id="patient-similarity-networks"><span class="header-section-number">14.6.1</span> Patient Similarity Networks</h3>
-<ul>
-<li>Constructing graphs from molecular profiles</li>
-<li>k-nearest neighbor and correlation-based edges</li>
-<li>MoGCN for cancer subtyping</li>
-</ul>
-</section>
-<section id="gene-level-module-graphs" class="level3" data-number="14.6.2">
-<h3 data-number="14.6.2" class="anchored" data-anchor-id="gene-level-module-graphs"><span class="header-section-number">14.6.2</span> Gene-Level Module Graphs</h3>
-<ul>
-<li>CGMega’s gene-centric approach</li>
-<li>Co-expression and co-methylation edges</li>
-<li>Module discovery for biomarker identification</li>
-</ul>
-</section>
-</section>
-<section id="epistasis-and-variant-interaction-networks" class="level2" data-number="14.7">
-<h2 data-number="14.7" class="anchored" data-anchor-id="epistasis-and-variant-interaction-networks"><span class="header-section-number">14.7</span> Epistasis and Variant Interaction Networks</h2>
-<section id="network-guided-epistasis-detection" class="level3" data-number="14.7.1">
-<h3 data-number="14.7.1" class="anchored" data-anchor-id="network-guided-epistasis-detection"><span class="header-section-number">14.7.1</span> Network-Guided Epistasis Detection</h3>
-<ul>
-<li>NeEDL: local search on biological networks</li>
-<li>Using network structure to constrain search space</li>
-<li>Mapping interactions to pathways</li>
-</ul>
-</section>
-<section id="variant-gene-phenotype-graphs" class="level3" data-number="14.7.2">
-<h3 data-number="14.7.2" class="anchored" data-anchor-id="variant-gene-phenotype-graphs"><span class="header-section-number">14.7.2</span> Variant-Gene-Phenotype Graphs</h3>
-<ul>
-<li>G2PT’s hierarchical graph structure</li>
-<li>Variants → genes → systems → phenotypes</li>
-<li>Attention over biological hierarchy</li>
-</ul>
-</section>
-</section>
-<section id="practical-considerations" class="level2" data-number="14.8">
-<h2 data-number="14.8" class="anchored" data-anchor-id="practical-considerations"><span class="header-section-number">14.8</span> Practical Considerations</h2>
-<ul>
-<li>Graph construction choices and their consequences</li>
-<li>Scalability: sparse operations, sampling strategies</li>
-<li>Handling incomplete or noisy biological networks</li>
-<li>Interpretability of learned edge weights</li>
-</ul>
-</section>
-<section id="summary" class="level2" data-number="14.9">
-<h2 data-number="14.9" class="anchored" data-anchor-id="summary"><span class="header-section-number">14.9</span> Summary</h2>
+<section id="summary" class="level2" data-number="14.6">
+<h2 data-number="14.6" class="anchored" data-anchor-id="summary"><span class="header-section-number">14.6</span> Summary</h2>
+<p>Graphs provide a powerful and natural representation for the relational structure of biological systems. By encoding entities as nodes and their interactions as edges, graph representations enable us to reason about how perturbations propagate through networks, how pathways coordinate to produce phenotypes, and how spatial organization influences cell behavior. Graph neural networks extend deep learning to these irregular structures through message passing and neighborhood aggregation, learning task-specific transformations that integrate node features with topological context.</p>
+<p>This chapter introduced core GNN concepts and architectures, surveyed major classes of biological graphs (protein-protein interactions, gene regulatory networks, pathways, spatial cell graphs, molecular association networks, and variant-gene-phenotype hierarchies), and examined key applications including disease gene prioritization, pathway discovery, and integration with sequence foundation models. We discussed practical considerations around graph construction, scalability, robustness to noise, and interpretability.</p>
+<p>Graphs and GNNs form a complementary perspective to the sequence-based foundation models explored in earlier chapters. While sequence models excel at learning from the linear structure of DNA, RNA, and proteins, GNNs excel at learning from the relational structure of interactions, regulation, and spatial organization. The most powerful approaches often combine both: using sequence models to generate rich node features and GNNs to refine these features based on network context. This integration pattern recurs throughout the book and is central to the multi-omics and systems-level models discussed in <a href="p4-ch15-systems.html" class="quarto-xref"><span>Chapter 15</span></a>.</p>
+<p>The graph-based methods introduced here provide essential building blocks for moving beyond single-gene or single-sequence analysis toward systems-level understanding. As genomic foundation models continue to mature, the integration of sequence, structure, and network information promises to yield increasingly comprehensive and biologically grounded representations of complex traits and diseases.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
-<div id="ref-chandak_primekg_2023" class="csl-entry" role="listitem">
-Chandak, Payal, Kexin Huang, and Marinka Zitnik. 2023. <span>“[<span>PrimeKG</span>] <span>Building</span> a Knowledge Graph to Enable Precision Medicine.”</span> <em>Scientific Data</em> 10 (1): 67. <a href="https://doi.org/10.1038/s41597-023-01960-3">https://doi.org/10.1038/s41597-023-01960-3</a>.
-</div>
-<div id="ref-gao_high-ppi_2023" class="csl-entry" role="listitem">
-Gao, Ziqi, Chenran Jiang, Jiawen Zhang, Xiaosen Jiang, Lanqing Li, Peilin Zhao, Huanming Yang, Yong Huang, and Jia Li. 2023. <span>“[<span>HIGH</span>-<span>PPI</span>] <span>Hierarchical</span> Graph Learning for Protein–Protein Interaction.”</span> <em>Nature Communications</em> 14 (1): 1093. <a href="https://doi.org/10.1038/s41467-023-36736-1">https://doi.org/10.1038/s41467-023-36736-1</a>.
-</div>
-</div>
 </section>
 
 </main> <!-- /main -->

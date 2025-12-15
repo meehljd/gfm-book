@@ -20,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -75,6 +95,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -560,9 +609,9 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#chapter-overview" id="toc-chapter-overview" class="nav-link active" data-scroll-target="#chapter-overview"><span class="header-section-number">16.1</span> Chapter Overview</a></li>
   <li><a href="#molecular-and-regulatory-benchmarks" id="toc-molecular-and-regulatory-benchmarks" class="nav-link" data-scroll-target="#molecular-and-regulatory-benchmarks"><span class="header-section-number">16.2</span> Molecular and Regulatory Benchmarks</a>
   <ul class="collapse">
-  <li><a href="#chromatin-and-tf-binding-tasks" id="toc-chromatin-and-tf-binding-tasks" class="nav-link" data-scroll-target="#chromatin-and-tf-binding-tasks"><span class="header-section-number">16.2.1</span> Chromatin and TF Binding Tasks</a></li>
-  <li><a href="#splicing-benchmarks" id="toc-splicing-benchmarks" class="nav-link" data-scroll-target="#splicing-benchmarks"><span class="header-section-number">16.2.2</span> Splicing Benchmarks</a></li>
-  <li><a href="#expression-prediction-tasks" id="toc-expression-prediction-tasks" class="nav-link" data-scroll-target="#expression-prediction-tasks"><span class="header-section-number">16.2.3</span> Expression Prediction Tasks</a></li>
+  <li><a href="#classical-sequence-level-classification-tasks" id="toc-classical-sequence-level-classification-tasks" class="nav-link" data-scroll-target="#classical-sequence-level-classification-tasks"><span class="header-section-number">16.2.1</span> Classical Sequence-Level Classification Tasks</a></li>
+  <li><a href="#quantitative-prediction-of-regulatory-readouts" id="toc-quantitative-prediction-of-regulatory-readouts" class="nav-link" data-scroll-target="#quantitative-prediction-of-regulatory-readouts"><span class="header-section-number">16.2.2</span> Quantitative Prediction of Regulatory Readouts</a></li>
+  <li><a href="#benchmark-suites-and-leaderboards-for-regulatory-genomics" id="toc-benchmark-suites-and-leaderboards-for-regulatory-genomics" class="nav-link" data-scroll-target="#benchmark-suites-and-leaderboards-for-regulatory-genomics"><span class="header-section-number">16.2.3</span> Benchmark Suites and Leaderboards for Regulatory Genomics</a></li>
   </ul></li>
   <li><a href="#dna-language-model-benchmark-suites" id="toc-dna-language-model-benchmark-suites" class="nav-link" data-scroll-target="#dna-language-model-benchmark-suites"><span class="header-section-number">16.3</span> DNA Language Model Benchmark Suites</a>
   <ul class="collapse">
@@ -571,35 +620,31 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#dnalongbench" id="toc-dnalongbench" class="nav-link" data-scroll-target="#dnalongbench"><span class="header-section-number">16.3.3</span> DNALongBench</a></li>
   <li><a href="#genbench" id="toc-genbench" class="nav-link" data-scroll-target="#genbench"><span class="header-section-number">16.3.4</span> GenBench</a></li>
   </ul></li>
-  <li><a href="#protein-language-model-benchmarks" id="toc-protein-language-model-benchmarks" class="nav-link" data-scroll-target="#protein-language-model-benchmarks"><span class="header-section-number">16.4</span> Protein Language Model Benchmarks</a>
+  <li><a href="#variant-effect-prediction-benchmarks" id="toc-variant-effect-prediction-benchmarks" class="nav-link" data-scroll-target="#variant-effect-prediction-benchmarks"><span class="header-section-number">16.4</span> Variant Effect Prediction Benchmarks</a>
   <ul class="collapse">
-  <li><a href="#proteingym" id="toc-proteingym" class="nav-link" data-scroll-target="#proteingym"><span class="header-section-number">16.4.1</span> ProteinGym</a></li>
-  <li><a href="#structure-prediction-benchmarks" id="toc-structure-prediction-benchmarks" class="nav-link" data-scroll-target="#structure-prediction-benchmarks"><span class="header-section-number">16.4.2</span> Structure Prediction Benchmarks</a></li>
-  <li><a href="#clinical-variant-benchmarks-for-proteins" id="toc-clinical-variant-benchmarks-for-proteins" class="nav-link" data-scroll-target="#clinical-variant-benchmarks-for-proteins"><span class="header-section-number">16.4.3</span> Clinical Variant Benchmarks for Proteins</a></li>
+  <li><a href="#clinical-annotation-databases" id="toc-clinical-annotation-databases" class="nav-link" data-scroll-target="#clinical-annotation-databases"><span class="header-section-number">16.4.1</span> Clinical Annotation Databases</a></li>
+  <li><a href="#multiplexed-assays-of-variant-effect-maves" id="toc-multiplexed-assays-of-variant-effect-maves" class="nav-link" data-scroll-target="#multiplexed-assays-of-variant-effect-maves"><span class="header-section-number">16.4.2</span> Multiplexed Assays of Variant Effect (MAVEs)</a></li>
+  <li><a href="#noncoding-variant-benchmarks" id="toc-noncoding-variant-benchmarks" class="nav-link" data-scroll-target="#noncoding-variant-benchmarks"><span class="header-section-number">16.4.3</span> Noncoding Variant Benchmarks</a></li>
   </ul></li>
-  <li><a href="#variant-effect-prediction-benchmarks" id="toc-variant-effect-prediction-benchmarks" class="nav-link" data-scroll-target="#variant-effect-prediction-benchmarks"><span class="header-section-number">16.5</span> Variant Effect Prediction Benchmarks</a>
+  <li><a href="#protein-language-model-benchmarks" id="toc-protein-language-model-benchmarks" class="nav-link" data-scroll-target="#protein-language-model-benchmarks"><span class="header-section-number">16.5</span> Protein Language Model Benchmarks</a>
   <ul class="collapse">
-  <li><a href="#clinical-annotation-databases" id="toc-clinical-annotation-databases" class="nav-link" data-scroll-target="#clinical-annotation-databases"><span class="header-section-number">16.5.1</span> Clinical Annotation Databases</a></li>
-  <li><a href="#multiplexed-assays-of-variant-effect-maves" id="toc-multiplexed-assays-of-variant-effect-maves" class="nav-link" data-scroll-target="#multiplexed-assays-of-variant-effect-maves"><span class="header-section-number">16.5.2</span> Multiplexed Assays of Variant Effect (MAVEs)</a></li>
-  <li><a href="#noncoding-variant-benchmarks" id="toc-noncoding-variant-benchmarks" class="nav-link" data-scroll-target="#noncoding-variant-benchmarks"><span class="header-section-number">16.5.3</span> Noncoding Variant Benchmarks</a></li>
+  <li><a href="#proteingym" id="toc-proteingym" class="nav-link" data-scroll-target="#proteingym"><span class="header-section-number">16.5.1</span> ProteinGym</a></li>
+  <li><a href="#structure-prediction-benchmarks" id="toc-structure-prediction-benchmarks" class="nav-link" data-scroll-target="#structure-prediction-benchmarks"><span class="header-section-number">16.5.2</span> Structure Prediction Benchmarks</a></li>
+  <li><a href="#clinical-variant-benchmarks-for-proteins" id="toc-clinical-variant-benchmarks-for-proteins" class="nav-link" data-scroll-target="#clinical-variant-benchmarks-for-proteins"><span class="header-section-number">16.5.3</span> Clinical Variant Benchmarks for Proteins</a></li>
   </ul></li>
   <li><a href="#trait-and-individual-level-benchmarks" id="toc-trait-and-individual-level-benchmarks" class="nav-link" data-scroll-target="#trait-and-individual-level-benchmarks"><span class="header-section-number">16.6</span> Trait and Individual-Level Benchmarks</a>
   <ul class="collapse">
-  <li><a href="#traitgym" id="toc-traitgym" class="nav-link" data-scroll-target="#traitgym"><span class="header-section-number">16.6.1</span> TraitGym</a></li>
-  <li><a href="#polygenic-score-benchmarks" id="toc-polygenic-score-benchmarks" class="nav-link" data-scroll-target="#polygenic-score-benchmarks"><span class="header-section-number">16.6.2</span> Polygenic Score Benchmarks</a></li>
+  <li><a href="#polygenic-score-benchmarks" id="toc-polygenic-score-benchmarks" class="nav-link" data-scroll-target="#polygenic-score-benchmarks"><span class="header-section-number">16.6.1</span> Polygenic Score Benchmarks</a></li>
+  <li><a href="#traitgym" id="toc-traitgym" class="nav-link" data-scroll-target="#traitgym"><span class="header-section-number">16.6.2</span> TraitGym</a></li>
+  <li><a href="#embedgem-framework" id="toc-embedgem-framework" class="nav-link" data-scroll-target="#embedgem-framework"><span class="header-section-number">16.6.3</span> EmbedGEM Framework</a></li>
   </ul></li>
-  <li><a href="#clinical-and-decision-level-benchmarks" id="toc-clinical-and-decision-level-benchmarks" class="nav-link" data-scroll-target="#clinical-and-decision-level-benchmarks"><span class="header-section-number">16.7</span> Clinical and Decision-Level Benchmarks</a>
+  <li><a href="#cross-cutting-issues" id="toc-cross-cutting-issues" class="nav-link" data-scroll-target="#cross-cutting-issues"><span class="header-section-number">16.7</span> Cross-Cutting Issues</a>
   <ul class="collapse">
-  <li><a href="#diagnostic-yield-studies" id="toc-diagnostic-yield-studies" class="nav-link" data-scroll-target="#diagnostic-yield-studies"><span class="header-section-number">16.7.1</span> Diagnostic Yield Studies</a></li>
-  <li><a href="#pharmacogenomic-benchmarks" id="toc-pharmacogenomic-benchmarks" class="nav-link" data-scroll-target="#pharmacogenomic-benchmarks"><span class="header-section-number">16.7.2</span> Pharmacogenomic Benchmarks</a></li>
+  <li><a href="#benchmark-suite-proliferation" id="toc-benchmark-suite-proliferation" class="nav-link" data-scroll-target="#benchmark-suite-proliferation"><span class="header-section-number">16.7.1</span> Benchmark Suite Proliferation</a></li>
+  <li><a href="#what-benchmarks-miss" id="toc-what-benchmarks-miss" class="nav-link" data-scroll-target="#what-benchmarks-miss"><span class="header-section-number">16.7.2</span> What Benchmarks Miss</a></li>
+  <li><a href="#benchmark-leakage-and-staleness" id="toc-benchmark-leakage-and-staleness" class="nav-link" data-scroll-target="#benchmark-leakage-and-staleness"><span class="header-section-number">16.7.3</span> Benchmark Leakage and Staleness</a></li>
   </ul></li>
-  <li><a href="#cross-cutting-issues" id="toc-cross-cutting-issues" class="nav-link" data-scroll-target="#cross-cutting-issues"><span class="header-section-number">16.8</span> Cross-Cutting Issues</a>
-  <ul class="collapse">
-  <li><a href="#benchmark-suite-proliferation" id="toc-benchmark-suite-proliferation" class="nav-link" data-scroll-target="#benchmark-suite-proliferation"><span class="header-section-number">16.8.1</span> Benchmark Suite Proliferation</a></li>
-  <li><a href="#what-benchmarks-miss" id="toc-what-benchmarks-miss" class="nav-link" data-scroll-target="#what-benchmarks-miss"><span class="header-section-number">16.8.2</span> What Benchmarks Miss</a></li>
-  <li><a href="#benchmark-leakage-and-staleness" id="toc-benchmark-leakage-and-staleness" class="nav-link" data-scroll-target="#benchmark-leakage-and-staleness"><span class="header-section-number">16.8.3</span> Benchmark Leakage and Staleness</a></li>
-  </ul></li>
-  <li><a href="#chapter-summary" id="toc-chapter-summary" class="nav-link" data-scroll-target="#chapter-summary"><span class="header-section-number">16.9</span> Chapter Summary</a></li>
+  <li><a href="#chapter-summary" id="toc-chapter-summary" class="nav-link" data-scroll-target="#chapter-summary"><span class="header-section-number">16.8</span> Chapter Summary</a></li>
   </ul>
 </nav>
     </div>
@@ -626,6 +671,17 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="chapter-overview" class="level2" data-number="16.1">
+<h2 data-number="16.1" class="anchored" data-anchor-id="chapter-overview"><span class="header-section-number">16.1</span> Chapter Overview</h2>
+<p>Foundation models do not exist in a vacuum. Whether a model is perceived as “good” in practice is determined almost entirely by the benchmarks the community chooses to report. In genomics, these benchmarks range from classic transcription factor (TF) binding prediction tasks to multi-phenotype cohort analyses, from single-assay classification to multi-modal, multi-task evaluations spanning species and cellular contexts.</p>
+<p>This chapter surveys the landscape of existing benchmarks for genomic models and documents how they are commonly used. In contrast, Chapter 17 (<a href="p5-ch17-eval.html" class="quarto-xref"><span>Chapter 17</span></a>) focuses on evaluation principles and methodology: how to design experiments, choose metrics, quantify uncertainty, and interpret results. Here we concentrate on the empirical landscape itself, cataloging datasets, tasks, and leaderboards that structure the incentives of model developers.</p>
+<p>The benchmark ecosystem is evolving quickly. Early deep learning work focused on small numbers of hand-curated tasks derived from ENCODE-style assays. More recent efforts introduce benchmark suites that attempt to cover many assays, tissues, or variant types, and to standardize splits and metrics. Even so, substantial gaps remain, especially around structural variation, non-European populations, and clinically meaningful endpoints.</p>
+<p>By the end of this chapter you should have:</p>
+<ul>
+<li>A mental map of the main benchmark families used for genomic models.</li>
+<li>An understanding of what these benchmarks actually measure, and what they miss.</li>
+<li>An appreciation for benchmark staleness, leakage, and distribution shift, which are elaborated in <a href="p5-ch17-eval.html" class="quarto-xref"><span>Chapter 17</span></a> and <a href="p5-ch18-confound.html" class="quarto-xref"><span>Chapter 18</span></a>.</li>
+</ul>
 <div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -636,219 +692,253 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>TODO:</strong></p>
-<ul>
-<li>Add “Genomic Benchmarks” (Gresova et al.; 2023)</li>
-</ul>
+<p><strong>Visual suggestion (overview table):</strong> A 1–2 page table listing major benchmark suites. Columns could include: “Name”, “Assays/modalities”, “Primary task(s)”, “Typical metrics”, “Scale (loci / peaks / cohort size)”, “Intended use (pretraining, fine-tuning, zero-shot)”.</p>
 </div>
 </div>
-<section id="chapter-overview" class="level2" data-number="16.1">
-<h2 data-number="16.1" class="anchored" data-anchor-id="chapter-overview"><span class="header-section-number">16.1</span> Chapter Overview</h2>
-<ul>
-<li>Motivation: Why a survey chapter distinct from evaluation methodology?</li>
-<li>Relationship to <a href="p5-ch17-eval.html" class="quarto-xref"><span>Chapter 17</span></a>: this chapter catalogs <em>what exists</em>; Ch17 covers <em>how to evaluate properly</em></li>
-<li>A rapidly evolving landscape: benchmarks as snapshots of community priorities</li>
-</ul>
 </section>
 <section id="molecular-and-regulatory-benchmarks" class="level2" data-number="16.2">
 <h2 data-number="16.2" class="anchored" data-anchor-id="molecular-and-regulatory-benchmarks"><span class="header-section-number">16.2</span> Molecular and Regulatory Benchmarks</h2>
-<section id="chromatin-and-tf-binding-tasks" class="level3" data-number="16.2.1">
-<h3 data-number="16.2.1" class="anchored" data-anchor-id="chromatin-and-tf-binding-tasks"><span class="header-section-number">16.2.1</span> Chromatin and TF Binding Tasks</h3>
+<p>Most genomic benchmarks originate from molecular assays that measure regulatory activity, chromatin state, or gene expression. These tasks were the first to be adopted by deep learning in genomics and remain core metrics for many new models.</p>
+<section id="classical-sequence-level-classification-tasks" class="level3" data-number="16.2.1">
+<h3 data-number="16.2.1" class="anchored" data-anchor-id="classical-sequence-level-classification-tasks"><span class="header-section-number">16.2.1</span> Classical Sequence-Level Classification Tasks</h3>
+<p>The earliest deep learning benchmarks for genomics framed regulatory prediction as a binary classification problem at short sequence windows. Typical examples include:</p>
 <ul>
-<li>DeepSEA evaluation sets: ENCODE/Roadmap chromatin profiles</li>
-<li>Basset and Basenji evaluation paradigms</li>
-<li>Nucleotide Transformer regulatory tasks</li>
-<li>Limitations: cell line bias, assay heterogeneity</li>
+<li><strong>TF binding prediction:</strong> Given a sequence of approximately 1 kb, predict whether a specific TF ChIP-seq peak overlaps that window in a given cell type.</li>
+<li><strong>Open chromatin and accessibility:</strong> Predict DNase-seq or ATAC-seq peaks, labeling regions as “open” or “closed”.</li>
+<li><strong>Histone marks:</strong> Predict the presence or absence of a histone mark peak (for example, H3K27ac or H3K4me1) in each window.</li>
+<li><strong>Promoter and enhancer classification:</strong> Distinguish promoter, enhancer, and background sequences based on curated annotations.</li>
 </ul>
+<p>These tasks are usually constructed from consortia like ENCODE or Roadmap Epigenomics. Benchmarks derived from them often share a common structure: fixed-length input sequences (for example, 1,000 bp centered on peaks), one label per assay or assay times cell-type combination, and random genomic train/validation/test splits, sometimes with held-out chromosomes.</p>
+<p>Models such as DeepSEA, Basset, and ExPecto were evaluated primarily on such tasks. Modern foundation models still report AUROC or average precision on similar benchmarks, often as a first sanity check before moving to more complex evaluations.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Visual suggestion (task cartoon):</strong> A cartoon panel illustrating how raw tracks (for example, ChIP-seq, DNase-seq) are converted into binary labels over fixed windows, feeding a sequence model.</p>
+</div>
+</div>
 </section>
-<section id="splicing-benchmarks" class="level3" data-number="16.2.2">
-<h3 data-number="16.2.2" class="anchored" data-anchor-id="splicing-benchmarks"><span class="header-section-number">16.2.2</span> Splicing Benchmarks</h3>
+<section id="quantitative-prediction-of-regulatory-readouts" class="level3" data-number="16.2.2">
+<h3 data-number="16.2.2" class="anchored" data-anchor-id="quantitative-prediction-of-regulatory-readouts"><span class="header-section-number">16.2.2</span> Quantitative Prediction of Regulatory Readouts</h3>
+<p>Beyond binary classification, many benchmarks require prediction of quantitative readouts:</p>
 <ul>
-<li>SpliceAI validation: GTEx RNA-seq, validation rates by delta score</li>
-<li>GENCODE splice junction sets</li>
-<li>Clinical splice variant databases</li>
-<li>Coverage gaps: deep intronic regions, tissue specificity</li>
+<li><strong>Signal regression:</strong> Predict the per-base or per-bin signal of a ChIP-seq or ATAC-seq experiment from sequence alone.</li>
+<li><strong>Gene expression prediction:</strong> Predict gene-level expression (for example, TPM or counts) from promoters, enhancers, or larger genomic contexts.</li>
+<li><strong>Reporter assays and MPRA:</strong> Predict continuous activity of synthetic or genomic sequences tested in massively parallel reporter assays.</li>
 </ul>
+<p>Hybrid architectures like Enformer and related models (see Chapter 9, <a href="p2-ch09-hybrid.html" class="quarto-xref"><span>Chapter 9</span></a>) popularized benchmarks that combine large receptive fields with dense quantitative targets. Here, metrics often include Pearson or Spearman correlation, coefficient of determination (<span class="math inline">\(R^2\)</span>), or distance-dependent correlation decay curves between predicted and observed profiles.</p>
+<p>These tasks better reflect the continuous nature of regulatory activity but also introduce challenges around heterogeneous noise across different assays and laboratories, replicates and uncertainty (some benchmarks now report performance relative to replicate concordance, but this is not universal), and cell-type diversity (evaluations may include dozens or hundreds of cell types, raising questions about how to aggregate performance).</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Visual suggestion (multi-task regression):</strong> A figure showing a multi-task model predicting many regulatory tracks at once, with example predicted versus observed profiles for several assays.</p>
+</div>
+</div>
 </section>
-<section id="expression-prediction-tasks" class="level3" data-number="16.2.3">
-<h3 data-number="16.2.3" class="anchored" data-anchor-id="expression-prediction-tasks"><span class="header-section-number">16.2.3</span> Expression Prediction Tasks</h3>
+<section id="benchmark-suites-and-leaderboards-for-regulatory-genomics" class="level3" data-number="16.2.3">
+<h3 data-number="16.2.3" class="anchored" data-anchor-id="benchmark-suites-and-leaderboards-for-regulatory-genomics"><span class="header-section-number">16.2.3</span> Benchmark Suites and Leaderboards for Regulatory Genomics</h3>
+<p>To facilitate more standardized comparison, several efforts have curated suites of regulatory tasks and established leaderboards or challenge settings. Examples include:</p>
 <ul>
-<li>GTEx-based expression benchmarks</li>
-<li>Enformer evaluation: cross-gene, cross-individual splits</li>
-<li>Sei regulatory variant assessments</li>
-<li>Open questions: cell type coverage, dynamic range</li>
+<li>TF binding and accessibility leaderboards derived from ENCODE-style assays.</li>
+<li>DREAM Challenges focusing on TF binding, gene expression prediction, or network inference from multi-omics data.</li>
+<li>Community-maintained benchmark collections of DNA sequence classification tasks. The <strong>Genomic Benchmarks</strong> resource by <span class="citation" data-cites="gresova_genomic_2023">Grešová et al. (<a href="references.html#ref-gresova_genomic_2023" role="doc-biblioref">2023</a>)</span> compiles a variety of classification datasets in a unified format, covering tasks such as enhancer identification, promoter recognition, and splice site detection across multiple species. This resource facilitates direct comparison of sequence models on standardized splits and evaluation protocols.</li>
 </ul>
+<p>These suites define canonical train/validation/test splits, metrics, and baseline models, making it easier to compare new architectures. However, they are still heavily skewed toward short-range, single-variant or single-element tasks and often focus on a small number of well-studied cell types and assays.</p>
 </section>
 </section>
 <section id="dna-language-model-benchmark-suites" class="level2" data-number="16.3">
 <h2 data-number="16.3" class="anchored" data-anchor-id="dna-language-model-benchmark-suites"><span class="header-section-number">16.3</span> DNA Language Model Benchmark Suites</h2>
+<p>As genomic language models have matured (see <a href="p2-ch07-dna.html" class="quarto-xref"><span>Chapter 7</span></a> and <a href="p3-ch11-principles.html" class="quarto-xref"><span>Chapter 11</span></a>), dedicated benchmark suites have emerged to assess their representation quality and task performance in a more comprehensive and standardized manner.</p>
 <section id="bend-benchmark-for-dna-language-models" class="level3" data-number="16.3.1">
 <h3 data-number="16.3.1" class="anchored" data-anchor-id="bend-benchmark-for-dna-language-models"><span class="header-section-number">16.3.1</span> BEND (Benchmark for DNA Language Models)</h3>
-<ul>
-<li>Task composition: gene finding, enhancer annotation, chromatin accessibility, histone marks, CpG methylation</li>
-<li>Design philosophy: biologically meaningful tasks on human genome</li>
-<li>Key findings: limited long-range feature capture in current models</li>
-</ul>
+<p>BEND provides a diverse set of biologically meaningful tasks on the human genome. Task composition includes gene finding, enhancer annotation, chromatin accessibility prediction, histone mark classification, and CpG methylation status. The design philosophy emphasizes biologically relevant evaluation rather than synthetic or contrived benchmarks.</p>
+<p>Key findings from models evaluated on BEND include limited capture of long-range features in current architectures, highlighting an important gap between model receptive fields and the genomic distances over which regulatory interactions occur.</p>
 </section>
 <section id="genomics-long-range-benchmark-lrb" class="level3" data-number="16.3.2">
 <h3 data-number="16.3.2" class="anchored" data-anchor-id="genomics-long-range-benchmark-lrb"><span class="header-section-number">16.3.2</span> Genomics Long-Range Benchmark (LRB)</h3>
-<ul>
-<li>InstaDeep/Nucleotide Transformer evaluation suite</li>
-<li>Tasks requiring extended context: enhancer-promoter linking, expression prediction</li>
-<li>Fine-tuning recipes and their impact on evaluation</li>
-<li>Performance gaps: variant effect and expression prediction lag behind annotation tasks</li>
-</ul>
+<p>Developed alongside the Nucleotide Transformer and related work by InstaDeep, the LRB focuses explicitly on tasks requiring extended context. These tasks include enhancer-promoter linking, expression prediction over long genomic windows, and regulatory variant effect prediction at distances beyond what typical convolutional models can capture.</p>
+<p>The LRB also explores fine-tuning recipes and their impact on evaluation. Performance gaps are often observed: models tend to perform better on annotation tasks (chromatin marks, binding) than on variant effect and expression prediction, which require more integrated understanding of regulatory logic.</p>
 </section>
 <section id="dnalongbench" class="level3" data-number="16.3.3">
 <h3 data-number="16.3.3" class="anchored" data-anchor-id="dnalongbench"><span class="header-section-number">16.3.3</span> DNALongBench</h3>
-<ul>
-<li>Five long-range tasks up to 1 Mb: enhancer-target gene, eQTL, 3D organization, regulatory activity, transcription initiation</li>
-<li>Baseline comparisons: CNN, HyenaDNA, Caduceus variants</li>
-<li>Designed for standardized long-range dependency assessment</li>
-</ul>
+<p>DNALongBench extends the evaluation of long-range dependencies even further, with five tasks operating on sequences up to 1 Mb in length. These tasks include enhancer-target gene assignment, eQTL identification, 3D genome organization prediction, regulatory activity modeling, and transcription initiation site prediction.</p>
+<p>Baseline comparisons across CNNs, HyenaDNA, and Caduceus variants reveal that different architectures have different strengths: some handle local features well but struggle with megabase-scale patterns, while others sacrifice local precision for better long-range coherence. The benchmark is designed for standardized assessment of long-range dependency modeling.</p>
 </section>
 <section id="genbench" class="level3" data-number="16.3.4">
 <h3 data-number="16.3.4" class="anchored" data-anchor-id="genbench"><span class="header-section-number">16.3.4</span> GenBench</h3>
-<ul>
-<li>Modular framework for GFM evaluation</li>
-<li>Short-range vs long-range task stratification</li>
-<li>Architecture-task interactions: attention vs convolution preferences</li>
-<li>Reproducibility emphasis</li>
-</ul>
+<p>GenBench offers a modular framework for genomic foundation model evaluation, stratifying tasks by short-range versus long-range dependencies and examining architecture-task interactions. For example, attention-based models may excel at tasks requiring integration over long distances, while convolutional models may be better suited for motif-centric predictions.</p>
+<p>The benchmark emphasizes reproducibility, providing clear documentation of data splits, preprocessing, and evaluation protocols. This emphasis addresses a common concern in the field: that minor differences in data preparation or hyperparameter tuning can produce large swings in reported performance.</p>
 </section>
 </section>
-<section id="protein-language-model-benchmarks" class="level2" data-number="16.4">
-<h2 data-number="16.4" class="anchored" data-anchor-id="protein-language-model-benchmarks"><span class="header-section-number">16.4</span> Protein Language Model Benchmarks</h2>
-<section id="proteingym" class="level3" data-number="16.4.1">
-<h3 data-number="16.4.1" class="anchored" data-anchor-id="proteingym"><span class="header-section-number">16.4.1</span> ProteinGym</h3>
-<ul>
-<li>217 deep mutational scanning assays</li>
-<li>Standardized variant effect prediction evaluation</li>
-<li>Coverage of diverse protein families</li>
-<li>Spearman correlation as primary metric; limitations thereof</li>
-</ul>
+<section id="variant-effect-prediction-benchmarks" class="level2" data-number="16.4">
+<h2 data-number="16.4" class="anchored" data-anchor-id="variant-effect-prediction-benchmarks"><span class="header-section-number">16.4</span> Variant Effect Prediction Benchmarks</h2>
+<p>From a clinical perspective, the most important question is often not “what is the regulatory activity here?” but “what happens if this variant is present?” Variant effect prediction (VEP) benchmarks try to connect sequence changes to molecular or phenotypic consequences.</p>
+<section id="clinical-annotation-databases" class="level3" data-number="16.4.1">
+<h3 data-number="16.4.1" class="anchored" data-anchor-id="clinical-annotation-databases"><span class="header-section-number">16.4.1</span> Clinical Annotation Databases</h3>
+<p>A common class of benchmarks uses curated variant databases to define classification tasks. <strong>ClinVar</strong> is the most widely used resource, providing pathogenic, likely pathogenic, benign, and likely benign annotations for variants across the genome. However, ClinVar has well-documented biases: submission heterogeneity (annotations come from diverse submitters with varying standards), version sensitivity (classifications are updated regularly as evidence accumulates), and ancestry and gene coverage biases (variants in well-studied populations and disease genes are overrepresented).</p>
+<p><strong>HGMD</strong> (Human Gene Mutation Database) offers another source of disease-associated variants, but access limitations and similar biases apply. Expert-curated panels such as those from ClinGen and disease-specific consortia provide higher confidence labels for subsets of genes, but at much smaller scale.</p>
+<p>Labels from these resources are closer to clinical decisions than molecular assay readouts, but subject to ascertainment bias (well-studied genes and variant types are overrepresented), historical annotation bias (older annotations may not reflect current clinical guidelines), and context dependence (pathogenicity can depend on ancestry, environment, and genetic background, which benchmarks often ignore).</p>
+<p>Models that score variants (as discussed in <a href="p3-ch12-vep.html" class="quarto-xref"><span>Chapter 12</span></a>) are commonly assessed on such benchmarks using metrics like AUROC, AUPRC, and calibration diagnostics.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Visual suggestion (variant effect flow):</strong> A schematic showing the flow from raw variant call to variant effect predictor to benchmark labels (for example, ClinVar categories), including possible sources of noise and bias.</p>
+</div>
+</div>
 </section>
-<section id="structure-prediction-benchmarks" class="level3" data-number="16.4.2">
-<h3 data-number="16.4.2" class="anchored" data-anchor-id="structure-prediction-benchmarks"><span class="header-section-number">16.4.2</span> Structure Prediction Benchmarks</h3>
-<ul>
-<li>CASP legacy and ESMFold evaluation</li>
-<li>TM-score, GDT-TS metrics</li>
-<li>Single-sequence vs MSA-based evaluation</li>
-</ul>
+<section id="multiplexed-assays-of-variant-effect-maves" class="level3" data-number="16.4.2">
+<h3 data-number="16.4.2" class="anchored" data-anchor-id="multiplexed-assays-of-variant-effect-maves"><span class="header-section-number">16.4.2</span> Multiplexed Assays of Variant Effect (MAVEs)</h3>
+<p>Another important family of variant effect benchmarks comes from high-throughput perturbation experiments. <strong>Deep mutational scanning (DMS)</strong> provides systematic measurements of functional consequences for many single amino acid or nucleotide changes in a gene or regulatory element. These datasets are aggregated in resources like <strong>MaveDB</strong>, offering dense maps of sequence-to-function relationships.</p>
+<p>Such assays serve as attractive gold standards for predicting variant effects because they provide quantitative, experimentally determined readouts. However, they come with their own biases: the reporter context may differ from native genomic settings, selection stringency in the assay affects which variants appear deleterious, and gene coverage remains sparse (only a small fraction of genes and regulatory elements have been subjected to comprehensive DMS).</p>
+<p>Benchmarks derived from MAVEs typically ask: How well does a model’s predicted effect size correlate with experimental measurements? Can the model correctly prioritize variants that strongly disrupt function? Does performance generalize to unseen sequences or contexts?</p>
 </section>
-<section id="clinical-variant-benchmarks-for-proteins" class="level3" data-number="16.4.3">
-<h3 data-number="16.4.3" class="anchored" data-anchor-id="clinical-variant-benchmarks-for-proteins"><span class="header-section-number">16.4.3</span> Clinical Variant Benchmarks for Proteins</h3>
-<ul>
-<li>ClinVar pathogenic vs benign discrimination</li>
-<li>Benchmarking AlphaMissense, ESM-1v, CADD integration</li>
-<li>Circularity concerns: training on clinical labels</li>
-</ul>
+<section id="noncoding-variant-benchmarks" class="level3" data-number="16.4.3">
+<h3 data-number="16.4.3" class="anchored" data-anchor-id="noncoding-variant-benchmarks"><span class="header-section-number">16.4.3</span> Noncoding Variant Benchmarks</h3>
+<p>Noncoding variants present distinct challenges and require specialized benchmarks. MPRA datasets for regulatory variants test whether models can predict the quantitative effect of variants on enhancer or promoter activity. eQTL-based evaluation approaches leverage naturally occurring variants associated with expression changes, treating the statistical evidence for eQTL status as a proxy for functional impact. GWAS fine-mapped variant sets identify putatively causal variants in associated loci, providing another source of functional labels.</p>
+<p>The open challenge in noncoding benchmarks is linking molecular effects to trait effects. A variant may alter chromatin accessibility without affecting disease risk, or affect risk through pathways unrelated to the molecular phenotype being measured. This gap complicates interpretation of noncoding variant benchmarks.</p>
 </section>
 </section>
-<section id="variant-effect-prediction-benchmarks" class="level2" data-number="16.5">
-<h2 data-number="16.5" class="anchored" data-anchor-id="variant-effect-prediction-benchmarks"><span class="header-section-number">16.5</span> Variant Effect Prediction Benchmarks</h2>
-<section id="clinical-annotation-databases" class="level3" data-number="16.5.1">
-<h3 data-number="16.5.1" class="anchored" data-anchor-id="clinical-annotation-databases"><span class="header-section-number">16.5.1</span> Clinical Annotation Databases</h3>
-<ul>
-<li>ClinVar: composition, submission biases, version sensitivity</li>
-<li>HGMD limitations and access issues</li>
-<li>Expert-curated panels (ClinGen, disease-specific)</li>
-<li>Ancestry and gene coverage biases</li>
-</ul>
+<section id="protein-language-model-benchmarks" class="level2" data-number="16.5">
+<h2 data-number="16.5" class="anchored" data-anchor-id="protein-language-model-benchmarks"><span class="header-section-number">16.5</span> Protein Language Model Benchmarks</h2>
+<p>Protein language models (Chapter 6, <a href="p2-ch06-plm.html" class="quarto-xref"><span>Chapter 6</span></a>) have their own rich benchmarking traditions that intersect with genomic modeling when variants affect protein-coding sequences.</p>
+<section id="proteingym" class="level3" data-number="16.5.1">
+<h3 data-number="16.5.1" class="anchored" data-anchor-id="proteingym"><span class="header-section-number">16.5.1</span> ProteinGym</h3>
+<p><strong>ProteinGym</strong> has emerged as a comprehensive benchmark for protein variant effect prediction. It compiles 217 deep mutational scanning assays covering diverse protein families and uses Spearman correlation as the primary metric for comparing predicted and observed fitness effects. This benchmark provides standardized evaluation across a wide range of proteins, enabling fair comparison of different modeling approaches.</p>
+<p>However, the reliance on Spearman correlation as the primary metric has limitations. It measures rank correlation but does not directly assess calibration or absolute effect size prediction, both of which may matter for clinical interpretation. Moreover, the benchmark reflects the biases of available DMS datasets: over-representation of well-studied proteins and specific functional classes, limited coverage of variants in disordered regions or regulatory domains, and assay-specific artifacts.</p>
 </section>
-<section id="multiplexed-assays-of-variant-effect-maves" class="level3" data-number="16.5.2">
-<h3 data-number="16.5.2" class="anchored" data-anchor-id="multiplexed-assays-of-variant-effect-maves"><span class="header-section-number">16.5.2</span> Multiplexed Assays of Variant Effect (MAVEs)</h3>
-<ul>
-<li>Deep mutational scanning: experimental ground truth</li>
-<li>MaveDB as a resource</li>
-<li>Assay-specific biases: reporter context, selection stringency</li>
-<li>Gene coverage gaps</li>
-</ul>
+<section id="structure-prediction-benchmarks" class="level3" data-number="16.5.2">
+<h3 data-number="16.5.2" class="anchored" data-anchor-id="structure-prediction-benchmarks"><span class="header-section-number">16.5.2</span> Structure Prediction Benchmarks</h3>
+<p>Structure prediction benchmarks derive from the <strong>CASP</strong> (Critical Assessment of protein Structure Prediction) tradition and the evaluations established for models like ESMFold and AlphaFold2. Metrics include TM-score (template modeling score) and GDT-TS (global distance test, total score), which measure structural similarity between predicted and experimentally determined structures.</p>
+<p>Benchmarks distinguish between single-sequence and MSA-based evaluation regimes. Protein language models are typically evaluated in the single-sequence setting, where predictions rely only on the target sequence without multiple sequence alignments. This tests whether the model has internalized evolutionary and biophysical constraints from pretraining alone.</p>
 </section>
-<section id="noncoding-variant-benchmarks" class="level3" data-number="16.5.3">
-<h3 data-number="16.5.3" class="anchored" data-anchor-id="noncoding-variant-benchmarks"><span class="header-section-number">16.5.3</span> Noncoding Variant Benchmarks</h3>
-<ul>
-<li>MPRA datasets for regulatory variants</li>
-<li>eQTL-based evaluation approaches</li>
-<li>GWAS fine-mapped variant sets</li>
-<li>Open challenges: linking molecular to trait effects</li>
-</ul>
+<section id="clinical-variant-benchmarks-for-proteins" class="level3" data-number="16.5.3">
+<h3 data-number="16.5.3" class="anchored" data-anchor-id="clinical-variant-benchmarks-for-proteins"><span class="header-section-number">16.5.3</span> Clinical Variant Benchmarks for Proteins</h3>
+<p>Benchmarks that evaluate protein models on clinical variant classification often use ClinVar pathogenic versus benign discrimination as the primary task. Models like AlphaMissense, ESM-1v, and integrated tools like CADD have been benchmarked on this task. However, circularity concerns arise when models are trained on features derived from resources that also contribute to ClinVar labels, creating feedback loops that inflate apparent performance without genuine predictive power.</p>
 </section>
 </section>
 <section id="trait-and-individual-level-benchmarks" class="level2" data-number="16.6">
 <h2 data-number="16.6" class="anchored" data-anchor-id="trait-and-individual-level-benchmarks"><span class="header-section-number">16.6</span> Trait and Individual-Level Benchmarks</h2>
-<section id="traitgym" class="level3" data-number="16.6.1">
-<h3 data-number="16.6.1" class="anchored" data-anchor-id="traitgym"><span class="header-section-number">16.6.1</span> TraitGym</h3>
+<p>At the trait and individual level, benchmarks assess models on cohort-level or population genetics tasks.</p>
+<section id="polygenic-score-benchmarks" class="level3" data-number="16.6.1">
+<h3 data-number="16.6.1" class="anchored" data-anchor-id="polygenic-score-benchmarks"><span class="header-section-number">16.6.1</span> Polygenic Score Benchmarks</h3>
+<p>Polygenic score benchmarks evaluate how well genotype-derived scores predict disease risk or quantitative traits. Common evaluation settings include UK Biobank held-out evaluation (partitioning individuals into training and test sets within a single large biobank), cross-biobank transferability (training in one biobank and testing in another to assess robustness), and ancestry-specific performance gaps (reporting results stratified by ancestry to identify differential utility).</p>
+<p>These benchmarks typically report <span class="math inline">\(R^2\)</span> for quantitative traits, AUROC or AUPRC for binary disease outcomes, and incremental predictive value over clinical covariates. The portability of polygenic scores across populations remains a major concern, as discussed in <a href="p1-ch03-pgs.html" class="quarto-xref"><span>Chapter 3</span></a>.</p>
+</section>
+<section id="traitgym" class="level3" data-number="16.6.2">
+<h3 data-number="16.6.2" class="anchored" data-anchor-id="traitgym"><span class="header-section-number">16.6.2</span> TraitGym</h3>
+<p><strong>TraitGym</strong> provides a framework specifically for assessing complex trait prediction from genomic features. It evaluates GFM-augmented polygenic scores, testing whether foundation model embeddings or variant scorings improve prediction over traditional polygenic score methods. Ancestry stratification in evaluation is built into the benchmark design, highlighting performance disparities across populations.</p>
+<p>This benchmark is particularly relevant for assessing whether genomic foundation models deliver on their promise to improve phenotype prediction beyond what classical statistical genetics methods already achieve.</p>
+</section>
+<section id="embedgem-framework" class="level3" data-number="16.6.3">
+<h3 data-number="16.6.3" class="anchored" data-anchor-id="embedgem-framework"><span class="header-section-number">16.6.3</span> EmbedGEM Framework</h3>
+<p><span class="citation" data-cites="mukherjee_evaluating_2024">(<a href="references.html#ref-mukherjee_evaluating_2024" role="doc-biblioref"><strong>mukherjee_evaluating_2024?</strong></a>)</span> introduced <strong>EmbedGEM</strong>, a framework to evaluate multivariate traits or machine learning-derived embeddings specifically for <strong>genetic discovery</strong> along two complementary axes. The first axis measures <strong>heritability</strong> through the number of LD-clumped genome-wide significant hits and the mean or median chi-squared statistic at those loci, quantifying how much genetic signal is captured. The second axis measures <strong>disease relevance</strong> through polygenic risk scores built from embedding-associated variants and their incremental predictive value for a downstream trait in an independent cohort.</p>
+<p>Technically, EmbedGEM orthogonalizes multivariate traits or embedding dimensions using principal component analysis, then runs univariate GWAS on each principal component. Wald Z-statistics are combined into a multivariate chi-squared test for each SNP, followed by LD-based clumping to identify independent loci. For each principal component, polygenic risk scores are constructed and compared against full models (PRS plus covariates) versus reduced models (covariates only) using AUROC or AUPRC for binary traits and <span class="math inline">\(R^2\)</span> or MAE for continuous traits. Permutation and bootstrap procedures provide p-values for statistical inference.</p>
+<p>This framework is particularly useful for evaluating whether embeddings learned by genomic foundation models are enriched for biologically meaningful genetic signal rather than technical artifacts or confounders. It addresses a key gap in foundation model evaluation: demonstrating that representations are not only predictive of downstream phenotypes but also discover novel genetic associations.</p>
+</section>
+</section>
+<section id="cross-cutting-issues" class="level2" data-number="16.7">
+<h2 data-number="16.7" class="anchored" data-anchor-id="cross-cutting-issues"><span class="header-section-number">16.7</span> Cross-Cutting Issues</h2>
+<p>Several issues cut across multiple benchmark families and warrant explicit discussion.</p>
+<section id="benchmark-suite-proliferation" class="level3" data-number="16.7.1">
+<h3 data-number="16.7.1" class="anchored" data-anchor-id="benchmark-suite-proliferation"><span class="header-section-number">16.7.1</span> Benchmark Suite Proliferation</h3>
+<p>The rapid proliferation of benchmark suites creates both opportunities and challenges. On one hand, diverse benchmarks test different aspects of model capability and reduce the risk that a single benchmark becomes an unrepresentative target for optimization. On the other hand, fragmentation and inconsistent evaluation make it difficult to compare models evaluated on different suites. Calls for unified evaluation frameworks recur in the literature, but tension persists between standardization (which enables comparison) and task-specific validity (which requires domain-appropriate design choices).</p>
+</section>
+<section id="what-benchmarks-miss" class="level3" data-number="16.7.2">
+<h3 data-number="16.7.2" class="anchored" data-anchor-id="what-benchmarks-miss"><span class="header-section-number">16.7.2</span> What Benchmarks Miss</h3>
+<p>Despite the breadth of existing tasks, there are systematic blind spots in the genomic benchmark landscape.</p>
+<p><strong>Tasks underrepresented:</strong> Structural variants, inversions, copy number variants, and other complex rearrangements are rarely evaluated, even though they account for substantial genomic variation and disease burden. Repeat regions, including tandem repeats, transposable elements, and segmental duplications, are often excluded or down-weighted in benchmarks. Multi-variant effects, epistasis, and haplotype-specific phenomena receive minimal attention, even though real genomes exhibit dense, correlated variation.</p>
+<p><strong>Populations underrepresented:</strong> Non-European ancestry groups are systematically underrepresented in benchmark cohorts, limiting the assessment of model robustness and equity. Environmental diversity (diet, exposures, comorbidities, treatment histories) that shapes phenotypic expression is rarely incorporated into benchmarks. These biases mean that models appearing to perform well on benchmarks may fail in diverse real-world populations.</p>
+<p><strong>Modalities underrepresented:</strong> Long-read sequencing data, which resolves structural variants and phasing more effectively than short reads, is scarce in benchmarks. Single-cell contexts, where cell-type heterogeneity and rare cell states matter, are underrepresented. Spatial transcriptomics, epigenetic aging measures, and other emerging modalities have minimal benchmark coverage.</p>
+<p><strong>Clinical endpoints versus molecular surrogates:</strong> Most benchmarks rely on molecular surrogates (chromatin accessibility, TF binding, expression) rather than hard clinical endpoints like disease incidence, progression, severity, treatment response, or patient-reported outcomes. While molecular surrogates are easier to obtain at scale, they do not directly measure what matters most for clinical translation.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Visual suggestion (coverage heatmap):</strong> A heatmap with rows representing benchmark suites and columns representing “variant types”, “ancestry groups”, “modalities”, and “clinical endpoints”. Shaded cells indicate coverage, visually emphasizing systematic gaps.</p>
+</div>
+</div>
+</section>
+<section id="benchmark-leakage-and-staleness" class="level3" data-number="16.7.3">
+<h3 data-number="16.7.3" class="anchored" data-anchor-id="benchmark-leakage-and-staleness"><span class="header-section-number">16.7.3</span> Benchmark Leakage and Staleness</h3>
+<p>Benchmarks derive their value from being both representative and unseen. As foundation models scale, both properties are under pressure.</p>
+<p><strong>Training-test overlap:</strong> Modern genomic foundation models may be pretrained on enormous corpora that include almost all publicly available sequencing and assay data. This creates several leakage risks. Assay-level overlap occurs when the exact experiments used in a benchmark are also present, explicitly or implicitly, in the pretraining data. Individual-level overlap arises when the same individuals appear in both pretraining and evaluation sets if care is not taken to exclude them. Task-level overlap happens when a foundation model has been fine-tuned on tasks nearly identical to those used for evaluation, blurring the line between pretraining and test performance.</p>
+<p>Leakage can inflate reported metrics, obscure true generalization capacity, and make comparisons between models unfair. Where possible, benchmark designers should explicitly document which public datasets were used to construct benchmarks, provide tools or hashes to help model developers identify potential overlaps, and encourage evaluations on held-out consortia or data collections reserved specifically for assessment.</p>
+<p><strong>Temporal drift:</strong> Genomic technology and clinical practice evolve rapidly. Assays change as new sequencing platforms, library preparations, or protocols alter noise profiles and data distributions. Annotations improve as variant classifications, gene annotations, and regulatory element maps are continuously updated. Clinical practice shifts as treatment guidelines and diagnostic criteria evolve, changing the meaning of historical labels.</p>
+<p>A benchmark constructed from assays and annotations circa 2013 may no longer reflect current practice. Over time, models may effectively “overfit the literature,” optimizing for performance on legacy benchmarks that no longer capture the most relevant questions.</p>
+<p>To mitigate staleness, communities can periodically refresh benchmark datasets, splits, and labels; maintain versioned benchmarks with clear documentation about changes; and establish ongoing evaluation consortia that curate new cohorts and assays specifically for benchmarking.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Visual suggestion (timeline):</strong> A timeline showing benchmark introductions over time, overlaid with major assay and technology changes (for example, short-read to long-read, bulk to single-cell). Highlight how older benchmarks drift away from current practice.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="chapter-summary" class="level2" data-number="16.8">
+<h2 data-number="16.8" class="anchored" data-anchor-id="chapter-summary"><span class="header-section-number">16.8</span> Chapter Summary</h2>
+<p>Genomic benchmarks are the lenses through which we view foundation model progress. This chapter surveyed the main components of the current landscape:</p>
 <ul>
-<li>Complex trait prediction assessment</li>
-<li>Evaluation of GFM-augmented polygenic scores</li>
-<li>Ancestry stratification in evaluation</li>
+<li><strong>Molecular and regulatory benchmarks</strong> based on TF binding, chromatin state, expression, and quantitative assay signals, which remain foundational for evaluating sequence-level prediction.</li>
+<li><strong>DNA language model benchmark suites</strong> such as BEND, LRB, DNALongBench, and GenBench, which provide standardized evaluation for genomic foundation models across diverse tasks and context lengths.</li>
+<li><strong>Variant effect and disease-relevant benchmarks</strong> that connect sequence variation to functional changes and clinical phenotypes, including clinical variant databases, perturbation experiments, and noncoding variant evaluations.</li>
+<li><strong>Protein language model benchmarks</strong> including ProteinGym, structure prediction tasks, and clinical variant classification, which intersect with genomics when evaluating coding variants.</li>
+<li><strong>Trait and individual-level benchmarks</strong> such as polygenic score evaluations, TraitGym, and the EmbedGEM framework, which assess prediction of complex phenotypes and genetic discovery from foundation model representations.</li>
 </ul>
-</section>
-<section id="polygenic-score-benchmarks" class="level3" data-number="16.6.2">
-<h3 data-number="16.6.2" class="anchored" data-anchor-id="polygenic-score-benchmarks"><span class="header-section-number">16.6.2</span> Polygenic Score Benchmarks</h3>
-<ul>
-<li>UK Biobank held-out evaluation</li>
-<li>Cross-biobank transferability</li>
-<li>Ancestry-specific performance gaps</li>
-</ul>
-</section>
-</section>
-<section id="clinical-and-decision-level-benchmarks" class="level2" data-number="16.7">
-<h2 data-number="16.7" class="anchored" data-anchor-id="clinical-and-decision-level-benchmarks"><span class="header-section-number">16.7</span> Clinical and Decision-Level Benchmarks</h2>
-<section id="diagnostic-yield-studies" class="level3" data-number="16.7.1">
-<h3 data-number="16.7.1" class="anchored" data-anchor-id="diagnostic-yield-studies"><span class="header-section-number">16.7.1</span> Diagnostic Yield Studies</h3>
-<ul>
-<li>Exome/genome sequencing cohort evaluations</li>
-<li>Retrospective re-analysis with newer models</li>
-<li>Prospective validation challenges</li>
-</ul>
-</section>
-<section id="pharmacogenomic-benchmarks" class="level3" data-number="16.7.2">
-<h3 data-number="16.7.2" class="anchored" data-anchor-id="pharmacogenomic-benchmarks"><span class="header-section-number">16.7.2</span> Pharmacogenomic Benchmarks</h3>
-<ul>
-<li>CPIC variant prediction tasks</li>
-<li>Drug response prediction evaluation</li>
-</ul>
-</section>
-</section>
-<section id="cross-cutting-issues" class="level2" data-number="16.8">
-<h2 data-number="16.8" class="anchored" data-anchor-id="cross-cutting-issues"><span class="header-section-number">16.8</span> Cross-Cutting Issues</h2>
-<section id="benchmark-suite-proliferation" class="level3" data-number="16.8.1">
-<h3 data-number="16.8.1" class="anchored" data-anchor-id="benchmark-suite-proliferation"><span class="header-section-number">16.8.1</span> Benchmark Suite Proliferation</h3>
-<ul>
-<li>Fragmentation and inconsistent evaluation</li>
-<li>Calls for unified evaluation frameworks</li>
-<li>Tension between standardization and task-specific validity</li>
-</ul>
-</section>
-<section id="what-benchmarks-miss" class="level3" data-number="16.8.2">
-<h3 data-number="16.8.2" class="anchored" data-anchor-id="what-benchmarks-miss"><span class="header-section-number">16.8.2</span> What Benchmarks Miss</h3>
-<ul>
-<li>Tasks underrepresented: structural variants, repeat regions, multi-variant effects</li>
-<li>Populations underrepresented: non-European ancestry</li>
-<li>Modalities underrepresented: long-read data, single-cell contexts</li>
-<li>Clinical endpoints vs molecular surrogates</li>
-</ul>
-</section>
-<section id="benchmark-leakage-and-staleness" class="level3" data-number="16.8.3">
-<h3 data-number="16.8.3" class="anchored" data-anchor-id="benchmark-leakage-and-staleness"><span class="header-section-number">16.8.3</span> Benchmark Leakage and Staleness</h3>
-<ul>
-<li>Training-test overlap across community benchmarks</li>
-<li>Temporal drift: benchmarks as moving targets</li>
-<li>Need for held-out evaluation consortia</li>
-</ul>
-</section>
-</section>
-<section id="chapter-summary" class="level2" data-number="16.9">
-<h2 data-number="16.9" class="anchored" data-anchor-id="chapter-summary"><span class="header-section-number">16.9</span> Chapter Summary</h2>
-<ul>
-<li>Current benchmark landscape: strengths and systematic gaps</li>
-<li>Benchmark choice shapes model development incentives</li>
-<li>Forward link to <a href="p5-ch17-eval.html" class="quarto-xref"><span>Chapter 17</span></a>: principles for using benchmarks critically</li>
-</ul>
+<p>We also highlighted systematic gaps: underrepresented variant types, populations, modalities, and clinical endpoints; and the growing challenges of <strong>benchmark leakage</strong> and <strong>staleness</strong> as models and datasets scale.</p>
+<p>In the next chapter (<a href="p5-ch17-eval.html" class="quarto-xref"><span>Chapter 17</span></a>), we step back from specific benchmarks to discuss evaluation principles and methodology. While this chapter cataloged what benchmarks exist, Chapter 17 explains how to use them properly: designing experiments, choosing metrics, quantifying uncertainty, and interpreting results responsibly when deploying genomic foundation models in research and clinical settings.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Visual suggestion (summary diagram):</strong> A final “roadmap” figure connecting this chapter’s benchmark types to the methodological topics in <a href="p5-ch17-eval.html" class="quarto-xref"><span>Chapter 17</span></a> and the downstream applications in the translation part of the book (<a href="p6-ch20-clinical.html" class="quarto-xref"><span>Chapter 20</span></a>, <a href="p6-ch21-variants.html" class="quarto-xref"><span>Chapter 21</span></a>, <a href="p6-ch22-drugs.html" class="quarto-xref"><span>Chapter 22</span></a>, <span class="quarto-unresolved-ref">?sec-design</span>).</p>
+</div>
+</div>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-gresova_genomic_2023" class="csl-entry" role="listitem">
+Grešová, Katarína, Vlastimil Martinek, David Čechák, Petr Šimeček, and Panagiotis Alexiou. 2023. <span>“Genomic Benchmarks: A Collection of Datasets for Genomic Sequence Classification.”</span> <em>BMC Genomic Data</em> 24 (1): 25. <a href="https://doi.org/10.1186/s12863-023-01123-8">https://doi.org/10.1186/s12863-023-01123-8</a>.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
