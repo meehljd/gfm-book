@@ -1,4 +1,4 @@
-# Long-range Hybrid Models {#sec-hybrid}
+# Long-range Hybrid Models {#sec-regulatory}
 
 Hybrid convolution–transformer architectures such as Enformer and Borzoi were developed to tackle one of the hardest supervised problems in regulatory genomics: predicting gene expression and other functional readouts directly from long stretches of DNA sequence. By combining the locality and efficiency of convolutions with the expressiveness of attention, these models extend the effective receptive field from a few kilobases to hundreds of kilobases or more, while still training end-to-end on large functional genomics compendia.
 
@@ -127,7 +127,7 @@ While not perfect, these analyses showed that **purely sequence-based prediction
 
 Despite its size, Enformer is amenable to several interpretation strategies: gradient-based attribution (e.g., saliency maps, integrated gradients) to highlight sequence positions and motifs that contribute most to predicted outputs, in silico saturation mutagenesis systematically testing all possible substitutions in a region to map functional motifs, and attention visualization examining which positions attend to promoters in the transformer layers, providing hints about promoter–enhancer interactions.
 
-These tools have been used to map candidate long-range regulatory interactions, generate hypotheses about motif function, and prioritize variants for experimental follow-up. However, as discussed in Chapter @sec-vep, attribution is not foolproof; it must be interpreted carefully and combined with external evidence.
+These tools have been used to map candidate long-range regulatory interactions, generate hypotheses about motif function, and prioritize variants for experimental follow-up. However, as discussed in Chapter @sec-vep-fm, attribution is not foolproof; it must be interpreted carefully and combined with external evidence.
 
 ::: {.callout-note .content-visible when-profile="draft"}
 **VISUAL SUGGESTION (attention / attribution)**  
@@ -213,7 +213,7 @@ AlphaGenome sits at the intersection of long-range hybrid architectures and **mu
 
 Relative to emerging cross-species sequence models such as Evo 2 [@brixi_evo_2025], AlphaGenome is more **task-specific and supervised**, using labeled functional genomics datasets. Evo 2 focuses on **self-supervised pretraining** across diverse genomes, potentially providing more general sequence representations but less direct mechanistic interpretability.
 
-Relative to self-supervised DNA language models and efficient long-context architectures (Hyena, Mamba; see @sec-foundation), AlphaGenome can be seen as a **bridge** between specialized supervised models and broad foundation models, offering rich, multi-modal supervision within a long-range hybrid backbone.
+Relative to self-supervised DNA language models and efficient long-context architectures (Hyena, Mamba; see @sec-fm-principles), AlphaGenome can be seen as a **bridge** between specialized supervised models and broad foundation models, offering rich, multi-modal supervision within a long-range hybrid backbone.
 
 From a practical standpoint, AlphaGenome's API and multi-modal outputs make it an attractive candidate for **variant interpretation pipelines**, particularly where a single system that integrates chromatin, expression, splicing, and contacts is desirable.
 
@@ -245,7 +245,7 @@ The choice between full attention and hierarchical/windowed attention involves s
 
 **Hierarchical/windowed attention (Genomic Interpreter, 1D-Swin)** scales better with sequence length and can handle longer inputs at similar compute budgets. However, some long-range interactions require multiple layers to propagate, and the inductive bias may or may not match specific regulatory architectures.
 
-**Alternative efficient mechanisms** (e.g., Hyena, state-space models, Mamba; see @sec-foundation) replace attention entirely with architectures that have **sub-quadratic or linear** scaling and strong long-range memory. These are still being actively explored and benchmarked on genomic tasks; integration with multi-task hybrid setups is an open area.
+**Alternative efficient mechanisms** (e.g., Hyena, state-space models, Mamba; see @sec-fm-principles) replace attention entirely with architectures that have **sub-quadratic or linear** scaling and strong long-range memory. These are still being actively explored and benchmarked on genomic tasks; integration with multi-task hybrid setups is an open area.
 
 In practice, hybrid models are likely to incorporate a mix of these ideas: convolutional stems for motif-scale features, efficient long-range mechanisms for context propagation, and multi-task heads for rich outputs. The frontier is moving from "Can we model 200 kb?" to "Can we model megabase-scale or chromosomal segments with biologically meaningful inductive biases?"
 
@@ -291,7 +291,7 @@ Despite their power, hybrid long-range models are not omniscient and introduce n
 
 Training data still imposes strong constraints. Functional genomics assays are **biased toward certain cell types and conditions**, often over-representing well-studied tissues and cancer lines. Many loci, particularly in **non-European ancestries**, are underrepresented or absent from training data. Assays are noisy, with batch effects, sequencing artifacts, and experimental variability.
 
-As a result, models may **underperform in underrepresented cell types or ancestries**, and their predictions should be treated with caution in those settings. Rare regulatory phenomena, such as cell-state-specific enhancers or context-dependent chromatin changes, may be only partially captured. Predictions can reflect **technical artifacts** in training data, not just biology (a theme revisited in the chapters on evaluation, @sec-eval, and confounders, @sec-confound).
+As a result, models may **underperform in underrepresented cell types or ancestries**, and their predictions should be treated with caution in those settings. Rare regulatory phenomena, such as cell-state-specific enhancers or context-dependent chromatin changes, may be only partially captured. Predictions can reflect **technical artifacts** in training data, not just biology (a theme revisited in the chapters on evaluation, @sec-eval, and confounders, @sec-confounding).
 
 ### Sequence Context and Generalization
 
@@ -303,7 +303,7 @@ These constraints mean that predictions are most trustworthy for **cis-acting va
 
 Although attribution and interpretation methods exist and have yielded biologically plausible insights, several caveats remain. Attribution maps can be **sensitive to model architecture and noise**, and may highlight correlated but non-causal sequence features. Attention weights are not guaranteed to be faithful explanations of the model's reasoning. Multi-modal outputs increase the **complexity of interpretation**, as one must reconcile changes across many tracks.
 
-As discussed in the chapters on evaluation (@sec-eval) and confounders (@sec-confound), hybrid models must be evaluated not only on predictive performance but also on their **robustness, calibration, and susceptibility to dataset biases**. Interpretability tools should be treated as hypothesis-generating, not as definitive proofs of mechanism.
+As discussed in the chapters on evaluation (@sec-eval) and confounders (@sec-confounding), hybrid models must be evaluated not only on predictive performance but also on their **robustness, calibration, and susceptibility to dataset biases**. Interpretability tools should be treated as hypothesis-generating, not as definitive proofs of mechanism.
 
 ::: {.callout-note .content-visible when-profile="draft"}
 **VISUAL SUGGESTION (failure modes)**  
@@ -319,7 +319,7 @@ In practice, hybrid models serve multiple roles:
 
 - As **task models**: directly predicting chromatin, expression, RNA coverage, and variant effects from sequence.
 - As **feature extractors**: their internal representations can be used as embeddings for downstream models, fine-tuned for specific tasks or cell types.
-- As **benchmarks and baselines**: they set a high bar for supervised performance on regulatory tasks, against which newer architectures (state-space models, Hyena, Mamba, and large self-supervised DNA language models) must be compared (@sec-foundation).
+- As **benchmarks and baselines**: they set a high bar for supervised performance on regulatory tasks, against which newer architectures (state-space models, Hyena, Mamba, and large self-supervised DNA language models) must be compared (@sec-fm-principles).
 
 As the field moves toward large, multi-modal genomic foundation models, hybrid long-range architectures are likely to remain important as **specialized, mechanistically grounded models** for variant effect prediction, provide **training curricula and evaluation tasks** for more general sequence models, and influence the design of future architectures that blend **supervised multi-task learning** with **self-supervised pretraining** on large-scale genomic data.
 
@@ -339,4 +339,4 @@ Enformer combines a convolutional stem with transformer blocks to predict chroma
 
 The key lessons from this chapter are that long-range context substantially improves our ability to predict expression and regulatory activity from sequence alone, multi-task and multi-modal supervision helps models learn representations that connect chromatin, transcription, and RNA processing, hybrid models are powerful tools for variant effect prediction but remain limited by data biases, finite context, and interpretability challenges, and in the broader genomic foundation model ecosystem, hybrid long-range architectures act as both state-of-the-art task models and stepping stones toward more general, multi-modal genomic foundation models.
 
-In @sec-foundation, we step back to consider what makes a model a "genomic foundation model" and how hybrid architectures, self-supervised sequence models, and efficient long-context mechanisms fit together in this rapidly evolving space.
+In @sec-fm-principles, we step back to consider what makes a model a "genomic foundation model" and how hybrid architectures, self-supervised sequence models, and efficient long-context mechanisms fit together in this rapidly evolving space.

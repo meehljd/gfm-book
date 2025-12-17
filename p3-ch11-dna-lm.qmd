@@ -1,6 +1,6 @@
-# DNA and Genomic Models  {#sec-dna}
+# DNA and Genomic Models  {#sec-dna-lm}
 
-Genomic language models extend the ideas of protein language models (@sec-prot) to the DNA level. They treat genomes themselves as a corpus, learn statistical regularities through self-supervision, and reuse those representations for many downstream tasks. Where Chapters 5–7 focused on supervised sequence-to-function CNNs and specialized architectures, and @sec-token focused on representation and tokenization, this chapter turns to genomic foundation models: large, often transformer-based or hybrid architectures trained on unlabeled genomic sequence at scale.
+Genomic language models extend the ideas of protein language models (@sec-protein-lm) to the DNA level. They treat genomes themselves as a corpus, learn statistical regularities through self-supervision, and reuse those representations for many downstream tasks. Where Chapters 5–7 focused on supervised sequence-to-function CNNs and specialized architectures, and @sec-representations focused on representation and tokenization, this chapter turns to genomic foundation models: large, often transformer-based or hybrid architectures trained on unlabeled genomic sequence at scale.
 
 These models aim to provide a single, reusable backbone for tasks ranging from regulatory annotation and variant effect prediction to cross-species transfer and clinical prioritization. They mark the transition from building one model per dataset to constructing general-purpose genomic backbones analogous to BERT, GPT, and ESM in natural and protein language modeling.
 
@@ -36,13 +36,13 @@ These pretrained models can be used in multiple ways. The simplest approach free
 
 ## DNABERT: BERT for K-merized DNA
 
-DNABERT applied the BERT masked language modeling framework to genomic sequences, using overlapping k-mers (typically 6-mers) as tokens and training on human reference sequences [@ji_dnabert_2021]. As discussed in @sec-token, this design had several defining characteristics.
+DNABERT applied the BERT masked language modeling framework to genomic sequences, using overlapping k-mers (typically 6-mers) as tokens and training on human reference sequences [@ji_dnabert_2021]. As discussed in @sec-representations, this design had several defining characteristics.
 
 The tokenization scheme converted DNA sequences into overlapping k-mers, creating a discrete vocabulary of size $4^k$. For 6-mers, this yields a vocabulary of 4,096 tokens. The model used the standard BERT architecture with masked token prediction as its training objective. Context windows were relatively modest, spanning a few hundred base pairs (typically 512 tokens). The model was then fine-tuned on downstream tasks including promoter classification, splice site prediction, and transcription factor binding site identification.
 
 DNABERT provided proof of concept for several important ideas. Self-supervised pretraining on raw DNA can improve performance over training from scratch. Learned embeddings capture biologically meaningful regularities, even when trained only on the reference genome. BERT-style architectures can be re-used across multiple downstream tasks with modest fine-tuning.
 
-However, the k-mer design introduced significant limitations detailed in @sec-token. The overlapping k-mer tokenization provided no true sequence compression, as each nucleotide participated in multiple adjacent tokens. This created ambiguity in positional interpretation, since the precise position of a variant within the k-mer vocabulary was unclear. The quadratic attention complexity of transformers combined with redundant overlapping tokens severely limited the effective context length.
+However, the k-mer design introduced significant limitations detailed in @sec-representations. The overlapping k-mer tokenization provided no true sequence compression, as each nucleotide participated in multiple adjacent tokens. This created ambiguity in positional interpretation, since the precise position of a variant within the k-mer vocabulary was unclear. The quadratic attention complexity of transformers combined with redundant overlapping tokens severely limited the effective context length.
 
 ## DNABERT-2: Improved Tokenization and Efficiency
 
@@ -91,7 +91,7 @@ Evaluated on *A. thaliana* variants using allele frequencies from the 1001 Genom
 
 GPN established several principles that would influence subsequent work. First, cross-species pretraining captures evolutionary constraints that transfer to variant effect prediction, even without alignment-based conservation calculations. Second, relatively small models trained on focused phylogenetic groups can outperform larger generic conservation measures for species within that group. Third, the masked language modeling objective naturally produces representations suitable for variant scoring via likelihood comparisons.
 
-The limitation of the original GPN was its scope. Training on plant genomes did not directly produce a human variant effect predictor. The later GPN-MSA addressed this gap by incorporating multi-species alignments and training on mammalian genomes, achieving strong performance on human variant benchmarks as discussed in @sec-vep. However, the original GPN remains important as a demonstration that the DNA language model paradigm extends beyond model organisms and can discover biologically meaningful patterns through self-supervision on comparatively modest training data.
+The limitation of the original GPN was its scope. Training on plant genomes did not directly produce a human variant effect predictor. The later GPN-MSA addressed this gap by incorporating multi-species alignments and training on mammalian genomes, achieving strong performance on human variant benchmarks as discussed in @sec-vep-fm. However, the original GPN remains important as a demonstration that the DNA language model paradigm extends beyond model organisms and can discover biologically meaningful patterns through self-supervision on comparatively modest training data.
 
 ## HyenaDNA: Megabase Context at Single-Nucleotide Resolution
 
@@ -181,7 +181,7 @@ The trade-off inherent in Evo 2's design is generality versus specialization. As
 
 ## Central-Dogma-Aware and Annotation-Enriched Models
 
-The tokenization discussion in @sec-token described how biological structure can be encoded directly into the input representation. Recent models push this idea further by integrating central dogma knowledge and genomic annotations into the modeling framework itself.
+The tokenization discussion in @sec-representations described how biological structure can be encoded directly into the input representation. Recent models push this idea further by integrating central dogma knowledge and genomic annotations into the modeling framework itself.
 
 ### Life-Code: The Central Dogma as Inductive Bias
 
@@ -245,7 +245,7 @@ Long-range context is biologically necessary for many applications. Regulatory p
 
 Biological inductive biases can substitute for scale in some applications. Reverse-complement equivariance in Caduceus, central dogma awareness in Life-Code, and variant encoding in BioToken all demonstrate that incorporating domain knowledge into model architecture improves data efficiency and often matches or exceeds the performance of larger generic models.
 
-Self-supervision and supervision are complementary rather than competing approaches. Self-supervised language models excel at learning broad, reusable features, but they do not automatically solve every downstream problem. Specialized architectures and supervised objectives, such as Enformer and related models discussed in @sec-hybrid, remain crucial for accurate quantitative prediction of complex genomic readouts.
+Self-supervision and supervision are complementary rather than competing approaches. Self-supervised language models excel at learning broad, reusable features, but they do not automatically solve every downstream problem. Specialized architectures and supervised objectives, such as Enformer and related models discussed in @sec-regulatory, remain crucial for accurate quantitative prediction of complex genomic readouts.
 
 Several important limitations remain. Current models struggle with complex variant patterns beyond single-nucleotide changes, including indels, structural variants, and epistatic interactions across distant loci. Training data and labels remain skewed toward certain ancestries, raising concerns about performance and calibration in underrepresented populations. Interpretability is limited, as it remains difficult to explain why a model assigns a particular score to a variant in terms that connect to biological mechanism. Integration with other data modalities (chromatin, expression, 3D genome structure, clinical phenotypes) is still in its early stages.
 
@@ -257,4 +257,4 @@ This chapter surveyed the landscape of genomic language models, from early proof
 
 The key lessons are that self-supervised pretraining transfers effectively to genomics, that architectural choices enabling long-range context provide both efficiency and accuracy improvements, and that biological inductive biases (reverse-complement equivariance, central dogma awareness, variant encoding) can substitute for raw scale in some applications. These models establish a foundation for the field but leave important gaps in our ability to predict quantitative molecular readouts, integrate multi-omic context, and provide mechanistic explanations of their predictions.
 
-In @sec-hybrid, we turn to Enformer and related long-range sequence-to-function models that explicitly predict molecular readouts from sequence. These models close the loop between self-supervised sequence understanding and supervised functional prediction, addressing a key limitation of pure language models: their indirect relationship to quantitative molecular phenotypes.
+In @sec-regulatory, we turn to Enformer and related long-range sequence-to-function models that explicitly predict molecular readouts from sequence. These models close the loop between self-supervised sequence understanding and supervised functional prediction, addressing a key limitation of pure language models: their indirect relationship to quantitative molecular phenotypes.

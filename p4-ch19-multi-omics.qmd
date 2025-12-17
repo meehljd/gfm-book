@@ -1,4 +1,4 @@
-# Multi-Omics & Systems Biology  {#sec-systems}
+# Multi-Omics & Systems Biology  {#sec-multi-omics}
 
 The preceding chapter examined foundation models for individual data types: single-cell transcriptomics, DNA methylation, and three-dimensional genome structure. Real biological systems, however, do not respect these modality boundaries. Complex traits arise from systems-level interactions where genetic variants perturb molecular networks, networks span multiple omics layers, and these layers interact with environment, development, and clinical context. A model that sees only one layer rarely captures the full story.
 
@@ -10,7 +10,7 @@ Earlier chapters emphasized how sequence-based models can predict variant effect
 
 Most sequence models operate on a single molecular layer. A convolutional network or transformer may see only DNA sequence, or only expression values, without access to the other layers that mediate the flow of genetic information. Even when multiple outputs are predicted simultaneously, as in multi-task models like Enformer, the input remains a single modality.
 
-Many downstream uses treat variant effects as additively summing across loci. The PGS framework from @sec-pgs exemplifies this assumption: effects of individual variants are estimated independently and combined through weighted sums. While linear models have well-understood statistical properties and interpretability, they cannot capture interactions between variants or between molecular layers.
+Many downstream uses treat variant effects as additively summing across loci. The PGS framework from @sec-gwas exemplifies this assumption: effects of individual variants are estimated independently and combined through weighted sums. While linear models have well-understood statistical properties and interpretability, they cannot capture interactions between variants or between molecular layers.
 
 Models rarely account for dynamic cellular state. The same sequence may have different regulatory consequences depending on cell type, developmental stage, or environmental exposure. Static sequence-to-function models provide context-averaged predictions that may not reflect biology in any particular condition.
 
@@ -32,7 +32,7 @@ Early fusion, also called feature-level integration, concatenates normalized fea
 
 Intermediate fusion, also called shared latent space integration, learns modality-specific encoders that map each omic into a common embedding space. Alignment between modalities is encouraged through reconstruction losses that require each encoder's latent representation to support decoding back to its original features, contrastive terms that pull together representations of the same biological entity across modalities, or graph constraints that enforce consistency with known biological relationships.
 
-Intermediate fusion is the dominant design in modern multi-omics deep learning because it handles missing modalities gracefully (only the available encoder needs to fire), allows modality-specific preprocessing and architectures, and can incorporate biological prior knowledge through the alignment objectives. GLUE and related methods from @sec-epi exemplify this approach.
+Intermediate fusion is the dominant design in modern multi-omics deep learning because it handles missing modalities gracefully (only the available encoder needs to fire), allows modality-specific preprocessing and architectures, and can incorporate biological prior knowledge through the alignment objectives. GLUE and related methods from @sec-single-cell exemplify this approach.
 
 ### Late Fusion
 
@@ -68,7 +68,7 @@ These cancer subtyping models illustrate how multi-omics integration naturally l
 
 ## Rare Variants and Epistasis in Systems Context
 
-@sec-pgs discussed how standard PGS methods largely ignore rare variants and epistatic interactions, despite their importance for individual-level risk and disease mechanism. Rare variants, though individually uncommon, collectively explain substantial phenotypic variance and often have larger effect sizes than common variants. Epistasis, the non-additive interaction between variants, is theoretically expected from network biology and has been documented empirically for many traits. Multi-omics and systems models offer a framework to incorporate these effects more effectively than linear approaches.
+@sec-gwas discussed how standard PGS methods largely ignore rare variants and epistatic interactions, despite their importance for individual-level risk and disease mechanism. Rare variants, though individually uncommon, collectively explain substantial phenotypic variance and often have larger effect sizes than common variants. Epistasis, the non-additive interaction between variants, is theoretically expected from network biology and has been documented empirically for many traits. Multi-omics and systems models offer a framework to incorporate these effects more effectively than linear approaches.
 
 ### DeepRVAT: Set-Based Rare Variant Burden Modeling
 
@@ -108,7 +108,7 @@ G2PT can be viewed as an early example of a systems-aware genomic foundation mod
 
 ## Deep Learning-Enhanced Polygenic Risk and Fine-Mapping
 
-@sec-pgs framed polygenic scores as linear weighted sums of variant effects. This approach has attractive statistical properties including interpretability, efficiency, and well-characterized uncertainty. However, it misses nonlinear effects, cannot incorporate rich sequence-based features, and struggles with rare variants and cross-ancestry generalization. Deep learning extends the PGS paradigm along each of these dimensions.
+@sec-gwas framed polygenic scores as linear weighted sums of variant effects. This approach has attractive statistical properties including interpretability, efficiency, and well-characterized uncertainty. However, it misses nonlinear effects, cannot incorporate rich sequence-based features, and struggles with rare variants and cross-ancestry generalization. Deep learning extends the PGS paradigm along each of these dimensions.
 
 ### Deep-Learning PGS Frameworks
 
@@ -168,7 +168,7 @@ The methods in this chapter sketch an endgame for genomic deep learning that ext
 
 Genome-wide variant and sequence representation through hybrid CNN, transformer, and state-space model architectures established the foundation in earlier chapters. These models learn rich representations of sequence that capture regulatory grammar, variant effects, and long-range dependencies.
 
-Single-cell and epigenomic foundation models from @sec-epi bring methylation, cellular identity, and 3D genome structure into the picture. CpGPT treats methylation as a foundation modeling problem. scGPT and Geneformer learn cellular representations from massive transcriptomic corpora. GLUE enables integration across modalities measured in different cells.
+Single-cell and epigenomic foundation models from @sec-single-cell bring methylation, cellular identity, and 3D genome structure into the picture. CpGPT treats methylation as a foundation modeling problem. scGPT and Geneformer learn cellular representations from massive transcriptomic corpora. GLUE enables integration across modalities measured in different cells.
 
 Multi-omics integration through graph-guided latent spaces adds new dimensions. MoGCN and CGMega demonstrate how graph neural networks can integrate patient-level or gene-level multi-omic data for cancer subtyping and biomarker discovery.
 

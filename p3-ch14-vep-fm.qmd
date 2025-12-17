@@ -1,16 +1,16 @@
-# Variant Effect Prediction {#sec-vep}
+# Variant Effect Prediction {#sec-vep-fm}
 
-Variant effect prediction (VEP) sits at the intersection of sequence analysis, machine learning, and clinical genetics. This chapter provides comprehensive treatment of VEP methods, from early conservation-based scores through modern foundation models. Earlier chapters introduced specific aspects of this landscape: @sec-cadd covered annotation-based methods like CADD and established key concepts including circularity and benchmark design; @sec-cnn examined CNN-based approaches including SpliceAI for splice variants; @sec-prot described protein language models and their application to missense variant scoring. Here we synthesize these threads, examine the full spectrum of VEP approaches, and address cross-cutting challenges in evaluation, calibration, and clinical deployment.
+Variant effect prediction (VEP) sits at the intersection of sequence analysis, machine learning, and clinical genetics. This chapter provides comprehensive treatment of VEP methods, from early conservation-based scores through modern foundation models. Earlier chapters introduced specific aspects of this landscape: @sec-vep-classical covered annotation-based methods like CADD and established key concepts including circularity and benchmark design; @sec-cnn examined CNN-based approaches including SpliceAI for splice variants; @sec-protein-lm described protein language models and their application to missense variant scoring. Here we synthesize these threads, examine the full spectrum of VEP approaches, and address cross-cutting challenges in evaluation, calibration, and clinical deployment.
 
-For readers primarily interested in clinical workflows and how VEP tools fit into diagnostic pipelines, @sec-variants provides application-focused perspective. This chapter focuses on the models themselves: what they learn, how they are trained and evaluated, and what their predictions mean.
+For readers primarily interested in clinical workflows and how VEP tools fit into diagnostic pipelines, @sec-rare-disease provides application-focused perspective. This chapter focuses on the models themselves: what they learn, how they are trained and evaluated, and what their predictions mean.
 
 ## From Handcrafted Scores to Foundation Models
 
 Variant effect prediction sits at the heart of modern genomics. Most variants discovered in clinical sequencing are rare and lack direct experimental evidence, yet clinicians must still decide whether a change is likely benign, pathogenic, or uncertain. The goal of variant effect prediction (VEP) is to map a variant and its context to a quantitative estimate of functional impact or disease risk that can support this decision.
 
-Early computational approaches relied on hand-engineered features and relatively simple models. Conservation and heuristic-based scores such as SIFT and PolyPhen combine information about amino acid properties, sequence conservation, and protein domains to estimate whether a missense variant is damaging [@ng_sift_2003; @adzhubei_polyphen_2010]. CADD extends this idea to genome-wide scoring, integrating many annotations (e.g., conservation, regulatory marks, local sequence context) into a single pathogenicity score [@rentzsch_cadd_2019; @sec-cadd]. These methods were a major step forward, but they are fundamentally limited by the expressiveness of the hand-crafted features and by biases in the labeled data they use (@sec-confound).
+Early computational approaches relied on hand-engineered features and relatively simple models. Conservation and heuristic-based scores such as SIFT and PolyPhen combine information about amino acid properties, sequence conservation, and protein domains to estimate whether a missense variant is damaging [@ng_sift_2003; @adzhubei_polyphen_2010]. CADD extends this idea to genome-wide scoring, integrating many annotations (e.g., conservation, regulatory marks, local sequence context) into a single pathogenicity score [@rentzsch_cadd_2019; @sec-vep-classical]. These methods were a major step forward, but they are fundamentally limited by the expressiveness of the hand-crafted features and by biases in the labeled data they use (@sec-confounding).
 
-Deep learning methods widened the scope of VEP. Convolutional models like DeepSEA and ExPecto learn regulatory sequence features directly from raw DNA; splicing-focused models such as SpliceAI target specific molecular mechanisms, predicting how sequence changes alter splice donor/acceptor usage (@sec-splice). Protein language models (@sec-prot) learn high-dimensional representations of protein sequences that can be adapted for missense variant effect prediction, often outperforming feature-based scores.
+Deep learning methods widened the scope of VEP. Convolutional models like DeepSEA and ExPecto learn regulatory sequence features directly from raw DNA; splicing-focused models such as SpliceAI target specific molecular mechanisms, predicting how sequence changes alter splice donor/acceptor usage (@sec-splice). Protein language models (@sec-protein-lm) learn high-dimensional representations of protein sequences that can be adapted for missense variant effect prediction, often outperforming feature-based scores.
 
 The current frontier is defined by foundation models that treat DNA, RNA, and protein as languages, learning rich sequence representations from massive unlabeled corpora and then reusing those representations for variant interpretation. These models differ in their input modalities (protein vs DNA vs multi-species alignments), architectural choices (CNNs, transformers, state-space models), and training objectives (masked language modeling, autoregressive modeling, multi-task prediction), but they all aim to capture the evolutionary and regulatory constraints that shape observed variation.
 
@@ -48,7 +48,7 @@ ESM-1v and related protein language models push beyond MSAs by training transfor
 
 Zero-shot variant scoring follows the same principle as in EVE. The model computes the log-probability of the wild-type amino acid at a position, computes the log-probability of the mutant amino acid, and uses the difference as a variant effect score (often aggregated over both directions and context windows).
 
-Compared to MSA-based models, large protein LMs provide much broader coverage since they do not require explicit MSAs per protein, capture global patterns such as secondary/tertiary structure and remote homology (@sec-prot), and still require calibration and interpretation to be clinically useful.
+Compared to MSA-based models, large protein LMs provide much broader coverage since they do not require explicit MSAs per protein, capture global patterns such as secondary/tertiary structure and remote homology (@sec-protein-lm), and still require calibration and interpretation to be clinically useful.
 
 ### Cross-Protein Transfer from Deep Mutational Scanning
 
@@ -95,7 +95,7 @@ A zoom-in panel could highlight how local 3D neighborhood (e.g., proximity to ac
 
 ### Training and Calibration
 
-AlphaMissense uses a hybrid training strategy. Self-supervised pretraining on protein sequences and structures ensures that representations capture generic biophysical and evolutionary constraints. Supervised fine-tuning on labeled clinical and population data uses pathogenic and benign missense variants from ClinVar and other curated resources, along with high-frequency variants from population databases such as gnomAD, treated as likely benign under standard assumptions (@sec-confound).
+AlphaMissense uses a hybrid training strategy. Self-supervised pretraining on protein sequences and structures ensures that representations capture generic biophysical and evolutionary constraints. Supervised fine-tuning on labeled clinical and population data uses pathogenic and benign missense variants from ClinVar and other curated resources, along with high-frequency variants from population databases such as gnomAD, treated as likely benign under standard assumptions (@sec-confounding).
 
 Raw model outputs are then calibrated so that scores near 0 correspond to variants observed to behave like benign in curated sets, scores near 1 correspond to variants consistently observed as pathogenic, and intermediate scores are interpretable as uncertain or conflicting evidence, which can be integrated into ACMG-like decision frameworks (@sec-eval).
 
@@ -107,7 +107,7 @@ Its precomputed proteome-wide score release makes it particularly attractive in 
 
 ### Limitations and Caveats
 
-Despite its strengths, AlphaMissense has several important limitations. It only handles missense variants; other coding and noncoding variant types require separate tools. Calibration depends on existing clinical and population labels, which are themselves biased by ascertainment and ancestry (@sec-confound). The model is largely opaque: it provides a scalar score but limited mechanistic explanations (@sec-interp). Structural features rely on predicted rather than experimentally determined structures for most proteins; errors or uncertainties in AlphaFold2 predictions can propagate into scores.
+Despite its strengths, AlphaMissense has several important limitations. It only handles missense variants; other coding and noncoding variant types require separate tools. Calibration depends on existing clinical and population labels, which are themselves biased by ascertainment and ancestry (@sec-confounding). The model is largely opaque: it provides a scalar score but limited mechanistic explanations (@sec-interpretability). Structural features rely on predicted rather than experimentally determined structures for most proteins; errors or uncertainties in AlphaFold2 predictions can propagate into scores.
 
 Guidelines thus recommend using AlphaMissense as a strong supporting line of evidence, but not as a standalone decision-maker. Scores are best interpreted in combination with segregation data, population frequencies, functional assays, and gene-level context (@sec-trans).
 
@@ -152,7 +152,7 @@ Evo 2 pushes the foundation model paradigm further by acting as a generalist gen
 
 ### Scale and Architecture
 
-Evo 2 introduces several distinctive features. Long context length is enabled by the StripedHyena 2 architecture, which efficiently handles context lengths up to approximately 1 Mb, enabling it to model both local motifs and long-range dependencies (e.g., enhancer-promoter links). The model is trained on a diverse corpus: OpenGenome2, a large collection of genomes spanning many branches of the tree of life. This cross-species training encourages learning general principles of genomic organization and constraint. Flexible tokenization strategies range from single nucleotides to longer k-mer or hybrid schemes, balancing resolution and efficiency (@sec-token).
+Evo 2 introduces several distinctive features. Long context length is enabled by the StripedHyena 2 architecture, which efficiently handles context lengths up to approximately 1 Mb, enabling it to model both local motifs and long-range dependencies (e.g., enhancer-promoter links). The model is trained on a diverse corpus: OpenGenome2, a large collection of genomes spanning many branches of the tree of life. This cross-species training encourages learning general principles of genomic organization and constraint. Flexible tokenization strategies range from single nucleotides to longer k-mer or hybrid schemes, balancing resolution and efficiency (@sec-representations).
 
 The training objective is primarily autoregressive or masked language modeling on raw DNA, learning to predict bases or tokens given the surrounding context.
 
@@ -175,7 +175,7 @@ Because Evo 2 sees long genomic neighborhoods, its scores implicitly capture loc
 
 ### Fine-Tuning and Task-Specific Heads
 
-While zero-shot scores are already competitive, Evo 2 can be fine-tuned or paired with task-specific heads for regulatory prediction (e.g., chromatin accessibility, histone marks), splicing outcomes, and gene expression levels. Such adapters reuse Evo 2's representations as a generic backbone, mirroring how text LLMs are adapted via lightweight fine-tuning and prompting (@sec-foundation).
+While zero-shot scores are already competitive, Evo 2 can be fine-tuned or paired with task-specific heads for regulatory prediction (e.g., chromatin accessibility, histone marks), splicing outcomes, and gene expression levels. Such adapters reuse Evo 2's representations as a generic backbone, mirroring how text LLMs are adapted via lightweight fine-tuning and prompting (@sec-fm-principles).
 
 
 ## AlphaGenome: Unified Multi-Omic VEP at 1 Mb Context
@@ -184,7 +184,7 @@ AlphaGenome is a unified model that takes a 1 Mb DNA sequence as input and joint
 
 ### Architecture and Training
 
-The AlphaGenome architecture combines multiple components. Convolutional front-ends extract local motif-level features (akin to models like DeepSEA and Enformer). Long-range attention or state-space blocks propagate information across hundreds of kilobases (@sec-hybrid). Multi-task prediction heads handle different assay types (e.g., ATAC-seq, ChIP-seq marks, Hi-C contact maps, splice junction usage).
+The AlphaGenome architecture combines multiple components. Convolutional front-ends extract local motif-level features (akin to models like DeepSEA and Enformer). Long-range attention or state-space blocks propagate information across hundreds of kilobases (@sec-regulatory). Multi-task prediction heads handle different assay types (e.g., ATAC-seq, ChIP-seq marks, Hi-C contact maps, splice junction usage).
 
 Training relies on large-scale functional genomics data from many cell types and assays (@sec-reg). The model is optimized to jointly predict 1D tracks (e.g., coverage profiles), 2D contact maps (e.g., Hi-C), and sequence-derived splicing features (e.g., junction usage, splice site scores).
 
@@ -219,7 +219,7 @@ The models surveyed in this chapter span different points in a multidimensional 
 | Evo 2        | Raw DNA sequence                         | Up to ~1 Mb       | OpenGenome2 (multi-species genomes)                   | All variant types     | Zero-shot likelihood-based scores + representations |
 | AlphaGenome  | Raw DNA sequence                         | 1 Mb              | Human genome + multi-omic tracks across cell types    | All variant types     | Multi-omic tracks + delta effects                   |
 
-Several key contrasts emerge. AlphaMissense focuses on proteins and missense variants, while GPN-MSA, Evo 2, and AlphaGenome operate directly on DNA, with varying emphasis on coding vs noncoding variants. Shorter context models (e.g., GPN-MSA) excel at capturing local conservation, whereas Evo 2 and AlphaGenome can model long-range regulatory interactions. AlphaMissense outputs a single pathogenicity probability; Evo 2 primarily offers likelihood-based scores and representations; AlphaGenome produces rich multi-omic profiles that can support mechanistic hypotheses (@sec-interp). AlphaMissense and GPN-MSA emphasize evolutionary constraints; Evo 2 adds cross-species genomic syntax; AlphaGenome emphasizes functional genomics.
+Several key contrasts emerge. AlphaMissense focuses on proteins and missense variants, while GPN-MSA, Evo 2, and AlphaGenome operate directly on DNA, with varying emphasis on coding vs noncoding variants. Shorter context models (e.g., GPN-MSA) excel at capturing local conservation, whereas Evo 2 and AlphaGenome can model long-range regulatory interactions. AlphaMissense outputs a single pathogenicity probability; Evo 2 primarily offers likelihood-based scores and representations; AlphaGenome produces rich multi-omic profiles that can support mechanistic hypotheses (@sec-interpretability). AlphaMissense and GPN-MSA emphasize evolutionary constraints; Evo 2 adds cross-species genomic syntax; AlphaGenome emphasizes functional genomics.
 
 ::: {.callout-warning .content-visible when-profile="draft"}
 **Visual suggestions – comparative performance and design**
@@ -234,7 +234,7 @@ Several key contrasts emerge. AlphaMissense focuses on proteins and missense var
 
 A recurring tension in regulatory VEP is whether to build specialized models for a specific tissue/assay or general models that span many contexts. TREDNet exemplifies the specialized strategy: it is trained to predict regulatory activity (e.g., TF binding, chromatin marks) for a specific cell type and assay configuration [@hudaiberdiev_trednet_2023]. Such specialization concentrates model capacity on a well-defined biological context, often yields strong performance for that context, and facilitates interpretation in terms of a particular regulatory program.
 
-In contrast, models like AlphaGenome and Evo 2 are generalist backbones that can be adapted across many contexts via multi-task heads or fine-tuning. Generalist models provide a single representation that can be reused across tasks (@sec-foundation), enable transfer to cell types or assays with limited data, and support unified analyses that integrate multiple regulatory modalities.
+In contrast, models like AlphaGenome and Evo 2 are generalist backbones that can be adapted across many contexts via multi-task heads or fine-tuning. Generalist models provide a single representation that can be reused across tasks (@sec-fm-principles), enable transfer to cell types or assays with limited data, and support unified analyses that integrate multiple regulatory modalities.
 
 In practice, specialized vs general models are complementary. Specialized models may be preferable when the disease mechanism is tightly linked to a particular cell type and high-quality matched functional data exist for that context. Generalist backbones are more attractive when data are sparse or heterogeneous and we wish to systematically explore variant effects across many cell types and assays (@sec-reg).
 
@@ -245,7 +245,7 @@ No single VEP model is universally optimal. Practical workflows often combine mu
 
 These combinations are typically integrated with population allele frequencies (e.g., gnomAD), gene-level constraint metrics, clinical and segregation data, and task-specific experimental assays when available (@sec-eval; @sec-trans).
 
-A key challenge is to avoid overcounting correlated signals (e.g., multiple scores derived from similar evolutionary data) and to calibrate evidence contributions within frameworks like ACMG, as discussed further in Chapters 17 and 18 (@sec-eval; @sec-confound).
+A key challenge is to avoid overcounting correlated signals (e.g., multiple scores derived from similar evolutionary data) and to calibrate evidence contributions within frameworks like ACMG, as discussed further in Chapters 17 and 18 (@sec-eval; @sec-confounding).
 
 ::: {.callout-warning .content-visible when-profile="draft"}
 **Visual suggestion – practical VEP workflow**
@@ -267,7 +267,7 @@ Even state-of-the-art systems like AlphaMissense, GPN-MSA, Evo 2, and AlphaGenom
 
 ### Ancestry and Population Bias
 
-Training data and labels remain skewed toward certain ancestries, genes, and disease phenotypes. ClinVar submissions are dominated by variants from individuals of European ancestry, population databases underrepresent many global populations, and functional assays are concentrated on a limited set of genes and pathways. These biases can distort both calibration and ranking of variants across ancestries (@sec-confound). Future VEP models will need more diverse training datasets, explicit modeling of population structure, and evaluation frameworks that surface ancestry-specific performance disparities (@sec-benchmarks).
+Training data and labels remain skewed toward certain ancestries, genes, and disease phenotypes. ClinVar submissions are dominated by variants from individuals of European ancestry, population databases underrepresent many global populations, and functional assays are concentrated on a limited set of genes and pathways. These biases can distort both calibration and ranking of variants across ancestries (@sec-confounding). Future VEP models will need more diverse training datasets, explicit modeling of population structure, and evaluation frameworks that surface ancestry-specific performance disparities (@sec-benchmarks).
 
 ### Complex Variant Patterns
 
@@ -275,11 +275,11 @@ Most current models focus on single-nucleotide variants (SNVs) or single amino a
 
 ### Integrating Multi-Omics and Longitudinal Data
 
-AlphaGenome takes a first step toward unified multi-omic prediction, but real tissues and organisms exhibit dynamic regulatory programs across development and aging, responses to environmental perturbations, and cell-type heterogeneity and spatial organization. Integrating single-cell, spatial, and longitudinal omics into VEP frameworks will be crucial for capturing context-specific variant effects (@sec-systems). This will likely require new multi-scale architectures that span from sequence to cell states, careful treatment of batch effects and confounders, and benchmarks that explicitly evaluate context-specific predictions (@sec-benchmarks).
+AlphaGenome takes a first step toward unified multi-omic prediction, but real tissues and organisms exhibit dynamic regulatory programs across development and aging, responses to environmental perturbations, and cell-type heterogeneity and spatial organization. Integrating single-cell, spatial, and longitudinal omics into VEP frameworks will be crucial for capturing context-specific variant effects (@sec-multi-omics). This will likely require new multi-scale architectures that span from sequence to cell states, careful treatment of batch effects and confounders, and benchmarks that explicitly evaluate context-specific predictions (@sec-benchmarks).
 
 ### Interpretability and Clinical Communication
 
-As models grow more complex, interpretability becomes a central concern (@sec-interp). Clinicians need explanations that connect model scores to mechanism (e.g., "disrupts a conserved splice acceptor, predicted to cause exon skipping"). Researchers need tools to trace predictions back to motifs, domains, or 3D contacts that can be experimentally tested. Future work will involve model-based attribution methods adapted to sequence and structure, counterfactual reasoning over variant sets, and interfaces that present model outputs in clinically meaningful formats.
+As models grow more complex, interpretability becomes a central concern (@sec-interpretability). Clinicians need explanations that connect model scores to mechanism (e.g., "disrupts a conserved splice acceptor, predicted to cause exon skipping"). Researchers need tools to trace predictions back to motifs, domains, or 3D contacts that can be experimentally tested. Future work will involve model-based attribution methods adapted to sequence and structure, counterfactual reasoning over variant sets, and interfaces that present model outputs in clinically meaningful formats.
 
 ### Safe Deployment and Continual Learning
 

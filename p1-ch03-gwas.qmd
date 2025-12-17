@@ -4,7 +4,7 @@
 - Double-check all equation notation for consistency with later chapters.
 :::
 
-# GWAS & Polygenic Scores {#sec-pgs}
+# GWAS & Polygenic Scores {#sec-gwas}
 
 Genome-wide association studies (GWAS) and polygenic scores (PGS) form the statistical backbone of modern human genetics. GWAS connect variation in DNA to variation in traits. Polygenic scores then aggregate many small genetic effects across the genome into a single number per individual. Together, they have delivered striking insights into complex traits, but they also expose fundamental limitations that motivate the mechanistic models developed in later parts of this book.
 
@@ -17,7 +17,7 @@ In this chapter we:
 - Discuss how to interpret PGS and why they often fail to transfer across ancestries.
 - Highlight the limitations of GWAS and PGS, motivating the need for genomic foundation models.
 
-Throughout, we will connect to data resources introduced in Chapter @sec-data and to confounding and fairness issues discussed in Chapter @sec-confound.
+Throughout, we will connect to data resources introduced in Chapter @sec-data and to confounding and fairness issues discussed in Chapter @sec-confounding.
 
 ::: {.callout-warning .content-visible when-profile="draft"}
 *Suggested visual*: High-level pipeline figure showing:
@@ -97,7 +97,7 @@ Population structure can induce confounding: if allele frequencies differ across
 
 Principal component analysis (PCA) on genotype data captures major axes of genetic variation [@price_pca_2006; @patterson_population_2006]. The top principal components often correspond to broad ancestry gradients (continental-level differences). Including these PCs as covariates attenuates spurious associations due to ancestry stratification in the linear regression framework.
 
-However, ancestry adjustment in GWAS is only a partial solution to a much broader set of challenges. Ancestry is intertwined with environment, socioeconomic status, healthcare access, and clinical practice in ways that simple covariate adjustment cannot fully resolve. These issues become critical when translating GWAS results to polygenic scores and clinical applications. We return to the full complexity of ancestry as a confounder, including its impact on model performance, fairness, and generalizability, in @sec-confound.
+However, ancestry adjustment in GWAS is only a partial solution to a much broader set of challenges. Ancestry is intertwined with environment, socioeconomic status, healthcare access, and clinical practice in ways that simple covariate adjustment cannot fully resolve. These issues become critical when translating GWAS results to polygenic scores and clinical applications. We return to the full complexity of ancestry as a confounder, including its impact on model performance, fairness, and generalizability, in @sec-confounding.
 
 #### Intercept and Residuals
 
@@ -349,7 +349,7 @@ Relative risk communication often focuses on percentiles:
 - Individuals in the top 1% of the PGS distribution may have several-fold higher disease odds than those near the median.
 - Risk gradients can be displayed as odds ratios or hazard ratios by PGS decile or percentile.
 
-Absolute risk requires combining the PGS with baseline incidence rates (e.g., age-specific disease rates in the population). Clinical guidelines increasingly emphasize absolute risk (e.g., 10-year risk of coronary artery disease) for decision-making, and using PGS in this context requires careful calibration and validation in representative populations (see Chapter @sec-clinical).
+Absolute risk requires combining the PGS with baseline incidence rates (e.g., age-specific disease rates in the population). Clinical guidelines increasingly emphasize absolute risk (e.g., 10-year risk of coronary artery disease) for decision-making, and using PGS in this context requires careful calibration and validation in representative populations (see Chapter @sec-clinical-risk).
 
 ### Ancestry, Linkage Disequilibrium, and Transferability
 
@@ -365,7 +365,7 @@ Several factors contribute:
 - **Gene–environment interactions** and environment-specific exposures.
 - **Statistical artifacts** due to mismatched LD reference panels and QC pipelines.
 
-Empirical studies document pronounced drops in PGS performance when applied across ancestries and emphasize the importance of diverse training data and careful evaluation [@verma_diversity_2024]. Equity concerns are central: deploying PGS trained primarily in one ancestry can exacerbate health disparities if scores are systematically less accurate for underrepresented groups (see also Chapter @sec-confound).
+Empirical studies document pronounced drops in PGS performance when applied across ancestries and emphasize the importance of diverse training data and careful evaluation [@verma_diversity_2024]. Equity concerns are central: deploying PGS trained primarily in one ancestry can exacerbate health disparities if scores are systematically less accurate for underrepresented groups (see also Chapter @sec-confounding).
 
 ::: {.callout-warning .content-visible when-profile="draft"}
 *Suggested visual*: 
@@ -408,7 +408,7 @@ As discussed above, PGS constructed from predominantly European-ancestry GWAS of
 - Are they measuring biology that is genuinely universal but poorly estimated in underrepresented groups?
 - Or are they partly capturing ancestry-specific LD patterns, environmental context, and even subtle confounders?
 
-These issues complicate the use of PGS in diverse clinical populations and underscore the importance of diverse cohorts and careful causal reasoning (Chapters @sec-confound and @sec-systems).
+These issues complicate the use of PGS in diverse clinical populations and underscore the importance of diverse cohorts and careful causal reasoning (Chapters @sec-confounding and @sec-multi-omics).
 
 ### The Noncoding Variant Challenge
 
@@ -449,14 +449,14 @@ Polygenic scores derived from predominantly European ancestry GWAS show substant
 
 These portability failures are not merely technical limitations but raise fundamental questions about equity and fairness in precision medicine. If genomic models work primarily for individuals of European ancestry, they risk exacerbating existing health disparities. Multi-ancestry GWAS, diverse training cohorts, and methods that account for population structure help but do not fully solve the problem [@marquez-luna_incorporating_2021].
 
-The challenges of ancestry in genomic prediction extend far beyond PGS to every model in this book. Foundation models can easily learn to exploit ancestry signals as shortcuts, benchmark evaluations mask poor cross-ancestry performance by reporting only aggregate metrics, and deployment in diverse clinical populations requires explicit validation across ancestry groups. These issues are addressed comprehensively in @sec-confound, which provides frameworks for detecting, mitigating, and reporting ancestry-related biases in genomic models.
+The challenges of ancestry in genomic prediction extend far beyond PGS to every model in this book. Foundation models can easily learn to exploit ancestry signals as shortcuts, benchmark evaluations mask poor cross-ancestry performance by reporting only aggregate metrics, and deployment in diverse clinical populations requires explicit validation across ancestry groups. These issues are addressed comprehensively in @sec-confounding, which provides frameworks for detecting, mitigating, and reporting ancestry-related biases in genomic models.
 
 ### Toward Mechanistic Models
 
 These limitations collectively motivate the mechanistic approaches that form the core of this book. We would like models that:
 
 - Connect sequence variation directly to molecular phenotypes (e.g., regulatory activity, splicing, chromatin structure).
-- Integrate multi-omics data across scales (Chapters @sec-splice and @sec-systems).
+- Integrate multi-omics data across scales (Chapters @sec-splice and @sec-multi-omics).
 - Provide causal hypotheses about how variants influence cellular and organismal phenotypes.
 - Generalize across populations and contexts by modeling underlying biology rather than solely statistical association patterns.
 
@@ -464,8 +464,8 @@ Deep learning models trained on large regulatory and transcriptomic datasets, su
 
 Downstream chapters will show how:
 
-- Multi-omics integration (Chapter @sec-systems) connects molecular and clinical data.
-- Variant effect prediction methods (Chapter @sec-splice and Chapter @sec-vep) refine our understanding of GWAS loci.
+- Multi-omics integration (Chapter @sec-multi-omics) connects molecular and clinical data.
+- Variant effect prediction methods (Chapter @sec-splice and Chapter @sec-vep-fm) refine our understanding of GWAS loci.
 - Genomic foundation models move beyond association to provide mechanistic insight and improved, equitable clinical translation (Part VI).
 
 The goal is not to discard GWAS and PGS, but to build on them—replacing “association without mechanism” with models that make testable, mechanistic claims and support robust, fair deployment in real-world settings.

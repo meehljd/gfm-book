@@ -2,11 +2,11 @@
 
 :::
 
-# Transformer Architecture for Genomics {#sec-transformers}
+# Transformer Architecture for Genomics {#sec-attention}
 
 The transformer architecture revolutionized natural language processing in 2017 and rapidly spread to other domains, including genomics. Between 2018 and 2023, transformers became the dominant paradigm for modeling biological sequences, powering protein language models like ESM and genomic models like DNABERT and Nucleotide Transformer. This chapter examines the core mechanisms that make transformers effective for genomic data, their architectural components, and the practical considerations for applying them to DNA, RNA, and protein sequences.
 
-We begin by motivating why transformers matter for genomics, then systematically unpack the self-attention mechanism, positional encodings, and the standard transformer block. We discuss scaling considerations specific to genomic sequences, survey transformer variants used in genomic applications, and address training challenges. Finally, we consider the limitations that led to the development of alternative architectures like state space models, which we cover in depth in Chapter @sec-dna.
+We begin by motivating why transformers matter for genomics, then systematically unpack the self-attention mechanism, positional encodings, and the standard transformer block. We discuss scaling considerations specific to genomic sequences, survey transformer variants used in genomic applications, and address training challenges. Finally, we consider the limitations that led to the development of alternative architectures like state space models, which we cover in depth in Chapter @sec-dna-lm.
 
 ::: {.callout-note .content-visible when-profile="draft"}
 **VISUAL SUGGESTION (chapter overview)**  
@@ -40,7 +40,7 @@ CNNs were the first architecture to achieve strong performance on genomic tasks,
 
 Transformers emerged from natural language processing, where they demonstrated unprecedented ability to model linguistic context and semantic relationships. The core innovation is self-attention, which computes interactions between all sequence positions simultaneously. This provides global context but comes at a computational cost that scales quadratically with sequence length. Despite this expense, transformers dominated genomic modeling from roughly 2018 through 2023 because their ability to capture long-range dependencies outweighed their computational demands for many applications.
 
-State space models (SSMs) represent a more recent development, offering linear computational complexity while maintaining long-range modeling capability. Architectures like Mamba have begun to challenge transformers' dominance, particularly for ultra-long genomic contexts where transformer quadratic scaling becomes prohibitive. We defer detailed discussion of SSMs to Chapter @sec-dna, focusing here on transformers as the foundation from which these newer architectures emerged.
+State space models (SSMs) represent a more recent development, offering linear computational complexity while maintaining long-range modeling capability. Architectures like Mamba have begun to challenge transformers' dominance, particularly for ultra-long genomic contexts where transformer quadratic scaling becomes prohibitive. We defer detailed discussion of SSMs to Chapter @sec-dna-lm, focusing here on transformers as the foundation from which these newer architectures emerged.
 
 The progression from CNNs to transformers to SSMs reflects an ongoing tension between computational efficiency and modeling capacity. Each paradigm offers distinct trade-offs that remain relevant for different genomic applications. Understanding transformers in depth provides essential context for appreciating both why they succeeded and why the field is now exploring alternatives.
 
@@ -142,7 +142,7 @@ Figure: Detailed diagram of a single transformer block showing pre-norm configur
 
 ## Scaling Transformers for Genomics
 
-Genomic sequences present unique scaling challenges. DNA sequences can span millions of bases, far exceeding the typical context lengths in natural language processing. Tokenization choices (covered in Chapter @sec-token) interact with sequence length: single-nucleotide tokens create very long sequences, while k-mer tokens reduce length at the cost of vocabulary size. Scaling transformers to genomic applications requires careful consideration of how to balance model size, context length, and computational resources.
+Genomic sequences present unique scaling challenges. DNA sequences can span millions of bases, far exceeding the typical context lengths in natural language processing. Tokenization choices (covered in Chapter @sec-representations) interact with sequence length: single-nucleotide tokens create very long sequences, while k-mer tokens reduce length at the cost of vocabulary size. Scaling transformers to genomic applications requires careful consideration of how to balance model size, context length, and computational resources.
 
 Parameter scaling in transformers comes from two main sources: width and depth. Width refers to the model dimension $d$, which determines the size of embeddings and hidden states. Increasing width allows the model to represent more complex patterns at each position but increases the number of parameters quadratically (since weight matrices are $d \times d$). Depth refers to the number of stacked transformer blocks. Increasing depth allows the model to learn hierarchical abstractions through repeated refinement but also increases parameters linearly with layers.
 
@@ -152,7 +152,7 @@ Context length scaling presents the central challenge for genomic transformers. 
 
 Several strategies address this computational bottleneck. Sparse attention patterns restrict which positions can attend to which others, reducing the quadratic cost. For example, local windowing allows each position to attend only to positions within a fixed window, reducing complexity to $O(Lw)$ where $w$ is window size. This works well when most relevant interactions are local, as often holds for regulatory sequences where nearby elements interact more strongly than distant ones.
 
-Strided attention patterns create a hierarchy where lower layers use local windows and upper layers attend to every $k$-th position. This captures both local fine-grained patterns and global coarse-grained structure while maintaining sub-quadratic complexity. Hybrid models like Enformer (Chapter @sec-hybrid) use this strategy, applying CNNs to downsample sequences before transformer layers.
+Strided attention patterns create a hierarchy where lower layers use local windows and upper layers attend to every $k$-th position. This captures both local fine-grained patterns and global coarse-grained structure while maintaining sub-quadratic complexity. Hybrid models like Enformer (Chapter @sec-regulatory) use this strategy, applying CNNs to downsample sequences before transformer layers.
 
 Approximations to full attention offer another approach. Linformer approximates the attention matrix through low-rank decomposition, reducing complexity to linear in sequence length at the cost of some expressiveness. Performer uses random feature methods to approximate attention scores without explicitly computing the full $L \times L$ matrix. These approximations work well in practice for some tasks but may lose important long-range dependencies.
 
@@ -180,7 +180,7 @@ Decoder-only transformers use causal attention where each position attends only 
 
 The trade-off between encoder and decoder architectures reflects a fundamental tension in genomic modeling. Representation learning benefits from bidirectional context, while sequence generation requires causal structure. Some applications use both: a bidirectional encoder produces initial representations, then a causal decoder refines them for generation or prediction tasks.
 
-Hybrid CNN-transformer architectures combine convolutional layers with transformer blocks. Models like Enformer and Borzoi (Chapter @sec-hybrid) apply convolutional stems to long sequences, downsampling through pooling, then pass the compressed representation through transformer layers. This exploits CNNs' efficiency for local pattern extraction while using transformers for long-range integration. The downsampling addresses transformers' quadratic complexity by reducing sequence length before attention.
+Hybrid CNN-transformer architectures combine convolutional layers with transformer blocks. Models like Enformer and Borzoi (Chapter @sec-regulatory) apply convolutional stems to long sequences, downsampling through pooling, then pass the compressed representation through transformer layers. This exploits CNNs' efficiency for local pattern extraction while using transformers for long-range integration. The downsampling addresses transformers' quadratic complexity by reducing sequence length before attention.
 
 These hybrid models achieve state-of-the-art performance on regulatory prediction tasks but blur the line between pure transformers and other architectures. They work because genomic regulation involves both local patterns (motifs, nucleosome positioning) and long-range interactions (enhancer-promoter loops, chromatin domains). The CNN-transformer combination matches this multi-scale structure.
 
@@ -234,7 +234,7 @@ The quadratic complexity bottleneck is transformers' most severe limitation. Com
 
 Recent genomic models have pushed context lengths to impressive scales (Enformer handles 200kb, AlphaGenome approaches 1Mb), but these often rely on hybrid architectures with significant downsampling or hierarchical windowing that may miss certain long-range patterns. Pure transformers without such modifications remain limited to shorter contexts.
 
-Alternative sub-quadratic architectures address this limitation directly. State space models (SSMs) like S4 and Mamba achieve linear complexity by representing sequences as continuous-time dynamical systems rather than discrete token-to-token interactions. These models maintain long-range memory through recurrent state updates while avoiding the quadratic attention bottleneck. Chapter @sec-dna covers SSMs in detail, including Hyena DNA and the Evo family of genomic foundation models.
+Alternative sub-quadratic architectures address this limitation directly. State space models (SSMs) like S4 and Mamba achieve linear complexity by representing sequences as continuous-time dynamical systems rather than discrete token-to-token interactions. These models maintain long-range memory through recurrent state updates while avoiding the quadratic attention bottleneck. Chapter @sec-dna-lm covers SSMs in detail, including Hyena DNA and the Evo family of genomic foundation models.
 
 Hyena operators replace attention with long convolutions implemented efficiently in the Fourier domain, achieving sub-quadratic complexity. Mamba uses selective state space models that dynamically adjust state transitions based on input content. Both approaches show promise for ultra-long genomic contexts, potentially enabling whole-chromosome or even whole-genome modeling.
 
@@ -242,7 +242,7 @@ When should we prefer transformers over these alternatives? Transformers excel w
 
 CNNs remain preferable when computational efficiency is paramount and local patterns dominate. For splice site prediction or promoter classification where the relevant context spans at most a few hundred base pairs, a well-designed CNN may outperform transformers while using far fewer parameters and less compute. The inductive bias toward local patterns also provides regularization that helps with limited training data.
 
-Hybrid approaches combining CNNs for local feature extraction with transformers for long-range integration often achieve the best of both worlds. As discussed in Chapter @sec-hybrid, models like Enformer demonstrate that architectural combinations can outperform pure transformers or pure CNNs on real genomic tasks.
+Hybrid approaches combining CNNs for local feature extraction with transformers for long-range integration often achieve the best of both worlds. As discussed in Chapter @sec-regulatory, models like Enformer demonstrate that architectural combinations can outperform pure transformers or pure CNNs on real genomic tasks.
 
 The transition to sub-quadratic architectures is ongoing. Early results suggest SSMs match or exceed transformers on some genomic benchmarks while scaling to longer contexts. However, transformers benefit from years of engineering optimization and extensive pretrained models. The genomics community is actively exploring whether SSMs' theoretical advantages translate to practical improvements across diverse tasks.
 
@@ -268,6 +268,6 @@ Training considerations specific to genomics include learning rate schedules wit
 
 Transformers' quadratic complexity motivates alternatives, particularly state space models that achieve linear scaling while maintaining long-range capability. When to prefer transformers versus SSMs or CNNs depends on sequence length requirements, local versus global pattern importance, computational resources, and whether extensive pretrained models are available.
 
-Looking forward, transformers remain central to genomic foundation models despite emerging alternatives. Chapter @sec-dna surveys DNA language models built on transformer and SSM architectures, trained through self-supervised objectives. Chapter @sec-prot covers protein language models where transformers have achieved remarkable success at learning structure and function from sequence alone. Chapter @sec-hybrid examines how regulatory prediction models combine transformers with CNNs to handle long genomic contexts efficiently.
+Looking forward, transformers remain central to genomic foundation models despite emerging alternatives. Chapter @sec-dna-lm surveys DNA language models built on transformer and SSM architectures, trained through self-supervised objectives. Chapter @sec-protein-lm covers protein language models where transformers have achieved remarkable success at learning structure and function from sequence alone. Chapter @sec-regulatory examines how regulatory prediction models combine transformers with CNNs to handle long genomic contexts efficiently.
 
 The transformer architecture represents a watershed moment in genomic deep learning, enabling models that genuinely capture long-range dependencies essential for understanding gene regulation. While newer architectures may supersede transformers for some applications, the conceptual framework they introduced, particularly the idea that global context aggregation through learned attention is tractable and effective, continues to shape genomic modeling.

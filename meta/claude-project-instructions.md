@@ -271,7 +271,7 @@ End chapters when the argument naturally completes. Final paragraph should point
 Weave forward references throughout the chapter naturally:
 - "We return to this in Chapter X when examining..."
 - "This architectural choice anticipates the foundation models in Part 4"
-- "The interpretability challenges here motivate the mechanistic approaches in @sec-interpretability"
+- "The interpretability challenges here motivate the mechanistic approaches in @sec-interpretabilityretability"
 
 **Don't**: Save all forward references for conclusion
 **Don't**: Make them feel like advertisements ("The exciting developments in Chapter X...")

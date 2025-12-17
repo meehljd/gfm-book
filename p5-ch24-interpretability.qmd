@@ -1,4 +1,4 @@
-# Interpretability & Mechanisms {#sec-interp}
+# Interpretability & Mechanisms {#sec-interpretability}
 
 ## Why Interpretability Matters for Genomic Models
 
@@ -6,7 +6,7 @@ Deep learning models in genomics increasingly operate as systems-level surrogate
 
 Interpretability in this context serves several distinct but interconnected roles. The most scientifically compelling is mechanistic insight: extracting sequence motifs, regulatory grammars, and long-range interaction patterns directly from trained models. A well-designed interpretability analysis can turn a black-box predictor into a source of candidate mechanisms that can be tested experimentally. When a model trained to predict chromatin accessibility learns filters that match known transcription factor binding motifs, this validates that the model has discovered biologically meaningful patterns. When the same analysis reveals novel motif variants or unexpected spacing constraints, it generates hypotheses that extend beyond what was known before training.
 
-Interpretability also serves as a tool for model debugging and confounder detection. Deep networks can achieve high benchmark accuracy by learning spurious correlations rather than genuine regulatory signals. A model might learn that certain k-mers correlate with peak calls because of batch effects in the training data, or that GC content predicts chromatin accessibility because GC-rich regions tend to be more mappable and thus better covered by sequencing. Interpretability methods can reveal such shortcuts by showing what features the model actually relies upon. This diagnostic function complements the data-level confounder analyses discussed in @sec-confound by interrogating model internals directly.
+Interpretability also serves as a tool for model debugging and confounder detection. Deep networks can achieve high benchmark accuracy by learning spurious correlations rather than genuine regulatory signals. A model might learn that certain k-mers correlate with peak calls because of batch effects in the training data, or that GC content predicts chromatin accessibility because GC-rich regions tend to be more mappable and thus better covered by sequencing. Interpretability methods can reveal such shortcuts by showing what features the model actually relies upon. This diagnostic function complements the data-level confounder analyses discussed in @sec-confounding by interrogating model internals directly.
 
 In clinical and translational settings, interpretability supports variant interpretation workflows by explaining why specific rare or de novo variants are predicted to be damaging. A pathogenicity score alone may be insufficient for clinical decision-making; knowing that a variant disrupts a specific transcription factor binding motif in a disease-relevant enhancer provides interpretable evidence that can be combined with family history, functional assays, and literature review. These adoption barriers extend beyond clinical genomics. A systematic review of machine learning in agricultural genomics found that despite promising benchmark performance, interpretability concerns remain a primary obstacle to real-world deployment in livestock breeding programs, where traditional statistical methods continue to dominate despite their theoretical limitations [@chafai_review_2023].
 
@@ -136,7 +136,7 @@ A critical methodological note: raw attention weights should be interpreted with
 ::: {.callout-note}
 **Visual suggestion: Attention head patterns**
 
-A figure consisting of: (1) A genomic sequence with annotated features such as promoter, enhancer, or operon structure, (2) One or two attention maps for individual heads showing strong, structured connectivity between regulatory elements, (3) A small inset summarizing head specialization statistics (fraction of attention mass connecting enhancer to promoter). This can be cross-referenced in @sec-systems when discussing multi-omic integration and regulatory networks.
+A figure consisting of: (1) A genomic sequence with annotated features such as promoter, enhancer, or operon structure, (2) One or two attention maps for individual heads showing strong, structured connectivity between regulatory elements, (3) A small inset summarizing head specialization statistics (fraction of attention mass connecting enhancer to promoter). This can be cross-referenced in @sec-multi-omics when discussing multi-omic integration and regulatory networks.
 :::
 
 ### Distal Regulatory Elements in Enformer-Like Models
@@ -148,7 +148,7 @@ Practical tools include contribution tracks that aggregate base-level or region-
 ::: {.callout-note}
 **Visual suggestion: Long-range contributions**
 
-A multi-track genome browser-style figure showing: (1) Input sequence with gene and regulatory annotations, (2) Experimental tracks such as ATAC-seq and ChIP-seq, (3) Model prediction track for a target gene, (4) A contribution track highlighting distal regions whose deletion strongly alters the prediction. This figure can be cross-referenced in @sec-systems as an example of how single-sequence interpretability interfaces with 3D regulatory models.
+A multi-track genome browser-style figure showing: (1) Input sequence with gene and regulatory annotations, (2) Experimental tracks such as ATAC-seq and ChIP-seq, (3) Model prediction track for a target gene, (4) A contribution track highlighting distal regions whose deletion strongly alters the prediction. This figure can be cross-referenced in @sec-multi-omics as an example of how single-sequence interpretability interfaces with 3D regulatory models.
 :::
 
 ## Global Regulatory Vocabularies: Sei Sequence Classes
@@ -166,7 +166,7 @@ This notion of a regulatory vocabulary parallels word embeddings or topic models
 ::: {.callout-note}
 **Visual suggestion: Sequence-class embedding**
 
-A figure showing: (1) A UMAP or t-SNE of sequence features or loci colored by regulatory class (promoter, enhancer, insulator, repressed), (2) Example genomic loci annotated with their class assignments, (3) Example variants mapped as arrows showing movement between classes (such as enhancer to promoter-like). This can be cross-linked to variant interpretation chapters and to @sec-systems to emphasize multi-scale regulatory modeling.
+A figure showing: (1) A UMAP or t-SNE of sequence features or loci colored by regulatory class (promoter, enhancer, insulator, repressed), (2) Example genomic loci annotated with their class assignments, (3) Example variants mapped as arrows showing movement between classes (such as enhancer to promoter-like). This can be cross-linked to variant interpretation chapters and to @sec-multi-omics to emphasize multi-scale regulatory modeling.
 :::
 
 ## A Case Study: From Base-Pair Attributions to Regulatory Grammar
@@ -221,7 +221,7 @@ For practitioners working with genomic foundation models and their fine-tuned de
 
 **Regulatory vocabularies and embeddings** use frameworks like Sei to project sequences into interpretable regulatory activity spaces. Clustering variants, enhancers, or genomic regions by their sequence-class profiles reveals shared regulatory programs and enables compact summaries of complex predictions.
 
-**Model and dataset auditing** uses interpretability tools to identify reliance on confounded or undesirable features. Cross-referencing with the confounder taxonomy from @sec-confound helps design deconfounded training and evaluation schemes. If interpretability reveals that a model relies heavily on GC content or batch-specific signals, this diagnoses a problem that evaluation metrics alone might miss.
+**Model and dataset auditing** uses interpretability tools to identify reliance on confounded or undesirable features. Cross-referencing with the confounder taxonomy from @sec-confounding helps design deconfounded training and evaluation schemes. If interpretability reveals that a model relies heavily on GC content or batch-specific signals, this diagnoses a problem that evaluation metrics alone might miss.
 
 **Human-in-the-loop analysis** integrates motif and sequence-class outputs into visualization tools such as genome browsers with attribution tracks, motif annotations, and class scores. Domain experts can then iteratively refine hypotheses, identifying patterns that merit experimental follow-up and flagging predictions that seem biologically implausible.
 
@@ -235,7 +235,7 @@ A compact reference table with rows for common tasks (Variant effect prediction,
 
 Interpretability in genomic deep learning is evolving from post hoc explanation toward model-assisted mechanistic discovery. Foundation models provide rich latent spaces and long-range context that capture regulatory information at unprecedented scale. Attribution and motif discovery tools translate those representations into candidate regulatory grammars that can be tested experimentally. Global vocabularies like Sei's sequence classes offer interpretable axes spanning thousands of assays, enabling systematic characterization of regulatory programs across the genome.
 
-Attention analysis in genomic language models reveals emergent gene-level organization, suggesting that models trained on raw sequence implicitly learn operon structure, co-regulation patterns, and phylogenetic context. These findings hint at scalable ways to capture systems-level biology from sequence alone, complementing the multi-omic integration approaches discussed in @sec-systems.
+Attention analysis in genomic language models reveals emergent gene-level organization, suggesting that models trained on raw sequence implicitly learn operon structure, co-regulation patterns, and phylogenetic context. These findings hint at scalable ways to capture systems-level biology from sequence alone, complementing the multi-omic integration approaches discussed in @sec-multi-omics.
 
 The next frontier is to close the loop between interpretability and model development. Insights from interpretability (motifs, grammars, sequence classes) can inform better architectures and training objectives. Experimentally validated grammars can be fed back into models as inductive biases, constraining the hypothesis space to biologically plausible solutions. Evaluation frameworks can measure not only predictive accuracy but also mechanistic fidelity: how well do model-derived hypotheses align with the causal structure of regulatory biology revealed by perturbation experiments?
 
@@ -243,7 +243,7 @@ Several trends point toward this integration:
 
 - **Interpretability-guided experimental design** uses model-derived motifs and grammars to prioritize which sequences to perturb, reducing experimental search space and accelerating mechanistic discovery.
 
-- **Multi-scale integration** combines attention heads and long-range contribution patterns in Enformer-like models [@avsec_enformer_2021; @cheng_dnalongbench_2024] with network and systems-level analyses in @sec-systems to move from single-sequence explanations to global regulatory circuitry.
+- **Multi-scale integration** combines attention heads and long-range contribution patterns in Enformer-like models [@avsec_enformer_2021; @cheng_dnalongbench_2024] with network and systems-level analyses in @sec-multi-omics to move from single-sequence explanations to global regulatory circuitry.
 
 - **Foundation models and emergent structure** reveal that genomic language models and multimodal models (sequence plus epigenomics plus 3D structure) encode increasingly sophisticated representations, shifting interpretability from individual features to representation geometry.
 

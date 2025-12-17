@@ -10,7 +10,7 @@
 :::
 
 
-# Protein Language Models  {#sec-prot}
+# Protein Language Models  {#sec-protein-lm}
 
 Before transformers revolutionized genomic sequence modeling, they first transformed our ability to model proteins. The field built upon decades of computational progress, from David Baker's Rosetta framework that pioneered physics-based protein structure prediction and design through sampling and energy minimization, to the deep learning revolution of the past decade. This progression moved from early generative models like DeepSequence that captured epistatic interactions in protein families [@riesselman_deepsequence_2018], to EVE's unsupervised prediction of disease variants from evolutionary data [@frazer_eve_2021], to the ESM family's demonstration that transformers trained on massive sequence databases learn representations encoding structure and function [@rives_esm_2021]. The trajectory culminated in AlphaFold2's solution to the protein structure prediction problem [@jumper_alphafold2_2021] and AlphaMissense's proteome-wide variant pathogenicity scoring [@cheng_alphamissense_2023], establishing that self-supervised learning on biological sequences could match or exceed decades of specialized computational methods. The transformative impact of this work was recognized with the 2024 Nobel Prize in Chemistry, awarded to Demis Hassabis and John Jumper for AlphaFold2 and to David Baker for computational protein design. These advances validated and extended the central dogma's sequence → structure → function paradigm, demonstrating that deep learning models could compress the entire chain of causation into learned representations that predict functional consequences directly from amino acid sequences.
 
@@ -132,7 +132,7 @@ This has profound implications for understanding what PLMs learn. The attention 
 
 ### CADD v1.7: PLM Features for Ensemble Methods
 
-The Combined Annotation Dependent Depletion (CADD) framework integrates diverse annotations to score variant deleteriousness (@sec-cadd). CADD v1.7 incorporated ESM-1v predictions as features within its existing integrative architecture [@schubach_cadd_2024].
+The Combined Annotation Dependent Depletion (CADD) framework integrates diverse annotations to score variant deleteriousness (@sec-vep-classical). CADD v1.7 incorporated ESM-1v predictions as features within its existing integrative architecture [@schubach_cadd_2024].
 
 The integration approach treats PLM scores as additional annotations alongside conservation scores, functional annotations, and regulatory predictions. For each missense variant, ESM-1v scores are computed and included as features in CADD's gradient-boosted tree classifier. This allows the ensemble to learn how PLM predictions complement other evidence sources, potentially capturing cases where PLM and conservation signals provide independent information.
 
@@ -202,7 +202,7 @@ Most variant effect predictions assume independence: the effect of mutation A do
 
 ### Interpretability
 
-While attention patterns correlate with biological features, understanding exactly what PLMs learn remains challenging. The field is developing interpretation methods (@sec-interp), but PLMs remain partially opaque. For clinical applications where explanations are valued, this interpretability gap limits adoption. Future work must balance the accuracy gains from complex models against the transparency required for clinical decision-making.
+While attention patterns correlate with biological features, understanding exactly what PLMs learn remains challenging. The field is developing interpretation methods (@sec-interpretability), but PLMs remain partially opaque. For clinical applications where explanations are valued, this interpretability gap limits adoption. Future work must balance the accuracy gains from complex models against the transparency required for clinical decision-making.
 
 ## Beyond Language Models: Structure Prediction and Design
 
@@ -250,4 +250,4 @@ The protein modeling ecosystem thus spans a continuum from pure sequence models 
 
 Protein language models established that transformer architectures can learn deep biological knowledge from sequence data alone. ESM's ability to predict structure, function, and variant effects without explicit labels demonstrated the power of self-supervised learning on evolutionary data. This success directly motivated the development of genomic language models. If proteins constitute a language that transformers can learn, perhaps DNA does too.
 
-The genomic language models covered in @sec-dna adapt PLM architectures and training strategies to the distinct challenges of DNA sequences: longer contexts, different alphabets, and the full complexity of gene regulation. The integration path continues as well: just as CADD v1.7 and AlphaMissense incorporate PLM predictions, future models will integrate genomic and proteomic language models into unified frameworks for variant interpretation (@sec-vep) and multi-omic modeling (@sec-systems).
+The genomic language models covered in @sec-dna-lm adapt PLM architectures and training strategies to the distinct challenges of DNA sequences: longer contexts, different alphabets, and the full complexity of gene regulation. The integration path continues as well: just as CADD v1.7 and AlphaMissense incorporate PLM predictions, future models will integrate genomic and proteomic language models into unified frameworks for variant interpretation (@sec-vep-fm) and multi-omic modeling (@sec-multi-omics).

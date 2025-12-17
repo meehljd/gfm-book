@@ -12,7 +12,7 @@ By the end of this chapter you should have:
 
 - A mental map of the main benchmark families used for genomic models.
 - An understanding of what these benchmarks actually measure, and what they miss.
-- An appreciation for benchmark staleness, leakage, and distribution shift, which are elaborated in @sec-eval and @sec-confound.
+- An appreciation for benchmark staleness, leakage, and distribution shift, which are elaborated in @sec-eval and @sec-confounding.
 
 ::: {.callout-warning .content-visible when-profile="draft"}
 **Visual suggestion (overview table):** A 1–2 page table listing major benchmark suites. Columns could include: "Name", "Assays/modalities", "Primary task(s)", "Typical metrics", "Scale (loci / peaks / cohort size)", "Intended use (pretraining, fine-tuning, zero-shot)".
@@ -47,7 +47,7 @@ Beyond binary classification, many benchmarks require prediction of quantitative
 - **Gene expression prediction:** Predict gene-level expression (for example, TPM or counts) from promoters, enhancers, or larger genomic contexts.
 - **Reporter assays and MPRA:** Predict continuous activity of synthetic or genomic sequences tested in massively parallel reporter assays.
 
-Hybrid architectures like Enformer and related models (see Chapter 9, @sec-hybrid) popularized benchmarks that combine large receptive fields with dense quantitative targets. Here, metrics often include Pearson or Spearman correlation, coefficient of determination ($R^2$), or distance-dependent correlation decay curves between predicted and observed profiles.
+Hybrid architectures like Enformer and related models (see Chapter 9, @sec-regulatory) popularized benchmarks that combine large receptive fields with dense quantitative targets. Here, metrics often include Pearson or Spearman correlation, coefficient of determination ($R^2$), or distance-dependent correlation decay curves between predicted and observed profiles.
 
 These tasks better reflect the continuous nature of regulatory activity but also introduce challenges around heterogeneous noise across different assays and laboratories, replicates and uncertainty (some benchmarks now report performance relative to replicate concordance, but this is not universal), and cell-type diversity (evaluations may include dozens or hundreds of cell types, raising questions about how to aggregate performance).
 
@@ -83,13 +83,13 @@ Clinical variant databases provide pathogenicity labels that connect sequence va
 
 **ClinVar** is the most widely used resource, aggregating pathogenicity assertions (pathogenic, likely pathogenic, benign, likely benign, uncertain significance) from clinical laboratories and researchers [@landrum_clinvar_2018]. As a benchmark, ClinVar enables direct evaluation of how well models predict clinical classifications. However, the biases documented in @sec-data profoundly shape what these benchmarks measure: submission heterogeneity means label quality varies dramatically across variants, version sensitivity means benchmark composition changes over time, and circularity with computational predictors means models may be evaluated on labels they helped create.
 
-**Ancestry and gene coverage biases** are particularly consequential for benchmark interpretation. Variants in well-studied populations (particularly European ancestry) and well-studied disease genes are heavily overrepresented, while variants from underrepresented populations are more likely to remain classified as VUS. This means that high performance on ClinVar primarily demonstrates accuracy for European ancestry variants in canonical disease genes rather than robust generalization across human genetic diversity. These representation gaps and their implications for model fairness are detailed in @sec-confound.
+**Ancestry and gene coverage biases** are particularly consequential for benchmark interpretation. Variants in well-studied populations (particularly European ancestry) and well-studied disease genes are heavily overrepresented, while variants from underrepresented populations are more likely to remain classified as VUS. This means that high performance on ClinVar primarily demonstrates accuracy for European ancestry variants in canonical disease genes rather than robust generalization across human genetic diversity. These representation gaps and their implications for model fairness are detailed in @sec-confounding.
 
 When using ClinVar as a benchmark, best practices include specifying the exact version and download date, excluding variants with conflicting assertions unless studying disagreement resolution, stratifying performance by evidence level (expert-reviewed vs single submitter), reporting ancestry-stratified metrics when ancestry information is available, and comparing to baselines that use only allele frequency or basic annotations.
 
 **HGMD** (Human Gene Mutation Database) provides another source of disease-associated variants, but access limitations and similar biases apply. Expert-curated panels such as those from ClinGen and disease-specific consortia provide higher confidence labels for subsets of genes, but at much smaller scale.
 
-Models assessed on these benchmarks are typically evaluated using AUROC, AUPRC, and calibration diagnostics. However, high discrimination metrics can be misleading. A model that achieves 0.95 AUROC by learning to reproduce CADD scores (which were used in the original clinical classifications) demonstrates circularity rather than independent predictive power. As discussed in @sec-confound, detecting such shortcuts requires comparison to simpler baselines and evaluation on truly held-out data where the predictor could not have influenced the labels.
+Models assessed on these benchmarks are typically evaluated using AUROC, AUPRC, and calibration diagnostics. However, high discrimination metrics can be misleading. A model that achieves 0.95 AUROC by learning to reproduce CADD scores (which were used in the original clinical classifications) demonstrates circularity rather than independent predictive power. As discussed in @sec-confounding, detecting such shortcuts requires comparison to simpler baselines and evaluation on truly held-out data where the predictor could not have influenced the labels.
 ::: {.callout-warning .content-visible when-profile="draft"}
 **Visual suggestion (variant effect flow):** A schematic showing the flow from raw variant call to variant effect predictor to benchmark labels (for example, ClinVar categories), including possible sources of noise and bias.
 :::
@@ -110,7 +110,7 @@ The open challenge in noncoding benchmarks is linking molecular effects to trait
 
 ## Protein Language Model Benchmarks
 
-Protein language models (Chapter 6, @sec-prot) have their own rich benchmarking traditions that intersect with genomic modeling when variants affect protein-coding sequences.
+Protein language models (Chapter 6, @sec-protein-lm) have their own rich benchmarking traditions that intersect with genomic modeling when variants affect protein-coding sequences.
 
 ### ProteinGym
 
@@ -154,7 +154,7 @@ At the trait and individual level, benchmarks assess models on cohort-level or p
 
 Polygenic score benchmarks evaluate how well genotype-derived scores predict disease risk or quantitative traits. Common evaluation settings include UK Biobank held-out evaluation (partitioning individuals into training and test sets within a single large biobank), cross-biobank transferability (training in one biobank and testing in another to assess robustness), and ancestry-specific performance gaps (reporting results stratified by ancestry to identify differential utility).
 
-These benchmarks typically report $R^2$ for quantitative traits, AUROC or AUPRC for binary disease outcomes, and incremental predictive value over clinical covariates. The portability of polygenic scores across populations remains a major concern, as discussed in @sec-pgs.
+These benchmarks typically report $R^2$ for quantitative traits, AUROC or AUPRC for binary disease outcomes, and incremental predictive value over clinical covariates. The portability of polygenic scores across populations remains a major concern, as discussed in @sec-gwas.
 
 ### TraitGym
 
@@ -222,7 +222,7 @@ A recurring limitation across nearly all genomic benchmarks is ancestry represen
 
 **Fairness requires explicit evaluation**. Best practices now include stratifying all performance metrics by ancestry or population group, reporting confidence intervals for each stratum to assess whether differences are statistically meaningful, evaluating calibration separately by group (a model may discriminate well but be systematically miscalibrated in underrepresented groups), and documenting the ancestry composition of training data to set expectations about where the model is likely to work well.
 
-The fundamental challenge is that genomic benchmarks inherit biases from their source data: biobanks, clinical databases, and functional genomics consortia that systematically undersample non-European populations. Addressing these biases requires investment in diverse cohorts, multi-ancestry functional genomics, and evaluation frameworks that explicitly prioritize equity. The technical and social dimensions of ancestry bias in genomic models are explored in depth in @sec-confound.
+The fundamental challenge is that genomic benchmarks inherit biases from their source data: biobanks, clinical databases, and functional genomics consortia that systematically undersample non-European populations. Addressing these biases requires investment in diverse cohorts, multi-ancestry functional genomics, and evaluation frameworks that explicitly prioritize equity. The technical and social dimensions of ancestry bias in genomic models are explored in depth in @sec-confounding.
 
 ## Chapter Summary
 
@@ -239,5 +239,5 @@ We also highlighted systematic gaps: underrepresented variant types, populations
 In the next chapter (@sec-eval), we step back from specific benchmarks to discuss evaluation principles and methodology. While this chapter cataloged what benchmarks exist, Chapter 17 explains how to use them properly: designing experiments, choosing metrics, quantifying uncertainty, and interpreting results responsibly when deploying genomic foundation models in research and clinical settings.
 
 ::: {.callout-warning .content-visible when-profile="draft"}
-**Visual suggestion (summary diagram):** A final "roadmap" figure connecting this chapter's benchmark types to the methodological topics in @sec-eval and the downstream applications in the translation part of the book (@sec-clinical, @sec-variants, @sec-drugs, @sec-design).
+**Visual suggestion (summary diagram):** A final "roadmap" figure connecting this chapter's benchmark types to the methodological topics in @sec-eval and the downstream applications in the translation part of the book (@sec-clinical-risk, @sec-rare-disease, @sec-drug-discovery, @sec-design).
 :::

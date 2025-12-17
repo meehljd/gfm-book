@@ -144,7 +144,7 @@ In genomics, **how we split** matters as much as **how much data** we have:
 - Splitting by **individual or cohort** (to avoid leakage between related samples)  
 - Splitting by **species or ancestry** when evaluating transfer
 
-These issues are developed in more depth in the evaluation and confounding chapters (@sec-eval and @sec-confound).
+These issues are developed in more depth in the evaluation and confounding chapters (@sec-eval and @sec-confounding).
 
 ### Overfitting and Regularization
 
@@ -168,7 +168,7 @@ You’ll encounter metrics such as:
 
 - **AUROC (Area Under the ROC Curve)** – how well the model ranks positives above negatives.  
 - **AUPRC (Area Under the Precision–Recall Curve)** – more informative when positives are rare.  
-- **Calibration metrics** (e.g., Brier score) and reliability diagrams – especially for clinical risk prediction (@sec-clinical).
+- **Calibration metrics** (e.g., Brier score) and reliability diagrams – especially for clinical risk prediction (@sec-clinical-risk).
 
 The model and application chapters provide details about which metrics are appropriate for which tasks.  See @sec-eval for more on evaluation metrics.
 
@@ -304,7 +304,7 @@ A central theme of this book is **pretraining**: training a large model once on 
 - **Supervised learning**: Each input $x$ comes with a label $y$. Examples:
   - Predicting chromatin marks from sequence (DeepSEA).  
   - Predicting splice junctions (SpliceAI).  
-  - Predicting disease risk from features (@sec-clinical).
+  - Predicting disease risk from features (@sec-clinical-risk).
 
 - **Self-supervised learning**: The model learns from raw input data without explicit labels, using some **pretext task** constructed from the data itself. Examples:
   - Masked token prediction (BERT-style): hide some nucleotides and train the model to predict them from surrounding context.  
@@ -326,7 +326,7 @@ Benefits:
 - Uses essentially unlimited unlabeled genomic data.  
 - Learns rich representations that can be fine-tuned for tasks like promoter prediction, splice site detection, and variant effect prediction.
 
-@sec-dna generalizes this story to broader DNA foundation models, including alternative tokenization schemes and architectures.
+@sec-dna-lm generalizes this story to broader DNA foundation models, including alternative tokenization schemes and architectures.
 
 ### Pretraining, Fine-Tuning, and Probing
 
@@ -342,7 +342,7 @@ These patterns reappear across protein LMs, DNA LMs, variant effect models, and 
 
 ## Foundations for Evaluation and Reliability
 
-While the main book has dedicated chapters for evaluation (@sec-eval), confounding (@sec-confound), and clinical metrics (@sec-clinical), it’s useful to have a few basic concepts in mind.
+While the main book has dedicated chapters for evaluation (@sec-eval), confounding (@sec-confounding), and clinical metrics (@sec-clinical-risk), it’s useful to have a few basic concepts in mind.
 
 ### Distribution Shift
 
@@ -356,11 +356,11 @@ Typical genomic shifts include:
 
 ### Data Leakage
 
-**Data leakage** occurs when information from the test set “leaks” into training (e.g., through overlapping loci or related individuals), leading to overly optimistic estimates of performance. @sec-eval and @sec-confound discuss strategies for leak-resistant splits in detail.
+**Data leakage** occurs when information from the test set “leaks” into training (e.g., through overlapping loci or related individuals), leading to overly optimistic estimates of performance. @sec-eval and @sec-confounding discuss strategies for leak-resistant splits in detail.
 
 ### Calibration and Uncertainty
 
-For many applications, especially in the clinic, we care not just about whether the model is *correct*, but whether its probabilities are **well calibrated** and whether we know when the model is uncertain. Calibration and uncertainty quantification are covered in @sec-clinical; here, the main takeaway is that **perfect AUROC does not imply perfect clinical utility**.
+For many applications, especially in the clinic, we care not just about whether the model is *correct*, but whether its probabilities are **well calibrated** and whether we know when the model is uncertain. Calibration and uncertainty quantification are covered in @sec-clinical-risk; here, the main takeaway is that **perfect AUROC does not imply perfect clinical utility**.
 
 ---
 
@@ -373,7 +373,7 @@ To make the abstractions more concrete, here is a lightweight “recipe” that 
    - Output: e.g., presence of a chromatin mark, change in expression, disease risk.
 
 2. **Choose an input representation**
-   - One-hot encoding or tokenization scheme for sequences (see @sec-token).  
+   - One-hot encoding or tokenization scheme for sequences (see @sec-representations).  
    - Encodings for variants, genes, or patients (e.g., aggregate from per-variant features).
 
 3. **Pick a model family**
@@ -396,7 +396,7 @@ To make the abstractions more concrete, here is a lightweight “recipe” that 
 
 7. **Inspect and stress-test**
    - Check performance across subgroups (e.g., ancestries, assays, cohorts).  
-   - Use interpretability tools (@sec-interp) to see what patterns the model is using.  
+   - Use interpretability tools (@sec-interpretability) to see what patterns the model is using.  
    - Run robustness checks and ablations.
 
 8. **Iterate**

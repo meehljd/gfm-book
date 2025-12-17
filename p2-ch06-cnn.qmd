@@ -157,7 +157,7 @@ Sei represents the current state of the DeepSEA lineage, predicting 21,907 chrom
 
 Analysis of DeepSEA's first-layer filters reveals learned sequence patterns corresponding to known transcription factor binding motifs. Many filters match canonical motifs from databases like JASPAR, indicating that the network has independently discovered the sequence preferences of well-characterized transcription factors. Beyond individual motifs, DeepSEA implicitly learns aspects of regulatory "grammar," including motif spacing requirements, orientation preferences, and combinatorial logic.
 
-However, the original DeepSEA architecture's limited receptive field constrained its ability to learn long-range dependencies. Max pooling after each convolutional layer progressively reduces spatial resolution, and the fully connected layer can only integrate information from the resulting compressed representation. Dependencies spanning hundreds or thousands of base pairs, such as enhancer-promoter communication, are difficult to capture in this framework. This limitation motivated later architectures with expanded context windows, culminating in models like Enformer (@sec-hybrid) with effective receptive fields spanning hundreds of kilobases.
+However, the original DeepSEA architecture's limited receptive field constrained its ability to learn long-range dependencies. Max pooling after each convolutional layer progressively reduces spatial resolution, and the fully connected layer can only integrate information from the resulting compressed representation. Dependencies spanning hundreds or thousands of base pairs, such as enhancer-promoter communication, are difficult to capture in this framework. This limitation motivated later architectures with expanded context windows, culminating in models like Enformer (@sec-regulatory) with effective receptive fields spanning hundreds of kilobases.
 
 
 ### Limitations
@@ -287,7 +287,7 @@ For each gene, the comprehensive mutagenesis profile defines its "variation pote
 
 ### The 40 kb Regulatory Window
 
-ExPecto's ±20 kb window around each TSS represents an empirically optimized trade-off. Smaller windows decreased prediction performance, while larger windows (50 to 200 kb) showed negligible improvement. This suggests that most regulatory information for promoter-proximal expression lies within 40 kb of the TSS, at least within the linear modeling framework employed by ExPecto. Distal enhancers beyond this window, while biologically important, likely require more sophisticated integration approaches. Enformer (@sec-hybrid), with its 200 kb effective receptive field, addresses this limitation.
+ExPecto's ±20 kb window around each TSS represents an empirically optimized trade-off. Smaller windows decreased prediction performance, while larger windows (50 to 200 kb) showed negligible improvement. This suggests that most regulatory information for promoter-proximal expression lies within 40 kb of the TSS, at least within the linear modeling framework employed by ExPecto. Distal enhancers beyond this window, while biologically important, likely require more sophisticated integration approaches. Enformer (@sec-regulatory), with its 200 kb effective receptive field, addresses this limitation.
 
 
 ### Limitations
@@ -322,7 +322,7 @@ SpliceAI, introduced by Jaganathan et al. in 2019, demonstrated that deep neural
 
 Before SpliceAI, splice site prediction relied on methods with limited sequence context. MaxEntScan models core splice motifs using maximum entropy, limited to approximately 9 bp context around donor/acceptor sites [@yeo_maxentscan_2004]. GeneSplicer combines Markov models with decision trees. NNSplice represents an early neural network approach with narrow receptive fields. These methods captured the essential GT (donor) and AG (acceptor) dinucleotides and surrounding consensus sequences, but could not model the long-range determinants that contribute to splicing specificity.
 
-The limitations parallel those of pre-deep-learning variant effect predictors like CADD (@sec-cadd), which aggregate many annotation features but lack the capacity to learn complex sequence dependencies. Prior methods produced many false positive predictions and missed variants acting through distal mechanisms.
+The limitations parallel those of pre-deep-learning variant effect predictors like CADD (@sec-vep-classical), which aggregate many annotation features but lack the capacity to learn complex sequence dependencies. Prior methods produced many false positive predictions and missed variants acting through distal mechanisms.
 
 
 ### The SpliceAI Architecture
@@ -453,7 +453,7 @@ Novel exon-creation events were significantly associated with existing nucleosom
 
 ### Limitations
 
-SpliceAI predicts splice sites based on sequence alone, without modeling tissue-specific alternative splicing. Many cryptic splice variants produce partial shifts rather than complete disruption, and the Δ score correlates with penetrance but does not precisely quantify isoform ratios. While substantially better than prior methods, sensitivity for deep intronic variants (41% at Δ ≥ 0.5) remains lower than for variants near exons. Subsequent work has explored tissue-specific splicing models, transformer-based architectures, and integration of RNA-seq directly into training, themes we revisit in @sec-rna and @sec-vep.
+SpliceAI predicts splice sites based on sequence alone, without modeling tissue-specific alternative splicing. Many cryptic splice variants produce partial shifts rather than complete disruption, and the Δ score correlates with penetrance but does not precisely quantify isoform ratios. While substantially better than prior methods, sensitivity for deep intronic variants (41% at Δ ≥ 0.5) remains lower than for variants near exons. Subsequent work has explored tissue-specific splicing models, transformer-based architectures, and integration of RNA-seq directly into training, themes we revisit in @sec-rna and @sec-vep-fm.
 
 
 ## Architectural Progression and Common Themes {#sec-cnn-summary}
@@ -478,7 +478,7 @@ Yet these models also share limitations. All assume reference genome context, sc
 
 These CNN models represent a different design philosophy from the foundation model approach explored in Parts III and IV. Rather than learning general sequence representations that transfer across tasks, each model focuses computational capacity on a single problem. SpliceAI's representations do not obviously transfer to chromatin prediction; ExPecto's chromatin model was purpose-built for expression prediction.
 
-This specialization has both advantages and limitations. Task-specific models achieve remarkable accuracy on their target problems, but require separate training for each new application. Later chapters will explore whether self-supervised foundation models can match task-specific performance while providing broader utility (@sec-dna; @sec-foundation).
+This specialization has both advantages and limitations. Task-specific models achieve remarkable accuracy on their target problems, but require separate training for each new application. Later chapters will explore whether self-supervised foundation models can match task-specific performance while providing broader utility (@sec-dna-lm; @sec-fm-principles).
 
 The tension between specialized and general-purpose models remains unresolved. For clinical applications requiring high accuracy on specific tasks, specialized models like SpliceAI may remain preferred. For discovery applications requiring broad coverage of molecular mechanisms, foundation models may prove more valuable.
 
@@ -492,7 +492,7 @@ TREDNet exemplifies this tissue-specific approach [@hudaiberdiev_trednet_2023]. 
 
 ### Integration with Variant Interpretation
 
-All three models contribute to modern variant interpretation pipelines. DeepSEA and Sei scores indicate regulatory potential. ExPecto predictions prioritize expression-altering variants. SpliceAI Δ scores support splicing evidence in ACMG/AMP classification. These predictions complement protein-effect predictors and provide independent evidence types for clinical interpretation (@sec-vep).
+All three models contribute to modern variant interpretation pipelines. DeepSEA and Sei scores indicate regulatory potential. ExPecto predictions prioritize expression-altering variants. SpliceAI Δ scores support splicing evidence in ACMG/AMP classification. These predictions complement protein-effect predictors and provide independent evidence types for clinical interpretation (@sec-vep-fm).
 
 The models also established expectations for the field: public web servers, downloadable code and weights, rigorous validation against orthogonal data sources, and clear articulation of limitations. These norms have persisted as genomic deep learning has grown in scope and ambition.
 
