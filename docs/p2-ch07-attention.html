@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>6&nbsp; Transformer Architecture for Genomics – Genomic Foundation Models</title>
+<title>7&nbsp; Transformer Architecture for Genomics – Genomic Foundation Models</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -50,8 +50,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./p2-ch07-foundation.html" rel="next">
-<link href="./p2-ch05-tokens.html" rel="prev">
+<link href="./p2-ch08-pretraining.html" rel="next">
+<link href="./p2-ch06-cnn.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -299,7 +299,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./p2--principles.html">Part II: Core Principles</a></li><li class="breadcrumb-item"><a href="./p2-ch06-transformers.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Transformer Architecture for Genomics</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./p2--principles.html">Part II: Core Principles</a></li><li class="breadcrumb-item"><a href="./p2-ch07-attention.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Transformer Architecture for Genomics</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -362,13 +362,13 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p1-ch03-pgs.html" class="sidebar-item-text sidebar-link">
+  <a href="./p1-ch03-gwas.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">GWAS &amp; Polygenic Scores</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p1-ch04-cadd.html" class="sidebar-item-text sidebar-link">
+  <a href="./p1-ch04-vep-classical.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Deleteriousness Scores</span></span></a>
   </div>
 </li>
@@ -385,25 +385,25 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p2-ch05-tokens.html" class="sidebar-item-text sidebar-link">
+  <a href="./p2-ch05-representations.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Sequence Representation &amp; Tokens</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p2-ch06-transformers.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Transformer Architecture for Genomics</span></span></a>
+  <a href="./p2-ch06-cnn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">CNN Sequence-to-Function Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p2-ch07-foundation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Genomic Foundation Models: Concepts &amp; Taxonomy</span></span></a>
+  <a href="./p2-ch07-attention.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Transformer Architecture for Genomics</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p2-ch08-pretrain.html" class="sidebar-item-text sidebar-link">
+  <a href="./p2-ch08-pretraining.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Pretraining Objectives &amp; Strategies</span></span></a>
   </div>
 </li>
@@ -426,32 +426,32 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p3-ch10-cnn.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">CNN Sequence-to-Function Models</span></span></a>
+  <a href="./p3-ch10-fm-principles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Genomic Foundation Models: Concepts &amp; Taxonomy</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p3-ch11-dna.html" class="sidebar-item-text sidebar-link">
+  <a href="./p3-ch11-dna-lm.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">DNA and Genomic Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p3-ch12-rna.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">RNA &amp; Transcript-Level Models</span></span></a>
+  <a href="./p3-ch12-protein-lm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Protein Language Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p3-ch13-plm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Protein Language Models</span></span></a>
+  <a href="./p3-ch13-regulatory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Long-range Hybrid Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p3-ch14-hybrid.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Long-range Hybrid Models</span></span></a>
+  <a href="./p3-ch14-vep-fm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Variant Effect Prediction</span></span></a>
   </div>
 </li>
       </ul>
@@ -467,20 +467,32 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p4-ch15-sc-epi.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Single-Cell &amp; Epigenomic Models</span></span></a>
+  <a href="./p4-ch15-rna.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">RNA &amp; Transcript-Level Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p4-ch16-networks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Graphs, Networks, and Biology</span></span></a>
+  <a href="./p4-ch16-single-cell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Single-Cell &amp; Epigenomic Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p4-ch17-systems.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Multi-Omics &amp; Systems Biology</span></span></a>
+  <a href="./p4-ch17-3d-genome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">3D Genome and Spatial Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./p4-ch18-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Graphs, Networks, and Biology</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./p4-ch19-multi-omics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Multi-Omics &amp; Systems Biology</span></span></a>
   </div>
 </li>
       </ul>
@@ -496,32 +508,32 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p5-ch18-benchmarks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Benchmarks for Genomic Models</span></span></a>
+  <a href="./p5-ch20-benchmarks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Benchmarks for Genomic Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p5-ch19-eval.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Evaluation of Models</span></span></a>
+  <a href="./p5-ch21-eval.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Model Evaluation</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p5-ch20-vep.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Variant Effect Prediction</span></span></a>
+  <a href="./p5-ch22-confounding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Confounders in Model Training</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p5-ch21-confound.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Confounders in Model Training</span></span></a>
+  <a href="./p5-ch23-uncertainty.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Uncertainty Quantification</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p5-ch22-interp.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Interpretability &amp; Mechanisms</span></span></a>
+  <a href="./p5-ch24-interpretability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Interpretability &amp; Mechanisms</span></span></a>
   </div>
 </li>
       </ul>
@@ -537,32 +549,32 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p6-ch23-clinical.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Clinical Risk Prediction</span></span></a>
+  <a href="./p6-ch25-clinical-risk.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Clinical Risk Prediction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p6-ch24-variants.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Pathogenic Variant Discovery</span></span></a>
+  <a href="./p6-ch26-rare-disease.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Pathogenic Variant Discovery</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p6-ch25-drugs.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Drug Discovery &amp; Biotech</span></span></a>
+  <a href="./p6-ch27-drug-discovery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Drug Discovery &amp; Biotech</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p6-ch26-design.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Sequence Design</span></span></a>
+  <a href="./p6-ch28-design.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Sequence Design</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./p6-ch27-future.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Future Work &amp; Ethics</span></span></a>
+  <a href="./p6-ch29-future.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Future Work &amp; Ethics</span></span></a>
   </div>
 </li>
       </ul>
@@ -590,26 +602,32 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./app-b-deployment.html" class="sidebar-item-text sidebar-link">
+  <a href="./app-b-compute.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Model Deployment</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./app-c-model-list.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Referenced Models</span></span></a>
+  <a href="./app-c-data-curation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Training Data Curation</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./app-d-resources.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Additional Resources</span></span></a>
+  <a href="./app-d-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Referenced Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./app-e-glossary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+  <a href="./app-e-resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">Additional Resources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./app-f-glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
   </div>
 </li>
       </ul>
@@ -624,16 +642,16 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#why-transformers-for-genomics" id="toc-why-transformers-for-genomics" class="nav-link active" data-scroll-target="#why-transformers-for-genomics"><span class="header-section-number">6.1</span> Why Transformers for Genomics?</a></li>
-  <li><a href="#architectural-paradigms-for-sequences" id="toc-architectural-paradigms-for-sequences" class="nav-link" data-scroll-target="#architectural-paradigms-for-sequences"><span class="header-section-number">6.2</span> Architectural Paradigms for Sequences</a></li>
-  <li><a href="#the-self-attention-mechanism" id="toc-the-self-attention-mechanism" class="nav-link" data-scroll-target="#the-self-attention-mechanism"><span class="header-section-number">6.3</span> The Self-Attention Mechanism</a></li>
-  <li><a href="#positional-encoding-representing-sequence-order" id="toc-positional-encoding-representing-sequence-order" class="nav-link" data-scroll-target="#positional-encoding-representing-sequence-order"><span class="header-section-number">6.4</span> Positional Encoding: Representing Sequence Order</a></li>
-  <li><a href="#the-transformer-block-architecture" id="toc-the-transformer-block-architecture" class="nav-link" data-scroll-target="#the-transformer-block-architecture"><span class="header-section-number">6.5</span> The Transformer Block Architecture</a></li>
-  <li><a href="#scaling-transformers-for-genomics" id="toc-scaling-transformers-for-genomics" class="nav-link" data-scroll-target="#scaling-transformers-for-genomics"><span class="header-section-number">6.6</span> Scaling Transformers for Genomics</a></li>
-  <li><a href="#transformer-variants-in-genomic-applications" id="toc-transformer-variants-in-genomic-applications" class="nav-link" data-scroll-target="#transformer-variants-in-genomic-applications"><span class="header-section-number">6.7</span> Transformer Variants in Genomic Applications</a></li>
-  <li><a href="#training-considerations" id="toc-training-considerations" class="nav-link" data-scroll-target="#training-considerations"><span class="header-section-number">6.8</span> Training Considerations</a></li>
-  <li><a href="#limitations-and-alternatives" id="toc-limitations-and-alternatives" class="nav-link" data-scroll-target="#limitations-and-alternatives"><span class="header-section-number">6.9</span> Limitations and Alternatives</a></li>
-  <li><a href="#summary-and-forward-references" id="toc-summary-and-forward-references" class="nav-link" data-scroll-target="#summary-and-forward-references"><span class="header-section-number">6.10</span> Summary and Forward References</a></li>
+  <li><a href="#why-transformers-for-genomics" id="toc-why-transformers-for-genomics" class="nav-link active" data-scroll-target="#why-transformers-for-genomics"><span class="header-section-number">7.1</span> Why Transformers for Genomics?</a></li>
+  <li><a href="#architectural-paradigms-for-sequences" id="toc-architectural-paradigms-for-sequences" class="nav-link" data-scroll-target="#architectural-paradigms-for-sequences"><span class="header-section-number">7.2</span> Architectural Paradigms for Sequences</a></li>
+  <li><a href="#the-self-attention-mechanism" id="toc-the-self-attention-mechanism" class="nav-link" data-scroll-target="#the-self-attention-mechanism"><span class="header-section-number">7.3</span> The Self-Attention Mechanism</a></li>
+  <li><a href="#positional-encoding-representing-sequence-order" id="toc-positional-encoding-representing-sequence-order" class="nav-link" data-scroll-target="#positional-encoding-representing-sequence-order"><span class="header-section-number">7.4</span> Positional Encoding: Representing Sequence Order</a></li>
+  <li><a href="#the-transformer-block-architecture" id="toc-the-transformer-block-architecture" class="nav-link" data-scroll-target="#the-transformer-block-architecture"><span class="header-section-number">7.5</span> The Transformer Block Architecture</a></li>
+  <li><a href="#scaling-transformers-for-genomics" id="toc-scaling-transformers-for-genomics" class="nav-link" data-scroll-target="#scaling-transformers-for-genomics"><span class="header-section-number">7.6</span> Scaling Transformers for Genomics</a></li>
+  <li><a href="#transformer-variants-in-genomic-applications" id="toc-transformer-variants-in-genomic-applications" class="nav-link" data-scroll-target="#transformer-variants-in-genomic-applications"><span class="header-section-number">7.7</span> Transformer Variants in Genomic Applications</a></li>
+  <li><a href="#training-considerations" id="toc-training-considerations" class="nav-link" data-scroll-target="#training-considerations"><span class="header-section-number">7.8</span> Training Considerations</a></li>
+  <li><a href="#limitations-and-alternatives" id="toc-limitations-and-alternatives" class="nav-link" data-scroll-target="#limitations-and-alternatives"><span class="header-section-number">7.9</span> Limitations and Alternatives</a></li>
+  <li><a href="#summary-and-forward-references" id="toc-summary-and-forward-references" class="nav-link" data-scroll-target="#summary-and-forward-references"><span class="header-section-number">7.10</span> Summary and Forward References</a></li>
   </ul>
 </nav>
     </div>
@@ -641,9 +659,9 @@ window.Quarto = {
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./p2--principles.html">Part II: Core Principles</a></li><li class="breadcrumb-item"><a href="./p2-ch06-transformers.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Transformer Architecture for Genomics</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./p2--principles.html">Part II: Core Principles</a></li><li class="breadcrumb-item"><a href="./p2-ch07-attention.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Transformer Architecture for Genomics</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-transformers" class="quarto-section-identifier"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Transformer Architecture for Genomics</span></span></h1>
+<h1 class="title"><span id="sec-attention" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Transformer Architecture for Genomics</span></span></h1>
 </div>
 
 
@@ -674,7 +692,7 @@ Warning
 </div>
 </div>
 <p>The transformer architecture revolutionized natural language processing in 2017 and rapidly spread to other domains, including genomics. Between 2018 and 2023, transformers became the dominant paradigm for modeling biological sequences, powering protein language models like ESM and genomic models like DNABERT and Nucleotide Transformer. This chapter examines the core mechanisms that make transformers effective for genomic data, their architectural components, and the practical considerations for applying them to DNA, RNA, and protein sequences.</p>
-<p>We begin by motivating why transformers matter for genomics, then systematically unpack the self-attention mechanism, positional encodings, and the standard transformer block. We discuss scaling considerations specific to genomic sequences, survey transformer variants used in genomic applications, and address training challenges. Finally, we consider the limitations that led to the development of alternative architectures like state space models, which we cover in depth in Chapter <a href="p3-ch11-dna.html" class="quarto-xref"><span>Chapter 11</span></a>.</p>
+<p>We begin by motivating why transformers matter for genomics, then systematically unpack the self-attention mechanism, positional encodings, and the standard transformer block. We discuss scaling considerations specific to genomic sequences, survey transformer variants used in genomic applications, and address training challenges. Finally, we consider the limitations that led to the development of alternative architectures like state space models, which we cover in depth in Chapter <a href="p3-ch11-dna-lm.html" class="quarto-xref"><span>Chapter 11</span></a>.</p>
 <div class="content-visible callout callout-style-default callout-note callout-titled" data-when-profile="draft">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -689,8 +707,8 @@ Note
 Figure: Timeline showing major transformer milestones in NLP (Vaswani 2017, BERT 2018, GPT-3 2020) alongside genomic applications (DNABERT 2020, Enformer 2021, Nucleotide Transformer 2023, Evo 2024), with arrows indicating architectural innovations flowing from NLP to genomics.</p>
 </div>
 </div>
-<section id="why-transformers-for-genomics" class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="why-transformers-for-genomics"><span class="header-section-number">6.1</span> Why Transformers for Genomics?</h2>
+<section id="why-transformers-for-genomics" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="why-transformers-for-genomics"><span class="header-section-number">7.1</span> Why Transformers for Genomics?</h2>
 <p>Convolutional neural networks dominated early genomic deep learning because they naturally capture local patterns like transcription factor binding motifs, splice sites, and promoter elements. CNNs apply the same learned filters across all positions, implementing a form of translation equivariance that matches the biological intuition that a motif has similar effects regardless of where it appears in a regulatory region.</p>
 <p>However, CNNs have fundamental limitations when modeling genomic regulation. Their receptive fields are inherently local. Even with stacked layers and dilated convolutions, the effective context a CNN can integrate remains bounded, often spanning only a few kilobases. Gene regulation in eukaryotes operates over vastly longer ranges. Enhancers routinely act hundreds of kilobases from their target promoters. Topologically associating domains (TADs) organize chromatin contacts at megabase scales. Distal regulatory variants identified through GWAS often lie far from coding sequences, exerting their effects through long-range interactions that CNNs struggle to capture directly.</p>
 <p>Transformers address this limitation through their self-attention mechanism, which allows each position in a sequence to directly attend to all other positions in a single operation. This global receptive field enables modeling of long-range dependencies without requiring information to propagate through many layers. For genomics, this means enhancer-promoter interactions can be learned directly, regulatory context from distant elements can inform predictions at any position, and models can integrate information across entire genes or regulatory domains.</p>
@@ -711,16 +729,16 @@ Figure: Side-by-side comparison showing a CNN’s limited, layered receptive fie
 </div>
 </div>
 </section>
-<section id="architectural-paradigms-for-sequences" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="architectural-paradigms-for-sequences"><span class="header-section-number">6.2</span> Architectural Paradigms for Sequences</h2>
+<section id="architectural-paradigms-for-sequences" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="architectural-paradigms-for-sequences"><span class="header-section-number">7.2</span> Architectural Paradigms for Sequences</h2>
 <p>Before diving into transformer mechanics, we briefly situate them within the broader landscape of sequence modeling architectures. Three main paradigms have dominated genomic deep learning over the past decade.</p>
 <p>CNNs were the first architecture to achieve strong performance on genomic tasks, pioneered by models like DeepSEA and DeepBind. Their strength lies in parameter efficiency (shared filters across positions) and the ability to learn hierarchical local features (motifs, motif combinations, regulatory grammar). Chapter 5 covers CNN-based regulatory prediction models in detail. CNNs remain competitive for tasks where local context dominates, such as splice site recognition or promoter classification. However, their limited receptive fields constrain performance on tasks requiring long-range integration.</p>
 <p>Transformers emerged from natural language processing, where they demonstrated unprecedented ability to model linguistic context and semantic relationships. The core innovation is self-attention, which computes interactions between all sequence positions simultaneously. This provides global context but comes at a computational cost that scales quadratically with sequence length. Despite this expense, transformers dominated genomic modeling from roughly 2018 through 2023 because their ability to capture long-range dependencies outweighed their computational demands for many applications.</p>
-<p>State space models (SSMs) represent a more recent development, offering linear computational complexity while maintaining long-range modeling capability. Architectures like Mamba have begun to challenge transformers’ dominance, particularly for ultra-long genomic contexts where transformer quadratic scaling becomes prohibitive. We defer detailed discussion of SSMs to Chapter <a href="p3-ch11-dna.html" class="quarto-xref"><span>Chapter 11</span></a>, focusing here on transformers as the foundation from which these newer architectures emerged.</p>
+<p>State space models (SSMs) represent a more recent development, offering linear computational complexity while maintaining long-range modeling capability. Architectures like Mamba have begun to challenge transformers’ dominance, particularly for ultra-long genomic contexts where transformer quadratic scaling becomes prohibitive. We defer detailed discussion of SSMs to Chapter <a href="p3-ch11-dna-lm.html" class="quarto-xref"><span>Chapter 11</span></a>, focusing here on transformers as the foundation from which these newer architectures emerged.</p>
 <p>The progression from CNNs to transformers to SSMs reflects an ongoing tension between computational efficiency and modeling capacity. Each paradigm offers distinct trade-offs that remain relevant for different genomic applications. Understanding transformers in depth provides essential context for appreciating both why they succeeded and why the field is now exploring alternatives.</p>
 </section>
-<section id="the-self-attention-mechanism" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="the-self-attention-mechanism"><span class="header-section-number">6.3</span> The Self-Attention Mechanism</h2>
+<section id="the-self-attention-mechanism" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="the-self-attention-mechanism"><span class="header-section-number">7.3</span> The Self-Attention Mechanism</h2>
 <p>Self-attention is the defining component of transformer architecture. It allows each position in a sequence to aggregate information from all other positions through learned, input-dependent weights. This section unpacks the mathematical formulation and intuition behind self-attention.</p>
 <p>At each position in the input sequence, self-attention computes three vectors: a query, a key, and a value. These are produced by multiplying the input embedding at that position by three learned weight matrices <span class="math inline">\(W^Q\)</span>, <span class="math inline">\(W^K\)</span>, and <span class="math inline">\(W^V\)</span>. The query represents “what this position is looking for,” the key represents “what this position offers,” and the value represents “what information this position carries.”</p>
 <p>The attention mechanism then computes similarity scores between each query and all keys. Specifically, for position <span class="math inline">\(i\)</span>, we compute the dot product between its query <span class="math inline">\(q_i\)</span> and every key <span class="math inline">\(k_j\)</span> for positions <span class="math inline">\(j = 1, \ldots, L\)</span>, where <span class="math inline">\(L\)</span> is the sequence length. These scores are scaled by the square root of the key dimension <span class="math inline">\(\sqrt{d_k}\)</span> to prevent gradient instability when dimensions are large, yielding:</p>
@@ -754,8 +772,8 @@ Figure: Schematic showing input embeddings transformed into Q, K, V matrices, co
 </div>
 </div>
 </section>
-<section id="positional-encoding-representing-sequence-order" class="level2" data-number="6.4">
-<h2 data-number="6.4" class="anchored" data-anchor-id="positional-encoding-representing-sequence-order"><span class="header-section-number">6.4</span> Positional Encoding: Representing Sequence Order</h2>
+<section id="positional-encoding-representing-sequence-order" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="positional-encoding-representing-sequence-order"><span class="header-section-number">7.4</span> Positional Encoding: Representing Sequence Order</h2>
 <p>Transformers have a critical limitation: self-attention is permutation invariant. If you shuffle the order of input tokens, each position still attends to the same set of other positions with the same values, just in different order. The model has no inherent notion of sequence position. For genomic data where order matters fundamentally (5’ to 3’ directionality, strand orientation, spatial organization), this poses a serious problem.</p>
 <p>Positional encodings solve this by injecting information about token positions into the model. The original Transformer <span class="citation" data-cites="vaswani_attention_2017">(<a href="references.html#ref-vaswani_attention_2017" role="doc-biblioref">Vaswani et al. 2017</a>)</span> used sinusoidal functions with different frequencies for each dimension. For position <span class="math inline">\(pos\)</span> and dimension <span class="math inline">\(i\)</span>, the encoding is:</p>
 <p><span class="math display">\[
@@ -785,8 +803,8 @@ Figure: Four panels comparing positional encoding methods. (a) Sinusoidal: wave 
 </div>
 </div>
 </section>
-<section id="the-transformer-block-architecture" class="level2" data-number="6.5">
-<h2 data-number="6.5" class="anchored" data-anchor-id="the-transformer-block-architecture"><span class="header-section-number">6.5</span> The Transformer Block Architecture</h2>
+<section id="the-transformer-block-architecture" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="the-transformer-block-architecture"><span class="header-section-number">7.5</span> The Transformer Block Architecture</h2>
 <p>A transformer model consists of stacked blocks, each containing self-attention and feed-forward components connected by residual connections and layer normalization. Understanding this block structure is essential for grasping how information flows through transformer models.</p>
 <p>Each transformer block has two main components: a multi-head self-attention layer and a position-wise feed-forward network. The attention layer enables global communication across all positions, allowing each position to gather information from the entire sequence. The feed-forward network processes each position independently, applying nonlinear transformations to the aggregated information.</p>
 <p>Layer normalization stabilizes training by normalizing activations across the feature dimension at each position. Two conventions exist for where to place layer normalization relative to the self-attention and feed-forward sublayers. Post-norm places normalization after each sublayer, applying it to the output before the residual connection. Pre-norm places normalization before each sublayer, normalizing the input to that sublayer. Pre-norm has become more common in recent models because it improves training stability, particularly for deep networks, though post-norm can achieve slightly better final performance with careful tuning.</p>
@@ -810,14 +828,14 @@ Figure: Detailed diagram of a single transformer block showing pre-norm configur
 </div>
 </div>
 </section>
-<section id="scaling-transformers-for-genomics" class="level2" data-number="6.6">
-<h2 data-number="6.6" class="anchored" data-anchor-id="scaling-transformers-for-genomics"><span class="header-section-number">6.6</span> Scaling Transformers for Genomics</h2>
-<p>Genomic sequences present unique scaling challenges. DNA sequences can span millions of bases, far exceeding the typical context lengths in natural language processing. Tokenization choices (covered in Chapter <a href="p2-ch05-tokens.html" class="quarto-xref"><span>Chapter 5</span></a>) interact with sequence length: single-nucleotide tokens create very long sequences, while k-mer tokens reduce length at the cost of vocabulary size. Scaling transformers to genomic applications requires careful consideration of how to balance model size, context length, and computational resources.</p>
+<section id="scaling-transformers-for-genomics" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="scaling-transformers-for-genomics"><span class="header-section-number">7.6</span> Scaling Transformers for Genomics</h2>
+<p>Genomic sequences present unique scaling challenges. DNA sequences can span millions of bases, far exceeding the typical context lengths in natural language processing. Tokenization choices (covered in Chapter <a href="p2-ch05-representations.html" class="quarto-xref"><span>Chapter 5</span></a>) interact with sequence length: single-nucleotide tokens create very long sequences, while k-mer tokens reduce length at the cost of vocabulary size. Scaling transformers to genomic applications requires careful consideration of how to balance model size, context length, and computational resources.</p>
 <p>Parameter scaling in transformers comes from two main sources: width and depth. Width refers to the model dimension <span class="math inline">\(d\)</span>, which determines the size of embeddings and hidden states. Increasing width allows the model to represent more complex patterns at each position but increases the number of parameters quadratically (since weight matrices are <span class="math inline">\(d \times d\)</span>). Depth refers to the number of stacked transformer blocks. Increasing depth allows the model to learn hierarchical abstractions through repeated refinement but also increases parameters linearly with layers.</p>
 <p>The transformer scaling laws studied in natural language processing suggest that model performance improves smoothly with increased parameters, data, and compute. For genomics, similar principles apply, though the optimal ratios differ. Genomic sequences are less compressible than natural language (each nucleotide carries less predictable information than words in structured text), suggesting that genomic models might benefit more from depth than width compared to language models of similar parameter count.</p>
 <p>Context length scaling presents the central challenge for genomic transformers. Standard self-attention has <span class="math inline">\(O(L^2)\)</span> complexity, where <span class="math inline">\(L\)</span> is sequence length. A 10kb sequence tokenized at single-nucleotide resolution has 10,000 tokens, requiring 100 million attention computations per layer. A 200kb sequence has 200,000 tokens, requiring 40 billion attention computations per layer. This quadratic scaling rapidly becomes prohibitive.</p>
 <p>Several strategies address this computational bottleneck. Sparse attention patterns restrict which positions can attend to which others, reducing the quadratic cost. For example, local windowing allows each position to attend only to positions within a fixed window, reducing complexity to <span class="math inline">\(O(Lw)\)</span> where <span class="math inline">\(w\)</span> is window size. This works well when most relevant interactions are local, as often holds for regulatory sequences where nearby elements interact more strongly than distant ones.</p>
-<p>Strided attention patterns create a hierarchy where lower layers use local windows and upper layers attend to every <span class="math inline">\(k\)</span>-th position. This captures both local fine-grained patterns and global coarse-grained structure while maintaining sub-quadratic complexity. Hybrid models like Enformer (Chapter <a href="p3-ch14-hybrid.html" class="quarto-xref"><span>Chapter 14</span></a>) use this strategy, applying CNNs to downsample sequences before transformer layers.</p>
+<p>Strided attention patterns create a hierarchy where lower layers use local windows and upper layers attend to every <span class="math inline">\(k\)</span>-th position. This captures both local fine-grained patterns and global coarse-grained structure while maintaining sub-quadratic complexity. Hybrid models like Enformer (Chapter <a href="p3-ch13-regulatory.html" class="quarto-xref"><span>Chapter 13</span></a>) use this strategy, applying CNNs to downsample sequences before transformer layers.</p>
 <p>Approximations to full attention offer another approach. Linformer approximates the attention matrix through low-rank decomposition, reducing complexity to linear in sequence length at the cost of some expressiveness. Performer uses random feature methods to approximate attention scores without explicitly computing the full <span class="math inline">\(L \times L\)</span> matrix. These approximations work well in practice for some tasks but may lose important long-range dependencies.</p>
 <p>For genomic applications, the choice among these strategies depends on the biological context. Regulatory prediction often benefits from local windowing because nearby elements dominate enhancer-promoter interactions. Foundation models trained to predict masked tokens may require global attention because the model must integrate information from across the entire sequence to make coherent predictions. Variant effect prediction sometimes requires selective attention to specific distal elements, which sparse patterns may miss.</p>
 <p>Memory requirements compound the computational challenge. Transformer training requires storing activations for backpropagation, and attention matrices can be particularly memory-intensive. Gradient checkpointing trades compute for memory by recomputing activations during the backward pass rather than storing them. This allows training larger models or longer sequences on fixed hardware at the cost of additional computation time.</p>
@@ -837,14 +855,14 @@ Figure: Multi-panel showing scaling relationships. (a) Parameter count vs model 
 </div>
 </div>
 </section>
-<section id="transformer-variants-in-genomic-applications" class="level2" data-number="6.7">
-<h2 data-number="6.7" class="anchored" data-anchor-id="transformer-variants-in-genomic-applications"><span class="header-section-number">6.7</span> Transformer Variants in Genomic Applications</h2>
+<section id="transformer-variants-in-genomic-applications" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="transformer-variants-in-genomic-applications"><span class="header-section-number">7.7</span> Transformer Variants in Genomic Applications</h2>
 <p>The transformer architecture has been adapted in diverse ways for genomic modeling. This section surveys major variants and their design rationale.</p>
 <p>Standard encoder-only transformers process sequences bidirectionally, allowing each position to attend to all other positions including future positions. DNABERT and Nucleotide Transformer exemplify this architecture. They are trained with masked language modeling objectives where random tokens are masked and the model predicts them from bidirectional context. This works well for understanding genomic sequences where both upstream and downstream context matters, such as transcription factor binding sites influenced by flanking sequence or protein structures determined by both N-terminal and C-terminal residues.</p>
 <p>Encoder-only transformers excel at sequence representation tasks where the goal is to learn meaningful embeddings that capture biological properties. These embeddings can be used directly for downstream tasks like variant effect prediction or as features for other models. The bidirectional context allows rich representations but makes these models unsuitable for generative tasks where we need to sample sequences autoregressively.</p>
 <p>Decoder-only transformers use causal attention where each position attends only to itself and preceding positions. This enables autoregressive generation: the model generates sequences one token at a time, conditioning each new token on all previous tokens. GenSLM and other genomic foundation models trained on next-token prediction use this architecture. Causal attention is essential for generative modeling but provides less rich representations than bidirectional attention for fixed sequences because each position has access to only partial context.</p>
 <p>The trade-off between encoder and decoder architectures reflects a fundamental tension in genomic modeling. Representation learning benefits from bidirectional context, while sequence generation requires causal structure. Some applications use both: a bidirectional encoder produces initial representations, then a causal decoder refines them for generation or prediction tasks.</p>
-<p>Hybrid CNN-transformer architectures combine convolutional layers with transformer blocks. Models like Enformer and Borzoi (Chapter <a href="p3-ch14-hybrid.html" class="quarto-xref"><span>Chapter 14</span></a>) apply convolutional stems to long sequences, downsampling through pooling, then pass the compressed representation through transformer layers. This exploits CNNs’ efficiency for local pattern extraction while using transformers for long-range integration. The downsampling addresses transformers’ quadratic complexity by reducing sequence length before attention.</p>
+<p>Hybrid CNN-transformer architectures combine convolutional layers with transformer blocks. Models like Enformer and Borzoi (Chapter <a href="p3-ch13-regulatory.html" class="quarto-xref"><span>Chapter 13</span></a>) apply convolutional stems to long sequences, downsampling through pooling, then pass the compressed representation through transformer layers. This exploits CNNs’ efficiency for local pattern extraction while using transformers for long-range integration. The downsampling addresses transformers’ quadratic complexity by reducing sequence length before attention.</p>
 <p>These hybrid models achieve state-of-the-art performance on regulatory prediction tasks but blur the line between pure transformers and other architectures. They work because genomic regulation involves both local patterns (motifs, nucleosome positioning) and long-range interactions (enhancer-promoter loops, chromatin domains). The CNN-transformer combination matches this multi-scale structure.</p>
 <p>Long-range modifications adapt transformer attention for ultra-long genomic contexts. Genomic Interpreter uses 1D Swin transformers with hierarchical windowed attention, enabling megabase-scale modeling. Others use sparse attention patterns tailored to genomic structure, such as attending to fixed landmark positions (promoters, insulators) or using genomic distance-based sparsity patterns that assume nearby positions interact more strongly than distant ones.</p>
 <p>These modifications share a common goal: reducing attention’s quadratic cost while preserving long-range capability. Success depends on whether the imposed structure matches actual genomic interactions. If enhancer-promoter loops occur at specific, regular spacing, fixed sparse patterns might work well. If interactions are highly variable and data-dependent, full attention or learned sparsity may be necessary.</p>
@@ -864,8 +882,8 @@ Figure: Comparison of four architectures with attention pattern diagrams and use
 </div>
 </div>
 </section>
-<section id="training-considerations" class="level2" data-number="6.8">
-<h2 data-number="6.8" class="anchored" data-anchor-id="training-considerations"><span class="header-section-number">6.8</span> Training Considerations</h2>
+<section id="training-considerations" class="level2" data-number="7.8">
+<h2 data-number="7.8" class="anchored" data-anchor-id="training-considerations"><span class="header-section-number">7.8</span> Training Considerations</h2>
 <p>Training genomic transformers involves optimization algorithms, regularization strategies, and infrastructure choices that differ in important ways from natural language models.</p>
 <p>Optimization for transformers typically uses Adam or AdamW, adaptive learning rate algorithms that maintain per-parameter learning rates adjusted based on gradient statistics. AdamW adds weight decay directly to the parameter updates rather than to the loss function, which improves training stability and generalization for transformers. Learning rate schedules typically use warmup for the first few thousand steps, linearly increasing the learning rate from zero to a peak value, then decay (either linear or cosine) for the remainder of training.</p>
 <p>Warmup is particularly important for transformers because large learning rates early in training can cause instability when parameters are randomly initialized. Gradients in early iterations can be extremely large or small depending on initialization, and adaptive optimizers need time to build accurate gradient statistics. Warmup allows the optimizer to stabilize before applying full learning rates.</p>
@@ -892,16 +910,16 @@ Figure: Two-panel figure showing typical training curves. (a) Learning rate sche
 </div>
 </div>
 </section>
-<section id="limitations-and-alternatives" class="level2" data-number="6.9">
-<h2 data-number="6.9" class="anchored" data-anchor-id="limitations-and-alternatives"><span class="header-section-number">6.9</span> Limitations and Alternatives</h2>
+<section id="limitations-and-alternatives" class="level2" data-number="7.9">
+<h2 data-number="7.9" class="anchored" data-anchor-id="limitations-and-alternatives"><span class="header-section-number">7.9</span> Limitations and Alternatives</h2>
 <p>Despite their success, transformers have fundamental limitations that motivated development of alternative architectures. Understanding these limitations contextualizes recent innovations and guides architecture choice for specific genomic applications.</p>
 <p>The quadratic complexity bottleneck is transformers’ most severe limitation. Computing all pairwise attention scores for a sequence of length <span class="math inline">\(L\)</span> requires <span class="math inline">\(O(L^2)\)</span> operations and memory. For genomic contexts of 100kb or more (roughly 100,000 single-nucleotide tokens), this becomes prohibitive. Even with sparse attention approximations, transformers struggle to scale to megabase-length contexts where some regulatory interactions occur.</p>
 <p>Recent genomic models have pushed context lengths to impressive scales (Enformer handles 200kb, AlphaGenome approaches 1Mb), but these often rely on hybrid architectures with significant downsampling or hierarchical windowing that may miss certain long-range patterns. Pure transformers without such modifications remain limited to shorter contexts.</p>
-<p>Alternative sub-quadratic architectures address this limitation directly. State space models (SSMs) like S4 and Mamba achieve linear complexity by representing sequences as continuous-time dynamical systems rather than discrete token-to-token interactions. These models maintain long-range memory through recurrent state updates while avoiding the quadratic attention bottleneck. Chapter <a href="p3-ch11-dna.html" class="quarto-xref"><span>Chapter 11</span></a> covers SSMs in detail, including Hyena DNA and the Evo family of genomic foundation models.</p>
+<p>Alternative sub-quadratic architectures address this limitation directly. State space models (SSMs) like S4 and Mamba achieve linear complexity by representing sequences as continuous-time dynamical systems rather than discrete token-to-token interactions. These models maintain long-range memory through recurrent state updates while avoiding the quadratic attention bottleneck. Chapter <a href="p3-ch11-dna-lm.html" class="quarto-xref"><span>Chapter 11</span></a> covers SSMs in detail, including Hyena DNA and the Evo family of genomic foundation models.</p>
 <p>Hyena operators replace attention with long convolutions implemented efficiently in the Fourier domain, achieving sub-quadratic complexity. Mamba uses selective state space models that dynamically adjust state transitions based on input content. Both approaches show promise for ultra-long genomic contexts, potentially enabling whole-chromosome or even whole-genome modeling.</p>
 <p>When should we prefer transformers over these alternatives? Transformers excel when global context matters but sequences are not extremely long (under 10-50kb depending on resources). Their attention maps provide some interpretability, showing which positions the model considers relevant for specific predictions. Transformers have extensive tooling and pretrained models available from NLP research that transfer readily to genomics.</p>
 <p>CNNs remain preferable when computational efficiency is paramount and local patterns dominate. For splice site prediction or promoter classification where the relevant context spans at most a few hundred base pairs, a well-designed CNN may outperform transformers while using far fewer parameters and less compute. The inductive bias toward local patterns also provides regularization that helps with limited training data.</p>
-<p>Hybrid approaches combining CNNs for local feature extraction with transformers for long-range integration often achieve the best of both worlds. As discussed in Chapter <a href="p3-ch14-hybrid.html" class="quarto-xref"><span>Chapter 14</span></a>, models like Enformer demonstrate that architectural combinations can outperform pure transformers or pure CNNs on real genomic tasks.</p>
+<p>Hybrid approaches combining CNNs for local feature extraction with transformers for long-range integration often achieve the best of both worlds. As discussed in Chapter <a href="p3-ch13-regulatory.html" class="quarto-xref"><span>Chapter 13</span></a>, models like Enformer demonstrate that architectural combinations can outperform pure transformers or pure CNNs on real genomic tasks.</p>
 <p>The transition to sub-quadratic architectures is ongoing. Early results suggest SSMs match or exceed transformers on some genomic benchmarks while scaling to longer contexts. However, transformers benefit from years of engineering optimization and extensive pretrained models. The genomics community is actively exploring whether SSMs’ theoretical advantages translate to practical improvements across diverse tasks.</p>
 <div class="content-visible callout callout-style-default callout-note callout-titled" data-when-profile="draft">
 <div class="callout-header d-flex align-content-center">
@@ -918,8 +936,8 @@ Figure: Comparison table or radar chart showing transformers, CNNs, and SSMs acr
 </div>
 </div>
 </section>
-<section id="summary-and-forward-references" class="level2" data-number="6.10">
-<h2 data-number="6.10" class="anchored" data-anchor-id="summary-and-forward-references"><span class="header-section-number">6.10</span> Summary and Forward References</h2>
+<section id="summary-and-forward-references" class="level2" data-number="7.10">
+<h2 data-number="7.10" class="anchored" data-anchor-id="summary-and-forward-references"><span class="header-section-number">7.10</span> Summary and Forward References</h2>
 <p>This chapter examined transformer architecture from first principles through genomic applications. Transformers introduced global self-attention that addresses CNNs’ limited receptive fields, enabling modeling of long-range genomic interactions. The core mechanisms involve queries, keys, and values computing position-dependent aggregation weights that determine how information flows through the sequence.</p>
 <p>Positional encodings address transformers’ permutation invariance by injecting sequence order information. Multiple approaches exist (sinusoidal, learned, relative, RoPE), each with different properties for generalization and computational efficiency. Genomic applications must consider strand directionality and genomic coordinate systems when choosing positional encoding schemes.</p>
 <p>The transformer block architecture combines multi-head attention with position-wise feed-forward networks, connected by residual connections and layer normalization. Stacking these blocks creates deep networks that learn hierarchical representations through repeated refinement. Design choices about depth, width, normalization placement, and component sizing affect model capacity and training stability.</p>
@@ -927,7 +945,7 @@ Figure: Comparison table or radar chart showing transformers, CNNs, and SSMs acr
 <p>Transformer variants for genomics include bidirectional encoders for representation learning (DNABERT, Nucleotide Transformer), causal decoders for generation (GenSLM), and hybrid architectures combining CNNs with attention (Enformer, Borzoi). Each variant suits different tasks based on whether bidirectional context or autoregressive structure is more important.</p>
 <p>Training considerations specific to genomics include learning rate schedules with warmup, dropout and weight decay regularization, gradient clipping for stability, and distributed training infrastructure. Genomic sequences’ unique statistical properties (token frequency imbalance, weaker hierarchical structure than language) affect optimization in subtle ways that may require task-specific tuning.</p>
 <p>Transformers’ quadratic complexity motivates alternatives, particularly state space models that achieve linear scaling while maintaining long-range capability. When to prefer transformers versus SSMs or CNNs depends on sequence length requirements, local versus global pattern importance, computational resources, and whether extensive pretrained models are available.</p>
-<p>Looking forward, transformers remain central to genomic foundation models despite emerging alternatives. Chapter <a href="p3-ch11-dna.html" class="quarto-xref"><span>Chapter 11</span></a> surveys DNA language models built on transformer and SSM architectures, trained through self-supervised objectives. Chapter <a href="p3-ch13-plm.html" class="quarto-xref"><span>Chapter 13</span></a> covers protein language models where transformers have achieved remarkable success at learning structure and function from sequence alone. Chapter <a href="p3-ch14-hybrid.html" class="quarto-xref"><span>Chapter 14</span></a> examines how regulatory prediction models combine transformers with CNNs to handle long genomic contexts efficiently.</p>
+<p>Looking forward, transformers remain central to genomic foundation models despite emerging alternatives. Chapter <a href="p3-ch11-dna-lm.html" class="quarto-xref"><span>Chapter 11</span></a> surveys DNA language models built on transformer and SSM architectures, trained through self-supervised objectives. Chapter <a href="p3-ch12-protein-lm.html" class="quarto-xref"><span>Chapter 12</span></a> covers protein language models where transformers have achieved remarkable success at learning structure and function from sequence alone. Chapter <a href="p3-ch13-regulatory.html" class="quarto-xref"><span>Chapter 13</span></a> examines how regulatory prediction models combine transformers with CNNs to handle long genomic contexts efficiently.</p>
 <p>The transformer architecture represents a watershed moment in genomic deep learning, enabling models that genuinely capture long-range dependencies essential for understanding gene regulation. While newer architectures may supersede transformers for some applications, the conceptual framework they introduced, particularly the idea that global context aggregation through learned attention is tractable and effective, continues to shape genomic modeling.</p>
 
 
@@ -1354,13 +1372,13 @@ Vaswani, Ashish, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan 
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./p2-ch05-tokens.html" class="pagination-link" aria-label="Sequence Representation &amp; Tokens">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Sequence Representation &amp; Tokens</span></span>
+      <a href="./p2-ch06-cnn.html" class="pagination-link" aria-label="CNN Sequence-to-Function Models">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">CNN Sequence-to-Function Models</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./p2-ch07-foundation.html" class="pagination-link" aria-label="Genomic Foundation Models: Concepts &amp; Taxonomy">
-        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Genomic Foundation Models: Concepts &amp; Taxonomy</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./p2-ch08-pretraining.html" class="pagination-link" aria-label="Pretraining Objectives &amp; Strategies">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Pretraining Objectives &amp; Strategies</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
