@@ -22,27 +22,7 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-  margin-bottom: 0em;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -619,7 +599,7 @@ div.csl-indent {
   <li><a href="#why-foundation-models-for-genomics" id="toc-why-foundation-models-for-genomics" class="nav-link" data-scroll-target="#why-foundation-models-for-genomics">Why Foundation Models for Genomics?</a></li>
   <li><a href="#recurring-themes" id="toc-recurring-themes" class="nav-link" data-scroll-target="#recurring-themes">Recurring Themes</a></li>
   <li><a href="#how-the-book-is-organized" id="toc-how-the-book-is-organized" class="nav-link" data-scroll-target="#how-the-book-is-organized">How the Book Is Organized</a></li>
-  <li><a href="#what-this-book-aims-to-provide" id="toc-what-this-book-aims-to-provide" class="nav-link" data-scroll-target="#what-this-book-aims-to-provide">What This Book Aims to Provide</a></li>
+  <li><a href="#a-framework-not-a-snapshot" id="toc-a-framework-not-a-snapshot" class="nav-link" data-scroll-target="#a-framework-not-a-snapshot">A Framework, Not a Snapshot</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -661,11 +641,9 @@ div.csl-indent {
 
 <section id="introduction" class="level1 unnumbered">
 <h1 class="unnumbered">Introduction</h1>
-<p>Every human cell contains the same three billion nucleotides, yet that identical sequence produces over two hundred distinct cell types, each with characteristic patterns of gene expression, chromatin accessibility, and regulatory state. The instructions for this differentiation are written in the genome itself: in enhancers and silencers distributed across hundreds of megabases, in splice sites that determine which exons join to form mature transcripts, in three-dimensional chromatin contacts that bring distant regulatory elements together. A typical genome harbors roughly three million variants distinguishing it from the reference, but clinicians can confidently interpret fewer than a hundred. The gap between reading sequence and understanding function remains one of the central unsolved problems in biology, and it is precisely the gap that genomic foundation models aim to close.</p>
-<p>The interpretive bottleneck is not simply a matter of missing labels or insufficient training data. The human genome encodes regulatory logic distributed across millions of base pairs, with enhancers acting on genes tens of kilobases away, chromatin structure gating access to transcription machinery, and splicing decisions depending on sequence contexts that span entire introns. Classical approaches attacked these problems piecemeal: one model for splice sites, another for transcription factor binding, a third for variant pathogenicity. Each required hand-crafted features, curated training sets, and careful validation within a narrow domain. The result was a fragmented landscape where transferring insights from one task to another demanded starting nearly from scratch.</p>
-<p>The foundation model paradigm offers a different approach. Rather than training specialized models for each downstream task, foundation models learn general-purpose representations from massive, heterogeneous datasets using self-supervised objectives such as masked-token prediction or next-token modeling <span class="citation" data-cites="bommasani_foundation_2022">(<a href="references.html#ref-bommasani_foundation_2022" role="doc-biblioref">Bommasani et al. 2022</a>)</span>. These representations can then be adapted to new problems through fine-tuning, probing, or zero-shot inference. In natural language processing and computer vision, this paradigm has proven transformative. In genomics, the question is whether similar approaches can bridge the gap between sequence and function, connecting raw nucleotides to molecular phenotypes, disease risk, and therapeutic targets <span class="citation" data-cites="guo_foundation_2025">(<a href="references.html#ref-guo_foundation_2025" role="doc-biblioref">Guo et al. 2025</a>)</span>.</p>
-<p>This book examines that intersection. <strong>Genomic foundation models (GFMs)</strong> are large, reusable models trained on genomic and related biological data that can be adapted to many downstream tasks. The term encompasses DNA language models trained on reference genomes and metagenomes, protein language models that learn evolutionary constraints from sequence databases, RNA structure predictors, and multi-omic architectures that integrate across data modalities. What unites them is the core insight that pretraining on broad biological data produces representations that transfer to specialized tasks more effectively than training narrow models from scratch.</p>
-<p>The book does not offer a general introduction to genomics or machine learning. Readers seeking comprehensive coverage of molecular biology should consult <em>Molecular Biology of the Cell</em>; those wanting deep learning fundamentals will find better treatments in dedicated textbooks. The goal here is narrower and more specific: to provide a conceptual and practical map of how modern deep models for DNA, RNA, and proteins are built, what they actually learn, and how they can be used responsibly in research and clinical workflows. The chapters connect classical genomics pipelines, early deep regulatory models, sequence language models, and multi-omic GFMs into a single narrative arc that emphasizes both capabilities and limitations.</p>
+<p>Every human cell contains the same three billion nucleotides, yet that identical sequence produces over two hundred distinct cell types, each with characteristic patterns of gene expression, chromatin accessibility, and regulatory state. The instructions for this differentiation are written in the genome itself: in enhancers and silencers distributed across hundreds of megabases, in splice sites that determine which exons join to form mature transcripts, in three-dimensional chromatin contacts that bring distant regulatory elements together. Reading these instructions requires understanding a regulatory grammar that evolution wrote over billions of years but never documented.</p>
+<p>Classical computational approaches attacked this problem piecemeal. One model predicted splice sites from local sequence context. Another identified transcription factor binding motifs. A third scored variant pathogenicity using evolutionary conservation. Each required hand-crafted features, curated training sets, and careful validation within a narrow domain. Insights rarely transferred: a model trained to recognize promoters knew nothing about enhancers, and neither could predict how a single nucleotide change might alter splicing. The result was a fragmented landscape where each biological question demanded its own specialized tool.</p>
+<p>Foundation models represent a fundamentally different approach. By training on vast corpora of genomic sequence with self-supervised objectives, these models learn representations that capture regulatory logic without explicit supervision on any particular task. The same model that predicts masked nucleotides can, after minimal adaptation, predict chromatin accessibility, identify splice sites, score variant effects, and distinguish pathogenic mutations from benign polymorphisms. This capacity for transfer learning suggests that foundation models have learned something general about how genomes encode function. Understanding what they have learned, how to deploy them effectively, and where they still fail is the subject of this book.</p>
 <section id="why-foundation-models-for-genomics" class="level2">
 <h2 class="anchored" data-anchor-id="why-foundation-models-for-genomics">Why Foundation Models for Genomics?</h2>
 <p>Traditional genomic modeling has been overwhelmingly task-specific. A variant caller is tuned to distinguish sequencing errors from true variants in a particular sequencing platform and sample type. A supervised convolutional network predicts a fixed set of chromatin marks for a specific cell line. A polygenic risk score is fit for one trait, in one ancestry group, using data from one biobank. These models can achieve excellent performance in the settings they were designed for, but they often transfer poorly to new assays, tissues, ancestries, or institutions. When the input distribution shifts, whether because of a new sequencing chemistry, a different population, or a novel cell type, performance degrades in ways that are difficult to anticipate.</p>
@@ -693,21 +671,13 @@ div.csl-indent {
 <p><strong>Part VI: Translation</strong> moves from methods to end-to-end workflows in research and clinical practice. <a href="p6-ch25-clinical-risk.html" class="quarto-xref"><span>25&nbsp; Clinical Risk Prediction</span></a> discusses clinical risk prediction that combines genomic features with electronic health records and environmental data, focusing on discrimination, calibration, fairness, and deployment in health systems. <a href="p6-ch26-rare-disease.html" class="quarto-xref"><span>26&nbsp; Rare Disease Diagnosis</span></a> examines how foundation models fit into rare disease and cancer workflows, including variant prioritization pipelines, integration with family and tumor-normal data, and laboratory validation. <a href="p6-ch27-drug-discovery.html" class="quarto-xref"><span>27&nbsp; Drug Discovery</span></a> looks at how GFMs intersect with target discovery, functional genomics screens, and biomarker development in pharmaceutical and biotechnology settings. <a href="p6-ch28-design.html" class="quarto-xref"><span>28&nbsp; Sequence Design</span></a> covers generative applications, from protein design and therapeutic sequence optimization to synthetic biology and bioengineering workflows. <a href="p6-ch29-future.html" class="quarto-xref"><span>29&nbsp; Ethical and Frontiers</span></a> concludes with regulatory and ethical considerations, open problems, emerging directions, and considerations for responsible development and deployment of genomic AI systems.</p>
 <p><strong>Six appendices</strong> provide supporting material. <a href="app-a-dl.html" class="quarto-xref"><span>Appendix A — Deep Learning Primer</span></a> offers a compact introduction to neural networks, CNNs, transformers, training, and evaluation for readers who want enough machine learning background to engage with the main chapters without consulting external references. <a href="app-b-compute.html" class="quarto-xref"><span>Appendix B — Deployment and Compute</span></a> covers practical considerations for deploying genomic foundation models, including computational requirements, hardware selection, and infrastructure concerns. <a href="app-c-data-curation.html" class="quarto-xref"><span>Appendix C — Data Curation</span></a> provides guidance on constructing training datasets, covering data sources, quality filtering, deduplication, and contamination detection. <a href="app-d-models.html" class="quarto-xref"><span>Appendix D — Model Reference</span></a> provides a comprehensive reference table of models discussed throughout the book, with architecture summaries, training data, and key citations. <a href="app-e-resources.html" class="quarto-xref"><span>Appendix E — Resources</span></a> offers a curated collection of datasets, software tools, courses, and papers for deeper exploration. <a href="app-f-glossary.html" class="quarto-xref"><span>Appendix F — Glossary</span></a> defines key terms spanning genomics, machine learning, and clinical applications.</p>
 </section>
-<section id="what-this-book-aims-to-provide" class="level2">
-<h2 class="anchored" data-anchor-id="what-this-book-aims-to-provide">What This Book Aims to Provide</h2>
-<p>Genomic foundation models represent a moving target: architectures, datasets, and evaluation suites evolve rapidly. This book is not intended as a frozen survey of the current state of the art but as a framework for reasoning about new models as they appear.</p>
-<p>Readers who work through the material should be able to place a new model in the landscape of data, architecture, objective, and application. They should be equipped to design analyses and experiments that use GFMs as components, whether as feature extractors, priors, or simulators, without overclaiming what the models can do. They should recognize common pitfalls in training, evaluation, and deployment, especially in clinical and translational settings where errors have real consequences. And they should be able to decide where foundation models are genuinely useful and where simpler methods or classical baselines remain sufficient.</p>
-<p>The next chapter turns to the foundations: how raw reads become variants, how variants become the datasets and benchmarks on which all subsequent models depend, and where the errors in this upstream process create systematic challenges that propagate through everything that follows.</p>
+<section id="a-framework-not-a-snapshot" class="level2">
+<h2 class="anchored" data-anchor-id="a-framework-not-a-snapshot">A Framework, Not a Snapshot</h2>
+<p>Genomic foundation models represent a moving target: architectures evolve, datasets expand, and evaluation standards shift. A book that cataloged the state of the art in 2024 would be obsolete before publication. This book instead provides a framework for reasoning about new models as they appear, grounding readers in principles stable enough to outlast any particular architecture or benchmark.</p>
+<p>Readers who work through this material should be equipped to place new models in the landscape of data, architecture, objective, and application. They should be able to design analyses that use foundation models as components (whether as feature extractors, priors, or simulators) without overclaiming what the models can do. They should recognize pitfalls in training, evaluation, and deployment, especially in clinical settings where errors have real consequences. And they should be able to decide where foundation models genuinely add value and where simpler methods remain sufficient.</p>
+<p>The journey begins with foundations: how raw reads become variants, how variants become the datasets on which all subsequent models depend, and where errors in this upstream process create systematic challenges that propagate through everything built upon them.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
-<div id="ref-bommasani_foundation_2022" class="csl-entry" role="listitem">
-Bommasani, Rishi, Drew A. Hudson, Ehsan Adeli, Russ Altman, Simran Arora, Sydney von Arx, Michael S. Bernstein, et al. 2022. <span>“On the <span>Opportunities</span> and <span>Risks</span> of <span>Foundation</span> <span>Models</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2108.07258">https://doi.org/10.48550/arXiv.2108.07258</a>.
-</div>
-<div id="ref-guo_foundation_2025" class="csl-entry" role="listitem">
-Guo, Fei, Renchu Guan, Yaohang Li, Qi Liu, Xiaowo Wang, Can Yang, and Jianxin Wang. 2025. <span>“Foundation Models in Bioinformatics.”</span> <em>National Science Review</em> 12 (4): nwaf028. <a href="https://doi.org/10.1093/nsr/nwaf028">https://doi.org/10.1093/nsr/nwaf028</a>.
-</div>
-</div>
 </section>
 </section>
 
