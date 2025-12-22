@@ -719,7 +719,7 @@ Make numbers memorable by connecting to genomic context:
 
 **In-prose for seminal contributions**:
 - "Vaswani et al. @vaswani_attention_2017 introduced the transformer architecture"
-- "The Enformer model by Avsec et al. @avsec_effective_2021 extended..."
+- "The Enformer model by Avsec et al. @avsec_enformer_2021 extended..."
 - "As Kelley et al. @kelley_sequential_2018 demonstrated..."
 
 **End-of-sentence brackets for supporting facts**:
@@ -737,9 +737,9 @@ Make numbers memorable by connecting to genomic context:
 
 Citations should feel natural, not tacked on:
 
-**Good**: "Enformer addressed this limitation by extending the receptive field to 200kb through transformer attention [@avsec_effective_2021]."
+**Good**: "Enformer addressed this limitation by extending the receptive field to 200kb through transformer attention [@avsec_enformer_2021]."
 
-**Bad**: "Enformer extended the receptive field to 200kb through transformer attention. [@avsec_effective_2021]"
+**Bad**: "Enformer extended the receptive field to 200kb through transformer attention. [@avsec_enformer_2021]"
 
 ## Readability and Engagement
 
@@ -969,7 +969,7 @@ After first mention, use term normally without formatting.
 
 > The **transformer architecture** processes sequences through **self-attention mechanisms** rather than recurrence. Each attention layer computes interactions between all positions simultaneously, enabling parallel training on modern GPUs. The model uses **positional embeddings** to encode sequence order, since attention itself is position-invariant. For genomic sequences, transformers typically operate on *k*-mer tokens extracted from DNA strings stored in `FASTA` format.
 >
-> The *Enformer* model [@avsec_effective_2021] extended this approach to 200kb contexts, sufficient to capture most enhancer-promoter interactions. Training used **chromatin accessibility** data from ATAC-seq experiments across 200 cell types...
+> The *Enformer* model [@avsec_enformer_2021] extended this approach to 200kb contexts, sufficient to capture most enhancer-promoter interactions. Training used **chromatin accessibility** data from ATAC-seq experiments across 200 cell types...
 
 ## Glossary Construction
 
