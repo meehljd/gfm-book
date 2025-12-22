@@ -16,10 +16,6 @@ The central problem is deceptively simple in statement but profound in consequen
 
 The scope of this chapter centers on germline variant calling in human whole-exome sequencing (WES) and whole-genome sequencing (WGS) data, the core technical challenge underlying most genomic deep learning applications. Somatic variant calling in cancer and RNA-seq-specific variant calling share many parallels but require additional considerations that fall outside Part I of this book.
 
-::: {.callout-warning .content-visible when-profile="draft"}
-Visual TODO: Overview schematic of an NGS variant-calling workflow, from DNA sample → library prep → sequencer (short vs. long read) → FASTQ → alignment → duplicate marking → BQSR → variant calling → filtering → VCF.
-:::
-
 ## Targeting Strategies: Panels, Exomes, and Genomes
 
 Different clinical and scientific goals demand different sequencing strategies. A patient presenting with sudden cardiac arrest at age 35 needs deep, reliable coverage of *KCNQ1*, *KCNH2*, *SCN5A*, and other ion channel genes associated with long QT syndrome; sequencing her entire genome to find these variants would waste resources and delay clinical decisions. A biobank building training data for polygenic risk scores across hundreds of thousands of participants needs genome-wide coverage, even if individual sites have modest depth. A family searching for the cause of their child's undiagnosed developmental delay needs comprehensive coverage that leaves no coding exon unexamined. These competing demands drive the choice between targeted panels, whole-exome sequencing, and whole-genome sequencing.
@@ -42,10 +38,6 @@ Noncoding variants contribute substantially to human disease, and structural var
 
 WGS has become increasingly favored for new large cohorts and rare disease studies. The UK Biobank's release of 500,000 whole genomes and gnomAD's expansion to include diverse populations both rely on WGS as the primary data type [@bycroft_ukbiobank_2018; @karczewski_gnomad_2020]. The data are reusable for many downstream analyses, including GWAS, polygenic score development, and rare variant burden tests, and the simplified pipeline eliminates the need to track changing capture designs across time and centers. When subsequent chapters refer to "whole-genome models," they implicitly assume access to WGS-based variant calls, even when actual training sets combine WES and WGS data for practical reasons.
 
-::: {.callout-warning .content-visible when-profile="draft"}
-Visual TODO: Comparative table or radar plot for panels, WES, WGS (and possibly long-read WGS) summarizing target size, typical coverage depth, per-sample cost, ability to detect rare variants, and suitability for large-cohort foundation model training.
-:::
-
 ### Long-Read Sequencing Technologies
 
 Short reads face a fundamental limitation rooted in information theory: sequences shorter than local repeats, segmental duplications, or structural variants cannot unambiguously resolve these features. Consider the *SMN1* and *SMN2* genes, which differ by only five nucleotides across their entire coding regions. Distinguishing them is clinically critical for diagnosing spinal muscular atrophy, yet short reads routinely fail this task because a 150-bp read maps equally well to either genomic location.
@@ -66,11 +58,13 @@ The journey from DNA sample to variant calls begins when instrument software con
 
 **Read alignment** maps each short read to its most likely position in a reference genome using seed-and-extend algorithms implemented in tools such as BWA-MEM and minimap2 [@li_bwa-mem_2013; @li_minimap2_2018]. The current standard references include GRCh38 (the traditional linear reference) and T2T-CHM13 (the first complete telomere-to-telomere assembly). The alignment challenge is substantial: algorithms must cope with mismatches arising from both true variants and sequencing errors, small indels that shift the alignment frame, and repetitive sequences where multiple genomic locations match equally well. When a read could plausibly originate from several locations, the aligner must either choose one (potentially incorrectly), report multiple candidates, or assign a mapping quality score reflecting its uncertainty about the true origin.
 
-**Post-alignment processing** addresses systematic artifacts that would otherwise corrupt variant calls. PCR duplicates arise when multiple reads are amplified from the same original DNA fragment during library preparation; these inflate apparent coverage and can amplify sequencing errors into false variants that appear well-supported. Duplicate marking identifies and flags these reads based on identical alignment coordinates. **Base quality score recalibration (BQSR)** models systematic quality score errors by comparing observed mismatches to databases of known variants, adjusting quality scores to better reflect true error rates in each sequence context [@depristo_gatk_2011]. Older pipelines also performed local realignment around indels, though modern callers have largely internalized this step.
+::: {#fig-variant-calling-pipeline}
+**[FIGURE PLACEHOLDER]**
 
-::: {.callout-warning .content-visible when-profile="draft"}
-Visual TODO: Block diagram of a short-read variant calling pipeline, with each step (alignment, duplicate marking, BQSR, per-sample calling, joint genotyping, filtering) shown as a box and data formats (FASTQ, BAM/CRAM, gVCF, VCF) annotated along the arrows.
+[Essential] End-to-end schematic showing the journey from DNA sample to VCF file. Major stages: (1) DNA fragmentation and library preparation, (2) sequencing (distinguish short-read Illumina vs long-read PacBio/ONT icons), (3) base calling producing FASTQ, (4) read alignment to reference (show reads stacking against genome), (5) post-alignment processing (duplicate marking, BQSR), (6) per-sample variant calling producing gVCF, (7) joint genotyping across cohort, (8) variant filtering producing final VCF. Annotate data formats at each arrow (FASTQ, BAM/CRAM, gVCF, VCF). Include approximate file sizes for a 30× WGS to ground scale.
 :::
+
+**Post-alignment processing** addresses systematic artifacts that would otherwise corrupt variant calls. PCR duplicates arise when multiple reads are amplified from the same original DNA fragment during library preparation; these inflate apparent coverage and can amplify sequencing errors into false variants that appear well-supported. Duplicate marking identifies and flags these reads based on identical alignment coordinates. **Base quality score recalibration (BQSR)** models systematic quality score errors by comparing observed mismatches to databases of known variants, adjusting quality scores to better reflect true error rates in each sequence context [@depristo_gatk_2011]. Older pipelines also performed local realignment around indels, though modern callers have largely internalized this step.
 
 ### Per-Sample Variant Calling
 
@@ -87,10 +81,6 @@ $$
 The prior $P(G)$ often assumes Hardy-Weinberg equilibrium with a specified allele frequency, while the likelihood $P(r \mid G)$ captures the probability of observing read $r$ given that the true genotype is $G$. This formulation assumes conditional independence of reads given the genotype, an assumption violated in practice by systematic sequencing errors, read pair correlations, and library-level artifacts that create dependencies among observations. Classical pipelines attempt to correct for these violations through BQSR and ad hoc filters. Deep learning-based callers can learn these dependencies implicitly by processing entire pileups simultaneously, one of their key advantages.
 
 The per-read likelihoods aggregate into genotype likelihoods, which combine with priors to yield posterior probabilities. These posteriors become the **genotype quality (GQ)** scores that downstream analyses often treat as ground truth. Per-sample results are output as `gVCF` files encoding both variant calls and "reference blocks" with estimated confidence at non-variant positions, enabling later joint analysis across samples.
-
-::: {.callout-warning .content-visible when-profile="draft"}
-Visual TODO: Small schematic showing reads aligned at a single site, illustrating how each read contributes to the likelihood term in the Bayesian genotype model (e.g., three reads supporting the alternate allele with different base qualities).
-:::
 
 ::: {.callout-note}
 The VCF Format
@@ -127,15 +117,21 @@ For deep learning applications, phasing determines whether models receive unorde
 
 Different data types enable different phasing strategies, each with characteristic strengths and resolution. **Read-backed phasing** uses sequencing reads that span multiple heterozygous sites to assign alleles to the same physical molecule. Short reads typically phase variants within tens to hundreds of base pairs, limited by fragment length. Long reads extend this range to tens of kilobases or more, providing direct physical evidence of haplotype structure.
 
+::: {#fig-phasing-compound-het}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+[High] Three-panel figure illustrating the clinical importance of phase information. Panel A: Maternal and paternal chromosomes carrying the *CFTR* gene, with two pathogenic variant positions marked. Panel B (*cis* configuration): Both variants on maternal chromosome; paternal copy functional; child is carrier (unaffected). Panel C (*trans* configuration): One variant on each chromosome; no functional copy; child has cystic fibrosis. Include VCF notation showing how unphased (0/1) vs phased (0|1, 1|0) genotypes encode this information.
+:::
+
 **Statistical phasing** tools such as SHAPEIT, Eagle, and Beagle use reference panels of previously phased haplotypes combined with linkage disequilibrium patterns to infer phase across much longer distances [@oconnell_shapeit2_2014; @loh_eagle_2016; @browning_beagle_2021]. When a study sample shares long haplotype segments with individuals in the reference panel, the algorithm can confidently assign alleles to chromosomes even without direct read evidence. These methods work well for common variation where LD is informative but struggle with rare variants that lack haplotype context in reference panels.
 
 **Pedigree-based phasing** becomes possible when parent-offspring trios or larger families are available. Mendelian inheritance rules resolve phase with high confidence: an allele present in the child and one parent but absent in the other must have been inherited from that parent. The deterministic nature of this inference makes it the gold standard when family data exist.
 
 Modern pipelines often combine these approaches, using statistical phasing anchored by a large reference panel, augmented by read-backed evidence where available, and refined by trio data when present. The resulting phase accuracy varies by variant frequency, local recombination rate, and representation in reference panels.
-
-::: {.callout-warning .content-visible when-profile="draft"}
-Visual TODO: Table or multi-panel cartoon comparing phasing strategies: axes for input data (short reads, long reads, trios, population reference), typical genomic span per phased block, and typical use cases (imputation, rare disease, population genetics).
-:::
 
 ### Genotype Imputation
 
@@ -145,13 +141,16 @@ Two related processes deserve distinction. **Genotype refinement** improves qual
 
 For downstream deep learning, imputation has several important consequences. It increases the number of variants available as input features for genotype-based models. It produces well-calibrated genotype probabilities (dosages) that probabilistic models can exploit rather than forcing hard calls. It also ties model performance to the composition and ancestry representation of the reference panel: imputation errors are systematically larger when target individuals come from populations underrepresented in the panel, reinforcing themes of bias and confounding addressed in @sec-confounding.
 
-::: {.callout-warning .content-visible when-profile="draft"}
-Visual TODO: Cartoon showing how genotype imputation and boosting fill in missing genotypes and refine uncertain calls using a reference panel of phased haplotypes, with before/after views of a sparse vs. dense genotype matrix.
-:::
-
 ## Sources of Error and Uncertainty
 
 Even with sophisticated pipelines, variant calls remain imperfect measurements of biological reality. These errors concentrate in specific genomic contexts and variant types, creating systematic blind spots in training data that downstream models inherit without warning [@li_mapping_2014]. Understanding where errors arise, and why they cluster where they do, is essential for interpreting model performance and designing robust training strategies.
+
+::: {#fig-error-sources}
+**[FIGURE PLACEHOLDER]**
+
+[High] Taxonomy diagram organizing error sources hierarchically. Three major branches: (1) Sequencing artifacts (subdivide: homopolymer errors, PCR duplicates, index hopping, strand bias, quality score miscalibration); (2) Alignment artifacts (subdivide: mapping ambiguity in repeats, reference bias favoring ref allele, misalignment in segmental duplications); (3) Biological complexity (subdivide: somatic mosaicism, low allele fraction, complex variants like MNVs). For each leaf, include 1-sentence description and indicate whether it creates false positives, false negatives, or both.
+:::
+
 
 ### Mapping Ambiguity and Reference Bias
 
@@ -181,6 +180,12 @@ The deep learning models discussed in later chapters inherit all these errors an
 
 Certain genomic regions resist accurate variant calling regardless of algorithmic sophistication, with their difficulty stemming from fundamental properties of sequence structure that challenge alignment and assembly. These regions are disproportionately responsible for discordant calls between pipelines and technologies [@li_mapping_2014]. Their clinical importance often exceeds their representation in training data.
 
+::: {#fig-difficult-regions}
+**[FIGURE PLACEHOLDER]**
+
+[Enhancing] Ideogram-style genome overview highlighting regions where short-read variant calling systematically fails. Mark: (1) Segmental duplications (show *CYP2D6* region on chr22 as exemplar); (2) HLA complex on chr6p21 (shade entire region); (3) Centromeric and pericentromeric regions; (4) Subtelomeric regions; (5) Example tandem repeat loci (e.g., *HTT*, *FMR1*). Inset panel shows approximate percentage of genome in each difficulty class. Second inset shows how long reads resolve a region invisible to short reads.
+:::
+
 ### Segmental Duplications and Gene Families
 
 The *CYP2D6* gene illustrates how sequence complexity creates clinical blind spots. This gene encodes a cytochrome P450 enzyme responsible for metabolizing approximately 25% of clinically used drugs, including codeine, tamoxifen, and many antidepressants. It resides in a complex genomic region alongside two pseudogenes (*CYP2D7* and *CYP2D8*) sharing over 90% sequence identity. Short reads from one copy map almost equally well to another, producing ambiguous alignments that either receive arbitrarily assigned positions or inflated mapping quality scores that mask the underlying uncertainty.
@@ -201,10 +206,6 @@ Specialized tools address these challenges through alternative strategies. HLA i
 
 HLA exemplifies a broader principle: regions that are biologically rich and clinically actionable are often technically difficult. Deep models trained on callsets that downweight or exclude these regions inherit their absence, creating blind spots precisely where accurate genotyping matters most.
 
-::: {.callout-warning .content-visible when-profile="draft"}
-Visual TODO: Zoomed-in view of the HLA region comparing a linear reference vs. graph/pangenome representation, with multiple alternative haplotypes and structural variants, highlighting why linear alignment fails and how graph alignment improves recall.
-:::
-
 ## Benchmarking and Ground Truth
 
 Evaluating variant callers requires high-confidence truth sets and standardized comparison tools. The challenge is that "ground truth" for variant calling is not actually true in any absolute sense; it represents consensus derived from multiple imperfect observations using different technologies and algorithms. Without careful benchmarking design, it is easy to overfit to specific datasets, underestimate errors in difficult regions, or misinterpret the practical significance of small metric improvements.
@@ -220,10 +221,6 @@ For each sample, GIAB provides **high-confidence variant calls** representing co
 Standard metrics for variant calling include **recall (sensitivity)**, the fraction of true variants in the benchmark successfully identified by the caller; **precision (positive predictive value)**, the fraction of called variants that are present in the benchmark truth set; and **F1 score**, the harmonic mean of precision and recall providing a single summary when both matter equally. These metrics are typically reported separately for SNVs and indels and may be stratified by genomic context to reveal where performance degrades.
 
 Metrics can be defined at different levels: per-variant (did we identify the correct alternate allele?), per-genotype (did we correctly determine zygosity?), or per-site (did we recognize variation at this position regardless of allele?). For downstream models, genotype-level accuracy and sample-level completeness often matter more than simply counting variant matches. A model that receives incorrect genotypes at common regulatory variants will learn corrupted associations even if overall variant-level metrics appear strong.
-
-::: {.callout-warning .content-visible when-profile="draft"}
-Visual TODO: Example precision-recall or ROC curves for two variant callers evaluated on a GIAB-like benchmark, plus a small confusion-matrix-style illustration showing how false positives and false negatives map to the metrics.
-:::
 
 ### Limitations of Benchmarks
 
@@ -243,8 +240,10 @@ Around each candidate variant site, *DeepVariant* constructs a multi-channel ten
 
 This representation transforms the variant calling problem fundamentally. Rather than computing summary statistics (depth, allelic balance, strand bias) and feeding them to a classifier with predefined decision rules, *DeepVariant* presents the raw evidence to a neural network. The model learns that strand-biased support clustered at read ends looks different from balanced support distributed across read positions without anyone explicitly defining these features or their relative importance. Patterns invisible to hand-crafted heuristics become learnable.
 
-::: {.callout-warning .content-visible when-profile="draft"}
-Visual TODO: Example DeepVariant-style pileup image with color channels labeled (reference, base identity, base quality, strand, mapping quality), showing how reads stack around a potential variant site.
+::: {#fig-deepvariant-pileup}
+**[FIGURE PLACEHOLDER]**
+
+[Essential] Annotated example of a DeepVariant-style pileup tensor. Show a candidate variant site (e.g., a heterozygous SNV) with approximately 30 reads stacked vertically. Label the multiple channels: (1) read bases with matches in gray, mismatches in color-coded nucleotides; (2) base quality as intensity gradient; (3) mapping quality as separate channel; (4) strand orientation (forward/reverse); (5) reference sequence overlay at top. Include the candidate alleles. Show corresponding genotype posterior output (e.g., P(0/0)=0.02, P(0/1)=0.96, P(1/1)=0.02).
 :::
 
 ### Architecture and Training
@@ -270,10 +269,6 @@ The fundamental difference between *DeepVariant* and classical pipelines lies in
 This end-to-end approach offers several practical advantages. Calibration emerges from training rather than requiring separate recalibration steps with their own parameter tuning. Transfer across platforms and even species often succeeds with modest fine-tuning rather than complete redevelopment. The model can detect subtle artifact patterns that escape hand-crafted filters, learning representations of error modes that human experts never explicitly described.
 
 Both approaches share important limitations. Neither handles structural variants well; both focus primarily on SNVs and small indels. Both operate within the same overall pipeline framework: alignment, duplicate marking, and joint genotyping remain largely unchanged regardless of the per-sample caller used. *DeepVariant* is best understood as a drop-in replacement for the per-sample calling step, not a complete reimagining of variant discovery from raw data.
-
-::: {.callout-warning .content-visible when-profile="draft"}
-Visual TODO: Side-by-side schematic of a classical GATK-style pipeline vs. a DeepVariant-enhanced pipeline, emphasizing which components are hand-crafted vs. learned, and where deep learning models plug into the overall workflow.
-:::
 
 ## Implications for Genomic Deep Learning
 
@@ -308,7 +303,3 @@ Variant calling produces the substrate on which every subsequent model operates.
 DeepVariant and related approaches demonstrate that learned representations can outperform hand-crafted heuristics, at least on established benchmarks. This paradigm recurs throughout the book: sequence-to-function models that learn regulatory grammar directly from data (@sec-regulatory), splice predictors that discover motifs without explicit encoding (@sec-cnn), language models that learn evolutionary constraint from sequence alone (@sec-dna-lm). In each case, the central question is whether the additional model capacity captures genuine biological signal or overfits to artifacts in training data.
 
 The models that follow inherit whatever systematic biases exist in variant calls. A pathogenicity predictor trained on ClinVar labels inherits the sequencing technologies and population composition that generated those labels. A fine-mapping method that trusts variant calls uniformly will miscalibrate its posterior probabilities in difficult regions. Understanding where variant calling succeeds and fails is prerequisite to understanding where downstream models can be trusted.
-
-::: {.callout-warning .content-visible when-profile="draft"}
-Visual TODO: Conceptual "stack" figure showing raw sequence/signal → variant calling → variant-level representations (VCF, annotations) → genomic foundation models → downstream tasks (PGS, regulatory prediction, variant interpretation), with arrows indicating how errors/choices propagate upward.
-:::

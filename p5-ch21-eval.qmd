@@ -12,6 +12,16 @@ The standard machine learning recipe calls for randomly partitioning data into t
 
 Genomic data violates these assumptions at every level. Consider a protein dataset where the goal is to predict stability from sequence. Proteins in the same family share evolutionary history and often similar structures. If a training set includes beta-lactamase variants from *E. coli* and the test set includes beta-lactamase variants from *Klebsiella*, the model may appear to generalize to "new" proteins while actually recognizing sequence patterns it saw during training. The test performance reflects memorization of family-specific features rather than general principles of protein stability.
 
+::: {#fig-random-splits-fail layout-ncol=3}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+[Essential] Three-panel comparison. Panel A (Image classification): Grid of images; random assignment works; independent. Panel B (Protein classification): Family tree; random split places related across train/test; 80% identity highlighted; "memorization pathway." Panel C (Variant prediction): Gene diagram with variants; same gene in train/test; family pedigree spanning splits; population structure. Annotations: sequence identity, relatedness, pseudo-replication.
+:::
+
 The problem compounds when sequence identity is high. Two proteins sharing 80% sequence identity will typically have similar structures and functions. A model trained on one and tested on the other is not really being tested on a novel example; it is being asked to interpolate within a region of sequence space it has already explored. Even at 30% sequence identity, the so-called "twilight zone" of homology detection, proteins often share structural and functional similarities that can be exploited by sufficiently powerful models.
 
 Variant-level data presents analogous challenges. Variants within the same gene share genomic context, and variants affecting the same protein domain share structural environment. Variants from the same individual share haplotype background. Variants from the same population share allele frequency distributions shaped by demographic history. Each of these relationships creates opportunities for models to learn shortcuts that generalize within the training distribution but fail on genuinely novel examples.
@@ -21,6 +31,12 @@ The consequence is that random splits systematically overestimate generalization
 ## Homology-Aware Splitting
 
 The solution to homology-driven leakage is to explicitly account for sequence similarity when constructing data splits. Rather than random assignment, examples are clustered by sequence identity, and entire clusters are assigned to training, validation, or test sets. This ensures that no test example is "too similar" to any training example, forcing the model to demonstrate genuine generalization.
+
+::: {#fig-homology-splitting}
+**[FIGURE PLACEHOLDER]**
+
+[Essential] Step-by-step workflow. Steps: (1) All sequences; (2) Clustering (CD-HIT/MMseqs2 at threshold); (3) Cluster visualization; (4) Split assignment (entire clusters to train/val/test); (5) Validation (no test >X% identity to training). Code snippets. Comparison table (strategy, strictness, efficiency, use case). Key insight: threshold determines hardness.
+:::
 
 ### Clustering Tools and Workflows
 
@@ -58,6 +74,12 @@ For genomic (non-protein) sequences, repeat elements and transposable elements c
 ## Splitting by Biological Axis
 
 Beyond sequence homology, genomic data admits multiple axes along which splits can be constructed. The choice of axis determines what kind of generalization is being tested.
+
+::: {#fig-splitting-strategies}
+**[FIGURE PLACEHOLDER]**
+
+[High] Matrix: Splitting strategies vs. what they test. Rows: Random, individual-aware, family-aware, chromosome, gene/protein family, cohort/site, temporal, ancestry. Columns: Sequence generalization, individual, population, temporal robustness, cross-site. Cells: ✓, ✗, ~. Schematics for each strategy; performance drop annotations; combinable strategies note.
+:::
 
 ### Splitting by Individual
 
@@ -103,6 +125,12 @@ The key limitation of temporal splits is non-stationarity. The distribution of v
 
 Even with careful splitting, leakage can enter evaluations through multiple pathways. Understanding common leakage patterns helps practitioners design cleaner evaluations and critically assess published results.
 
+::: {#fig-leakage-taxonomy}
+**[FIGURE PLACEHOLDER]**
+
+[High] Taxonomy tree. Top: Data Leakage. Branches: Feature Leakage (features encode target; conservation→pathogenicity; detection via ablation), Label Leakage (labels derived from model-accessible info; ClinVar circularity; temporal validation), Benchmark Leakage (pretraining overlaps evaluation; ENCODE everywhere; document and check overlap). For each: red warning, genomic example, detection strategy, mitigation.
+:::
+
 ### Feature Leakage
 
 Feature leakage occurs when input features encode information about the target that would not be available at prediction time. In genomics, conservation scores are a common source. If a model uses PhyloP scores as features and the target is pathogenicity, the model may learn that "conserved positions are more likely pathogenic" without learning anything about variant biology. This would be fine if conservation scores are intended to be part of the prediction pipeline, but problematic if the goal is to develop a model that can predict pathogenicity from sequence alone.
@@ -134,6 +162,12 @@ Several strategies help detect leakage. **Baseline analysis** asks whether simpl
 ## Metrics for Genomic Tasks
 
 Metrics quantify model performance but different metrics answer different questions. Choosing appropriate metrics requires clarity about what aspect of performance matters for the intended application.
+
+::: {#fig-metric-selection}
+**[FIGURE PLACEHOLDER]**
+
+[High] Decision flowchart. Decision points: Binary vs continuous? Balanced? Ranking vs probability? Clinical decisions? Metric recommendations at each terminal. Metric descriptions: AUROC, AUPRC, calibration, net benefit. Warning callouts: "AUROC invariant to monotonic transforms"; "High correlation ≠ clinically meaningful."
+:::
 
 ### Discrimination Metrics
 
@@ -242,6 +276,16 @@ Deep learning models are sensitive to initialization and optimization stochastic
 ## Evaluating Foundation Models
 
 Genomic foundation models (@sec-fm-principles) admit multiple evaluation paradigms, each testing different aspects of learned representations.
+
+::: {#fig-fm-evaluation-paradigms layout-ncol=3}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+[Enhancing] Three-column comparison. Column 1 (Zero-shot): Frozen model → direct prediction; tests alignment; ESM-1v log-likelihood example; pros/cons. Column 2 (Linear Probing): Frozen → embeddings → linear classifier; tests linear accessibility; isolates representation quality; pros/cons. Column 3 (Fine-tuning): Gradients → adaptation; tests total potential; best performance but conflates representation with adaptation. Bottom: Data efficiency curve; "Pretraining value = gap at low data."
+:::
 
 ### Zero-Shot Evaluation
 

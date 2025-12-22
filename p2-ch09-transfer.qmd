@@ -10,6 +10,12 @@ The reality requires careful navigation. Every adaptation decision involves trad
 
 When a cardiologist requests variant interpretation for a patient with hypertrophic cardiomyopathy, the clinical need (classifying a specific *MYH7* variant) differs fundamentally from the data available during model development (millions of protein sequences sampled across all of evolution). Bridging this gap requires understanding what properties of pretraining determine whether transfer will succeed. When this bridge fails, patients receive confident predictions based on patterns irrelevant to their clinical context.
 
+::: {#fig-domain-alignment}
+**[FIGURE PLACEHOLDER]**
+
+[Essential] Schematic illustrating domain shift in genomic transfer learning. Left panel (Source Domain): Diverse genomic sequences during pretraining, with learned representations capturing statistical regularities (local motifs, composition, conservation). Right panel (Target Domain): Sparse labeled examples for clinical task (e.g., pathogenic variants, tissue-specific enhancers), highlighting distributional differences. Center: Representation space showing well-transferred features (local motifs, conservation patterns) connected by solid arrows vs. poorly-transferred features (long-range regulatory logic, tissue-specific patterns) with dashed arrows indicating transfer failure.
+:::
+
 ### The Gap Between Pretraining and Deployment
 
 The **source domain** encompasses the data and objectives used during pretraining. For DNA foundation models, source domains typically include reference genomes, pan-genomic collections spanning population diversity, or metagenomic assemblies sampling environmental sequence space [@ji_dnabert_2021; @dalla-torre_nucleotide_2023]. For protein models, databases like UniRef provide billions of sequences representing the diversity of evolutionary history [@suzek_uniref_2015]. Pretraining objectives (masked language modeling, next-token prediction, contrastive learning) encourage models to capture statistical regularities that help predict held-out tokens: local motifs, compositional patterns, and the signatures distinguishing functional from random sequence. These learned regularities become the representations that might transfer to downstream tasks.
@@ -21,11 +27,6 @@ Four factors determine whether this distributional gap can be bridged. Task rela
 ### Recognizing Transfer Outcomes
 
 Not all transfer helps, and distinguishing outcomes requires explicit validation. **Positive transfer** accelerates learning or improves final performance beyond training from scratch. **Negative transfer** occurs when pretraining actively hurts, either because learned features conflict with task requirements or because pretrained initialization creates optimization difficulties [@wang_characterizing_2019]. Neutral transfer describes situations where pretraining neither helps nor hurts, wasting computational resources on pretrained models without benefit. When a pharmacogenomics team adapts a DNA language model for *CYP2D6* metabolizer status prediction, they must empirically verify which outcome applies to their specific task rather than assuming transfer will help because it helped elsewhere.
-
-::: {.callout-note}
-## Figure Recommendation: Source-Target Domain Alignment
-Schematic illustrating domain shift in genomic transfer learning. Left panel: source domain (pretraining) showing diverse sequence types with statistical regularities captured. Right panel: target domain examples (pathogenic variants, tissue-specific enhancers, rare functional elements) highlighting distributional differences from pretraining. Center: representation space showing well-transferred features (local motifs) versus poorly-transferred features (long-range regulatory logic). Arrows indicate successful versus failed transfer scenarios.
-:::
 
 
 ## Feature Extraction with Frozen Backbones
@@ -59,6 +60,12 @@ A research hospital developing tissue-specific expression predictors faces an im
 
 The efficiency gains prove substantial. A transformer with 500 million parameters might require updating only 2 to 5 million LoRA parameters (representing the low-rank decompositions applied to attention weight matrices), reducing memory requirements by an order of magnitude compared with full fine-tuning. This efficiency enables training on consumer GPUs for models that would otherwise require specialized infrastructure, and enables systematic hyperparameter search that would be prohibitive with full parameter updates. Zhou et al. demonstrated that LoRA adapters on *Nucleotide Transformer* enable tissue-specific chromatin accessibility prediction, where separate low-rank matrices capture tissue-specific regulatory patterns while the pretrained backbone encodes general sequence understanding [@zhou_dnabert-2_2023].
 
+::: {#fig-lora-architecture}
+**[FIGURE PLACEHOLDER]**
+
+[High] Diagram showing LoRA modification to a transformer weight matrix. Show: Original frozen weight matrix W (large, e.g., 768×768). LoRA decomposition: small matrices A (768×r) and B (r×768) where r << 768 (e.g., r=16). Combined transformation: W + BA. Annotate parameter counts: "500M frozen + 2M trainable." Show how this applies to attention weight matrices (W^Q, W^K, W^V, W^O).
+:::
+
 ### Alternative PEFT Approaches
 
 **Adapter layers** take a different architectural approach by inserting small bottleneck modules between transformer layers rather than modifying existing weights. Each adapter consists of a down-projection reducing dimensionality (typically by a factor of 4 to 16), a nonlinear activation, and an up-projection restoring the original dimension. Original transformer parameters remain frozen; only adapter parameters update. Different adapters can be trained for different tasks, enabling multi-task deployment from a single shared backbone without interference between tasks [@houlsby_parameter-efficient_2019].
@@ -86,11 +93,6 @@ The approach suits scenarios when labeled datasets are large (tens of thousands 
 
 The conservative strategy is to start with simpler methods and escalate only when they demonstrably fail. Establish frozen feature baselines first. If frozen features outperform random initialization, try PEFT methods before committing to full fine-tuning. Compare fine-tuned models against properly-tuned from-scratch baselines on the same target data. Monitor for overfitting through validation curves and early stopping. The goal is achieving required performance with minimal adaptation complexity.
 
-::: {.callout-note}
-## Figure Recommendation: Adaptation Strategy Spectrum
-Visual comparison of frozen features, LoRA, adapters, and full fine-tuning. For each strategy: (1) schematic showing which parameters update (highlighted) versus remain frozen (grayed), (2) typical parameter count as percentage of full model, (3) representative data requirements for effective use, (4) risk of catastrophic forgetting. Illustrate the tradeoff frontier between preservation and flexibility.
-:::
-
 
 ## Probing Representations
 
@@ -113,6 +115,12 @@ The diagnostic value extends beyond predicting which adaptation strategy to use.
 
 A clinical genomics laboratory evaluating foundation models for deployment must translate abstract transfer learning principles into concrete decisions. The molecular diagnostics team has 2,000 validated enhancer sequences: should they use frozen features, LoRA, or full fine-tuning? Which approach maximizes performance given available data? When should transfer be abandoned entirely in favor of task-specific training? Making the wrong choice means either leaving performance on the table or wasting months on approaches that will fail.
 
+::: {#fig-adaptation-decision-tree}
+**[FIGURE PLACEHOLDER]**
+
+[Essential] Flowchart guiding adaptation strategy selection. Decision nodes: (1) "Labeled data quantity?" with branches <500, 500-5000, >10000. (2) "Task similarity to pretraining?" with branches high/moderate/low. (3) "Computational constraints?" with branches limited/moderate/substantial. Terminal nodes recommend: Linear probing, LoRA/Adapters, Full fine-tuning, or From-scratch training. Include expected tradeoffs at each terminal (accuracy, compute, overfitting risk).
+:::
+
 ### Data Quantity Determines What Is Possible
 
 Data quantity provides the primary decision axis, though the thresholds depend on model size and task complexity.
@@ -130,11 +138,6 @@ Task similarity provides the second decision axis. When target tasks closely res
 Computational constraints impose practical limits. Linear probing requires minutes on CPUs. LoRA fine-tuning requires hours on single GPUs. Full fine-tuning of large models requires days on multiple GPUs or specialized hardware. When infrastructure is limited, simpler approaches may be the only feasible option regardless of what would theoretically be optimal.
 
 Empirical validation supersedes heuristics. No rule reliably predicts which strategy will succeed for any specific combination of model, task, and data. The guidelines above indicate which strategies merit trying first, but final selection requires comparing approaches on held-out validation data matching the intended deployment distribution.
-
-::: {.callout-note}
-## Figure Recommendation: Adaptation Strategy Decision Tree
-Flowchart guiding adaptation strategy selection. Decision nodes based on: (1) labeled data quantity (<500, 500-5000, >10000), (2) task similarity to pretraining, (3) computational constraints. Terminal nodes recommend specific approaches with expected tradeoffs. Include example scenarios for each pathway.
-:::
 
 
 ## Domain Shift and Cross-Context Transfer
@@ -157,11 +160,15 @@ Detecting domain shift before deployment prevents silent clinical failures. Stat
 
 When domain shift is detected, mitigation strategies include domain-adaptive fine-tuning, importance weighting of training examples, and explicit modeling of shift through domain-adversarial training [@ganin_domain-adversarial_2016]. When shift is severe and cannot be mitigated, acknowledging that transfer is inappropriate for this context prevents overconfident deployment of models that will fail.
 
-::: {.callout-note}
-## Figure Recommendation: Domain Shift Detection
-Three-panel visualization of domain shift. Panel A: UMAP projection of embeddings showing training distribution (dense cluster) and test examples (scattered points indicating varying degrees of shift). Panel B: Calibration curves comparing confidence versus accuracy for in-distribution versus out-of-distribution examples. Panel C: Performance degradation curve showing accuracy as a function of distributional distance from training data.
-:::
+::: {#fig-domain-shift-detection layout-ncol=3}
+**[FIGURE PLACEHOLDER A]**
 
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+[High] Three-panel visualization of domain shift detection. Panel A: UMAP/t-SNE projection of embeddings showing training distribution (dense cluster) and test examples at varying distances, with out-of-distribution examples clearly separated. Panel B: Calibration curves comparing confidence vs. accuracy for in-distribution (well-calibrated diagonal) vs. out-of-distribution examples (overconfident, curve below diagonal). Panel C: Performance degradation curve showing accuracy declining as distributional distance from training data increases.
+:::
 
 ## Few-Shot and Zero-Shot Learning
 
@@ -228,6 +235,19 @@ Models pretrained on human regulatory sequences and applied to zebrafish enhance
 
 A research group reports that their foundation model adaptation achieves 95% accuracy for splice variant classification, far exceeding previous methods. Six months later, clinical deployment reveals performance closer to 70%, with systematic failures on the rare variants that matter most. The initial evaluation was not wrong, but it was misleading. **Proper validation separates genuine transfer success from evaluation artifacts that dissolve on contact with clinical reality.**
 
+::: {#fig-validation-pitfalls layout-ncol=2}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+**[FIGURE PLACEHOLDER D]**
+
+[High] Multi-panel figure illustrating common validation failures. Panel A: Venn diagram showing pretraining data / test data overlap creating leakage (inflated performance). Panel B: Timeline showing temporal leakage when training on variants annotated after test set creation. Panel C: Bar chart comparing foundation model against weak baseline (large gap, misleading) vs. properly-tuned baseline (small gap, realistic). Panel D: Stratified performance showing aggregate accuracy (90%) vs. rare-variant accuracy (50%), revealing hidden failures.
+:::
+
+
 ### Sources of Spurious Success
 
 Test set overlap with pretraining data creates artificial performance inflation. Foundation models trained on massive genomic corpora may inadvertently include sequences later used for evaluation. When benchmarking on variants that appeared in pretraining data (even if unlabeled at pretraining time), the model has seen the sequences and may have memorized relevant patterns. Verifying that test sequences were excluded from pretraining requires careful provenance tracking, which published benchmarks often lack [@lee_pre-training_2020]. Chromosome-based splits help but do not fully address the problem when pretraining spans multiple species or includes population-level diversity.
@@ -241,12 +261,6 @@ Inappropriate baselines inflate apparent transfer benefits. Comparing adapted fo
 Single-metric reporting obscures important performance characteristics. A model achieving 90% overall accuracy may show 95% accuracy on common variants and 50% accuracy on rare variants, with the clinically important rare cases hidden by aggregate metrics. Stratified evaluation by allele frequency, variant type, gene family, and other clinically relevant categories reveals whether transfer benefits generalize or concentrate in particular subgroups.
 
 Confidence interval reporting and multiple training runs reveal performance variability. A single training run may produce misleadingly good or bad results through random initialization effects or data sampling. Testing on multiple independent datasets rather than a single benchmark reveals whether gains generalize beyond the specific evaluation setting.
-
-::: {.callout-note}
-## Figure Recommendation: Validation Pitfalls
-Multi-panel figure illustrating common validation failures. Panel A: Venn diagram showing pretraining/test set overlap creating leakage. Panel B: Timeline showing temporal leakage from future-dated annotations. Panel C: Bar chart comparing foundation model against weak versus strong baselines, showing inflated versus realistic transfer benefit estimates. Panel D: Stratified performance showing aggregate versus rare-variant accuracy divergence.
-:::
-
 
 ## Emerging Directions
 

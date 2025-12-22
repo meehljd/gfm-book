@@ -8,6 +8,16 @@ This chapter examines the regulatory, ethical, and frontier challenges that will
 
 ## Regulatory Frameworks for Genomic AI
 
+::: {#fig-regulatory-pathways layout-ncol=3}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+[Essential] Jurisdiction comparison. Columns: FDA (US), CE-IVD (EU), emerging (China, Japan, others). For each: Pathway (510(k), De Novo, PMA; CE marking; national approval); Evidence requirements; Update policies; Timeline; Key considerations. Complexity factors: Software as a Medical Device (SaMD); foundation models as "substantially equivalent" or novel; continuously learning systems; multi-site deployment. Annotation: Regulatory landscape evolving; early engagement recommended.
+:::
+
 ### The Software as Medical Device Paradigm
 
 Regulatory agencies worldwide classify AI-based clinical tools as **software as a medical device (SaMD)**, a category that applies when software itself constitutes the medical device rather than merely controlling hardware. The International Medical Device Regulators Forum defines SaMD risk tiers based on the seriousness of the health condition and the role software plays in clinical decision-making: software that provides information to drive clinical management of a serious condition receives higher scrutiny than software that merely informs decisions about non-serious conditions.
@@ -59,6 +69,12 @@ Governance structures must therefore address not just present uses but future po
 No consensus has emerged on optimal governance structures for genomic foundation model development. The field operates within a patchwork of institutional policies, national regulations, and community norms that permit some training configurations while prohibiting others. Researchers building foundation models must navigate this landscape carefully, documenting data provenance, respecting access restrictions, and anticipating how governance norms may evolve as AI capabilities advance.
 
 ## Privacy and Genomic Data
+
+::: {#fig-data-governance}
+**[FIGURE PLACEHOLDER]**
+
+[High] Multi-panel governance challenges. Panel A (Privacy vs. Utility): Anonymized data (limited utility) vs identified data (utility but privacy risk); differential privacy tradeoff curve. Panel B (Consent Complexity): Broad consent, specific consent, dynamic consent, tiered consent; each with implications. Panel C (Federated Learning): Data stays local; model travels; gradient aggregation; privacy-preserving computation. Panel D (Cross-Border Issues): Different jurisdictions with different rules; GDPR, HIPAA, emerging regulations; data localization requirements. Key insight: No perfect solution; governance requires ongoing negotiation between stakeholder interests.
+:::
 
 ### The Re-identification Challenge
 
@@ -130,6 +146,12 @@ System design must also prevent automation bias, the tendency for human operator
 
 ## Dual Use and Biosecurity
 
+::: {#fig-dual-use-governance}
+**[FIGURE PLACEHOLDER]**
+
+[High] Risk assessment matrix. Axes: Capability (what the model can do) × Access (who can use it). Quadrants: Low capability/restricted (current academic); high capability/restricted (industrial deployment with oversight); low capability/open (open-source educational); high capability/open (highest concern). Risk factors: Pathogen design, antibiotic resistance, agricultural biosecurity, emergent capabilities. Governance mechanisms: Pre-release evaluation, staged release, monitoring, audit trails, benefit-risk assessment. Key insight: Balancing open science benefits against misuse risks.
+:::
+
 ### Generative Models and Pathogen Enhancement
 
 Foundation models capable of generating functional biological sequences raise biosecurity concerns distinct from those posed by predictive models. A protein language model trained to generate functional enzymes might, in principle, be prompted to design proteins with enhanced pathogenic properties. A regulatory sequence model might generate promoters optimized for expression in human tissues of concern. A generative DNA model might propose sequences that evade detection by standard diagnostics.
@@ -164,6 +186,12 @@ Current approaches typically focus on single scales or model multi-scale relatio
 
 Architectures that explicitly integrate across scales remain a frontier. Hierarchical models that compose representations at different resolutions, graph neural networks that encode biological relationships across scales, and hybrid systems that combine modality-specific encoders with cross-modal attention layers all represent active research directions. Success will require not just architectural innovation but appropriate training data that captures multi-scale relationships and evaluation protocols that probe multi-scale reasoning.
 
+::: {#fig-multiscale-integration}
+**[FIGURE PLACEHOLDER]**
+
+[High] Scale hierarchy visualization. Levels: (1) Nucleotide (base pairs, modifications); (2) Sequence element (motifs, domains, genes); (3) Molecular complex (chromatin, ribonucleoprotein); (4) Cell (transcriptome, proteome, state); (5) Cell population (tissue, heterogeneity); (6) Tissue/Organism (intercellular communication, development). Current model coverage: DNA-LM (nucleotide → gene); Protein models (residue → protein); Single-cell models (cell state). Scale boundary challenges: Arrow indicating information loss at each boundary; hierarchical models emerging; graph networks for relational structure. Key insight: Biology operates across scales; future models must integrate.
+:::
+
 ### Causality and Mechanism
 
 The distinction between correlation and causation pervades genomic analysis. A variant associated with disease in GWAS may be causal, in linkage disequilibrium with a causal variant, or confounded by population structure or other factors. A regulatory element predicted to affect expression may directly drive transcription or may merely co-occur with other causal elements. Foundation models, like other statistical learners, capture patterns in training data without distinguishing causal from correlational relationships.
@@ -173,6 +201,12 @@ Progress toward causal and mechanistic reasoning in genomic AI likely requires i
 Incorporating causal structure into foundation models is technically challenging. Causal relationships are often unknown, contested, or context-dependent. Training objectives that encourage causal reasoning must balance causal accuracy against predictive performance on tasks where correlation suffices. Evaluation of causal reasoning requires benchmarks with known causal ground truth, which are scarce for complex biological systems.
 
 ## Emerging Directions
+
+::: {#fig-agentic-systems}
+**[FIGURE PLACEHOLDER]**
+
+[High] Autonomous design cycle with oversight. Cycle components: (1) Generative model (proposes candidates, optimizes toward objective); (2) Safety filter (screen against hazard databases, reject concerning, log for audit); (3) Automated synthesis (DNA/protein production, QC, physical realization); (4) High-throughput assay (functional measurement, multiplexed readouts, data generation); (5) Model update (results improve predictions, refine objective, guide next iteration). Human oversight points: Objective specification (before cycle); periodic review (during); stopping criteria (when to halt); anomaly investigation (if unexpected). Risk management: Containment, audit trails, escalation, kill switches. Key insight: Agentic systems require careful objective specification and monitoring; human oversight essential.
+:::
 
 ### Multimodal Integration
 
@@ -198,6 +232,13 @@ Learning health systems provide a framework for continuous improvement: clinical
 
 The foundation model paradigm offers particular advantages for learning health systems. Pretrained models can be adapted to local populations and practices through fine-tuning on institutional data. Improvements demonstrated at one institution can potentially transfer to others through shared model updates. Common architectures enable comparison across sites and accumulation of evidence across diverse populations.
 
+::: {#fig-learning-health-system}
+**[FIGURE PLACEHOLDER]**
+
+[Enhancing] Circular learning system. Components: (1) Clinical deployment (FM informs decisions, predictions reach patients); (2) Outcome observation (what happened? correct/incorrect?); (3) Data aggregation (outcomes linked to predictions, privacy-preserving); (4) Model refinement (updated training data, improved predictions, federated learning); (5) Validation and approval (updated model validated, regulatory approval, return to deployment). Governance at each stage: Who controls learning? How are improvements validated? How are benefits distributed? How are underrepresented populations protected? Multi-site collaboration: Common architecture enables comparison; improvements transfer; accumulate evidence across diverse populations. Key insight: Learning systems create virtuous cycles; governance must ensure benefits reach all equitably.
+:::
+
+
 Realizing this vision requires infrastructure for secure data sharing, governance frameworks that enable learning while protecting privacy, regulatory pathways that accommodate evolving systems, and clinical workflows that support appropriate use and oversight. The technical capabilities described in this book are necessary but not sufficient. Genomic foundation models will achieve their potential only through sustained collaboration among technologists, clinicians, patients, policymakers, and communities working together to build systems that are both capable and trustworthy.
 
 ## The Work Ahead
@@ -206,17 +247,3 @@ The ultimate test of genomic foundation models is whether they improve health ou
 Learning health systems provide a framework for bridging this gap: clinical use generates data that feeds back into model refinement, creating virtuous cycles where models improve as they serve more patients. Such systems raise governance questions as important as the technical ones. Who controls the learning process? How are improvements validated before deployment? How are benefits and risks distributed across patients, providers, and technology developers? How do we ensure that populations underrepresented in training data are not further disadvantaged by systems that learn primarily from others?
 
 Genomic foundation models will achieve their potential only through sustained collaboration among technologists, clinicians, patients, policymakers, and communities working together to build systems that are both capable and trustworthy. Capability without trustworthiness is dangerous: models that predict accurately but fail silently for certain populations cause harm even as they help others. Trustworthiness without capability is insufficient: systems that are transparent and fair but do not improve on existing practice offer nothing worth adopting. The technical achievements described in this book enable new capabilities; the human systems that govern their development and deployment will determine whether those capabilities translate into genuine benefit for the patients and populations that genomic medicine aims to serve.
-
----
-
-## Visual Recommendations
-
-**Figure 29.1**: Regulatory pathway comparison. Three-column diagram comparing FDA (United States), CE marking (European Union), and representative other jurisdictions (Japan, Australia) for genomic AI medical devices. Show classification tiers, required evidence types, and typical timelines. Annotate with examples of genomic AI tools at each regulatory stage.
-
-**Figure 29.2**: Data governance models. Schematic comparing traditional consent (participant → researcher), broad consent (participant → biobank → multiple researchers), dynamic consent (ongoing participant engagement), and federated/privacy-preserving approaches (data remains local, only aggregates shared). Include arrows showing data flow and control points.
-
-**Figure 29.3**: Dual-use risk assessment framework. Two-dimensional matrix with axes for "capability for harm" (low to high) and "accessibility of knowledge required" (low to high). Position example applications (variant interpretation, regulatory design, protein generation, sequence optimization) in appropriate quadrants. Annotate with suggested safeguards for each quadrant.
-
-**Figure 29.4**: Multi-scale integration architecture. Hierarchical diagram showing biological scales (nucleotide, element, gene, chromosome, cell, tissue, organism) and corresponding computational representations. Use connecting arrows to indicate information flow between scales. Highlight current model limitations at scale boundaries.
-
-**Figure 29.5**: Closed-loop design system. Circular workflow diagram showing: generative model proposes sequences → automated synthesis produces candidates → high-throughput assay measures function → results update model or guide selection → iteration. Annotate with where safety filters, human oversight, and stopping criteria can be applied.

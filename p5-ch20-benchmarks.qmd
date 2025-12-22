@@ -7,6 +7,12 @@ The genomic AI field has accumulated substantial evaluation infrastructure. Doze
 
 This chapter surveys the benchmark landscape for genomic foundation models, organized by biological modality. We examine protein benchmarks first, as the most mature evaluation ecosystem, then DNA and regulatory benchmarks, variant effect prediction benchmarks, and trait-level benchmarks linking genetics to phenotypes. Throughout, we attend not only to what these benchmarks measure but to their construction, their biases, and their limitations. The methodological principles for using benchmarks properly are covered in @sec-evaluation. Here we focus on cataloging what exists and developing the critical perspective necessary to interpret benchmark claims.
 
+::: {#fig-benchmark-landscape}
+**[FIGURE PLACEHOLDER]**
+
+[Essential] Navigational map organized as matrix. Rows (modalities): Protein, DNA/Regulatory, Variant Effect, Trait-Level. Columns (benchmark types): Structure, Function, Effect Prediction, Clinical Relevance. Include: TAPE, FLIP, ProteinGym, Genomic Benchmarks, BEND, ClinVar, CAGI, DMS/MaveDB, TraitGym, EmbedGEM. Visual encoding: icons per modality, color intensity for maturity, size for scale. Annotations: typical evaluation progression, prospective vs retrospective benchmarks.
+:::
+
 ## Protein Language Model Benchmarks
 
 Protein language models (@sec-protein-lm) benefit from the longest-established and most systematic evaluation ecosystem in genomic AI. The maturity of protein benchmarks reflects both the longer history of computational protein science and the relative tractability of protein structure and function prediction compared to regulatory genomics.
@@ -195,6 +201,12 @@ Homology-aware splitting clusters sequences by similarity before assigning clust
 
 Chromosome-based splitting holds out entire chromosomes for testing, preventing any position-based leakage within chromosomes. This approach is common for regulatory benchmarks but does not account for homologous sequences on different chromosomes. Temporal splitting reserves recent data for testing, appropriate when benchmarks derive from databases with submission timestamps. Each splitting strategy tests different aspects of generalization; the choice should match the intended deployment scenario.
 
+::: {#fig-leakage-pathways}
+**[FIGURE PLACEHOLDER]**
+
+[High] Flow diagram showing data flow with leakage highlighted. Central pipeline: Pretraining → FM → Fine-tuning → Benchmark. Leakage pathways (red): Direct overlap, homology leakage, label circularity, resource sharing, community iteration. Specific examples: ESM/UniRef→ProteinGym, ClinVar/CADD circularity, ENCODE in both. Visual encoding: legitimate flow blue, leakage red dashed.
+:::
+
 ### Metric Selection and Aggregation
 
 Benchmark metrics determine what aspects of model performance are measured. Discrimination metrics (AUROC, AUPRC, correlation) assess whether models rank predictions correctly. Calibration metrics (ECE, reliability diagrams) assess whether predicted probabilities match observed frequencies. Clinical utility metrics (net benefit, decision curves) assess whether predictions improve decisions compared to treating all patients the same.
@@ -212,6 +224,7 @@ More subtle gaming arises from selective reporting. Models may be evaluated on m
 
 The circularity between predictors and databases creates particularly insidious gaming dynamics. When ClinVar classifications incorporate computational predictions, and those predictions are then benchmarked against ClinVar, the benchmark rewards models that resemble their predecessors rather than models that provide independent information. This circularity is rarely acknowledged in benchmark reporting, yet it fundamentally compromises the validity of performance claims.
 
+
 Mitigating gaming requires structural changes to evaluation practice: prospective benchmarks like CAGI where predictions precede labels, held-out evaluation consortia that resist optimization pressure, and reporting standards that require disclosure of all benchmarks attempted rather than only those where performance was favorable. The field's maturation depends on developing evaluation cultures that reward honest assessment over leaderboard position.
 
 ## Benchmark Saturation and Staleness
@@ -227,6 +240,14 @@ Saturation is problematic because it removes the benchmark's value for model sel
 Detecting saturation requires estimating the irreducible error. For benchmarks with replicate measurements, comparing model performance to replicate concordance provides an upper bound: models cannot systematically outperform the reproducibility of the underlying assay. For benchmarks without replicates, saturation is harder to diagnose. One heuristic is tracking the rate of improvement: when new methods provide diminishing gains despite substantial architectural innovations, saturation is likely.
 
 The response to saturation should be moving to harder benchmarks that still discriminate between methods, developing new benchmarks that capture aspects of performance that existing benchmarks miss, and retiring saturated benchmarks from active leaderboard competition while retaining them as sanity checks.
+
+::: {#fig-benchmark-saturation layout-ncol=2}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+[High] Two-panel figure. Panel A (Saturation curve): Time vs benchmark performance; multiple lines; ceiling line; saturation zone annotation. Panel B (Staleness timeline): Benchmark creation dates above; data collection/annotation dates; current year below; growing gap; examples (ENCODE 2012, ClinVar evolving).
+:::
 
 ### Staleness: When Benchmarks Diverge from Practice
 
@@ -247,6 +268,12 @@ Mitigating leakage from scale requires explicit documentation of pretraining cor
 ## The Benchmark-Deployment Gap
 
 High benchmark performance does not guarantee deployment success. Understanding why requires examining the systematic differences between benchmark settings and real-world applications.
+
+::: {#fig-proxy-target-gap}
+**[FIGURE PLACEHOLDER]**
+
+[Essential] Conceptual diagram with layers. Left column (What we measure): ClinVar labels, held-out AUROC, DMS correlation, expression prediction accuracy. Right column (What we want): True clinical impact, deployment discrimination, actual protein function, regulatory mechanism. Center: Arrows with gap indicators. Gap factors: label quality, distribution shift, metric mismatch, temporal drift. Width of arrows indicates strength of proxy. Key insight: gap not uniform.
+:::
 
 ### Distribution Shift
 
@@ -280,11 +307,19 @@ Despite the proliferation of benchmark suites, systematic gaps remain in the gen
 
 **Populations**: Non-European ancestry groups remain severely underrepresented. Performance stratified by ancestry reveals gaps that aggregate metrics conceal. Environmental diversity (lifestyle, exposures, treatments) that shapes phenotypic expression is rarely incorporated.
 
+::: {#fig-cross-population-performance}
+**[FIGURE PLACEHOLDER]**
+
+[High] Grouped bar chart or heatmap. Rows: Different tasks/models. Columns: Ancestry groups (European, African, East Asian, South Asian, Admixed). Values: Performance metrics. Specific comparisons: PGS 40-75% reduction non-European; ClinVar-trained models across ancestries. Annotations: sample sizes, significance, training data representation. Key insight: aggregate conceals systematic failures.
+:::
+
 **Modalities**: Long-read sequencing data is scarce in benchmarks despite its advantages for structural variants and phasing. Single-cell benchmarks are emerging but remain limited compared to bulk assay benchmarks. Spatial transcriptomics and other emerging modalities have minimal coverage.
 
 **Clinical endpoints**: Most benchmarks use molecular surrogates rather than hard clinical endpoints. Disease incidence, progression, treatment response, and patient-reported outcomes are rarely the direct prediction target. The gap between molecular proxy accuracy and clinical utility remains poorly characterized.
 
 These gaps mean that strong benchmark performance may not predict utility for underserved populations, understudied variant classes, or clinical applications that depend on endpoints the benchmarks don't measure.
+
+
 
 ## Incentives and Their Limits
 

@@ -6,14 +6,15 @@ DNA language models import this paradigm to nucleotide sequences. Rather than tr
 
 The opportunity is substantial but not guaranteed to succeed. Protein sequences have clear functional units (domains, secondary structures, binding sites) that language model representations can capture. DNA sequences present a different challenge: regulatory grammar operates at multiple scales simultaneously, from six-nucleotide transcription factor binding sites through kilobase-scale enhancers to megabase chromatin domains. Whether self-supervised learning can discover this multi-scale grammar remains an empirical question. This chapter traces the development of DNA language models from early proof-of-concept systems through current architectures, examining the design choices that distinguish different approaches, analyzing what these models actually learn through probing studies, and assessing their performance across standardized benchmarks.
 
-::: {.callout-note}
-**Figure suggestion:** Timeline visualization showing the evolution of DNA language models from 2021 to 2025, with key milestones including DNABERT (2021), Nucleotide Transformer (2023), HyenaDNA (2023), Caduceus (2024), and Evo 2 (2025). Annotate with context length progression (512 bp → 6 kb → 1 Mb) and key architectural innovations at each stage.
-:::
-
-
 ## From Task-Specific CNNs to General-Purpose Language Models
 
 The convolutional neural networks examined in @sec-cnn achieved remarkable performance on specific genomic prediction tasks. DeepSEA predicted chromatin marks from sequence; SpliceAI identified splice junctions with clinical utility; ExPecto estimated expression effects of variants. Each model was engineered for its particular application, with architectural choices (filter sizes, dilation patterns, pooling strategies) optimized for the task at hand.
+
+::: {#fig-dna-lm-timeline}
+**[FIGURE PLACEHOLDER]**
+
+[Essential] Horizontal timeline with milestones and architectural innovations. Key milestones: 2021 DNABERT (512 tokens, proof of concept); 2023 Nucleotide Transformer (6kb, multi-species, scaling); 2023 HyenaDNA (1 Mb, sub-quadratic); 2024 Caduceus (reverse-complement equivariance, Mamba); 2024-2025 Evo 2 (1 Mb, 7B-40B params, pan-genomic). Upper track: Context length progression (log scale). Lower track: Key architectural innovations at each stage.
+:::
 
 This paradigm succeeded but imposed three constraints that limited scalability. **Label dependence** meant that every new assay, cell type, or phenotype required fresh labeled data. A model trained on ENCODE chromatin data could not predict histone modifications in a new cell type without additional labeled examples. **Task coupling** bound model architecture to specific prediction problems. SpliceAI's dilated convolutions were tailored for splice junction detection; ExPecto's spatial transformation was designed for the distance-dependent relationship between regulatory elements and transcription start sites. These choices, while effective, did not transfer naturally to other problems. **Limited reuse** meant features learned for one task could not easily support others. A model that learned to recognize transcription factor binding sites during chromatin accessibility training could not directly apply those representations to variant effect prediction without substantial re-engineering.
 
@@ -63,6 +64,14 @@ GPN established that cross-species pretraining captures evolutionary constraints
 
 Quadratic attention complexity limits transformer context to tens of kilobases at best. Processing a 100 kb sequence with dense attention requires on the order of 10^10 computations per layer. Yet regulatory phenomena routinely span larger distances: enhancer-promoter interactions extend 50-200 kb, topologically associating domains organize chromatin at the megabase scale, and some gene regulation involves even longer-range dependencies. **The mismatch between biological context and computational context represented a fundamental architectural limitation.**
 
+::: {#fig-long-context-revolution layout-ncol=2}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+[Essential] Two-panel comparison. Panel A (Computational Complexity): Log-log plot showing sequence length (x) vs. compute/memory (y); standard attention O(L²) steep curve; Hyena/Mamba O(L) or O(L log L) much flatter; annotated points at 1kb, 10kb, 100kb, 1Mb showing tractability. Panel B (Biological Context Coverage): Same x-axis; biological features overlaid as ranges (TF binding ~10-20bp, promoter ~1kb, gene body ~10-50kb, enhancer-promoter ~20-200kb, TAD ~100kb-1Mb); vertical lines showing model context limits.
+:::
+
 ### HyenaDNA: Megabase Context via Implicit Convolutions
 
 *HyenaDNA* addressed this limitation by replacing attention with implicit convolutions that scale sub-quadratically [@nguyen_hyenadna_2023]. The **Hyena architecture** parameterizes long convolutional filters through neural networks rather than storing explicit filter weights, achieving O(L log L) complexity through efficient FFT-based convolution compared to O(L^2) for standard attention. The result was a 500-fold increase in context length: *HyenaDNA* processes sequences up to 1 Mb while maintaining single-nucleotide resolution.
@@ -83,6 +92,16 @@ On downstream benchmarks, *Caduceus* outperformed previous long-range models. On
 
 *Evo 2* represents the current frontier: training at genome scale across all domains of life [@brixi_evo_2025]. While previous models focused on specific organisms (*DNABERT* on human, GPN on plants) or trained on multi-species corpora at limited scale (Nucleotide Transformer), *Evo 2* aims to learn universal genomic patterns spanning bacteria, archaea, eukaryotes, and phages.
 
+::: {#fig-caduceus-equivariance layout-ncol=3}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+[High] Three-panel diagram. Panel A (The Problem): Input sequence and reverse complement; standard model gives potentially different predictions; annotation: "Same biological information, inconsistent predictions." Panel B (Caduceus Architecture): BiMamba component with bidirectional arrows; MambaDNA block with weight-sharing scheme; mathematical relationship: f(revcomp(x)) = g(f(x)). Panel C (Performance Impact): Bar chart comparing models with/without equivariance on long-range tasks; annotation: "Appropriate biological inductive biases can substitute for raw scale."
+:::
+
 The training corpus draws from the OpenGenome2 dataset comprising 9.3 trillion DNA tokens across all domains of life. This massive scale exposes the model to the full spectrum of genomic organization: compact prokaryotic gene arrangements, sprawling eukaryotic regulatory landscapes with extensive noncoding sequence, viral genomes with overlapping reading frames, and the diversity of regulatory architectures across evolution. The model comes in 7 billion and 40 billion parameter variants.
 
 The architecture builds on StripedHyena 2, a hybrid design combining convolutional operations with selective attention mechanisms. This enables processing of sequences up to 1 million nucleotides while maintaining computational tractability. The **autoregressive training objective** (predicting the next base given all previous bases) differs from the masked language modeling used in DNABERT and related models. Autoregressive training may provide complementary strengths for sequence generation and likelihood-based scoring, since the model learns to generate plausible sequences in addition to discriminating between them.
@@ -93,10 +112,6 @@ For variant effect prediction, *Evo 2* enables zero-shot scoring through likelih
 
 The pan-species training enables cross-species applications. Variant interpretation extends naturally to non-model organisms, supporting conservation genomics and agricultural breeding where labeled training data is scarce. Model representations cluster sequences by phylogenetic relationships even without explicit evolutionary modeling. Beyond discriminative tasks, *Evo 2* demonstrates generative capabilities: synthesizing plausible mitochondrial genomes, prokaryotic operons, and eukaryotic regulatory regions with coherence across kilobase to megabase scales.
 
-::: {.callout-note}
-**Figure suggestion:** Multi-panel figure showing (A) OpenGenome2 training corpus composition across the tree of life with taxonomic breakdown, (B) StripedHyena 2 architecture schematic highlighting hybrid attention-convolution blocks, (C) t-SNE projection of sequence embeddings colored by taxonomic group showing phylogenetic clustering, and (D) zero-shot variant effect scores compared to experimental pathogenicity labels demonstrating calibration.
-:::
-
 
 ## Training Data and What Models Learn
 
@@ -105,6 +120,16 @@ DNA language models are trained on diverse corpora ranging from single reference
 ### Training Corpus Composition
 
 Early models like *DNABERT* trained primarily on the human reference genome (GRCh38), providing exposure to approximately 3 billion nucleotides from a single individual. The Nucleotide Transformer expanded to include multiple species and human population variation from resources like the 1000 Genomes Project. *Evo 2* scaled to 9.3 trillion tokens spanning all domains of life, including complete bacterial chromosomes, eukaryotic genomes, viral sequences, and metagenomic assemblies.
+
+::: {#fig-evo2-training layout-ncol=3}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+[High] Three-panel figure. Panel A (Training Corpus): Tree of life visualization with branch widths proportional to training data; Bacteria, Archaea, Eukaryotes, Viruses/Phages; total 9.3 trillion DNA tokens; contrast with human-only models (~3B tokens). Panel B (Architecture): StripedHyena 2 schematic with hybrid attention-convolution blocks; 1 Mb context; 7B and 40B variants. Panel C (Emergent Cross-Species Capabilities): Embedding space UMAP colored by taxonomic group; phylogenetic clustering emerging without explicit evolutionary modeling.
+:::
 
 The composition of training data shapes what models learn. Reference-only training captures the genome's architecture but not population variation. Multi-individual training exposes models to common polymorphisms but may underrepresent rare variants. Cross-species training provides evolutionary context (constrained regions are conserved, variable regions diverge) but may not capture species-specific regulatory patterns. Training on functional genomics data (GROVER-style approaches) teaches regulatory activity patterns but ties models to specific assays and cell types.
 
@@ -128,6 +153,17 @@ Equally important is recognizing what current DNA language models struggle to re
 
 **Complex variant patterns** beyond single nucleotide changes remain challenging. Indels, structural variants, repeat expansions, and epistatic interactions between distant loci are either not representable (depending on tokenization) or poorly predicted. Most benchmark tasks focus on SNVs, leaving multi-nucleotide effects underexplored.
 
+::: {#fig-dna-lm-probing layout-ncol=2}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+**[FIGURE PLACEHOLDER D]**
+
+[High] Multi-panel figure. Panel A (Motif Recognition): First-layer attention patterns aligned with JASPAR motifs; model learns CTCF pattern from sequence statistics alone. Panel B (Gene Structure): t-SNE/UMAP of embeddings color-coded by region type (exon, intron, UTR, intergenic); clear clustering without region labels during training. Panel C (Evolutionary Constraint): Scatter plot of model uncertainty vs. phyloP conservation score; strong correlation. Panel D (What Models Don't Learn): Icons with X marks for epigenetic state, 3D structure, cell-type specificity, complex variants.
+:::
 
 ## Benchmark Performance and Evaluation
 
@@ -151,6 +187,11 @@ Several systematic issues affect benchmark interpretation. **Saturation** occurs
 
 **Metric selection** affects what gets optimized. AUROC favors discrimination regardless of calibration; Spearman correlation measures rank ordering but not absolute effect size prediction. Clinical applications may require well-calibrated probability estimates or accurate quantitative predictions, neither of which standard metrics directly assess. The gap between benchmark performance and deployment utility remains substantial for most genomic applications.
 
+::: {#fig-dna-lm-benchmarks}
+**[FIGURE PLACEHOLDER]**
+
+[Enhancing] Heatmap or grouped bar chart. Models (rows): DNABERT-2, Nucleotide Transformer (2.5B), HyenaDNA, Caduceus, Evo 2. Benchmark tasks (columns) grouped: Short-range (promoter detection, enhancer classification, TF binding); Long-range (enhancer-promoter interaction, chromatin state); Variant effect (SNV scoring, splice prediction). Cell values: Relative performance (color scale). Key observations annotated: "No single model dominates all tasks"; "Long-context models excel on long-range tasks."
+:::
 
 ## Annotation-Aware Extensions
 

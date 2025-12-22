@@ -4,6 +4,18 @@ The human genome spans approximately two meters of linear DNA, yet it must fit w
 
 Disruptions to 3D genome architecture cause disease through mechanisms that sequence alone cannot predict. When structural variants delete a boundary between chromatin domains, enhancers can contact genes they normally never reach, a phenomenon called enhancer hijacking that underlies developmental disorders and cancer. The clinical consequences depend entirely on which contacts are disrupted. A deletion that removes a domain boundary may be pathogenic; an identical-sized deletion preserving boundaries may be benign. Current variant effect prediction tools largely ignore this spatial dimension, creating systematic blind spots for structural variant interpretation.
 
+::: {#fig-tad-disruption layout-ncol=2}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+**[FIGURE PLACEHOLDER D]**
+
+[High] Clinical example. Panel A (Normal Configuration): TAD with EPHA4 and limb enhancers; adjacent TAD with WNT6/PAX3; boundary separating; "Enhancers contact EPHA4, not WNT6." Panel B (Boundary Deletion): Boundary removed; TADs merge; enhancers can contact both genes. Panel C (Pathogenic Outcome): Limb enhancers activate WNT6 ectopically; abnormal expression; brachydactyly. Panel D (Interpretation Implications): Same-size deletions, different outcomes; boundary-preserving may be benign; boundary-disrupting pathogenic; "Current VEP tools miss 3D effects."
+:::
+
 This chapter examines how the genome folds, what determines that folding, and how computational models predict 3D structure from sequence. We begin with the hierarchy of chromatin organization, from megabase-scale compartments through topologically associating domains to kilobase-scale loops. We introduce the experimental methods (Hi-C, Micro-C, imaging approaches) that measure these structures. The technical core covers models that predict chromatin contacts from sequence, including Akita, Orca, and C.Origami, examining what architectural features they learn and where prediction fails. We extend to spatial transcriptomics, where tissue architecture provides cellular context for gene expression, and connect throughout to regulatory models: what does spatial context add that sequence alone cannot provide?
 
 
@@ -21,6 +33,29 @@ The molecular basis of TAD formation is now well understood through the loop ext
 
 At the finest scale, chromatin forms specific loops between defined loci. Enhancer-promoter loops bring distal regulatory elements into physical proximity with their target genes, while structural loops between convergent CTCF sites establish the TAD framework. Most enhancer-promoter contacts span less than 200 kilobases, but some extend over a megabase. Detecting these fine-scale contacts requires high-resolution data; the Micro-C method uses micrococcal nuclease digestion to achieve nucleosome-level resolution, revealing contact patterns invisible in standard Hi-C. The functional significance of individual loops remains debated. Some loops appear essential for gene activation; others may be structural features without direct regulatory consequences.
 
+::: {#fig-chromatin-hierarchy layout-ncol=2}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+**[FIGURE PLACEHOLDER D]**
+
+[Essential] Four-level visualization. Panel A (Chromosome Territories, Nuclear Scale): Nucleus with distinct territories; gene-rich interior, gene-poor periphery. Panel B (A/B Compartments, Megabase Scale): Hi-C checkerboard pattern; A active interior, B inactive lamina-associated. Panel C (TADs, Sub-Megabase Scale): Triangular domains; sharp boundaries; median ~800 kb; CTCF at boundaries. Panel D (Loops, Kilobase Scale): Focal Hi-C enrichments; enhancer-promoter contacts; CTCF-CTCF structural loops.
+:::
+
+::: {#fig-loop-extrusion layout-ncol=2}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+**[FIGURE PLACEHOLDER D]**
+
+[Essential] Loop extrusion mechanism. Panel A (Cohesin Loading): Ring loading onto chromatin; initial state no loop. Panel B (Bidirectional Extrusion): Cohesin extruding DNA; loop growing progressively; intermediate states. Panel C (CTCF Arrest): Cohesin encountering convergent CTCF; extrusion halted; stable loop. Panel D (The Orientation Rule): Convergent → ← (loop anchors ✓); divergent ← → (no stable loop ✗); tandem → → (extrusion continues ~). Inset: Acute cohesin degradation eliminates TADs but compartments remain.
+:::
 
 ## Measuring the 3D Genome {#sec-3d-measurement}
 
@@ -46,6 +81,18 @@ If 3D genome structure determines which enhancers contact which genes, can we pr
 **C.Origami** addressed the cell-type specificity problem by incorporating CTCF ChIP-seq as auxiliary input [@tan_corigami_2023]. While Akita and Orca predict from sequence alone, C.Origami takes both sequence and CTCF binding profiles, enabling cell-type-specific predictions based on cell-type-specific CTCF patterns. This design reflects the loop extrusion model: TAD formation depends on where CTCF binds and in what orientation, and CTCF binding varies across cell types. The practical advantage is transfer learning: the model can be trained on cell types with expensive Hi-C data, then applied to cell types where only CTCF ChIP-seq is available (a much cheaper assay). C.Origami substantially outperforms sequence-only models for cross-cell-type prediction, though it requires CTCF data as input rather than predicting purely from sequence.
 
 Other approaches explore different architectural and methodological choices. DeepC uses transfer learning to adapt models trained on one cell type to another, partially addressing the limited training data problem. Epiphany applies diffusion models to 3D structure prediction, treating contact matrix generation as a denoising process. Higashi addresses single-cell Hi-C data specifically, using variational autoencoders to impute missing contacts in the sparse single-cell matrices. Emerging transformer-based models may better capture the very long-range dependencies inherent in chromatin organization, though the computational cost of attention over megabase sequences presents challenges.
+
+::: {#fig-3d-prediction-models layout-ncol=2}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+**[FIGURE PLACEHOLDER D]**
+
+[High] Model comparison. Panel A (Akita Architecture): 1 Mb DNA input → dilated convolutions → symmetric output → 2 kb Hi-C. Panel B (Orca Multi-Scale): Coarse Mb prediction → progressive refinement → multi-resolution loss. Panel C (C.Origami with CTCF): Sequence + CTCF ChIP-seq → cell-type-specific predictions; transfer from Hi-C-rich to CTCF-only cells. Panel D (Prediction vs. Ground Truth): Example region; TAD boundaries correctly positioned; loop anchors identified; "Sequence contains substantial 3D information."
+:::
 
 Interpretability analysis reveals what these models learn about sequence determinants of 3D structure. Attribution methods consistently identify CTCF motifs as the strongest predictors of contact patterns, with convergent CTCF pairs (motifs oriented toward each other) most strongly associated with loop anchors. Transcription start sites contribute to boundary predictions, consistent with the observation that active promoters often coincide with domain edges. GC content correlates with compartment identity (GC-rich regions tend toward A compartment), and repetitive element composition shows systematic associations (LINE elements with B compartment; Alu elements with A compartment). The orientation rule for CTCF emerges naturally from training: models learn that CTCF motif orientation, not just presence, predicts which sites will anchor loops. This learned relationship matches the mechanistic understanding from the loop extrusion model, providing validation that models capture biologically meaningful features.
 
@@ -77,6 +124,18 @@ Spatial foundation models remain much less mature than sequence-based models. Th
 
 Other approaches address different aspects of the spatial modeling problem. CellPLM pretrains on millions of spatial transcriptomics cells, learning representations that transfer across tissue types and experimental platforms. STACI combines spatial coordinates with morphological features from histology images, enabling joint reasoning about molecular and visual tissue properties. GraphST uses graph attention networks to propagate expression signals across spatial neighborhoods while preserving local heterogeneity. These methods remain early in development compared to sequence foundation models; no spatial equivalent of DNABERT or ESM-2 has achieved broad adoption, and benchmark comparisons across methods remain limited by the diversity of spatial platforms and tissue types.
 
+::: {#fig-spatial-transcriptomics layout-ncol=2}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+**[FIGURE PLACEHOLDER D]**
+
+[Enhancing] Spatial data and models. Panel A (Visium Spot-Based): Tissue section with spot overlay; 1-10 cells per spot; ~55 μm resolution. Panel B (Imaging-Based MERFISH/Xenium): Single-cell resolution; limited gene panel; subcellular localization. Panel C (Deconvolution Challenge): Multi-cell spot → infer composition; reference atlas required. Panel D (Spatial Foundation Models): Cell as node, proximity as edge; GNNs over spatial graphs; cell-cell communication; examples (Nicheformer, SpaGCN, GraphST).
+:::
+
 The clinical applications motivating spatial foundation model development center on tumor microenvironment characterization. The spatial organization of immune cells relative to tumor cells predicts treatment response: tumors with immune cells infiltrating the tumor core respond better to immunotherapy than those with immune exclusion at the tumor periphery. Spatial models aim to learn these prognostic patterns from training data, enabling prediction of treatment response from spatial organization alone. Similar applications exist in developmental biology (understanding morphogen gradients and cell fate decisions), neuroscience (mapping brain region organization), and pathology (characterizing disease architecture in tissue sections).
 
 
@@ -97,16 +156,3 @@ The genome's three-dimensional organization provides context that one-dimensiona
 Yet the functional role of 3D structure remains more modest than early enthusiasm implied. Experimental perturbation studies show that TAD boundary disruption often has limited expression consequences. Many chromatin contacts appear permissive rather than instructive: they establish the possibility of regulatory communication without determining whether that communication occurs. A predicted enhancer-promoter contact indicates that interaction could happen, not that it does happen or that it matters when it does. The 3D genome may constrain the regulatory landscape without specifying regulatory outcomes.
 
 This distinction shapes how 3D structure should be integrated with other modalities. Chromatin contacts become edges in gene regulatory networks (@sec-networks), providing structural priors for graph-based reasoning. Spatial expression patterns integrate with multi-omics approaches (@sec-multi-omics), adding tissue architecture alongside genomics and transcriptomics. For interpretability (@sec-interpretability), 3D structure offers mechanistic hypotheses that require experimental validation. Whether a predicted regulatory effect operates through chromatin proximity, or whether proximity merely correlates with regulation through shared causes, remains a question that computational models can motivate but not answer. The integration of 3D information into genomic AI proceeds with appropriate uncertainty about what that information contributes.
-
-
-## Figures
-
-**Figure 17.1: Chromatin Organization Hierarchy.** Four-panel schematic showing nested levels of genome organization. Panel A shows chromosome territories within the nucleus, with gene-rich chromosomes positioned toward the interior. Panel B displays a Hi-C contact matrix with the characteristic checkerboard pattern of A and B compartments visible at megabase scale. Panel C zooms to show TADs as triangular domains of enriched contact along the matrix diagonal, with boundaries marked by sharp transitions. Panel D highlights chromatin loops as focal enrichments at off-diagonal positions, marking specific enhancer-promoter or CTCF-CTCF contacts. Scale bars indicate approximate genomic distances at each level.
-
-**Figure 17.2: The Loop Extrusion Model.** Schematic illustrating how cohesin and CTCF establish TAD boundaries and chromatin loops. Top panel shows cohesin loading onto chromatin and beginning bidirectional extrusion. Middle panel shows extrusion proceeding until cohesin encounters CTCF bound in convergent orientation (motifs facing each other). Bottom panel shows the resulting stable loop with convergent CTCF sites at the anchors. Inset emphasizes that CTCF motif orientation determines boundary function: convergent sites anchor loops while divergent sites do not.
-
-**Figure 17.3: Sequence-to-Structure Prediction Architecture.** Diagram of Akita-style model architecture. Input is one-dimensional DNA sequence (approximately 1 megabase). Dilated convolutional layers process the sequence with progressively expanding receptive fields. A symmetric output transformation produces the two-dimensional contact matrix prediction. Comparison of predicted and experimental Hi-C for a representative region illustrates the correspondence between model output and ground truth, with TAD boundaries and loop anchors correctly positioned.
-
-**Figure 17.4: TAD Boundary Disruption and Enhancer Hijacking.** Three-panel illustration of the *EPHA4* locus example. Left panel shows normal configuration with limb enhancers (marked) contacting *EPHA4* within their shared TAD, separated by a boundary from the adjacent *WNT6/PAX3* domain. Middle panel shows the boundary deletion that removes insulation between domains. Right panel shows the pathogenic outcome: enhancers now contact *WNT6*, causing ectopic expression and limb malformations. Clinical phenotypes (brachydactyly, polydactyly) indicated for different deletion configurations.
-
-**Figure 17.5: Spatial Transcriptomics Data Structure.** Three-panel figure showing spatial data types. Panel A shows a tissue section with Visium spots overlaid, colored by dominant cell type from deconvolution analysis. Panel B shows expression of a marker gene mapped to spatial coordinates, revealing tissue architecture (example: zonation pattern in liver). Panel C shows cell-cell communication inference, with arrows indicating ligand-receptor pairs between neighboring cell types in the spatial context.

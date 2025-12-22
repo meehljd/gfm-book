@@ -6,6 +6,16 @@ Self-supervised pretraining addresses a fundamental asymmetry in genomic data. R
 
 This chapter examines the major pretraining strategies employed by genomic foundation models, from masked language modeling in DNABERT and Nucleotide Transformer through autoregressive objectives in generative models. The focus is on understanding what each objective teaches the model to learn, what biological patterns emerge from each training approach, and how objective choice shapes downstream capabilities. The goal is not encyclopedic coverage of every pretraining variant but principled understanding of the design space: which objectives suit which applications, what tradeoffs each involves, and how to reason about novel objectives as the field continues to develop.
 
+::: {#fig-pretraining-objectives layout-ncol=3}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+[Essential] Three-panel schematic comparing major pretraining objectives on the same input sequence. Panel A (MLM): Sequence with masked positions (shown as [MASK]), bidirectional context arrows from both sides, prediction targets at masked positions. Panel B (Next-token prediction): Causal/unidirectional arrows, each position predicting the next, with sampling process for generation. Panel C (Contrastive): Anchor sequence, positive pair (augmented version), negative samples, mapped to embedding space with distance relationships.
+:::
+
 
 ## Masked Language Modeling
 
@@ -18,6 +28,15 @@ The key insight is that accurate prediction requires learning genuine sequence s
 MLM encourages bidirectional context integration, and this bidirectionality has direct clinical relevance. Unlike autoregressive models that condition only on preceding tokens, MLM models see both left and right context when predicting masked positions. For genomics, this matches biological reality: regulatory function depends on patterns both upstream and downstream of any given position. A transcription factor binding site is recognized through flanking sequences on both sides. Splicing signals require coordination between donor and acceptor sites separated by hundreds of bases. Missense variants disrupt protein function through effects that depend on the entire domain context, not just the preceding amino acids. The bidirectional attention in MLM naturally captures these dependencies.
 
 ### Masking Strategies and Their Implications
+
+::: {#fig-masking-strategies layout-ncol=2}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+[High] Two-panel visualization comparing masking strategies on a regulatory sequence containing a TF binding motif. Panel A (Random token masking): Individual tokens masked throughout, including partial motif masking; show how local context allows easy prediction. Panel B (Span masking): Entire motif region masked as contiguous span; show how prediction requires reasoning from distal regulatory context. Include attention patterns for each, showing how span masking forces longer-range dependencies.
+:::
+
 
 Predicting whether a regulatory variant disrupts an entire transcription factor binding site or merely alters its affinity requires models that learn compositional patterns, not just local nucleotide statistics. The tension between local and compositional learning plays out in masking strategy design.
 
@@ -59,6 +78,16 @@ DNA sequences present a complication that natural language does not: they have n
 Protein sequence models benefit from autoregressive pretraining with clearer biological justification. The N-terminus to C-terminus directionality of protein synthesis provides a natural left-to-right ordering: ribosomes translate mRNA sequentially, and co-translational folding means that protein structure emerges progressively from the N-terminus. *ESM* models and protein design systems like *ProtGPT2* predict amino acid sequences autoregressively, learning protein grammar and evolutionary constraints that transfer to structure prediction and function annotation [@ferruz_protgpt2_2022]. For designing therapeutic proteins (antibodies, enzymes, peptide drugs), autoregressive generation produces candidates that respect learned constraints on foldability and function.
 
 ### Comparing MLM and Autoregressive Objectives
+
+::: {#fig-bidirectional-vs-autoregressive layout-ncol=2}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+[Essential] Two-panel figure showing information flow during prediction. Panel A (MLM): Position in center of sequence with arrows coming from BOTH left and right context, showing bidirectional conditioning. Annotate: "Sees full context → better for understanding." Panel B (Autoregressive): Same position with arrows only from left (preceding tokens), showing causal restriction. Annotate: "Sees only past → enables generation."
+:::
+
+
 
 The tension between bidirectional understanding and generative capability represents the fundamental tradeoff between these objectives. For tasks requiring understanding of full sequence context, MLM's bidirectional attention provides richer representations. Predicting transcription factor binding at a specific location benefits from seeing both upstream and downstream sequence, information that autoregressive models cannot access during inference. Variant effect prediction similarly benefits from full context: a missense variant's impact depends on the entire domain, not just the preceding residues.
 
@@ -118,6 +147,12 @@ Negative sampling strategies also affect what models learn. Random genomic seque
 
 ### Cross-Species Contrastive Learning
 
+::: {#fig-cross-species-contrastive}
+**[FIGURE PLACEHOLDER]**
+
+[Enhancing] Illustration of contrastive pretraining using orthologous sequences. Show: Human enhancer sequence and mouse ortholog (aligned, showing nucleotide divergence but conserved functional elements). Both mapped to embedding space as nearby points (positive pair). Non-orthologous sequence mapped to distant point (negative). Include phylogenetic context showing ~75 million years of divergence. Annotate: "Same function despite sequence divergence → learns species-invariant features."
+:::
+
 Leveraging evolutionary relationships for self-supervision enables a particularly powerful form of contrastive learning. Orthologous sequences from different species share functional identity despite nucleotide divergence accumulated over millions of years of evolution. Treating orthologous pairs as positives and non-orthologous pairs as negatives teaches the model to extract species-invariant functional features. A human enhancer and its mouse ortholog should map to similar embeddings despite 75 million years of sequence divergence, while unrelated sequences should map to distant embeddings.
 
 This approach has direct implications for drug development and therapeutic translation. Many drug targets are validated in mouse models before human clinical trials; roughly 95% of cancer drugs that succeed in mouse models fail in human trials, often because the models do not adequately capture human biology. A model pretrained with human-mouse contrastive pairs may generalize better to predicting drug response in humans based on mouse efficacy data, or to transferring regulatory circuit designs from model organisms to human cell types. The evolutionary record provides implicit labels about functional equivalence that would be expensive to obtain through direct experimental annotation.
@@ -144,6 +179,12 @@ where $w_k$ are task weights. Equal weighting is simple but may lead to imbalanc
 *Enformer* exemplifies large-scale multi-task pretraining for genomics [@avsec_effective_2021]. The model predicts over 5,000 genomic assays simultaneously: ChIP-seq signals for hundreds of transcription factors and histone marks, DNase-seq and ATAC-seq accessibility across cell types, CAGE transcription initiation profiles, and more. This massive multi-task objective (covering 674 DNase-seq, 4,675 ChIP-seq, and 638 CAGE experiments from ENCODE and Roadmap Epigenomics [@encode_project_integrated_2012]) forces the model to learn representations capturing diverse regulatory signals.
 
 The task diversity in *Enformer* provides supervision far richer than any single assay. A model trained only on DNase-seq learns general accessibility patterns but misses transcription factor specificity: it cannot distinguish which factors bind to accessible regions. A model trained only on H3K27ac ChIP-seq captures active enhancers but misses repressive marks that indicate silenced regulatory elements. Training on all assays jointly allows the model to disentangle overlapping and complementary signals, learning representations that generalize across regulatory contexts. For clinical variant interpretation, this means *Enformer* can predict how a regulatory variant affects enhancer activity, chromatin state, transcription factor binding, and gene expression simultaneously.
+
+::: {#fig-multitask-pretraining}
+**[FIGURE PLACEHOLDER]**
+
+[High] Diagram showing shared encoder with multiple prediction heads. Structure: Sequence input → Convolutional layers → Transformer layers (labeled "Shared Backbone") → Branching to separate heads for: Chromatin accessibility (DNase-seq, ATAC-seq), Histone modifications (H3K27ac, H3K4me3, etc.), Transcription factor binding (hundreds of factors), Gene expression (CAGE). Annotate approximate task counts from ENCODE: "674 DNase + 4,675 ChIP-seq + 638 CAGE."
+:::
 
 *Borzoi* extends this paradigm to full RNA-seq coverage prediction, jointly modeling transcription initiation, splicing, and transcript abundance [@linder_borzoi_2023]. By predicting continuous coverage across gene bodies rather than just expression levels, *Borzoi* captures splicing patterns that are invisible to models predicting only total expression. This has direct clinical relevance: many pathogenic variants act through splicing disruption rather than protein-coding changes, and models that capture splicing patterns can identify variants that traditional expression-based approaches miss.
 
@@ -249,21 +290,3 @@ The fundamental insight underlying self-supervised pretraining is that patterns 
 The choice of pretraining objective shapes what models learn in ways that propagate to clinical utility. Masked language modeling teaches bidirectional sequence understanding, making it the natural choice for variant interpretation and regulatory prediction where full flanking context informs the prediction. Next-token prediction teaches generative capabilities essential for therapeutic protein design and synthetic sequence generation. Contrastive learning teaches invariance to perturbations, building robustness that transfers across species and populations. Aligning pretraining objectives with intended applications improves transfer; misalignment creates representational gaps that fine-tuning may struggle to bridge.
 
 Self-supervised pretraining has become the default approach for building genomic foundation models. The DNA language models in @sec-dna-lm, protein language models in @sec-protein-lm, and regulatory sequence models in @sec-regulatory each employ variants of these objectives tailored to their sequence modalities and downstream applications. The transfer learning methods examined next determine how effectively pretrained representations can be adapted to specific clinical and research tasks, completing the pipeline from raw sequence through learned representation to deployed application.
-
-
-## Figures
-
-**Figure 8.1: Pretraining Objective Comparison**
-Schematic comparing MLM, next-token prediction, and contrastive learning on the same input sequence. Show: (a) MLM with masked positions and bidirectional context arrows; (b) autoregressive prediction with unidirectional arrows and generation sampling; (c) contrastive learning with anchor, positive pair (augmented), and negative samples mapped to embedding space. Highlight the different information flow patterns and what each objective optimizes.
-
-**Figure 8.2: Masking Strategy Effects**
-Visualization comparing random token masking versus span masking on a regulatory sequence containing a transcription factor binding motif. Show how random masking allows local inference from adjacent nucleotides, while span masking of the entire motif requires reasoning from distal regulatory context. Include example attention patterns for each strategy.
-
-**Figure 8.3: Multi-Task Pretraining Architecture**
-Diagram of shared encoder with multiple task-specific heads, as exemplified by *Enformer*. Show: sequence input, convolutional layers, transformer layers (shared backbone), then branching to separate prediction heads for chromatin accessibility, histone modifications, transcription factor binding, and gene expression. Annotate with approximate numbers of tasks per category from ENCODE.
-
-**Figure 8.4: Scaling Laws for Genomic Models**
-Plot showing relationship between model scale (parameters), training data size, and downstream task performance. Include curves for different model families (*DNABERT*, *ESM*, *Enformer*) showing diminishing returns and optimal compute allocation. Annotate inflection points where emergent capabilities appear.
-
-**Figure 8.5: Cross-Species Contrastive Learning**
-Illustration of contrastive pretraining using orthologous sequences. Show human and mouse enhancer sequences with aligned functional elements despite nucleotide divergence, mapped to nearby points in embedding space. Contrast with non-orthologous sequences mapped to distant points. Include phylogenetic context showing evolutionary distance.

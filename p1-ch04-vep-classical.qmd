@@ -6,14 +6,26 @@ This chapter examines the conceptual foundations and practical methods that domi
 
 The field's response was to develop integrative methods that combine multiple signals into unified scores. Combined Annotation-Dependent Depletion (CADD) receives particular attention here because it introduced design patterns that recur throughout genomic machine learning: using evolutionary signals as proxy labels, training on large-scale genomic data, integrating dozens of diverse annotations, and precomputing scores genome-wide for downstream reuse. CADD and its successors, including REVEL, PrimateAI, and M-CAP, remain in active clinical use today. Understanding their construction and limitations illuminates both what classical methods achieved and why the field ultimately moved toward the learned representations examined in the following chapter.
 
-::: {.callout-warning .content-visible when-profile="draft"}
-**Visual suggestion:** The Variant Prioritization Funnel. Diagram showing how computational filters progressively reduce variant burden from millions of raw variants to tens of candidates for expert review. Starting panel shows approximately 4-5 million variants in a typical genome; subsequent panels show filtering by population frequency (removing common variants), consequence prediction (prioritizing coding and splice variants), conservation scores, and ensemble predictors like CADD. Final panel shows the handful of variants requiring manual curation. Annotate typical numbers at each stage to make the reduction concrete.
-:::
+::: {#fig-variant-funnel}
+**[FIGURE PLACEHOLDER]**
 
+[Essential] Funnel diagram showing progressive reduction of variant burden through computational filters. Stages with approximate numbers: (1) Raw variants from WGS: ~4-5 million; (2) After common variant filter (gnomAD AF > 1%): ~100,000; (3) After consequence filter (coding, splice, UTR): ~25,000; (4) After conservation filter (phyloP > 2): ~5,000; (5) After ensemble predictor (CADD ≥ 20): ~500-1,000; (6) Expert review candidates: ~50-100. Annotate which tools/resources apply at each stage.
+:::
 
 ## Conservation-Based Approaches
 
 A clinical geneticist evaluating a novel intronic variant faces an immediate problem: no functional annotation exists for most of the genome, and no clinical database has seen this specific change before. The variant lies outside any protein-coding region, no regulatory element overlaps it, and the patient's phenotype offers no clear mechanistic hypothesis. Yet one source of information spans the entire genome and predates any experimental annotation by billions of years. If a genomic position has remained unchanged across species separated by hundreds of millions of years of evolution, mutations at that position are likely to be deleterious. **Natural selection has already performed the largest functional screen imaginable, running experiments across countless organisms over evolutionary time, and conservation scores quantify the results.**
+
+::: {#fig-conservation-scores layout-ncol=3}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+[High] Multi-panel figure. Panel A: Multiple sequence alignment at a highly conserved position (same nucleotide across 30+ species) vs a neutrally evolving position (variable nucleotides). Show phylogenetic tree alongside alignment. Panel B: Distribution of phyloP or GERP scores genome-wide, with long right tail representing constrained elements. Mark threshold zones (e.g., phyloP > 2 = strong evidence). Panel C: Example intronic variant at deeply conserved position with no other annotation—illustrating how conservation provides evidence in annotation-sparse regions.
+:::
+
 
 ### Measuring Evolutionary Constraint
 
@@ -42,11 +54,6 @@ Conservation reflects the aggregate of selective pressures across the species in
 Conservation scores also face technical challenges from alignment quality. In repetitive regions, segmental duplications, and rapidly evolving gene families, reliable alignments may be impossible to construct, leaving conservation scores undefined or unreliable precisely where variant interpretation is most difficult. The HLA region, immunoglobulin loci, and centromeric sequences are clinically important yet systematically difficult to assess by conservation. **The regions most difficult to interpret computationally are frequently those of greatest clinical interest.**
 
 These boundaries do not diminish the value of conservation; they define where that value applies. Conservation provides information largely orthogonal to population frequency (which reflects recent human history rather than deep evolutionary constraint) and to functional genomics annotations (which capture biochemical activity rather than selective importance). The integrative methods discussed later in this chapter combine conservation with these other signals to achieve better performance than any single source. Protein language models, examined in @sec-protein-lm, learn conservation-like signals directly from sequence data without requiring explicit alignments, potentially addressing some technical limitations while introducing their own assumptions about what constitutes functional constraint.
-
-::: {.callout-warning .content-visible when-profile="draft"}
-**Visual suggestion:** Conservation Score Interpretation. Multi-panel figure showing: (A) Multiple sequence alignment across vertebrate species at a constrained position versus a neutral position, with corresponding phyloP scores annotated; (B) Distribution of GERP scores across the genome, highlighting the long tail of highly conserved positions that represent candidate functional elements; (C) Example of a deeply conserved intronic element with a clinical variant, showing how conservation provides evidence in the absence of other annotations.
-:::
-
 
 ## Protein-Level Predictors
 
@@ -103,6 +110,16 @@ The protein-level predictors and conservation scores examined above each capture
 
 The conceptual foundation of CADD rests on constructing training labels from evolutionary signal rather than clinical curation. The method builds two proxy classes of variants that serve as training labels, each designed to approximate a category that cannot be observed directly. Understanding these label sources is essential because the same proxy labeling strategies reappear throughout genomic machine learning, including in the foundation models discussed in @sec-fm-principles.
 
+::: {#fig-cadd-training layout-ncol=3}
+**[FIGURE PLACEHOLDER A]**
+
+**[FIGURE PLACEHOLDER B]**
+
+**[FIGURE PLACEHOLDER C]**
+
+[Essential] Three-panel conceptual figure. Panel A (Proxy-Neutral): Human-derived alleles fixed since human-chimpanzee split; these variants survived selection, representing tolerated changes. Show evolutionary tree with human branch highlighted. Panel B (Proxy-Deleterious): Simulated variants matching human mutational processes (trinucleotide context); these represent possible-but-not-observed mutations enriched for deleterious effects. Show simulation schematic with mutation spectrum. Panel C (Classification): SVM learning to distinguish classes based on annotation features; output is "evolutionary tolerance" score, not pathogenicity directly.
+:::
+
 The **proxy-neutral class** consists of variants that have been tolerated by purifying selection. CADD draws these from sequence differences that arose on the human lineage since the split from chimpanzees and became fixed or nearly fixed in modern humans. These are identified by their **derived allele frequency**: alleles that differ from the inferred ancestral state (typically determined by comparison to chimpanzee and other great ape sequences) and are present at very high frequency in human populations. Because these derived alleles have persisted over millions of years of evolution, most are presumed to be neutral or only weakly deleterious. This is not a perfect proxy: some observed alleles are genuinely pathogenic, particularly those with incomplete penetrance, late onset, or context-dependent effects. The proxy-neutral class is, on average, substantially enriched for tolerated alleles relative to a random sample of possible mutations.
 
 The **proxy-deleterious class** is constructed by simulating mutations across the genome according to realistic mutational processes. The simulation matches local sequence context (typically using trinucleotide frequencies to capture the strong dependence of mutation rates on flanking bases). CpG dinucleotides, for example, have elevated mutation rates due to spontaneous deamination of methylated cytosines, and the simulation accounts for this by generating more CpG transitions. Regional variation in mutation rates, driven by factors including replication timing and chromatin state, is similarly incorporated.
@@ -111,9 +128,6 @@ The logic underlying this construction is subtle but powerful. Simulated variant
 
 This proxy labeling strategy has important implications. CADD does not learn to distinguish pathogenic from benign variants directly; it learns to distinguish tolerated-by-evolution from possible-but-not-observed. The assumption is that variants depleted by selection are enriched for functional effects and therefore enriched for disease relevance. This assumption is often correct but introduces a systematic gap between what CADD measures (evolutionary tolerance) and what clinicians need (disease causation).
 
-::: {.callout-warning .content-visible when-profile="draft"}
-**Visual suggestion:** Evolutionary Proxy Training in CADD. Conceptual illustration of the proxy-neutral and proxy-deleterious variant classes. Left panel shows human-derived alleles (high derived allele frequency) fixed since the human-chimpanzee split (proxy-neutral), representing variants that survived purifying selection. Right panel shows simulated variants matching human mutational processes (proxy-deleterious), representing the space of possible mutations enriched for deleterious effects. Center panel shows the classifier learning to distinguish these classes based on annotation features. Annotate the approximate training set sizes to emphasize scale advantage over curated labels.
-:::
 
 ### Feature Integration
 
@@ -170,9 +184,6 @@ Diagnostic laboratories evaluating potential Mendelian disease variants face asy
 
 M-CAP was explicitly designed to minimize false positives while maintaining reasonable sensitivity. The developers tuned their classifier to achieve less than 5% false positive rate on known pathogenic variants, accepting some reduction in sensitivity as a tradeoff. This design philosophy differs from methods that balance sensitivity and specificity equally, reflecting M-CAP's intended use in diagnostic settings where false positive pathogenicity calls have serious consequences.
 
-::: {.callout-warning .content-visible when-profile="draft"}
-**Visual suggestion:** Ensemble Method Comparison. Receiver operating characteristic (ROC) curves or precision-recall curves comparing CADD, REVEL, and M-CAP performance on a held-out benchmark of missense variants. Include curves showing individual component scores (SIFT, PolyPhen-2, phyloP) to illustrate the improvement from integration. Annotate the different operating points corresponding to clinical thresholds (e.g., CADD greater than or equal to 20, REVEL greater than or equal to 0.75, M-CAP "possibly pathogenic") to show where each method trades sensitivity for specificity.
-:::
 
 ### Comparison and Selection
 
@@ -180,10 +191,21 @@ No single ensemble method dominates across all variant types and clinical contex
 
 Clinical variant interpretation typically incorporates multiple computational scores rather than relying on any single predictor. Different scores may agree, providing stronger evidence, or disagree, flagging variants requiring careful manual review. A variant with CADD greater than or equal to 25, REVEL greater than or equal to 0.8, and M-CAP "possibly pathogenic" presents a consistent computational picture; one where CADD and REVEL disagree prompts closer examination of the underlying features. Understanding the construction, training data, and intended use case of each method is essential for appropriate interpretation. The integration of these scores into clinical workflows is examined in detail in @sec-clinical-risk, where computational evidence must be weighed alongside functional studies, segregation data, and clinical presentation.
 
+::: {#fig-ensemble-performance}
+**[FIGURE PLACEHOLDER]**
+
+[High] ROC curves (or precision-recall curves) comparing CADD, REVEL, and M-CAP on a held-out benchmark of missense variants. Include curves for individual component scores (SIFT, PolyPhen-2, phyloP) to show improvement from integration. Mark operating points corresponding to common clinical thresholds (CADD ≥ 20, REVEL ≥ 0.75, M-CAP "possibly pathogenic"). Annotate sensitivity and specificity at each threshold. Include note about benchmark circularity caveats.
+:::
 
 ## Circularity and Ascertainment Bias
 
 A diagnostic laboratory classifies a novel missense variant as pathogenic based partly on its high CADD score. That classification enters ClinVar. Two years later, a benchmarking study evaluates CADD performance on ClinVar pathogenic variants and reports excellent accuracy. Is the high performance genuine, or has the benchmark been contaminated by the predictor's own influence on the labels it is evaluated against? This scenario illustrates one of two pervasive problems that affect all variant effect predictors: circularity between scores and clinical databases. The second problem, **ascertainment bias** in available training and testing variants, compounds the first. **These issues do not invalidate classical scores, but they counsel appropriate humility about performance claims and careful attention in both development and application.**
+
+::: {#fig-circularity-problem}
+**[FIGURE PLACEHOLDER]**
+
+[High] Circular diagram illustrating the feedback loop between computational predictors and clinical databases. Show cycle: (1) Computational score (e.g., high CADD) influences clinical classification; (2) Classified variant enters ClinVar as "Pathogenic"; (3) Benchmarking study evaluates CADD on ClinVar variants; (4) High benchmark performance encourages clinical adoption; (5) Return to step 1. Indicate intervention points: temporal holdouts, functional assay ground truth, prospective evaluation. Use visual metaphor of self-reinforcing spiral.
+:::
 
 ### The Circularity Problem
 
@@ -195,9 +217,6 @@ The consequence is that benchmark performance may overestimate real-world utilit
 
 Addressing circularity requires careful benchmark construction. Temporal holdouts (using only classifications made before a method's widespread adoption) can reduce but not eliminate the problem. Functional assays that directly measure variant effects provide ground truth independent of computational predictions but are available for only a small fraction of variants. Prospective evaluation on newly classified variants offers the cleanest test but requires patience and ongoing data collection. The foundation model evaluations discussed in @sec-vep-fm face these same challenges, and the confounding issues examined in @sec-confounding show how these problems persist and evolve as methods become more sophisticated.
 
-::: {.callout-warning .content-visible when-profile="draft"}
-**Visual suggestion:** The Circularity Problem. Diagram illustrating how computational predictions and clinical databases can become entangled. Show the feedback loop: computational scores inform clinical classification, classified variants enter benchmarks, predictors are evaluated on these benchmarks, high benchmark performance encourages clinical use, cycle repeats. Indicate intervention points where temporal holdouts or functional assays can break the cycle. Use arrows to show direction of influence and highlight the self-reinforcing nature of the problem.
-:::
 
 ### Ascertainment Bias
 
