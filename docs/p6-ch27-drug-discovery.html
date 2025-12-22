@@ -692,6 +692,16 @@ div.csl-indent {
 <section id="the-genetic-foundation-of-target-selection" class="level2" data-number="27.1">
 <h2 data-number="27.1" class="anchored" data-anchor-id="the-genetic-foundation-of-target-selection"><span class="header-section-number">27.1</span> The Genetic Foundation of Target Selection</h2>
 <p>Human genetics provides uniquely causal evidence for target selection. Unlike expression correlations or pathway membership, genetic associations reflect the consequences of lifelong modulation of gene activity in human populations. Multiple analyses over the past decade have demonstrated that genetically supported targets succeed in clinical trials at roughly twice the rate of targets without genetic evidence. Targets implicated by Mendelian disease genetics, GWAS hits, or functional variants show higher probabilities of success in phase II and III trials compared to targets selected through other means.</p>
+<div id="fig-target-prioritization" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-target-prioritization-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-target-prioritization-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;27.1: [Essential] Pipeline diagram. Steps: (1) GWAS summary statistics (Manhattan plot); (2) Fine-mapping (credible sets, posteriors); (3) FM scoring (coding: AlphaMissense, GPN-MSA; regulatory: Enformer, Borzoi); (4) Variant-to-gene mapping (coding direct; noncoding via Hi-C, eQTL, enhancer-gene); (5) Target ranking (genetic evidence, druggability, safety, mechanism clarity). Output: Ranked target list with evidence, effect sizes, fine-mapping probabilities, predicted mechanism, constraint/druggability. Key insight: FMs enrich genetic evidence with mechanistic context.
+</figcaption>
+</figure>
+</div>
 <p>This empirical observation motivates building pipelines where genetic architecture serves as a first-class input to target identification. Genomic foundation models extend this logic in two directions. First, they provide richer biological context: instead of simple “variants near gene X,” foundation models encode regulatory architecture, chromatin state, three-dimensional genome interactions, cell-type specificity, and perturbation responses. Second, they enable transfer across diseases and modalities: a single model trained on diverse genomic and multi-omic data can be reused for multiple diseases and therapeutic areas, analogous to how language models transfer across domains.</p>
 <section id="from-variant-level-predictions-to-gene-level-evidence" class="level3" data-number="27.1.1">
 <h3 data-number="27.1.1" class="anchored" data-anchor-id="from-variant-level-predictions-to-gene-level-evidence"><span class="header-section-number">27.1.1</span> From Variant-Level Predictions to Gene-Level Evidence</h3>
@@ -715,6 +725,16 @@ div.csl-indent {
 <p>The basic intuition is that GWAS signals concentrated in a pathway or protein interaction module provide stronger evidence than isolated hits. A single gene with modest genetic support but tight functional connections to several strongly implicated genes may be a more attractive target than an isolated hit with stronger statistics but unclear biology.</p>
 <p>Network-based methods integrate noncoding GWAS loci, regulatory annotations, and protein-protein interactomes to identify disease genes and evaluate drug repurposing opportunities in complex diseases. Graph neural network architectures (see <a href="p4-ch18-networks.html" class="quarto-xref"><span>Chapter 18</span></a>) can learn to propagate genetic evidence through interaction networks, scoring each gene not just by its direct genetic association but by its network context. The key methodological insight is that genes can be embedded jointly with their network neighbors, allowing the model to capture how genetic perturbations in one gene might affect functionally related genes.</p>
 <p>Foundation model representations enhance these network approaches. Instead of representing each gene by a sparse vector of annotations, genes can be embedded using features derived from protein language models, regulatory foundation models, and expression-based cell state encoders. These rich representations capture functional similarity beyond what interaction databases alone can provide. Two genes with similar protein language model embeddings likely share functional properties even if no direct interaction has been catalogued.</p>
+<div id="fig-network-target-discovery" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-network-target-discovery-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-network-target-discovery-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;27.2: [High] Network visualization. Nodes: Genes/proteins; colors: GWAS signal strength; sizes: FM embedding similarity to disease genes. Key concepts: (1) Direct GWAS hits (strong statistical evidence); (2) Network neighborhood (connected to hits, may be better targets); (3) Pathway enrichment (multiple signals converge); (4) Bottleneck nodes (druggable connecting disease modules). Repurposing application: Drug targets marked; drugs near disease genes in embedding space → repurposing candidates. Caution: Proximity ≠ causation; MR needed.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="drug-repurposing-through-shared-representations" class="level3" data-number="27.2.2">
 <h3 data-number="27.2.2" class="anchored" data-anchor-id="drug-repurposing-through-shared-representations"><span class="header-section-number">27.2.2</span> Drug Repurposing Through Shared Representations</h3>
@@ -726,6 +746,16 @@ div.csl-indent {
 <section id="drug-target-interaction-prediction" class="level2" data-number="27.3">
 <h2 data-number="27.3" class="anchored" data-anchor-id="drug-target-interaction-prediction"><span class="header-section-number">27.3</span> Drug-Target Interaction Prediction</h2>
 <p>Beyond identifying disease-relevant targets, foundation models can predict which molecules might modulate those targets. Drug-target interaction prediction sits at the interface between genomic and chemical foundation models, using biological representations to inform molecular design decisions.</p>
+<div id="fig-drug-target-prediction" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-drug-target-prediction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-drug-target-prediction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;27.3: [High] Dual-encoder architecture. Components: (1) Target Encoder (protein sequence → ESM-2 → protein embedding capturing structure, function, binding); (2) Molecule Encoder (SMILES/graph → chemical FM → molecule embedding); (3) Interaction Predictor (combine embeddings → predict binding affinity). Applications: Novel target screening, off-target prediction, selectivity profiling. Proteome-scale visualization: 2D protein embeddings; drug binding profile heatmap overlay; intended target and off-targets. Safety integration: Off-targets with CV expression flagged. Key insight: FM embeddings enable binding prediction without experimental structures.
+</figcaption>
+</figure>
+</div>
 <section id="representing-targets-for-binding-prediction" class="level3" data-number="27.3.1">
 <h3 data-number="27.3.1" class="anchored" data-anchor-id="representing-targets-for-binding-prediction"><span class="header-section-number">27.3.1</span> Representing Targets for Binding Prediction</h3>
 <p>Traditional drug-target interaction methods rely on sequence similarity, structural docking, or chemical fingerprint matching. Foundation model approaches replace these hand-crafted features with learned representations. Protein language model embeddings from ESM-2 or similar architectures capture evolutionary and structural information that correlates with binding site properties <span class="citation" data-cites="lin_evolutionary-scale_2023">(<a href="references.html#ref-lin_evolutionary-scale_2023" role="doc-biblioref"><strong>lin_evolutionary-scale_2023?</strong></a>)</span>. Ligand representations from chemical foundation models encode molecular properties relevant to binding affinity and selectivity.</p>
@@ -760,6 +790,16 @@ div.csl-indent {
 <section id="functional-genomics-screens-and-perturbation-models" class="level2" data-number="27.5">
 <h2 data-number="27.5" class="anchored" data-anchor-id="functional-genomics-screens-and-perturbation-models"><span class="header-section-number">27.5</span> Functional Genomics Screens and Perturbation Models</h2>
 <p>While human genetics offers observational evidence, drug discovery relies heavily on perturbation experiments that directly test hypotheses. CRISPR knockout and knockdown screens, saturation mutagenesis of protein domains, massively parallel reporter assays (MPRAs) of regulatory elements, and Perturb-seq experiments linking genetic perturbations to single-cell transcriptomic responses all generate data that both validates targets and improves models.</p>
+<div id="fig-perturb-seq" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-perturb-seq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-perturb-seq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;27.4: [High] Perturbation-response workflow. Components: (1) Perturb-seq experiment (pooled CRISPR + scRNA-seq; each cell has perturbation + transcriptome); (2) Perturbation signatures (knockdown → expression profile change; FM learns mapping); (3) Disease signature (patient samples characteristic changes); (4) Perturbation matching (find perturbations reversing disease signature; knockdown X reverses disease → X is candidate; drug Y similar to knockdown X → Y targets X mechanism). Visualization: Expression heatmap (genes × perturbations); disease signature overlay. Lab-in-the-loop: Screen → update model → design next screen; active learning.
+</figcaption>
+</figure>
+</div>
 <section id="designing-informative-perturbation-libraries" class="level3" data-number="27.5.1">
 <h3 data-number="27.5.1" class="anchored" data-anchor-id="designing-informative-perturbation-libraries"><span class="header-section-number">27.5.1</span> Designing Informative Perturbation Libraries</h3>
 <p>Traditional pooled screens use simple design rules: one guide RNA per exon, or tiling a regulatory region at fixed spacing. Foundation models enable smarter library design by providing priors over which perturbations are likely to be informative.</p>
@@ -782,6 +822,16 @@ div.csl-indent {
 <section id="biomarker-development-and-patient-stratification" class="level2" data-number="27.6">
 <h2 data-number="27.6" class="anchored" data-anchor-id="biomarker-development-and-patient-stratification"><span class="header-section-number">27.6</span> Biomarker Development and Patient Stratification</h2>
 <p>Even when a target is well validated, many programs fail in clinical trials because the right patients were not enrolled, the right endpoints were not measured, or the treatment effect was diluted across a heterogeneous population. Foundation model representations provide new tools for defining and validating biomarkers.</p>
+<div id="fig-biomarker-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-biomarker-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-biomarker-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;27.5: [Enhancing] Pipeline from features to trial. Stages: (1) FM features (variant embeddings, regulatory predictions, pathway scores; multi-omic); (2) Signature development (supervised learning on retrospective cohorts; predict response, toxicity, progression); (3) Validation (external cohorts, cross-ancestry, calibration); (4) Trial enrichment (select likely responders; smaller trial, higher effect); (5) Companion diagnostic (regulatory pathway; clinical deployment alongside therapy). Example: Genomic + transcriptomic signature predicts PARP inhibitor response; 3× efficiency improvement.
+</figcaption>
+</figure>
+</div>
 <section id="from-polygenic-scores-to-foundation-model-features" class="level3" data-number="27.6.1">
 <h3 data-number="27.6.1" class="anchored" data-anchor-id="from-polygenic-scores-to-foundation-model-features"><span class="header-section-number">27.6.1</span> From Polygenic Scores to Foundation Model Features</h3>
 <p>Classical polygenic scores summarize additive effects of common variants on disease risk. These scores have proven useful for patient enrichment in cardiovascular and metabolic disease trials, selecting patients at highest genetic risk who might benefit most from intervention. Deep learning methods extend this approach by learning nonlinear genotype-phenotype mappings that capture interactions and nonadditive effects.</p>

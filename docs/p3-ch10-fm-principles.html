@@ -695,6 +695,23 @@ div.csl-indent {
 <p>The history of computational genomics reveals a consistent pattern: models become more general while maintaining or improving task-specific performance. Hand-crafted scores such as CADD and SIFT established that integration of diverse genomic annotations could improve variant pathogenicity prediction <span class="citation" data-cites="rentzsch_cadd_2019 schubach_cadd_2024">(<a href="references.html#ref-rentzsch_cadd_2019" role="doc-biblioref">Rentzsch et al. 2019</a>; <a href="references.html#ref-schubach_cadd_2024" role="doc-biblioref">Schubach et al. 2024</a>)</span>. These approaches relied on expert feature engineering, combining conservation scores, functional annotations, and population frequency data through ensemble methods or logistic regression.</p>
 <p>Task-specific deep learning models demonstrated that neural networks could learn relevant features directly from sequence. DeepSEA predicted chromatin accessibility and transcription factor binding from 1 kb sequences using convolutional architectures <span class="citation" data-cites="zhou_deepsea_2015">(<a href="references.html#ref-zhou_deepsea_2015" role="doc-biblioref">J. Zhou and Troyanskaya 2015</a>)</span>. ExPecto extended this approach to gene expression prediction by modeling regulatory elements across multiple cell types <span class="citation" data-cites="zhou_expecto_2018">(<a href="references.html#ref-zhou_expecto_2018" role="doc-biblioref">J. Zhou et al. 2018</a>)</span>. Sei organized regulatory predictions into interpretable sequence classes through unsupervised clustering <span class="citation" data-cites="chen_deepsea_2022">(<a href="references.html#ref-chen_deepsea_2022" role="doc-biblioref">Chen et al. 2022</a>)</span>. SpliceAI achieved near-perfect splice site prediction through dilated convolutions over 10 kb contexts (<a href="p2-ch06-cnn.html" class="quarto-xref"><span>Chapter 6</span></a>). Enformer scaled sequence-to-function modeling to 200 kb windows and thousands of chromatin tracks through transformer architectures <span class="citation" data-cites="avsec_enformer_2021">(<a href="references.html#ref-avsec_enformer_2021" role="doc-biblioref">Avsec et al. 2021</a>)</span>.</p>
 <p>These models succeeded within their specific domains but remained difficult to repurpose. Training a DeepSEA model required chromatin accessibility data. Using SpliceAI for regulatory prediction would require complete retraining on different labels. Each application domain needed its own model, trained from scratch on task-specific data. <strong>The fundamental limitation was not model capacity but training paradigm: supervised learning on narrow tasks produced narrow capabilities.</strong></p>
+<div id="fig-paradigm-shift" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-paradigm-shift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-paradigm-shift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.1: [Essential] Two-panel comparison showing the paradigm shift. Panel A (Task-Specific Era): Multiple independent models (DeepSEA, SpliceAI, ExPecto) shown as separate pipelines, each with its own training data, architecture, hyperparameters; arrows showing no knowledge transfer between models; Label: “Train separately, no shared learning.” Panel B (Foundation Model Era): Single large pretrained backbone at center, multiple lightweight adaptation heads branching out, downstream tasks (regulatory, splicing, expression, variant effect) as leaf nodes, shared representation layer highlighted; Label: “Pretrain once, adapt many.”
+</figcaption>
+</figure>
+</div>
 <p>Sequence language models introduced the self-supervised pretraining paradigm (<a href="p2-ch08-pretraining.html" class="quarto-xref"><span>Chapter 8</span></a>) to genomics. DNABERT applied masked language modeling to DNA sequences, demonstrating that general representations could be learned without task-specific labels <span class="citation" data-cites="ji_dnabert_2021">(<a href="references.html#ref-ji_dnabert_2021" role="doc-biblioref">Ji et al. 2021</a>)</span>. ESM and ESM-2 showed that protein language models pretrained on sequence alone could transfer effectively to structure prediction, variant effect prediction, and protein design <span class="citation" data-cites="rives_esm_2021 lin_esm-2_2022">(<a href="references.html#ref-rives_esm_2021" role="doc-biblioref">Rives et al. 2021</a>; <a href="references.html#ref-lin_esm-2_2022" role="doc-biblioref">Lin et al. 2022</a>)</span>. The Nucleotide Transformer family scaled DNA language modeling to cross-species training corpora <span class="citation" data-cites="dalla-torre_nucleotide_2023">(<a href="references.html#ref-dalla-torre_nucleotide_2023" role="doc-biblioref">Dalla-Torre et al. 2023</a>)</span>. HyenaDNA used implicit convolutions to reach million-token contexts at single-nucleotide resolution <span class="citation" data-cites="nguyen_hyenadna_2023">(<a href="references.html#ref-nguyen_hyenadna_2023" role="doc-biblioref">Nguyen et al. 2023</a>)</span>.</p>
 <p>The transition from task-specific to foundation models changes the relationship between model developers and users. Task-specific models deliver predictions as their primary product. Foundation models deliver representations that users adapt to their own tasks through the transfer learning techniques examined in <a href="p2-ch09-transfer.html" class="quarto-xref"><span>Chapter 9</span></a>. This distinction affects everything from model architecture design to evaluation strategies to deployment infrastructure.</p>
 </section>
@@ -734,6 +751,26 @@ div.csl-indent {
 <h3 data-number="10.3.2" class="anchored" data-anchor-id="empirical-scaling-in-genomic-models"><span class="header-section-number">10.3.2</span> Empirical Scaling in Genomic Models</h3>
 <p>Several genomic foundation model families have reported scaling experiments, though systematic scaling laws comparable to NLP remain elusive.</p>
 <p>The Nucleotide Transformer family provides perhaps the clearest genomic scaling data <span class="citation" data-cites="dalla-torre_nucleotide_2023">(<a href="references.html#ref-dalla-torre_nucleotide_2023" role="doc-biblioref">Dalla-Torre et al. 2023</a>)</span>. Performance on downstream benchmarks improves consistently with parameter count across models from 50 million to 2.5 billion parameters. The largest models (trained on multi-species data) outperform smaller models trained on human sequences alone, suggesting that cross-species data provides effective scaling even when human-specific performance is the target. Training compute scaled from approximately 10^19 to 10^21 FLOPs across the model family.</p>
+<div id="fig-scaling-laws" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scaling-laws-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scaling-laws-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.2: [Essential] Three-panel figure illustrating scaling relationships. Panel A (Loss vs.&nbsp;Parameters): Log-log plot showing validation loss decreasing with parameter count; data points from Nucleotide Transformer family (50M → 2.5B); ESM-2 scaling curve overlaid for comparison; power law fit line with exponent annotation. Panel B (Compute-Optimal Frontier): Iso-performance contours on parameter × data plane; Chinchilla optimal line showing balanced allocation; undertrained region shaded; genomic data ceiling annotated (~10^12 nucleotides). Panel C (Emergent Capabilities): Capability (y-axis) vs.&nbsp;scale (x-axis, log); multiple curves showing different capabilities emerging at different scales; threshold markers where capabilities “switch on.”
+</figcaption>
+</figure>
+</div>
 <p>ESM-2 demonstrated similar scaling for protein language models, with performance on structure prediction and variant effect tasks improving smoothly from 8 million to 15 billion parameters <span class="citation" data-cites="lin_esm-2_2022">(<a href="references.html#ref-lin_esm-2_2022" role="doc-biblioref">Lin et al. 2022</a>)</span>. The largest ESM-2 models approach the structure prediction accuracy of AlphaFold2 using only single-sequence input, a capability entirely absent in smaller models. This represents a qualitative capability threshold crossed through scale.</p>
 <p>HyenaDNA focused on context length scaling rather than parameter scaling, demonstrating that million-token contexts at single-nucleotide resolution could be achieved through sub-quadratic architectures <span class="citation" data-cites="nguyen_hyenadna_2023">(<a href="references.html#ref-nguyen_hyenadna_2023" role="doc-biblioref">Nguyen et al. 2023</a>)</span>. The relationship between context length and downstream performance is task-dependent: some tasks (local motif recognition) show saturation at kilobase scales, while others (long-range regulatory prediction) continue improving with longer contexts.</p>
 </section>
@@ -760,6 +797,20 @@ div.csl-indent {
 <section id="a-taxonomy-of-genomic-foundation-models" class="level2" data-number="10.4">
 <h2 data-number="10.4" class="anchored" data-anchor-id="a-taxonomy-of-genomic-foundation-models"><span class="header-section-number">10.4</span> A Taxonomy of Genomic Foundation Models</h2>
 <p>The landscape of genomic foundation models can be organized into four broad families. Each family exhibits distinct characteristics, strengths, limitations, and typical application domains.</p>
+<div id="fig-model-taxonomy" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-model-taxonomy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-model-taxonomy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.3: [Essential] 2×2 grid with families as quadrants. Quadrant 1 (DNA Language Models, Blue): DNABERT, Nucleotide Transformer, HyenaDNA, Evo 2. Quadrant 2 (Protein Language Models, Purple): ESM-2, ProtTrans, ESMFold. Quadrant 3 (Sequence-to-Function Models, Green): Enformer, Borzoi, AlphaGenome. Quadrant 4 (Multi-Omic Models, Orange): Omni-DNA, cross-modal architectures. For each: representative models, input/output types, pretraining approach, strengths, limitations. Connecting lines showing where models can feed into each other.
+</figcaption>
+</figure>
+</div>
 <section id="dna-language-models" class="level3" data-number="10.4.1">
 <h3 data-number="10.4.1" class="anchored" data-anchor-id="dna-language-models"><span class="header-section-number">10.4.1</span> DNA Language Models</h3>
 <p>DNA language models learn sequence representations from raw nucleotide strings through self-supervised objectives. These models treat DNA as a language to be modeled without explicit functional labels, discovering patterns through statistical regularities in genomic sequence.</p>
@@ -812,6 +863,16 @@ div.csl-indent {
 <section id="tokenization" class="level3" data-number="10.5.4">
 <h3 data-number="10.5.4" class="anchored" data-anchor-id="tokenization"><span class="header-section-number">10.5.4</span> Tokenization</h3>
 <p><strong>Character-level</strong> maintains single-base resolution but imposes longest sequence lengths. <strong>K-mer tokenization</strong> reduces length by a factor approaching k, with vocabulary reaching 4,096 for 6-mers. <strong>Learned tokenization</strong> (BPE-style) discovers schemes from data, potentially allocating vocabulary more efficiently <span class="citation" data-cites="medvedev_biotoken_2025">(<a href="references.html#ref-medvedev_biotoken_2025" role="doc-biblioref">Medvedev et al. 2025</a>)</span>. The choice should align with both computational constraints and biological resolution requirements.</p>
+<div id="fig-design-dimensions" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-design-dimensions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-design-dimensions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.4: [High] Multi-axis comparison (radar/spider plot or parallel coordinates) showing how different models make different design choices. Axes: (1) Context Length: 512bp → 1Mb; (2) Parameter Count: 10M → 15B; (3) Species Coverage: Human-only → Pan-genomic; (4) Architecture Type: CNN → Transformer → Hybrid → SSM; (5) Tokenization: Character → k-mer → BPE → Codon-aware; (6) Pretraining Objective: MLM → Autoregressive → Multi-task supervised. Models plotted: DNABERT-2, HyenaDNA, Evo 2, Enformer, Nucleotide Transformer.
+</figcaption>
+</figure>
+</div>
 </section>
 </section>
 <section id="build-versus-use-decisions" class="level2" data-number="10.6">
@@ -844,6 +905,16 @@ div.csl-indent {
 <p><strong>Compute costs.</strong> Training a foundation model from scratch requires 10^20 to 10^22 FLOPs, translating to thousands of GPU-hours and tens of thousands of dollars at current cloud prices. Fine-tuning requires 10^16 to 10^18 FLOPs, often achievable in hours on single GPUs. Inference with frozen embeddings requires only forward passes. Detailed compute estimates for specific model scales and hardware configurations appear in <span class="citation" data-cites="app-compute">(<a href="references.html#ref-app-compute" role="doc-biblioref"><strong>app-compute?</strong></a>)</span>.</p>
 <p><strong>Data costs.</strong> Foundation model pretraining requires billions of tokens. Fine-tuning requires thousands to tens of thousands of labeled examples. Zero-shot and embedding approaches require only evaluation data.</p>
 <p><strong>Performance expectations.</strong> For well-studied tasks with abundant labeled data, fine-tuned models typically outperform frozen embeddings by 5-15% on standard metrics. Zero-shot approaches often achieve 70-90% of fine-tuned performance. Custom foundation models rarely outperform existing options by large margins unless the application involves genuinely novel domains.</p>
+<div id="fig-build-vs-use" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-build-vs-use-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-build-vs-use-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.5: [High] Decision flowchart with cost-benefit annotations. Entry Point: “New genomic prediction task.” Decision nodes leading to terminal recommendations: USE (Frozen embeddings + simple classifier, Hours/$10, 70-90% of fine-tuned); ADAPT (LoRA/adapter fine-tuning, Days/$100-1000, 95% of full fine-tuning); BUILD (Custom pretraining, Months/$100K+, potentially best for domain). Annotations: “Most applications land here” pointing to USE/ADAPT paths; “Rare but sometimes necessary” pointing to BUILD.
+</figcaption>
+</figure>
+</div>
 <p><strong>Time costs.</strong> Using existing models takes hours to days. Fine-tuning takes days to weeks. Training from scratch takes weeks to months. For time-sensitive applications, using existing models often dominates even if custom training would eventually yield better results.</p>
 <p>The practical recommendation for most applications: start with frozen embeddings from the most appropriate existing foundation model. If performance is insufficient, try parameter-efficient fine-tuning. Train from scratch only if adaptation fails and the application justifies the investment.</p>
 </section>

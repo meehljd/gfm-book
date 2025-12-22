@@ -694,9 +694,44 @@ window.Quarto = {
 <section id="attribution-methods-and-input-importance" class="level2" data-number="24.1">
 <h2 data-number="24.1" class="anchored" data-anchor-id="attribution-methods-and-input-importance"><span class="header-section-number">24.1</span> Attribution Methods and Input Importance</h2>
 <p>When a model predicts that a 200-kilobase genomic region will show high chromatin accessibility in hepatocytes, a natural question arises: which bases within that region drive the prediction? Attribution methods answer this question by assigning importance scores to input positions, identifying where the model focuses its computational attention. These scores can reveal candidate regulatory elements, highlight the sequence features underlying variant effects, and provide the raw material for downstream motif discovery.</p>
+<div id="fig-attribution-comparison" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-attribution-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-attribution-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24.1: [Essential] Attribution methods on same input sequence. Methods: Gradient × Input (fast, noisy), Integrated Gradients (principled, slower), DeepLIFT (reference-based), Attention weights (inspect what model attends), In silico mutagenesis (exhaustive, expensive). Visualization: Heatmaps on same sequence; correlation between methods; areas of agreement/disagreement. Annotations: Compute cost, principled basis, what each reveals.
+</figcaption>
+</figure>
+</div>
 <section id="in-silico-mutagenesis" class="level3" data-number="24.1.1">
 <h3 data-number="24.1.1" class="anchored" data-anchor-id="in-silico-mutagenesis"><span class="header-section-number">24.1.1</span> In Silico Mutagenesis</h3>
 <p>The most direct approach to measuring input importance is simply to change each base and observe what happens to the prediction. In silico mutagenesis (ISM) systematically introduces mutations at every position, computing the difference between mutant and reference predictions. For a sequence of length <span class="math inline">\(L\)</span>, ISM creates three mutant sequences at each position (substituting each non-reference nucleotide), yielding <span class="math inline">\(3L\)</span> forward passes through the model. The resulting mutation effect matrix captures how sensitive the prediction is to changes at each position and to each alternative base.</p>
+<div id="fig-in-silico-mutagenesis" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-in-silico-mutagenesis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-in-silico-mutagenesis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24.2: [High] Four-panel figure. Panel A (ISM procedure): For each position, systematically mutate to all alternatives; compute prediction change; produces position × mutation matrix. Panel B (ISM profile): Heatmap aligned to sequence; functional regions show large effects; silent regions near zero. Panel C (Saturation mutagenesis comparison): ISM predictions vs experimental DMS data; correlation validation. Panel D (Mechanistic insights): ISM reveals: binding site boundaries, position-specific tolerance, allele-specific effects. Note: Computational cost ~L×4 forward passes.
+</figcaption>
+</figure>
+</div>
 <p>ISM provides true counterfactual information rather than approximations. When ISM shows that mutating position 47 from A to G reduces the predicted accessibility by 0.3 log-fold, that is a direct observation about model behavior, not an estimate derived from gradients or attention weights. This directness makes ISM the gold standard for faithfulness: if ISM identifies a position as important, perturbing that position genuinely changes the output.</p>
 <p>The limitation is computational cost. Scoring all single-nucleotide substitutions in a 200-kilobase input requires 600,000 forward passes, which becomes prohibitive for large models or genome-wide analysis. Practical applications often restrict ISM to targeted windows around variants of interest, using faster methods to identify candidate regions for detailed analysis. For variant effect prediction specifically, ISM reduces to comparing reference and alternative allele predictions, requiring only two forward passes per variant.</p>
 </section>
@@ -709,7 +744,6 @@ window.Quarto = {
 <p><span class="math display">\[\text{IG}_i(x) = (x_i - x'_i) \int_{\alpha=0}^{1} \frac{\partial f(x' + \alpha(x - x'))}{\partial x_i} \, d\alpha\]</span></p>
 <p>This integral, approximated by summing gradients at discrete interpolation steps, satisfies sensitivity (any input that affects the output receives nonzero attribution) and implementation invariance (functionally equivalent networks produce identical attributions). Integrated gradients have become a standard choice for genomic models, balancing computational efficiency with theoretical guarantees.</p>
 <p>All gradient-based methods require choosing a reference sequence, which substantially affects the resulting attributions. Common choices include dinucleotide-shuffled versions of the input (preserving local composition while disrupting motifs), average non-functional sequence, or simply zeros. The reference defines what counts as informative: attributions highlight features that differ from the reference and contribute to the prediction difference. A shuffled reference emphasizes motif content; a zero reference treats any sequence information as potentially important.</p>
-<p><strong>Figure recommendation</strong>: A multi-panel comparison showing the same genomic region analyzed by ISM, gradient × input, DeepLIFT, and integrated gradients. Highlight a known transcription factor binding site and show how different methods assign importance to the motif core versus flanking regions. Include a small table comparing computational cost (forward passes required) and typical failure modes for each method.</p>
 </section>
 <section id="reconciling-attribution-methods" class="level3" data-number="24.1.3">
 <h3 data-number="24.1.3" class="anchored" data-anchor-id="reconciling-attribution-methods"><span class="header-section-number">24.1.3</span> Reconciling Attribution Methods</h3>
@@ -739,7 +773,16 @@ window.Quarto = {
 <p>The workflow proceeds through several stages. Base-level importance scores are computed for many sequences using DeepLIFT, ISM, or integrated gradients. Windows where total importance exceeds a threshold are extracted as seqlets, each representing a candidate motif instance. These seqlets are compared using metrics that consider both sequence content and importance profiles, then clustered into groups corresponding to putative motifs. Within each cluster, seqlets are aligned and consolidated into PWMs and importance-weighted logos. The resulting motifs can be matched to known transcription factors or flagged as novel patterns.</p>
 <p>Beyond individual motifs, TF-MoDISco enables grammar inference by analyzing motif co-occurrence. Mapping discovered motif instances back to genomic coordinates reveals characteristic spacing between motif pairs, orientation preferences, and cell-type-specific usage patterns. These grammatical rules can be validated through in silico experiments: inserting or removing motifs in synthetic sequences and checking whether predictions change as expected.</p>
 <p>Applications to models like BPNet trained on ChIP-seq data have recovered known transcription factor motifs, discovered novel sequence variants, and revealed spacing constraints validated through synthetic reporter assays. The same workflow applies to foundation model analysis: use the model to produce base-level attributions for a downstream task, run TF-MoDISco to extract a task-specific motif vocabulary, and analyze how motif usage varies across conditions.</p>
-<p><strong>Figure recommendation</strong>: A pipeline diagram showing the complete TF-MoDISco workflow, from input sequences through attribution computation, seqlet extraction, clustering, and motif logo generation. Include an example showing discovered motifs aligned to JASPAR matches and a small grammar diagram illustrating inferred spacing constraints between co-occurring motifs.</p>
+<div id="fig-tfmodisco" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tfmodisco-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tfmodisco-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24.3: [High] Motif discovery pipeline. Steps: (1) Attribution scores across many sequences; (2) Cluster high-attribution regions; (3) Align and aggregate into motifs; (4) Match to known databases (JASPAR). Examples: Discovered motif aligned to known TF (CTCF, GATA); novel motifs with unknown biology; composite motifs (TF combinations). Key insight: Bridge between black-box attributions and interpretable biology.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="probing-learned-representations" class="level2" data-number="24.4">
 <h2 data-number="24.4" class="anchored" data-anchor-id="probing-learned-representations"><span class="header-section-number">24.4</span> Probing Learned Representations</h2>
@@ -754,12 +797,31 @@ window.Quarto = {
 <h3 data-number="24.4.2" class="anchored" data-anchor-id="limitations-of-probing"><span class="header-section-number">24.4.2</span> Limitations of Probing</h3>
 <p>Probing results require careful interpretation. A probe’s failure to predict some property might indicate that the representation does not encode it, or might reflect limitations of the probe architecture, insufficient training data, or mismatch between the probe’s capacity and the complexity of the encoding. Linear probes may miss nonlinearly encoded information; more complex probes risk learning the property themselves rather than reading it from the representation.</p>
 <p>The selectivity-accessibility tradeoff complicates interpretation. A representation might encode a property accessibly (recoverable by a linear probe) or selectively (encoded but requiring nonlinear decoding). Properties encoded selectively might be present but not easily extracted, while properties encoded accessibly might be incidentally correlated with the training objective rather than causally important. Combining probing with causal interventions (ablating representation components and measuring effects on downstream predictions) provides stronger evidence about which encoded properties actually matter.</p>
-<p><strong>Figure recommendation</strong>: A schematic showing the probing setup, with a pretrained model producing hidden representations, a linear probe trained on those representations, and accuracy metrics for different probed properties. Include a bar chart comparing probe accuracy for different properties (secondary structure, binding site presence, GC content) across model layers, illustrating how different information localizes to different depths.</p>
 </section>
 </section>
 <section id="attention-patterns-in-transformer-models" class="level2" data-number="24.5">
 <h2 data-number="24.5" class="anchored" data-anchor-id="attention-patterns-in-transformer-models"><span class="header-section-number">24.5</span> Attention Patterns in Transformer Models</h2>
 <p>Transformer-based genomic models use self-attention to aggregate information across long sequence contexts, potentially capturing distal regulatory interactions invisible to models with narrow receptive fields. Attention weights indicate which positions each position attends to, creating natural candidates for interpretability: perhaps high attention weights identify functionally related sequence elements.</p>
+<div id="fig-attention-visualization" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-attention-visualization-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-attention-visualization-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24.4: [High] Three-panel figure. Panel A (Attention heatmap): Position × position; patterns revealing (promoter-enhancer contacts, local structure). Panel B (Biological overlay): Attention on genome browser; peaks align with known regulatory elements. Panel C (Multi-head specialization): Different heads capturing different patterns; local context head, long-range head, motif-specific head. Caveats: Attention ≠ causation; sanity checks needed.
+</figcaption>
+</figure>
+</div>
 <section id="what-attention-patterns-reveal" class="level3" data-number="24.5.1">
 <h3 data-number="24.5.1" class="anchored" data-anchor-id="what-attention-patterns-reveal"><span class="header-section-number">24.5.1</span> What Attention Patterns Reveal</h3>
 <p>When attention weights are analyzed in genomic language models, certain heads exhibit strikingly structured patterns. Some heads preferentially connect positions within the same predicted gene or operon, suggesting the model has learned gene boundaries from sequence alone. Other heads show long-range connections that align with known enhancer-promoter relationships or chromatin loop anchors. Still others cluster positions by functional annotation, connecting genes with similar Gene Ontology terms despite lacking explicit functional labels during training.</p>
@@ -770,7 +832,6 @@ window.Quarto = {
 <p>Raw attention weights require skeptical interpretation. High attention between two positions indicates information flow in the model’s computation but does not necessarily indicate causal influence on predictions. Attention serves multiple computational roles beyond identifying important features: routing information for intermediate computations, implementing positional reasoning, and satisfying architectural constraints. A position receiving high attention might be used for bookkeeping rather than contributing to the final output.</p>
 <p>Several specific issues undermine naive attention interpretation. Attention weights describe information movement before value vectors are applied; positions with high attention but small value vector magnitudes contribute little to the output. Multi-head attention averages across heads with different functions; examining average attention obscures specialized head behavior. Cross-layer effects mean that the importance of early-layer attention depends on what later layers do with the routed information.</p>
 <p>More robust approaches combine attention analysis with perturbation experiments. If deleting a position that receives high attention changes the prediction substantially, the attention is functionally meaningful. If deletion has minimal effect, the attention may serve computational purposes unrelated to the target output. Attention rollout and attention flow methods propagate attention through layers to better capture information movement across the full network, though these too provide correlational rather than causal evidence.</p>
-<p><strong>Figure recommendation</strong>: An attention heatmap for a genomic region containing a gene and distal enhancer, showing different attention head patterns: one head connecting enhancer to promoter, another attending uniformly, a third showing local patterns. Annotate with known regulatory elements and indicate which attention patterns survive deletion testing.</p>
 </section>
 </section>
 <section id="regulatory-vocabularies-and-global-interpretability" class="level2" data-number="24.6">
@@ -802,7 +863,6 @@ window.Quarto = {
 <p>Mechanistic interpretability remains nascent for genomic foundation models, but initial applications show promise. Attention head analysis in DNA language models has identified heads specialized for different genomic functions: some attend within genes, others across regulatory regions, still others implement positional computations. Probing activations at different layers reveals hierarchical feature construction, from local sequence patterns in early layers to long-range regulatory relationships in later layers.</p>
 <p>Circuit analysis can explain specific model behaviors. If a model predicts that a variant disrupts regulation, mechanistic analysis can trace which features activate differently for reference versus variant sequence, which attention heads route information about the variant to the prediction, and which intermediate computations change. This mechanistic trace provides far richer explanation than attribution scores alone, potentially identifying the regulatory logic the model has learned.</p>
 <p>The challenge is scalability. Current mechanistic interpretability techniques require substantial manual analysis and work best for small models or specific behaviors. Foundation models with billions of parameters resist exhaustive circuit enumeration. Developing automated tools for circuit discovery and scaling mechanistic analysis to large genomic models represents an active research frontier.</p>
-<p><strong>Figure recommendation</strong>: A simplified circuit diagram showing how a hypothetical genomic model might process a sequence containing a transcription factor binding site. Show information flow from input embeddings through attention heads that detect the motif, through intermediate layers that contextualize it, to the final prediction. Annotate with interpretable feature descriptions at each stage.</p>
 </section>
 </section>
 <section id="validation-from-explanations-to-experiments" class="level2" data-number="24.8">
@@ -813,13 +873,32 @@ window.Quarto = {
 <p>An interpretation is faithful if it accurately describes what the model does. Testing faithfulness requires interventions: changing the features identified as important and verifying that predictions change accordingly. If an attribution method highlights certain positions as driving a prediction, deleting or scrambling those positions should reduce the prediction. If discovered motifs are claimed to be necessary for regulatory activity, removing them from sequences should impair predicted and measured function.</p>
 <p>Sanity checks provide baseline validation. When model weights are randomized, attributions should degrade to uninformative noise. When training labels are scrambled, discovered motifs should disappear or lose predictive power. These checks identify methods that produce plausible-looking outputs regardless of model content, revealing explanations that reflect method biases rather than genuine model features.</p>
 <p>Counterfactual experiments go further by testing whether identified features are sufficient as well as necessary. Inserting discovered motifs into neutral sequences should increase predicted regulatory activity if the motifs genuinely encode functional elements. Constructing synthetic sequences that combine motifs according to discovered grammatical rules should produce predictions consistent with those rules. Discrepancies between expected and observed effects indicate gaps in the interpretation.</p>
+<div id="fig-plausible-vs-faithful" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-plausible-vs-faithful-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-plausible-vs-faithful-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24.5: [Essential] Two-path diagram. Scenario: Model predicts high enhancer activity. Path A (Plausible but unfaithful): Attribution highlights GATA motif (biologically reasonable); but model learned GC content correlate; validation fails (mutating GATA doesn’t change prediction; inserting GATA doesn’t increase); explanation matches intuition not computation. Path B (Faithful): Attribution highlights GATA; validation succeeds (mutating reduces prediction; inserting increases). Validation tests: Necessity (removing reduces?), Sufficiency (adding increases?), Sanity checks (random weights different?). Key distinction: Plausible matches intuition; faithful reflects computation; unfaithful provides false comfort.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="experimental-validation" class="level3" data-number="24.8.2">
 <h3 data-number="24.8.2" class="anchored" data-anchor-id="experimental-validation"><span class="header-section-number">24.8.2</span> Experimental Validation</h3>
 <p>The ultimate test of interpretability connects model-derived hypotheses to biological experiments. Motifs discovered through TF-MoDISco can be tested through electrophoretic mobility shift assays, ChIP-qPCR, or reporter constructs. Predicted spacing constraints can be validated by varying distances between motifs in synthetic constructs and measuring activity. Hypothesized enhancer-promoter connections can be tested through CRISPR deletion of predicted enhancers and measurement of target gene expression.</p>
 <p>This experimental validation distinguishes genuine mechanistic discovery from pattern matching that happens to produce plausible-looking results. A model might learn that certain k-mers correlate with regulatory activity for confounded reasons (batch effects, mappability artifacts) yet produce motif logos resembling real transcription factors. Only experimental testing can determine whether model-derived hypotheses reflect causal regulatory logic.</p>
 <p>High-throughput functional assays enable systematic validation at scale. Massively parallel reporter assays (MPRAs) can test thousands of model-predicted regulatory elements simultaneously. Perturb-seq combines CRISPR perturbations with single-cell RNA-seq to measure effects of knocking out predicted regulatory factors. These technologies create opportunities for iterative model improvement: interpretability generates hypotheses, experiments test them, and results refine both model architecture and training.</p>
-<p><strong>Figure recommendation</strong>: A validation pipeline showing the loop from interpretability analysis through hypothesis generation, experimental testing, and model refinement. Include specific examples: TF-MoDISco motif → EMSA validation, attention-derived enhancer prediction → CRISPR deletion, probing-derived feature → reporter assay.</p>
+<div id="fig-validation-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-validation-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-validation-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24.6: [High] Circular workflow. Steps: (1) Model prediction; (2) Interpretability analysis (attribution, TF-MoDISco, attention patterns); (3) Hypothesis generation (“GATA motif drives activity”); (4) Experimental validation (EMSA for binding, reporter for activity, CRISPR for necessity, MPRA for systematic testing); (5) Model refinement (validated → improved training; failed → identify limitations; return to step 1). Example pathways: TF-MoDISco → EMSA ✓; attention enhancer → CRISPR ✓; GC attribution → MPRA no effect ✗ → confounder identified. Key insight: Interpretability advances biology only when closed with validation.
+</figcaption>
+</figure>
+</div>
 </section>
 </section>
 <section id="interpretability-in-clinical-variant-assessment" class="level2" data-number="24.9">
@@ -828,6 +907,16 @@ window.Quarto = {
 <p>Current ACMG-AMP criteria allow computational evidence as supporting (PP3) or opposing (BP4) pathogenicity, but the evidence strength depends on understanding what the prediction reflects. A splice site disruption score from SpliceAI provides interpretable mechanistic evidence: the variant is predicted to alter splicing because it changes the consensus splice site sequence. This prediction can be evaluated against splice site models, tested with minigene assays, and combined with observations of aberrant transcripts in patient samples. The interpretation enables evidence integration.</p>
 <p>Foundation model predictions are less immediately interpretable but potentially more informative. A pathogenicity score from ESM-1v reflects evolutionary constraint inferred from protein language modeling, but the specific sequence features driving the prediction require attribution analysis to identify. An expression effect predicted by Enformer might result from disrupted transcription factor binding, altered chromatin accessibility, or changed 3D regulatory contacts; interpretability analysis distinguishes these mechanisms and guides experimental validation.</p>
 <p>For clinical utility, interpretability must be communicated effectively. Genome browsers displaying attribution tracks alongside variant calls help clinicians identify mechanistic hypotheses. Reports that accompany pathogenicity scores with regulatory vocabulary classifications (this variant shifts an enhancer toward a repressive state) provide actionable context. These communication challenges extend interpretability beyond algorithm development to user interface design and clinical workflow integration.</p>
+<div id="fig-clinical-interpretability" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clinical-interpretability-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clinical-interpretability-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24.7: [Enhancing] Clinical workflow integration. ACMG evidence framework: PP3 (computational supports pathogenicity), BP4 (supports benign). Evidence strength depends on interpretability: Weak (score only, 0.85, no mechanism, limited ACMG weight); Moderate (score + attribution: disrupts splice site; SpliceAI supports; can evaluate against transcript data); Strong (score + validated mechanism: disrupts CTCF binding; ChIP confirms; 3D genome shows contact; minigene assay confirms). Clinical report elements: Annotation, score with uncertainty, mechanistic hypothesis, supporting/conflicting evidence, recommended follow-up.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="practical-approaches-for-foundation-model-analysis" class="level2" data-number="24.10">
 <h2 data-number="24.10" class="anchored" data-anchor-id="practical-approaches-for-foundation-model-analysis"><span class="header-section-number">24.10</span> Practical Approaches for Foundation Model Analysis</h2>

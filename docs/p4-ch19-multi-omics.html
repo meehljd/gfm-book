@@ -660,6 +660,16 @@ ul.task-list li input[type="checkbox"] {
 
 <p>Combining data types should improve prediction. If genomic variants provide one signal and transcriptomic measurements provide another, their combination ought to be more informative than either alone. This intuition, while reasonable, proves frequently wrong in practice. Naive concatenation of multi-omics features often degrades performance relative to single-modality models. Noise from uninformative features overwhelms signal from informative ones. Batch effects between modalities create spurious correlations that models exploit. The curse of dimensionality intensifies when features from multiple assays are stacked without principled integration. The paradox is real: more data can mean worse predictions, and understanding why is prerequisite to making multi-omics integration work.</p>
 <p>Each molecular layer captures part of the biological story but not all of it. Genomic variants identify predisposition; transcriptomics reveals which genes respond; proteomics shows which proteins change; metabolomics measures downstream biochemical consequences. A patient with a BRCA1 variant may show altered DNA repair gene expression, deficient homologous recombination protein activity, and characteristic metabolic signatures. No single layer provides the complete picture. Effective integration traces this causal cascade from genetic variation through molecular intermediates to clinical phenotype, distinguishing primary effects from downstream consequences and noise from signal.</p>
+<div id="fig-integration-paradox" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-integration-paradox-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-integration-paradox-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19.1: [Essential] Central tension. Panel A (The Promise): Different modalities capture different aspects; genomics (heritable potential), transcriptomics (current state), proteomics (functional complement), metabolomics (downstream biochemistry); integration should improve prediction. Panel B (The Paradox): More modalities = more features = more overfitting risk; missing data compounds problem; when does integration actually help? Panel C (When Integration Helps): Complementary information (genomics + expression for complex traits), cross-modality validation, mechanistic interpretation. Panel D (When Integration Hurts): Redundant information, batch effects across modalities, sample size dilution.
+</figcaption>
+</figure>
+</div>
 <p>The integration strategy matters as much as the data itself. Early fusion concatenates features before modeling, intermediate fusion learns joint representations across modalities, and late fusion combines predictions from modality-specific models. Each approach carries distinct tradeoffs for different applications and data characteristics. Multi-omics foundation models attempt to learn unified representations across genomics, transcriptomics, proteomics, and other modalities simultaneously, while clinical integration extends further still, combining electronic health records, imaging data, and molecular measurements for patient-level prediction. The practical challenges are substantial: missing modalities when not every patient has every assay, batch effects from technical variation between measurement platforms, and a persistent gap between multi-omics potential and deployment reality.</p>
 <section id="the-limits-of-single-modality-models" class="level2" data-number="19.1">
 <h2 data-number="19.1" class="anchored" data-anchor-id="the-limits-of-single-modality-models"><span class="header-section-number">19.1</span> The Limits of Single-Modality Models</h2>
@@ -673,6 +683,26 @@ ul.task-list li input[type="checkbox"] {
 <section id="integration-strategies-and-their-tradeoffs" class="level2" data-number="19.2">
 <h2 data-number="19.2" class="anchored" data-anchor-id="integration-strategies-and-their-tradeoffs"><span class="header-section-number">19.2</span> Integration Strategies and Their Tradeoffs</h2>
 <p>Three broad strategies have emerged for combining multi-omics data, each with distinct strengths and limitations.</p>
+<div id="fig-fusion-strategies" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-fusion-strategies-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fusion-strategies-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19.2: [Essential] Strategy comparison. Panel A (Early Fusion): All features concatenated → single model; pros: can learn cross-modal interactions; cons: curse of dimensionality, requires complete data. Panel B (Late Fusion): Separate models → predictions combined; pros: handles missing, modality-specific architectures; cons: cannot learn feature interactions. Panel C (Intermediate Fusion): Modality-specific encoders → shared latent space → task head; pros: flexibility + robustness; cons: alignment complexity. Summary table comparing cross-modal interactions, missing data handling, compute.
+</figcaption>
+</figure>
+</div>
 <section id="early-fusion" class="level3" data-number="19.2.1">
 <h3 data-number="19.2.1" class="anchored" data-anchor-id="early-fusion"><span class="header-section-number">19.2.1</span> Early Fusion</h3>
 <p>Early fusion concatenates features from multiple modalities before any modeling, creating a single high-dimensional input vector that contains genomic variants, expression values, methylation levels, and any other available measurements. A classifier or regressor then learns directly from this concatenated representation.</p>
@@ -701,6 +731,31 @@ ul.task-list li input[type="checkbox"] {
 <p>GLUE, introduced in <a href="p4-ch16-single-cell.html" class="quarto-xref"><span>Chapter 16</span></a> for single-cell multi-omics integration, exemplifies this approach. Separate variational autoencoders encode RNA-seq and ATAC-seq data into a shared cell embedding space. A feature graph links ATAC-seq peaks to genes based on genomic proximity and transcription factor binding, providing biological constraints on the alignment. The result enables integration of measurements from different cells, not just different modalities in the same cell.</p>
 <p>Intermediate fusion dominates modern multi-omics deep learning because it balances flexibility with robustness. The modality-specific encoders can be pretrained on large single-modality datasets, then fine-tuned for alignment. New modalities can be added by training new encoders without retraining existing components. The shared space provides a natural target for interpretation and visualization.</p>
 <p>The approach is not without limitations. The quality of alignment depends heavily on the training objective and the availability of paired samples where multiple modalities are measured in the same biological entity. Without sufficient anchoring, the shared space may fail to capture true biological correspondence. Hyperparameter choices for balancing reconstruction against alignment losses require careful tuning.</p>
+<div id="fig-intermediate-fusion" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-intermediate-fusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-intermediate-fusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19.3: [High] Detailed architecture. Panel A (Modality-Specific Encoders): Expression VAE, methylation CNN, proteomics MLP; each tailored to modality. Panel B (Shared Latent Space): All encoders output same dimensionality; alignment via reconstruction loss, contrastive loss, graph constraints. Panel C (Downstream Task Head): Classifier/regressor on latent representation; can use partial representations. Panel D (Missing Modality Handling): Complete sample all encoders fire; partial sample available encoders only; graceful degradation.
+</figcaption>
+</figure>
+</div>
 </section>
 </section>
 <section id="multi-omics-foundation-models" class="level2" data-number="19.3">
@@ -750,6 +805,31 @@ ul.task-list li input[type="checkbox"] {
 <p>The training objective typically combines modality-specific reconstruction losses with alignment terms that encourage consistency across data types. A patient’s EHR embedding should be predictive of their molecular state; their imaging embedding should be consistent with their clinical trajectory. Downstream classifiers for outcomes like survival, treatment response, or disease progression operate on the combined representation.</p>
 <p>Missing modalities are common in clinical settings. Not all patients have genomic data; imaging may be unavailable for some conditions; the depth of EHR history varies by healthcare system and patient engagement. Multi-modal clinical models must handle this missingness gracefully, producing useful predictions from whatever data are available while leveraging cross-modal information when present.</p>
 <p>The clinical deployment path for such models requires validation on external cohorts, prospective evaluation, and regulatory clearance. These practical considerations, addressed in <a href="p6-ch25-clinical-risk.html" class="quarto-xref"><span>Chapter 25</span></a>, shape model development from the outset. A model that performs well on a research cohort but requires modalities unavailable in clinical workflows provides little value.</p>
+<div id="fig-clinical-multimodal" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clinical-multimodal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clinical-multimodal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19.4: [High] Patient-level integration. Panel A (Data Modalities): EHR (diagnoses, procedures, medications, labs—longitudinal), imaging (CT, MRI, histopathology—spatial), molecular (genomics, expression, proteomics—static). Panel B (Modality-Specific Encoders): EHR transformer over event sequence; imaging vision encoder; molecular FM embeddings. Panel C (Patient Representation Space): All → shared patient embedding; EHR predicts molecular; imaging consistent with trajectory. Panel D (Clinical Prediction Tasks): Risk stratification, treatment response, prognosis; missing modality handling (not all patients have all data). Practical challenges callout: batch effects, temporal alignment, cost constraints.
+</figcaption>
+</figure>
+</div>
 </section>
 </section>
 <section id="the-systems-view-from-variant-to-phenotype" class="level2" data-number="19.5">
@@ -761,6 +841,16 @@ ul.task-list li input[type="checkbox"] {
 <p>These primary effects propagate through molecular layers. Expression changes alter the cellular protein complement. Protein level changes affect enzyme activity, signaling cascades, and transcriptional feedback. Metabolic flux shifts in response to enzyme availability. Cell behavior changes as the integrated molecular state crosses thresholds for proliferation, differentiation, or death.</p>
 <p>Tissue-level phenotypes emerge from cellular behavior aggregated across the organ. Tumor growth reflects altered cell proliferation; fibrosis reflects aberrant extracellular matrix deposition; inflammation reflects immune cell recruitment and activation. These tissue phenotypes manifest as clinical symptoms, laboratory abnormalities, and imaging findings.</p>
 <p>The cascade view suggests where different modalities provide information. Genomics captures the inherited potential and somatic alterations. Transcriptomics and epigenomics capture the current regulatory state. Proteomics and metabolomics capture the functional molecular complement. Clinical data captures the phenotypic consequences.</p>
+<div id="fig-information-cascade" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-information-cascade-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-information-cascade-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19.5: [High] Systems biology view. Panel A (The Causal Cascade): Genetic variant → (cis-regulation) → Expression change → (translation) → Protein change → (metabolism) → Metabolite change → (cellular) → Cell behavior → (tissue) → Clinical phenotype. Panel B (Where Each Modality Provides Information): Genomics (starting point), transcriptomics (current state), proteomics (functional complement), metabolomics (downstream), clinical (manifestation). Panel C (Bottleneck Modalities): Coding variants bottleneck at protein; regulatory at expression; some phenotypes bottleneck downstream. Panel D (Integration Implications): Model should trace causal chain; not all modalities equally informative for all questions.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="bottleneck-modalities" class="level3" data-number="19.5.2">
 <h3 data-number="19.5.2" class="anchored" data-anchor-id="bottleneck-modalities"><span class="header-section-number">19.5.2</span> Bottleneck Modalities</h3>

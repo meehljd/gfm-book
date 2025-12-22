@@ -734,6 +734,31 @@ window.Quarto = {
 <p>Foundation models invert this relationship. Rather than engineering features, they learn representations from raw sequence data during pretraining, then apply those representations to variant interpretation. A protein language model trained to predict masked amino acids implicitly learns which substitutions violate evolutionary constraints. A DNA language model trained to predict nucleotides in genomic context learns which changes disrupt sequence grammar. The representations encode information about structure, function, and constraint that was never explicitly labeled during training.</p>
 <p>This paradigm shift has practical consequences. Coverage extends to any variant in any gene, not just those with extensive prior annotation. Representations capture subtle patterns (co-evolution between distant residues, context-dependent motif strength) that resist manual feature engineering. Transfer learning enables rapid adaptation to new tasks and variant classes. The cost is interpretability: understanding why a foundation model assigns a particular score requires specialized analysis techniques rather than simple inspection of feature weights.</p>
 <p>Three architectural families dominate current VEP applications. Protein language models (<a href="p3-ch12-protein-lm.html" class="quarto-xref"><span>Chapter 12</span></a>) encode amino acid sequences and score missense variants by measuring likelihood changes. DNA language models (<a href="p3-ch11-dna-lm.html" class="quarto-xref"><span>Chapter 11</span></a>) operate on nucleotide sequences and can score variants of any type. Regulatory models (<a href="p3-ch13-regulatory.html" class="quarto-xref"><span>Chapter 13</span></a>) predict molecular phenotypes (chromatin accessibility, gene expression, splicing) and score variants by their predicted impact on these phenotypes. The most powerful systems combine elements from multiple families.</p>
+<div id="fig-fm-vep-paradigm" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-fm-vep-paradigm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fm-vep-paradigm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14.1: [Essential] Paradigm comparison. Panel A (Classical Approach): Variant → hand-crafted features (conservation, Grantham, domains, regulatory marks) → feature vector → classifier → score; limitation: coverage limited by annotations. Panel B (Foundation Model Approach): Same variant → pretrained model → learned representations → adaptation → score; strength: extends to any position. Panel C (What Changes): Classical features explicit/interpretable/manual; foundation features learned/opaque/automatic; trade-off arrow. Panel D (Three Families): Protein LMs → missense; DNA LMs → all variants; Regulatory models → noncoding mechanism; arrow: “Most powerful combine families.”
+</figcaption>
+</figure>
+</div>
 <section id="zero-shot-and-supervised-approaches" class="level3" data-number="14.1.1">
 <h3 data-number="14.1.1" class="anchored" data-anchor-id="zero-shot-and-supervised-approaches"><span class="header-section-number">14.1.1</span> Zero-Shot and Supervised Approaches</h3>
 <p>Foundation model VEP methods divide into two paradigms. Zero-shot approaches apply pretrained models directly without task-specific training: ESM-1v scores variants by comparing amino acid likelihoods, requiring no pathogenicity labels. The model’s pretraining objective (masked token prediction) implicitly teaches which substitutions violate evolutionary constraints. Supervised approaches like AlphaMissense add task-specific training layers and optimize explicitly for pathogenicity prediction using labeled examples.</p>
@@ -766,6 +791,31 @@ window.Quarto = {
 <p>Calibration receives explicit attention. Raw model outputs undergo isotonic regression calibration against held-out ClinVar variants, ensuring that predicted probabilities correspond to observed pathogenic proportions. A score of 0.8 should mean that 80% of variants with similar scores are pathogenic, enabling meaningful clinical interpretation. AlphaMissense reports calibrated scores along with discrete classifications (likely pathogenic, likely benign, uncertain) at thresholds chosen to achieve specific precision targets.</p>
 <p>Performance on independent benchmarks substantially exceeds classical predictors. On deep mutational scanning datasets (where experimental fitness measurements provide ground truth independent of clinical labels), AlphaMissense achieves correlations of 0.5 to 0.7 depending on the assay, compared to 0.3 to 0.5 for CADD or PolyPhen-2. On ClinVar expert-reviewed variants held out from training, AlphaMissense achieves AUROC values above 0.9, representing a meaningful improvement over the 0.85 to 0.88 typical of classical methods.</p>
 <p>The structural component proves essential for this performance. Ablation experiments removing AlphaFold2 features degrade performance substantially, particularly for variants at protein-protein interfaces and buried core positions where local geometry determines functional impact. The protein language model captures evolutionary constraint; structural information explains why that constraint exists.</p>
+<div id="fig-alphamissense" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-alphamissense-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-alphamissense-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14.2: [Essential] Four-panel figure. Panel A (Input Integration): Protein sequence → ESM-like embeddings; mutation position → AlphaFold2 structural context (secondary structure, solvent accessibility, contact density); combined features. Panel B (Training Strategy): NOT trained on ClinVar; instead population frequency as pathogenicity proxy; common in gnomAD → likely benign; absent + disease context → likely pathogenic; reduces circularity risk. Panel C (Calibration): Raw outputs → isotonic regression → calibrated probabilities; reliability diagram; score 0.8 = 80% pathogenic; thresholds annotated. Panel D (Performance): DMS benchmarks (ρ = 0.5-0.7 vs CADD 0.3-0.5); ClinVar (AUROC &gt;0.9 vs 0.85-0.88); structural component essential.
+</figcaption>
+</figure>
+</div>
 </section>
 </section>
 <section id="dna-based-variant-effect-prediction" class="level2" data-number="14.3">
@@ -820,6 +870,31 @@ window.Quarto = {
 <h3 data-number="14.4.3" class="anchored" data-anchor-id="practical-workflow-design"><span class="header-section-number">14.4.3</span> Practical Workflow Design</h3>
 <p>An effective VEP workflow balances comprehensiveness against efficiency. Genome-wide screening might use fast, zero-shot models (DNA language model likelihood scores) to identify variants deviating from expected sequence patterns. Prioritized variants then receive detailed evaluation with computationally expensive models (AlphaGenome multi-omic predictions). Final interpretation combines computational scores with population frequency, gene-level constraint metrics, segregation data, and clinical phenotype.</p>
 <p>The ordering matters for efficiency. Filtering the majority of variants with fast models before applying expensive models reduces computational cost by orders of magnitude. The choice of filtering threshold trades sensitivity against specificity: strict thresholds miss true pathogenic variants; lenient thresholds burden downstream analysis with false positives. Threshold selection should match intended use: diagnostic applications prioritize sensitivity while research screening may prioritize specificity.</p>
+<div id="fig-multimodel-integration" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-multimodel-integration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-multimodel-integration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14.3: [Essential] Practical integration workflow. Panel A (Model Selection by Variant Type): Missense → AlphaMissense, ESM-1v; splice-proximal → SpliceAI; deep intronic → Enformer, cryptic splice; promoter/enhancer → Enformer, AlphaGenome; synonymous → splicing + regulatory; structural → limited coverage flag. Panel B (Evidence Integration): Same variant scored by multiple models; example missense near exon boundary; AlphaMissense 0.85, SpliceAI 0.45, Enformer regulatory effect; combining without double-counting. Panel C (Correlation and Redundancy): Correlation matrix between scores; high correlation = shared info (don’t count twice); residual analysis. Panel D (Practical Workflow): Tier 1 fast screening (DNA-LM likelihood); Tier 2 detailed (AlphaMissense, SpliceAI); Tier 3 mechanistic (AlphaGenome); cost/time at each tier.
+</figcaption>
+</figure>
+</div>
 </section>
 </section>
 <section id="calibration-and-clinical-categories" class="level2" data-number="14.5">
@@ -837,6 +912,31 @@ window.Quarto = {
 <p>Isotonic regression learns a monotonic mapping from raw scores to calibrated probabilities. The method fits a step function that preserves ranking while adjusting probability estimates to match observed frequencies. Isotonic regression handles more complex miscalibration patterns than temperature scaling but requires larger calibration sets to avoid overfitting.</p>
 <p>Platt scaling fits a logistic regression from raw scores to binary outcomes, learning slope and intercept parameters. This produces well-calibrated probabilities when the relationship between scores and log-odds is approximately linear. For foundation model outputs with more complex score distributions, isotonic regression typically outperforms Platt scaling.</p>
 <p>Calibration should use data representative of deployment conditions. Calibrating on ClinVar expert-reviewed variants produces good performance on similar variants but may not transfer to novel genes, rare populations, or variant classes underrepresented in ClinVar. Stratified calibration by gene function, variant class, or population improves reliability at the cost of increased data requirements.</p>
+<div id="fig-calibration-clinical" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-calibration-clinical-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-calibration-clinical-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14.4: [High] Four-panel figure. Panel A (The Calibration Problem): Raw model score distribution; neural networks often overconfident (cluster near 0/1); reliability diagram showing miscalibration. Panel B (Calibration Methods): Temperature scaling, isotonic regression, Platt scaling; before/after reliability diagrams. Panel C (Mapping to ACMG Categories): Continuous score 0-1; thresholds defining PP3, VUS, BP4; threshold selection trade-off. Panel D (What Uncertainty Looks Like): Intermediate scores genuinely reflect uncertainty; example variants at different score levels; “A score of 0.73 means nothing without calibration context.”
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="mapping-to-acmg-categories" class="level3" data-number="14.5.3">
 <h3 data-number="14.5.3" class="anchored" data-anchor-id="mapping-to-acmg-categories"><span class="header-section-number">14.5.3</span> Mapping to ACMG Categories</h3>
@@ -866,6 +966,31 @@ window.Quarto = {
 <p>Beyond quantifying uncertainty for in-distribution predictions, responsible deployment requires detecting when inputs fall outside the model’s training distribution. A protein language model trained on natural proteins may produce confident but unreliable predictions for synthetic sequences or fragments. A regulatory model trained on common cell types may fail on rare developmental stages.</p>
 <p>Likelihood-based detection uses the model’s own representations to identify unfamiliar inputs. Sequences with low embedding density or anomalous attention patterns may fall outside the training distribution regardless of predicted scores. Flagging these inputs for manual review prevents automated classification of cases the model cannot reliably assess.</p>
 <p>Distance-based methods compare new inputs to training examples in representation space. Variants far from any training example in embedding space warrant skepticism even if the model produces confident predictions. Maintaining summary statistics of training representations enables efficient distance computation at deployment.</p>
+<div id="fig-vep-uncertainty" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-vep-uncertainty-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-vep-uncertainty-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14.5: [High] Four-panel figure. Panel A (Sources of Uncertainty): Epistemic (model hasn’t seen similar, reducible) vs aleatoric (inherent noise, irreducible); training distribution vs query position. Panel B (Ensemble Methods): Multiple models trained differently; prediction variance; high disagreement = high epistemic uncertainty. Panel C (Conformal Prediction): Calibration set → conformal scores; prediction sets with coverage guarantee; confident {Benign} vs uncertain {P, VUS, B}. Panel D (OOD Detection): Embedding space; training examples dense region; query variant isolated = OOD; flag for manual review.
+</figcaption>
+</figure>
+</div>
 <p>Chapter <a href="p5-ch23-uncertainty.html" class="quarto-xref"><span>Chapter 23</span></a> develops uncertainty quantification methods in detail, including practical implementation guidance and evaluation metrics. For VEP applications, the key insight is that uncertainty estimates complement point predictions: high-confidence predictions can inform clinical decisions; low-confidence predictions should prompt additional evidence gathering rather than blind acceptance of model outputs.</p>
 </section>
 </section>
@@ -891,6 +1016,31 @@ window.Quarto = {
 <h3 data-number="14.7.4" class="anchored" data-anchor-id="persistent-limitations"><span class="header-section-number">14.7.4</span> Persistent Limitations</h3>
 <p>Foundation models have not solved several fundamental challenges. Ancestry bias persists because training data remain skewed toward European populations; performance degrades for variants common in African or Asian populations but rare in training sets (<a href="p5-ch22-confounding.html" class="quarto-xref"><span>Chapter 22</span></a>). Calibration requires substantial labeled data that inherit existing biases. Rare variant classes (structural variants, complex indels, repeat expansions) lack sufficient training examples for reliable prediction.</p>
 <p>The comparison to classical methods reveals diminishing returns on certain axes. For well-conserved active site variants in thoroughly studied proteins, PolyPhen-2 already achieves near-optimal performance; AlphaMissense improves marginally. The largest foundation model gains appear for difficult cases where classical features are uninformative or misleading.</p>
+<div id="fig-vep-gains-gaps" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-vep-gains-gaps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-vep-gains-gaps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14.6: [Enhancing] Balanced assessment. Panel A (Performance Improvements): Benchmark comparison table (Method | ClinVar AUROC | DMS Correlation | Coverage). Panel B (Where Improvements Largest): Difficult cases (sparse annotations, orphan genes), context-dependent effects, novel genes. Panel C (Persistent Gaps): Population bias, complex variants (SVs, repeats, phase), combinatorial effects (epistasis, compound het), tissue specificity. Panel D (The Bottom Line): Foundation models = tools for interpretation, not oracles; best use = combined with population data, functional evidence, clinical judgment.
+</figcaption>
+</figure>
+</div>
 </section>
 </section>
 <section id="clinical-integration-considerations" class="level2" data-number="14.8">

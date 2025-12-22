@@ -663,6 +663,16 @@ ul.task-list li input[type="checkbox"] {
 <section id="the-variant-prioritization-funnel" class="level2" data-number="26.1">
 <h2 data-number="26.1" class="anchored" data-anchor-id="the-variant-prioritization-funnel"><span class="header-section-number">26.1</span> The Variant Prioritization Funnel</h2>
 <p>Clinical variant interpretation operates through progressive filtering, narrowing tens of thousands of candidates to a manageable set for expert review. Each filtering step applies different types of evidence, and foundation models contribute at multiple stages.</p>
+<div id="fig-rare-disease-funnel" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rare-disease-funnel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rare-disease-funnel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.1: [Essential] Inverted funnel with filtering stages. Stages with numbers: (1) Raw variants (~25,000); (2) Quality filtered (~22,000); (3) Population frequency filtered (~500-1,000); (4) Consequence filtered (~100-200); (5) Foundation model scored (~20-50); (6) Expert review candidates (~5-10). Annotations: Percentage removed, time/compute cost, where FMs contribute most. Key insight: FMs contribute at scoring stage, after basic filtering, before expert review.
+</figcaption>
+</figure>
+</div>
 <section id="quality-and-technical-filters" class="level3" data-number="26.1.1">
 <h3 data-number="26.1.1" class="anchored" data-anchor-id="quality-and-technical-filters"><span class="header-section-number">26.1.1</span> Quality and Technical Filters</h3>
 <p>The first filter removes variants that are likely technical artifacts rather than true biological variation. Sequencing depth below 20x, strand bias exceeding established thresholds, and clustering of variants in repetitive regions all raise suspicion of false positives. Variant calling pipelines like GATK and DeepVariant (<a href="p1-ch01-ngs.html" class="quarto-xref"><span>Chapter 1</span></a>) produce quality scores that guide this initial triage. As discussed in <a href="p5-ch23-uncertainty.html#sec-calibration" class="quarto-xref"><span>Section 23.2</span></a>, these confidence estimates require careful calibration; systematic miscalibration in specific genomic contexts propagates directly into interpretation, creating blind spots where uncertain calls masquerade as confident ones or vice versa. Variants failing quality thresholds are removed before any biological interpretation begins.</p>
@@ -687,6 +697,16 @@ ul.task-list li input[type="checkbox"] {
 <section id="acmg-amp-criteria-and-computational-evidence" class="level2" data-number="26.2">
 <h2 data-number="26.2" class="anchored" data-anchor-id="acmg-amp-criteria-and-computational-evidence"><span class="header-section-number">26.2</span> ACMG-AMP Criteria and Computational Evidence</h2>
 <p>The American College of Medical Genetics and Genomics and Association for Molecular Pathology (ACMG-AMP) framework provides the dominant structure for clinical variant classification. Published in 2015 and subsequently refined through ClinGen expert panels, this framework assigns variants to five categories: pathogenic, likely pathogenic, variant of uncertain significance (VUS), likely benign, and benign. Classification emerges from combining multiple evidence types, each assigned a strength level (very strong, strong, moderate, supporting) and direction (pathogenic or benign).</p>
+<div id="fig-acmg-amp" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-acmg-amp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-acmg-amp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.2: [Essential] Evidence combination diagram. Columns (evidence categories): Population data, Computational predictions, Functional data, Segregation, De novo, Clinical. Rows (evidence strength): Very Strong (PVS1), Strong, Moderate, Supporting. Combination rules: Pathogenic criteria, Likely Pathogenic, VUS, Likely Benign, Benign. FM contribution highlighted: PP3/BP4 box emphasized; “Traditionally supporting strength”; arrow showing potential upgrade for calibrated predictors. Classification distribution showing VUS dominates.
+</figcaption>
+</figure>
+</div>
 <section id="evidence-categories" class="level3" data-number="26.2.1">
 <h3 data-number="26.2.1" class="anchored" data-anchor-id="evidence-categories"><span class="header-section-number">26.2.1</span> Evidence Categories</h3>
 <p>ACMG-AMP evidence spans several domains. Population data includes allele frequency in controls (BA1, BS1, BS2 for benign; PM2 for pathogenic support when absent). Computational predictions include in silico tools predicting deleterious effects (PP3 for pathogenic support) or benign effects (BP4 for benign support). Functional data includes well-established functional assays demonstrating deleterious (PS3) or no (BS3) effect. Segregation data addresses co-segregation with disease in multiple affected family members (PP1) or lack of segregation (BS4). De novo status assigns strong (PS2) or moderate (PM6) evidence when parental samples are available and the variant is absent in both parents. Clinical information incorporates specific phenotype match (PP4) and prevalence considerations.</p>
@@ -709,6 +729,26 @@ ul.task-list li input[type="checkbox"] {
 <section id="family-based-analysis" class="level2" data-number="26.3">
 <h2 data-number="26.3" class="anchored" data-anchor-id="family-based-analysis"><span class="header-section-number">26.3</span> Family-Based Analysis</h2>
 <p>Rare disease interpretation rarely relies on proband sequence alone. Family structure provides powerful additional information through inheritance pattern constraints, de novo status determination, and segregation analysis.</p>
+<div id="fig-family-analysis" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-family-analysis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-family-analysis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.3: [High] Three-panel scenarios. Panel A (De Novo Detection): Trio pedigree; variant present in proband, absent in parents; strong evidence (PS2); FM prioritizes among multiple de novos. Panel B (Compound Het Trans): Two variants in same gene from different parents; biallelic disruption; FM assesses severity of each. Panel C (Compound Het Cis): Both from same parent; one functional copy remains; recessive doesn’t fit; FM identifies if either alone sufficient. Phasing methods sidebar: Long-read, trio, statistical.
+</figcaption>
+</figure>
+</div>
 <section id="de-novo-variants" class="level3" data-number="26.3.1">
 <h3 data-number="26.3.1" class="anchored" data-anchor-id="de-novo-variants"><span class="header-section-number">26.3.1</span> De Novo Variants</h3>
 <p>De novo variants arise newly in the proband and are absent in both parents. For severe, early-onset dominant conditions, de novo mutations are expected: affected individuals rarely reproduce, so the disease-causing allele must arise fresh each generation. Observing a damaging variant as de novo provides strong evidence for pathogenicity under ACMG-AMP (PS2), often sufficient to push a candidate toward likely pathogenic or pathogenic classification.</p>
@@ -735,6 +775,23 @@ ul.task-list li input[type="checkbox"] {
 <section id="germline-versus-somatic-distinction" class="level3" data-number="26.4.1">
 <h3 data-number="26.4.1" class="anchored" data-anchor-id="germline-versus-somatic-distinction"><span class="header-section-number">26.4.1</span> Germline versus Somatic Distinction</h3>
 <p>Cancer sequencing must distinguish germline variants (present in all cells, inherited or de novo) from somatic variants (acquired in the tumor lineage). Tumor-only sequencing cannot make this distinction reliably, as rare germline variants may be mistaken for somatic events. Paired tumor-normal sequencing, comparing tumor to a non-malignant sample from the same patient, enables confident somatic variant identification.</p>
+<div id="fig-somatic-germline" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-somatic-germline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-somatic-germline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.4: [High] Two-column comparison. Column 1 (Germline): Present in all cells; question: explains inherited disease?; framework: ACMG-AMP pathogenicity; FM role: functional impact; clinical: genetic counseling, family screening, prevention. Column 2 (Somatic): Acquired in tumor; question: driver? therapy response?; framework: recurrence, functional impact, biomarkers; FM role: driver vs passenger; clinical: treatment selection, prognosis. Key distinctions: Same variant, different implications; BRCA1 example. Practical confusion: Tumor-only sequencing cannot distinguish.
+</figcaption>
+</figure>
+</div>
 <p>This distinction has direct clinical implications. A germline pathogenic variant in <em>BRCA1</em> indicates hereditary cancer predisposition affecting the patient and potentially their family members, warranting genetic counseling and possibly risk-reducing interventions. A somatic <em>BRCA1</em> mutation arose in the tumor and has no implications for inherited risk, though it may still predict response to PARP inhibitors.</p>
 </section>
 <section id="driver-classification" class="level3" data-number="26.4.2">
@@ -752,6 +809,16 @@ ul.task-list li input[type="checkbox"] {
 <section id="laboratory-validation" class="level2" data-number="26.5">
 <h2 data-number="26.5" class="anchored" data-anchor-id="laboratory-validation"><span class="header-section-number">26.5</span> Laboratory Validation</h2>
 <p>Computational predictions, however accurate, remain predictions. Functional assays provide direct experimental evidence of variant effects, and ACMG-AMP appropriately weights functional data (PS3 for damaging functional effect, BS3 for no functional effect) as strong evidence when assays are well-validated.</p>
+<div id="fig-functional-validation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-functional-validation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-functional-validation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.5: [High] Circular feedback loop. Steps: (1) Computational prediction (FM scores variants); (2) Prioritization for testing (select VUS where functional data resolves); (3) Functional assay (protein function, splicing, regulatory); (4) Result integration (PS3/BS3 evidence; classification update); (5) Model refinement (functional data improves training). Example pathway: AlphaMissense high impact → enzymatic assay → loss confirmed → PS3 → Likely Pathogenic → training data. Key insight: FM predictions are hypotheses; validation definitive but can only test limited variants.
+</figcaption>
+</figure>
+</div>
 <section id="types-of-functional-assays" class="level3" data-number="26.5.1">
 <h3 data-number="26.5.1" class="anchored" data-anchor-id="types-of-functional-assays"><span class="header-section-number">26.5.1</span> Types of Functional Assays</h3>
 <p>Different variant types require different assay approaches. For missense variants, protein function assays measure specific biochemical activities of the mutant protein: enzyme activity, DNA binding, protein-protein interactions, or cellular phenotypes in model systems. Deep mutational scanning systematically characterizes all possible amino acid substitutions at each position in a protein, creating comprehensive functional maps. These maps enable immediate lookup of functional effects for any observed missense variant, though coverage remains incomplete across the proteome.</p>
@@ -796,6 +863,16 @@ ul.task-list li input[type="checkbox"] {
 <h2 data-number="26.7" class="anchored" data-anchor-id="the-interpretive-partnership"><span class="header-section-number">26.7</span> The Interpretive Partnership</h2>
 <p>Foundation models transform variant interpretation by providing more accurate, comprehensive, and fine-grained predictions than previous computational approaches. Missense pathogenicity can be estimated proteome-wide with unprecedented accuracy. Regulatory variant effects can be predicted across tissues and cell types. Splicing disruption can be quantified with clinical-grade precision. These capabilities accelerate the diagnostic odyssey, enabling faster and more confident resolution for patients who have often waited years for answers.</p>
 <p>Yet foundation models do not replace human judgment in clinical genetics. They do not understand phenotypes, family structures, or therapeutic implications. They do not weigh the psychological impact of uncertain results or navigate the ethical complexities of predictive testing in unaffected relatives. They provide evidence that must be integrated within clinical frameworks designed around human decision-making, alongside family history, physical examination, prior testing, and the accumulated wisdom of clinical experience.</p>
+<div id="fig-interpretive-partnership" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-interpretive-partnership-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-interpretive-partnership-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.6: [Enhancing] Partnership diagram. FM Capabilities: Pattern recognition at scale, proteome-wide prediction, cross-gene generalization, consistent scoring, speed. Human Expert Capabilities: Clinical context, family reasoning, therapeutic implications, ethical navigation, communication, judgment under uncertainty. Partnership Zone: Efficient prioritization, evidence integration, quality assurance, continuous improvement. What remains human: Final classification, clinical communication, counseling, ethical judgment. Key insight: FMs accelerate diagnostic odyssey; human judgment essential for clinical decisions.
+</figcaption>
+</figure>
+</div>
 <p>The productive framing positions foundation models as partners in interpretation: computational systems that handle pattern recognition at scales beyond human capacity, freeing clinical experts to focus on integration, communication, and the decisions where human judgment remains essential. This partnership model, rather than replacement or autonomy, defines the path forward for genomic foundation models in rare disease diagnosis. The next chapter extends these interpretive principles beyond diagnosis to therapeutic discovery, examining how foundation models identify drug targets, predict biomarkers, and guide precision medicine approaches that translate genetic understanding into treatment.</p>
 
 

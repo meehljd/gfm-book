@@ -701,22 +701,28 @@ window.Quarto = {
 <p>A convolutional filter slides across an input sequence, computing similarity scores at each position. For genomic applications, the input is typically <strong>one-hot encoded</strong> DNA: a binary matrix with four rows (A, C, G, T) and columns for each position. Filters learn weight patterns that respond to specific nucleotide arrangements. A filter of width 8 nucleotides, for instance, computes a weighted sum of the underlying nucleotides at each position, producing high activation when the sequence matches its learned pattern and low activation otherwise. This operation is mathematically equivalent to scanning a position weight matrix across the sequence, but with a crucial difference: the filter weights are learned during training rather than derived from aligned binding site sequences.</p>
 <p>The first layer of a genomic CNN typically contains hundreds of such filters, each learning to detect different local patterns. Analysis of trained filters consistently reveals correspondence to known transcription factor binding motifs. The CTCF insulator motif, the ETS family consensus sequence, the AP-1 binding site: these patterns emerge from training on chromatin data without any explicit motif supervision. The network identifies them because they predict the training labels. Supervision on chromatin state induces discovery of the sequence patterns that create chromatin state, providing unsupervised motif learning as a byproduct of supervised prediction.</p>
 <p>Deeper layers operate on the output of earlier layers rather than raw sequence. A second-layer filter might learn to detect specific arrangements of first-layer motifs: two ETS sites within 20 base pairs, or a CTCF motif flanked by particular spacing patterns. This hierarchical feature learning enables CNNs to capture regulatory grammar beyond individual motifs, including spacing constraints, orientation preferences, and combinatorial requirements that govern transcription factor cooperativity.</p>
+<div id="fig-conv-pattern-detector" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-conv-pattern-detector-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-conv-pattern-detector-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.1: [Essential] Three-panel figure showing convolution mechanics. Panel A: Single convolutional filter (width 8) sliding across one-hot encoded DNA, producing activation scores at each position; show high activation where filter matches a motif. Panel B: Learned filter weights visualized as sequence logo (PWM-style), aligned to corresponding JASPAR motif showing the biological pattern discovered. Panel C: Multiple filters from first convolutional layer, each detecting different motifs (CTCF, ETS, AP-1), showing diverse pattern detection.
+</figcaption>
+</figure>
+</div>
 <p><strong>Pooling operations</strong> between convolutional layers reduce spatial resolution while increasing the receptive field. Max pooling selects the strongest activation within a window, achieving position-invariant detection where the network responds to a motif’s presence somewhere in a region rather than its exact position. This property suits regulatory genomics, where binding site positions within an enhancer often matter less than their presence and combination.</p>
 <p>The receptive field of a convolutional network defines how much input sequence can influence a single output prediction. For a network with kernel width <span class="math inline">\(k\)</span>, pooling factor <span class="math inline">\(p\)</span>, and <span class="math inline">\(L\)</span> layers, the receptive field grows with depth but remains fundamentally limited by architecture. A three-layer network with typical parameters might integrate information from 200 to 1,000 base pairs. Reaching further requires either more layers (increasing computational cost and training difficulty) or <strong>dilated convolutions</strong> that space filter weights to sample larger regions. When biological dependencies span tens of kilobases, this receptive field ceiling becomes the fundamental constraint that no amount of training data can overcome.</p>
-<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>VISUAL SUGGESTION: Convolution mechanics</strong></p>
-<p>Three-panel figure: (A) A single filter sliding across one-hot DNA, producing activation scores; (B) Comparison of learned filter weights to JASPAR motif logo; (C) Receptive field diagram showing how pooling and stacking expands the region influencing each output.</p>
-</div>
-</div>
 </section>
 <section id="sec-deepsea" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="sec-deepsea"><span class="header-section-number">6.2</span> DeepSEA: Regulatory Prediction from Sequence</h2>
@@ -725,6 +731,26 @@ Warning
 <p>A patient presents with a rare disease phenotype, and whole-genome sequencing reveals a novel variant in an intron 15 kilobases from the nearest exon. The variant does not disrupt any annotated regulatory element. No prior patient in any database carries this exact change. The clinician must decide: is this variant pathogenic, or is it an irrelevant passenger? Annotation-based methods offer no guidance. The variant overlaps nothing cataloged, so overlap-based interpretation returns nothing useful. Yet introns harbor splice regulatory elements, and 15 kilobases places the variant well within range of enhancers that might control the adjacent gene.</p>
 <p>Existing approaches to noncoding variant interpretation relied on this overlap paradigm. If a variant fell within a ChIP-seq peak or DNase hypersensitive site, it might be flagged as potentially regulatory. The strategy grounded predictions in experimental observations, but it could not predict whether a variant would strengthen or weaken regulatory activity, could not score variants in regions lacking experimental coverage, and provided no mechanism for quantifying effect magnitude. A variant might fall within an enhancer, but would it matter? The data indicated where regulatory elements existed; they did not indicate how sequence changes would affect them.</p>
 <p>DeepSEA, introduced by Zhou and Troyanskaya, reframed the problem: rather than asking whether a variant overlaps known annotations, ask what regulatory activities a sequence encodes and how mutations would alter them <span class="citation" data-cites="zhou_deepsea_2015">(<a href="references.html#ref-zhou_deepsea_2015" role="doc-biblioref">Zhou and Troyanskaya 2015</a>)</span>. The shift from annotation lookup to sequence-based prediction enabled scoring any variant in any genomic context, including regions never assayed in any experiment. This reframing would prove more consequential than any specific architectural choice.</p>
+<div id="fig-deepsea-architecture" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-deepsea-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-deepsea-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.2: [High] Three-panel figure. Panel A: Architecture schematic showing input (1000bp one-hot), three convolutional layers with pooling (320→480→960 filters), fully connected layer, and 919 sigmoid outputs for chromatin features. Panel B: First-layer filter aligned to JASPAR motif (e.g., CTCF), demonstrating learned = known biology. Panel C: Scatter plot of predicted vs.&nbsp;observed allelic imbalance for DNase-seq, showing correlation that validates variant effect prediction.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="architecture-and-training" class="level3" data-number="6.2.2">
 <h3 data-number="6.2.2" class="anchored" data-anchor-id="architecture-and-training"><span class="header-section-number">6.2.2</span> Architecture and Training</h3>
@@ -745,20 +771,6 @@ Warning
 <p>With a trained sequence-to-chromatin model, variant scoring becomes straightforward: predict chromatin profiles for reference and alternative sequences, compute the difference. This <strong>in silico mutagenesis</strong> produces a 919-dimensional vector describing predicted changes across all features. The model never encounters variant data during training; effect prediction emerges from learned sequence-function relationships applied to mutations the model has never seen.</p>
 <p>Validation used allelic imbalance data from digital genomic footprinting. For variants showing allele-specific DNase I sensitivity, DeepSEA predictions correlated with experimentally observed biases: variants predicted to increase accessibility tended to show higher accessibility on the corresponding allele. This correlation would not exist if the model merely learned coarse sequence features insensitive to point mutations.</p>
 <p><strong>In silico saturation mutagenesis</strong> extends single-variant scoring to systematic characterization. By predicting effects of all possible substitutions across a regulatory element, one identifies positions where mutations most strongly perturb function. These critical positions typically correspond to transcription factor binding motifs, providing motif discovery that emerges from learned representations rather than explicit sequence alignment. The approach enables characterization of any regulatory element, including those in cell types or conditions never experimentally profiled.</p>
-<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>VISUAL SUGGESTION: DeepSEA architecture and validation</strong></p>
-<p>Three-panel figure: (A) Architecture schematic showing convolutional stack, pooling, and 919-output vector; (B) First-layer filter aligned to JASPAR motif; (C) Scatter plot of predicted vs.&nbsp;observed allelic imbalance.</p>
-</div>
-</div>
 </section>
 </section>
 <section id="sec-basset-danq" class="level2" data-number="6.3">
@@ -776,6 +788,16 @@ Warning
 <p>A patient’s tumor harbors a somatic variant in a putative enhancer region. Chromatin profiling in matching tissue shows the region is accessible. The variant is predicted to disrupt a transcription factor binding site. Yet the clinician’s question remains unanswered: does this variant actually change expression of a target gene? Which gene? By how much? In which tissues?</p>
 <p>Chromatin accessibility and transcription factor binding are intermediate phenotypes, means rather than ends. The ultimate functional readout for most regulatory variants is their effect on gene expression. A variant might disrupt a binding site, but sites can be redundant, effects can be buffered, and the relationship between binding and expression is not one-to-one. Predicting expression change from sequence requires integrating regulatory signals across distances that determine which enhancers control which promoters. A variant that disrupts binding but does not alter expression is unlikely to be pathogenic, while a variant with modest chromatin effects but strong expression consequences may drive disease.</p>
 <p>ExPecto, introduced by Zhou et al.&nbsp;in 2018, addressed these questions by extending sequence-to-chromatin prediction toward tissue-specific gene expression <span class="citation" data-cites="zhou_expecto_2018">(<a href="references.html#ref-zhou_expecto_2018" role="doc-biblioref">Zhou et al. 2018</a>)</span>. The framework predicts expression levels across 218 tissues and cell types by integrating predicted chromatin signals across a 40 kb promoter-proximal window. This context expansion, from DeepSEA’s 1 kb to ExPecto’s 40 kb, represented a significant architectural commitment: expression prediction requires integrating regulatory signals from distances far exceeding typical motif sizes.</p>
+<div id="fig-expecto-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-expecto-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-expecto-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.3: [Enhancing] Three-component pipeline diagram. Component 1: Beluga CNN scanning 40kb window around TSS with sliding 2kb windows, producing chromatin predictions at 200 spatial positions. Component 2: Spatial transformation with exponential decay functions (upstream and downstream), reducing to ~20,000 features. Component 3: 218 tissue-specific linear regression models, producing per-tissue expression predictions. Show example delta scores for variant effect.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="the-modular-architecture" class="level3" data-number="6.4.2">
 <h3 data-number="6.4.2" class="anchored" data-anchor-id="the-modular-architecture"><span class="header-section-number">6.4.2</span> The Modular Architecture</h3>
@@ -789,20 +811,6 @@ Warning
 <p>ExPecto achieved 0.819 median Spearman correlation between predicted and observed expression across tissues. Analysis of model coefficients revealed automatic learning of cell-type-relevant features: the liver expression model weighted HepG2-derived transcription factor features most heavily; breast tissue models emphasized estrogen receptor features from breast cancer cell lines. These tissue-specific patterns emerged purely from learning to predict expression, without tissue identity information provided to the chromatin model.</p>
 <p>Variant effect prediction follows the same logic as DeepSEA: compare expression predictions for reference and alternative sequences. Because the model never trains on variant data, predictions are unconfounded by linkage disequilibrium, a critical distinction from association-based methods. ExPecto correctly predicted expression change direction for 92% of the strongest GTEx eQTL variants, and experimental validation confirmed that model-prioritized variants (not the GWAS lead SNPs) showed allele-specific regulatory activity in reporter assays.</p>
 <p>The 40 kb window represents an empirically optimized trade-off. Smaller windows decreased performance; larger windows showed negligible improvement. Most promoter-proximal regulatory information lies within 40 kb of the TSS, at least within ExPecto’s linear modeling framework. Distal enhancers beyond this window, while biologically important, require architectural approaches that can model longer-range dependencies. This limitation points toward the transformer architectures examined in <a href="p3-ch13-regulatory.html" class="quarto-xref"><span>Chapter 13</span></a>.</p>
-<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>VISUAL SUGGESTION: ExPecto pipeline</strong></p>
-<p>Three-component diagram: (1) Beluga CNN scanning 40 kb window; (2) Spatial feature transformation with decay functions; (3) Per-tissue linear models. Include example predicted expression values and delta scores.</p>
-</div>
-</div>
 </section>
 </section>
 <section id="sec-spliceai" class="level2" data-number="6.5">
@@ -823,6 +831,23 @@ Warning
 <p>By learning residual functions rather than direct mappings, the network can propagate gradients through dozens of layers. Skip connections from every fourth residual block feed directly to the penultimate layer, further stabilizing training dynamics.</p>
 <p>Dilated convolutions expand the receptive field efficiently. A dilated convolution with rate <span class="math inline">\(d\)</span> samples input positions at intervals of <span class="math inline">\(d\)</span> rather than consecutively. Stacking convolutions with increasing dilation rates (1, 2, 4, 8, 16, and so on) allows the network to integrate information across the full 10 kb window while maintaining sensitivity to local patterns. Standard convolutions with small kernels would require impractical depth to achieve equivalent receptive fields.</p>
 <p>For each position in the pre-mRNA sequence, SpliceAI outputs three probabilities: splice acceptor, splice donor, or neither. This per-position classification enables fine-grained predictions across entire transcripts. Training used GENCODE annotations, with odd and even chromosomes split for training and testing.</p>
+<div id="fig-spliceai-architecture" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-spliceai-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-spliceai-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.4: [High] Two-panel figure. Panel A: Diagram showing how dilated convolutions expand receptive field without proportional parameter growth. Show dilation rates (1, 2, 4, 8, 16…) with gaps between filter taps, illustrating how 32 layers with dilation reach 10kb context. Panel B: SpliceAI’s residual block structure with skip connections from every 4th block to output, enabling gradient flow through 32 layers.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="performance-and-validation" class="level3" data-number="6.5.3">
 <h3 data-number="6.5.3" class="anchored" data-anchor-id="performance-and-validation"><span class="header-section-number">6.5.3</span> Performance and Validation</h3>
@@ -869,20 +894,6 @@ Warning
 <h3 data-number="6.5.4" class="anchored" data-anchor-id="clinical-impact"><span class="header-section-number">6.5.4</span> Clinical Impact</h3>
 <p>SpliceAI’s most significant contribution may be quantifying cryptic splice mutations as a major, previously underappreciated cause of rare genetic disorders. Analysis of de novo mutations in over 4,000 individuals with intellectual disability found significant enrichment of predicted splice-disrupting variants compared to unaffected controls (1.51-fold, p = 4.2×10⁻⁴). Approximately 9% of pathogenic de novo mutations in intellectual disability act through cryptic splicing. Including these variants in gene discovery analyses identified additional candidate genes that would have fallen below discovery thresholds when considering only protein-coding mutations.</p>
 <p>This clinical utility explains SpliceAI’s rapid adoption. Illumina integrated SpliceAI into their annotation pipelines. Clinical genetics laboratories worldwide use delta scores to flag potential splice-affecting variants for RNA-seq follow-up. The model exemplifies how task-specific deep learning can achieve clinical-grade accuracy on well-defined problems. We return to SpliceAI’s role in modern variant interpretation workflows in <a href="p3-ch14-vep-fm.html" class="quarto-xref"><span>Chapter 14</span></a>.</p>
-<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>VISUAL SUGGESTION: SpliceAI clinical application</strong></p>
-<p>Case-style figure: (A) Intronic variant location in a disease gene; (B) Delta score track showing predicted cryptic splice activation; (C) RNA-seq sashimi plot confirming the aberrant junction; (D) Comparison to MaxEntScan prediction (missed).</p>
-</div>
-</div>
 </section>
 </section>
 <section id="sec-receptive-field" class="level2" data-number="6.6">
@@ -893,19 +904,15 @@ Warning
 <p>This creates a systematic mismatch between biological importance and computational accessibility. A variant within a distal enhancer may have profound effects on gene expression, but a model with a 10 kb receptive field cannot connect the enhancer sequence to its target promoter. The model might correctly predict that the enhancer sequence contains regulatory features, but it cannot predict which gene those features regulate or how strongly. We can predict local regulatory potential, yet we cannot predict long-range regulatory effects.</p>
 <p>The architectural response to this challenge takes two forms. One approach, exemplified by Enformer (<a href="p3-ch13-regulatory.html" class="quarto-xref"><span>Chapter 13</span></a>), combines convolutional feature extraction with attention mechanisms that enable direct interaction between distant positions. By computing pairwise relationships across a 200 kb context, Enformer can model enhancer-promoter communication that pure convolutions cannot reach. The other approach uses efficient attention variants or state space models that reduce the quadratic cost of full attention, enabling even longer contexts at reduced computational cost.</p>
 <p>The progression from DeepSEA’s 1 kb to Enformer’s 200 kb represents a 200-fold expansion in effective context. This expansion did not come from better convolutions; it came from abandoning the assumption that local operations were sufficient. Understanding why this architectural shift was necessary, and what CNNs fundamentally could not provide regardless of depth or dilation, establishes the motivation for the attention mechanisms examined in <a href="p2-ch07-attention.html" class="quarto-xref"><span>Chapter 7</span></a>.</p>
-<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<div id="fig-receptive-field-ceiling" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-receptive-field-ceiling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
 </div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>VISUAL SUGGESTION: Receptive field comparison</strong></p>
-<p>Diagram comparing effective context windows: DeepSEA (1 kb), ExPecto/Beluga (2 kb windows, 40 kb aggregated), SpliceAI (10 kb), Enformer (200 kb). Overlay typical enhancer-promoter distances and TAD sizes to illustrate what each architecture can and cannot see.</p>
-</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-receptive-field-ceiling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.5: [Essential] Horizontal genome diagram comparing effective context windows across CNN architectures. Show: DeepSEA (~1 kb), ExPecto/Beluga (2 kb windows, 40 kb aggregated), SpliceAI (10 kb), and for contrast, Enformer (200 kb). Overlay biologically relevant distances: typical TF binding site (~10bp), promoter region (~1kb), enhancer-gene distance (10-100kb), TAD size (~1Mb). Highlight the gap: “Most enhancer-promoter interactions exceed CNN receptive fields.”
+</figcaption>
+</figure>
 </div>
 </section>
 <section id="specialization-and-its-limits" class="level2" data-number="6.7">

@@ -714,12 +714,46 @@ window.Quarto = {
 <section id="the-design-formalism" class="level2" data-number="28.1">
 <h2 data-number="28.1" class="anchored" data-anchor-id="the-design-formalism"><span class="header-section-number">28.1</span> The design formalism</h2>
 <p>Sequence design inverts the standard prediction problem. Where prediction maps from sequence to function (given sequence <span class="math inline">\(x\)</span>, estimate property <span class="math inline">\(f(x)\)</span>), design maps from desired function to sequence (given target property <span class="math inline">\(y^\star\)</span>, find sequence <span class="math inline">\(x^\star\)</span> such that <span class="math inline">\(f(x^\star) \approx y^\star\)</span>). This inversion is computationally challenging because biological sequence spaces are astronomically large. A 200-residue protein admits <span class="math inline">\(20^{200}\)</span> possible sequences, vastly exceeding the number of atoms in the observable universe. Even a modest 500-base-pair regulatory element spans <span class="math inline">\(4^{500}\)</span> possibilities. Exhaustive enumeration is impossible; intelligent search strategies are essential.</p>
+<div id="fig-design-formalism" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-design-formalism-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-design-formalism-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.1: [Essential] Two-direction diagram. Top (Prediction Problem): Input sequence x → model f_θ → property f(x); arrow left to right; “Given sequence, estimate function.” Bottom (Design Problem): Desired property y* → search for x* such that f(x<em>) ≈ y</em> → optimized sequence x*; arrow right to left; “Given function, find sequence.” Design formulations: Optimization argmax f_θ(x), conditional generation x ~ p_θ(x|y), constrained optimization. Scale callout: 20^200 protein possibilities, 4^500 regulatory; “Exhaustive impossible—intelligent search required.” FM roles: Generative prior, differentiable oracle, embedding function.
+</figcaption>
+</figure>
+</div>
 <p>The design objective can take several mathematical forms depending on the application. Optimization problems seek sequences that maximize (or minimize) a scalar objective, such as finding <span class="math inline">\(x^\star = \arg\max_x f_\theta(x)\)</span> where <span class="math inline">\(f_\theta\)</span> might represent predicted binding affinity, expression level, or stability. Conditional generation problems sample sequences from a distribution conditioned on desired properties, drawing <span class="math inline">\(x \sim p_\theta(x \mid y)\)</span> where <span class="math inline">\(y\)</span> specifies structural constraints, functional requirements, or context. Constrained optimization problems combine objective maximization with explicit constraints, seeking <span class="math inline">\(x^\star = \arg\max_x f_\theta(x)\)</span> subject to <span class="math inline">\(c(x) \leq 0\)</span>, where constraints <span class="math inline">\(c\)</span> might enforce GC content limits, avoid restriction sites, or maintain similarity to natural sequences.</p>
 <p>Foundation models contribute to design through multiple mechanisms. As generative priors, they assign higher probability to sequences resembling natural biology, regularizing optimization toward plausible regions of sequence space. As differentiable oracles, they enable gradient-based optimization where sequence modifications are guided by gradients of predicted properties. As embedding functions, they map discrete sequences into continuous spaces where interpolation and optimization become tractable. The challenge lies in searching enormous combinatorial spaces while remaining within regimes where these model-based estimates remain reliable.</p>
 </section>
 <section id="protein-design-with-language-models" class="level2" data-number="28.2">
 <h2 data-number="28.2" class="anchored" data-anchor-id="protein-design-with-language-models"><span class="header-section-number">28.2</span> Protein design with language models</h2>
 <p>Protein language models (PLMs) trained on evolutionary sequence databases (see <a href="p3-ch12-protein-lm.html" class="quarto-xref"><span>Chapter 12</span></a>) have emerged as powerful tools for protein design, providing both generative sampling capabilities and fitness estimation for candidate sequences. The success of these approaches stems from a key insight: evolution has conducted billions of years of experiments on protein sequence space, and PLMs trained on the surviving sequences implicitly encode constraints on what works.</p>
+<div id="fig-protein-design" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-protein-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-protein-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.2: [Essential] Two-pathway comparison. Pathway A (Sequence-Based): Protein LM (ProGen, ESM-2) → generate by sampling/infilling → screen for properties → iterate with fitness-guided selection. Pathway B (Structure-Aware): RFdiffusion generates backbone from noise (conditioned on interface, topology, symmetry) → ProteinMPNN/ESM-IF inverse folds → multiple sequences, select by expression/stability. Comparison table: Prior knowledge, novel structures, compute, examples. Multi-objective: Binding, stability, expression, immunogenicity; Pareto frontier; FM oracles for each.
+</figcaption>
+</figure>
+</div>
 <section id="sequence-generation-from-language-model-priors" class="level3" data-number="28.2.1">
 <h3 data-number="28.2.1" class="anchored" data-anchor-id="sequence-generation-from-language-model-priors"><span class="header-section-number">28.2.1</span> Sequence generation from language model priors</h3>
 <p>Autoregressive protein language models such as ProGen and ProtGPT2 generate novel protein sequences by sampling tokens sequentially from learned distributions <span class="citation" data-cites="madani_progen_2023 ferruz_protgpt2_2022">(<a href="references.html#ref-madani_progen_2023" role="doc-biblioref">Madani et al. 2023</a>; <a href="references.html#ref-ferruz_protgpt2_2022" role="doc-biblioref">Ferruz, Schmidt, and Höcker 2022</a>)</span>. Given a partial sequence, the model predicts probability distributions over the next amino acid, enabling iterative extension until a complete protein emerges. This generation process can be unconditional (sampling from the full learned distribution) or conditional on control signals such as protein family annotations, organism of origin, or functional keywords.</p>
@@ -744,6 +778,16 @@ window.Quarto = {
 <section id="regulatory-sequence-design" class="level2" data-number="28.3">
 <h2 data-number="28.3" class="anchored" data-anchor-id="regulatory-sequence-design"><span class="header-section-number">28.3</span> Regulatory sequence design</h2>
 <p>Genomic foundation models trained on chromatin accessibility, transcription factor binding, and gene expression data enable design of synthetic regulatory elements with specified activity profiles. Unlike protein design where the sequence-to-function mapping operates through three-dimensional structure, regulatory design must account for the genomic and cellular context in which elements function.</p>
+<div id="fig-regulatory-design" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-regulatory-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-regulatory-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.3: [High] Optimization workflow. Steps: (1) Initial sequence (natural promoter or random); (2) FM prediction (Enformer → activity across cell types); (3) Gradient computation (∂expression/∂position); (4) Sequence update (relaxed representation, gradient step, project back); (5) Multi-objective balancing (maximize in target tissue, minimize off-target, respect constraints). Output examples: Cell-type-specific enhancer, inducible promoter, compact element for gene therapy. Generative alternative sidebar: Diffusion or autoregressive; condition on cell type labels; diverse library for screening. Key insight: Same saliency for interpretation runs in reverse for design.
+</figcaption>
+</figure>
+</div>
 <section id="promoter-and-enhancer-engineering" class="level3" data-number="28.3.1">
 <h3 data-number="28.3.1" class="anchored" data-anchor-id="promoter-and-enhancer-engineering"><span class="header-section-number">28.3.1</span> Promoter and enhancer engineering</h3>
 <p>Massively parallel reporter assays (MPRAs) have generated training data for models that predict expression levels from promoter and enhancer sequences <span class="citation" data-cites="deboer_deciphering_2020">(<a href="references.html#ref-deboer_deciphering_2020" role="doc-biblioref">Boer et al. 2020</a>)</span>. These models learn sequence determinants of regulatory activity, including transcription factor binding sites, spacing constraints between elements, and context-dependent interactions. Once trained, the same models serve as oracles for design: by evaluating expression predictions across millions of candidate sequences, optimization algorithms can identify synthetic regulatory elements with desired properties.</p>
@@ -761,6 +805,16 @@ window.Quarto = {
 <section id="mrna-design-and-optimization" class="level2" data-number="28.4">
 <h2 data-number="28.4" class="anchored" data-anchor-id="mrna-design-and-optimization"><span class="header-section-number">28.4</span> mRNA design and optimization</h2>
 <p>The clinical success of mRNA vaccines has intensified interest in systematic approaches to mRNA sequence design. Unlike protein or regulatory element design where the primary challenge is achieving desired function, mRNA design must simultaneously optimize translation efficiency, molecular stability, immune evasion, and manufacturing tractability. Foundation models increasingly contribute to each of these objectives.</p>
+<div id="fig-mrna-optimization" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mrna-optimization-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mrna-optimization-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.4: [High] Multi-objective radar chart. Objectives (axes): Translation efficiency, mRNA stability, immunogenicity (minimize), manufacturing tractability, codon optimality. Design elements per objective: Translation (ribosome profiling models, avoid rare codons); Stability (UTR engineering, secondary structure); Immunogenicity (avoid TLR motifs, modified nucleosides); Manufacturing (GC content, complexity, yield). Trade-off visualization: Two candidate designs on same radar; Design A (high translation, moderate stability); Design B (balanced). UTR design callout: 5’ affects ribosome recruitment, 3’ affects stability/localization. Key insight: Codon synonymy creates vast space; FMs navigate tradeoffs.
+</figcaption>
+</figure>
+</div>
 <section id="codon-optimization-principles" class="level3" data-number="28.4.1">
 <h3 data-number="28.4.1" class="anchored" data-anchor-id="codon-optimization-principles"><span class="header-section-number">28.4.1</span> Codon optimization principles</h3>
 <p>The genetic code is degenerate: sixty-one sense codons encode twenty amino acids, meaning that any protein sequence can be encoded by many different mRNA sequences. These synonymous sequences differ in translation efficiency, mRNA stability, and immunogenicity despite producing identical proteins. Codon optimization exploits this redundancy to improve therapeutic mRNA performance.</p>
@@ -782,6 +836,16 @@ window.Quarto = {
 <section id="antibody-and-vaccine-design" class="level2" data-number="28.5">
 <h2 data-number="28.5" class="anchored" data-anchor-id="antibody-and-vaccine-design"><span class="header-section-number">28.5</span> Antibody and vaccine design</h2>
 <p>Antibody engineering represents one of the most commercially significant applications of computational protein design. The modular architecture of antibodies (framework regions that maintain structural integrity surrounding hypervariable complementarity-determining regions that mediate antigen recognition) creates a well-defined design problem: optimize CDR sequences to achieve desired binding properties while maintaining framework stability and developability.</p>
+<div id="fig-antibody-design" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-antibody-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-antibody-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.5: [High] Antibody-specific pipeline. Starting point: Initial antibody from immunization/display; known antigen target. Steps: (1) Initial characterization (affinity, specificity, stability, developability); (2) CDR optimization (FM-guided mutations; sample CDR variants; maintain binding, improve developability); (3) Framework engineering (humanization, stability, expression); (4) Lead optimization (multi-objective: affinity, specificity, half-life, immunogenicity, manufacturability). FM contributions: Embedding space identifies similar therapeutic antibodies; structure prediction without experimental structure; developability prediction (aggregation, viscosity); liability scanning (post-translational modification, deamidation).
+</figcaption>
+</figure>
+</div>
 <section id="cdr-optimization-and-humanization" class="level3" data-number="28.5.1">
 <h3 data-number="28.5.1" class="anchored" data-anchor-id="cdr-optimization-and-humanization"><span class="header-section-number">28.5.1</span> CDR optimization and humanization</h3>
 <p>Antibodies discovered through animal immunization or phage display often require optimization before therapeutic use. Non-human framework sequences may trigger immune responses in patients, necessitating humanization that replaces framework residues with human equivalents while preserving antigen binding. CDR sequences may require affinity maturation to achieve therapeutic potency or specificity optimization to reduce off-target binding.</p>
@@ -798,6 +862,16 @@ window.Quarto = {
 <section id="closed-loop-designbuildtestlearn-cycles" class="level2" data-number="28.6">
 <h2 data-number="28.6" class="anchored" data-anchor-id="closed-loop-designbuildtestlearn-cycles"><span class="header-section-number">28.6</span> Closed-loop design–build–test–learn cycles</h2>
 <p>Foundation models achieve their full potential when integrated into iterative experimental workflows. The design–build–test–learn (DBTL) paradigm treats computational predictions as hypotheses to be tested experimentally, with results feeding back to improve both the designed molecules and the models that guide design.</p>
+<div id="fig-dbtl-cycle" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dbtl-cycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dbtl-cycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.6: [Essential] Circular workflow. Stages: (1) DESIGN (FM proposes candidates; generative sampling or optimization; active learning selects informative candidates); (2) BUILD (automated synthesis, library construction, QC); (3) TEST (high-throughput assays: binding, activity, stability, expression; multiplexed: DMS, MPRA, Perturb-seq); (4) LEARN (results update model; improve predictions; identify failure modes). Active learning integration: Acquisition function balances exploitation/exploration; maximize expected information gain. Safety and oversight callouts: Safety filters at design; human review before build; stopping criteria. Key insight: FMs achieve full potential in iterative cycles; each round improves molecules and predictions.
+</figcaption>
+</figure>
+</div>
 <section id="active-learning-for-efficient-exploration" class="level3" data-number="28.6.1">
 <h3 data-number="28.6.1" class="anchored" data-anchor-id="active-learning-for-efficient-exploration"><span class="header-section-number">28.6.1</span> Active learning for efficient exploration</h3>
 <p>Experimental validation remains the bottleneck in biological design. Even high-throughput assays can test at most thousands to millions of variants, a tiny fraction of possible sequences. Active learning strategies select which experiments to perform by balancing two competing objectives: exploiting current model predictions to test sequences likely to succeed, and exploring regions of uncertainty to gather data that will improve the model.</p>

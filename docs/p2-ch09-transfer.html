@@ -739,6 +739,16 @@ window.Quarto = {
 <section id="source-and-target-domains" class="level2" data-number="9.1">
 <h2 data-number="9.1" class="anchored" data-anchor-id="source-and-target-domains"><span class="header-section-number">9.1</span> Source and Target Domains</h2>
 <p>When a cardiologist requests variant interpretation for a patient with hypertrophic cardiomyopathy, the clinical need (classifying a specific <em>MYH7</em> variant) differs fundamentally from the data available during model development (millions of protein sequences sampled across all of evolution). Bridging this gap requires understanding what properties of pretraining determine whether transfer will succeed. When this bridge fails, patients receive confident predictions based on patterns irrelevant to their clinical context.</p>
+<div id="fig-domain-alignment" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-domain-alignment-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-domain-alignment-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.1: [Essential] Schematic illustrating domain shift in genomic transfer learning. Left panel (Source Domain): Diverse genomic sequences during pretraining, with learned representations capturing statistical regularities (local motifs, composition, conservation). Right panel (Target Domain): Sparse labeled examples for clinical task (e.g., pathogenic variants, tissue-specific enhancers), highlighting distributional differences. Center: Representation space showing well-transferred features (local motifs, conservation patterns) connected by solid arrows vs.&nbsp;poorly-transferred features (long-range regulatory logic, tissue-specific patterns) with dashed arrows indicating transfer failure.
+</figcaption>
+</figure>
+</div>
 <section id="the-gap-between-pretraining-and-deployment" class="level3" data-number="9.1.1">
 <h3 data-number="9.1.1" class="anchored" data-anchor-id="the-gap-between-pretraining-and-deployment"><span class="header-section-number">9.1.1</span> The Gap Between Pretraining and Deployment</h3>
 <p>The <strong>source domain</strong> encompasses the data and objectives used during pretraining. For DNA foundation models, source domains typically include reference genomes, pan-genomic collections spanning population diversity, or metagenomic assemblies sampling environmental sequence space <span class="citation" data-cites="ji_dnabert_2021 dalla-torre_nucleotide_2023">(<a href="references.html#ref-ji_dnabert_2021" role="doc-biblioref">Ji et al. 2021</a>; <a href="references.html#ref-dalla-torre_nucleotide_2023" role="doc-biblioref">Dalla-Torre et al. 2023</a>)</span>. For protein models, databases like UniRef provide billions of sequences representing the diversity of evolutionary history <span class="citation" data-cites="suzek_uniref_2015">(<a href="references.html#ref-suzek_uniref_2015" role="doc-biblioref"><strong>suzek_uniref_2015?</strong></a>)</span>. Pretraining objectives (masked language modeling, next-token prediction, contrastive learning) encourage models to capture statistical regularities that help predict held-out tokens: local motifs, compositional patterns, and the signatures distinguishing functional from random sequence. These learned regularities become the representations that might transfer to downstream tasks.</p>
@@ -748,19 +758,6 @@ window.Quarto = {
 <section id="recognizing-transfer-outcomes" class="level3" data-number="9.1.2">
 <h3 data-number="9.1.2" class="anchored" data-anchor-id="recognizing-transfer-outcomes"><span class="header-section-number">9.1.2</span> Recognizing Transfer Outcomes</h3>
 <p>Not all transfer helps, and distinguishing outcomes requires explicit validation. <strong>Positive transfer</strong> accelerates learning or improves final performance beyond training from scratch. <strong>Negative transfer</strong> occurs when pretraining actively hurts, either because learned features conflict with task requirements or because pretrained initialization creates optimization difficulties <span class="citation" data-cites="wang_characterizing_2019">(<a href="references.html#ref-wang_characterizing_2019" role="doc-biblioref"><strong>wang_characterizing_2019?</strong></a>)</span>. Neutral transfer describes situations where pretraining neither helps nor hurts, wasting computational resources on pretrained models without benefit. When a pharmacogenomics team adapts a DNA language model for <em>CYP2D6</em> metabolizer status prediction, they must empirically verify which outcome applies to their specific task rather than assuming transfer will help because it helped elsewhere.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Figure Recommendation: Source-Target Domain Alignment
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Schematic illustrating domain shift in genomic transfer learning. Left panel: source domain (pretraining) showing diverse sequence types with statistical regularities captured. Right panel: target domain examples (pathogenic variants, tissue-specific enhancers, rare functional elements) highlighting distributional differences from pretraining. Center: representation space showing well-transferred features (local motifs) versus poorly-transferred features (long-range regulatory logic). Arrows indicate successful versus failed transfer scenarios.</p>
-</div>
-</div>
 </section>
 </section>
 <section id="feature-extraction-with-frozen-backbones" class="level2" data-number="9.2">
@@ -786,6 +783,16 @@ window.Quarto = {
 <h3 data-number="9.3.1" class="anchored" data-anchor-id="low-rank-adaptation"><span class="header-section-number">9.3.1</span> Low-Rank Adaptation</h3>
 <p><strong>Low-Rank Adaptation (LoRA)</strong> has emerged as the dominant PEFT technique in genomic applications because it directly operationalizes this insight. Rather than updating a large weight matrix <span class="math inline">\(W\)</span> directly, LoRA introduces two smaller matrices <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> whose product approximates the desired weight change: <span class="math inline">\(W' = W + BA\)</span> <span class="citation" data-cites="hu_lora_2021">(<a href="references.html#ref-hu_lora_2021" role="doc-biblioref"><strong>hu_lora_2021?</strong></a>)</span>. During fine-tuning, <span class="math inline">\(W\)</span> remains frozen while only <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> receive gradient updates. The rank of these matrices (typically 8 to 64 for genomic models) controls adaptation expressiveness: lower ranks introduce fewer parameters and stronger implicit regularization; higher ranks enable more flexible task-specific modification at greater overfitting risk.</p>
 <p>The efficiency gains prove substantial. A transformer with 500 million parameters might require updating only 2 to 5 million LoRA parameters (representing the low-rank decompositions applied to attention weight matrices), reducing memory requirements by an order of magnitude compared with full fine-tuning. This efficiency enables training on consumer GPUs for models that would otherwise require specialized infrastructure, and enables systematic hyperparameter search that would be prohibitive with full parameter updates. Zhou et al.&nbsp;demonstrated that LoRA adapters on <em>Nucleotide Transformer</em> enable tissue-specific chromatin accessibility prediction, where separate low-rank matrices capture tissue-specific regulatory patterns while the pretrained backbone encodes general sequence understanding <span class="citation" data-cites="zhou_dnabert-2_2023">(<a href="references.html#ref-zhou_dnabert-2_2023" role="doc-biblioref"><strong>zhou_dnabert-2_2023?</strong></a>)</span>.</p>
+<div id="fig-lora-architecture" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-lora-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-lora-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.2: [High] Diagram showing LoRA modification to a transformer weight matrix. Show: Original frozen weight matrix W (large, e.g., 768×768). LoRA decomposition: small matrices A (768×r) and B (r×768) where r &lt;&lt; 768 (e.g., r=16). Combined transformation: W + BA. Annotate parameter counts: “500M frozen + 2M trainable.” Show how this applies to attention weight matrices (W^Q, W^K, W^V, W^O).
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="alternative-peft-approaches" class="level3" data-number="9.3.2">
 <h3 data-number="9.3.2" class="anchored" data-anchor-id="alternative-peft-approaches"><span class="header-section-number">9.3.2</span> Alternative PEFT Approaches</h3>
@@ -807,19 +814,6 @@ window.Quarto = {
 <h3 data-number="9.4.2" class="anchored" data-anchor-id="the-risks-of-unconstrained-adaptation"><span class="header-section-number">9.4.2</span> The Risks of Unconstrained Adaptation</h3>
 <p><strong>Catastrophic forgetting</strong> occurs when fine-tuning overwrites general knowledge useful for related tasks or out-of-distribution inputs; a model fine-tuned aggressively on lymphocyte data may lose performance on epithelial cells it previously handled well <span class="citation" data-cites="mccloskey_catastrophic_1989">(<a href="references.html#ref-mccloskey_catastrophic_1989" role="doc-biblioref"><strong>mccloskey_catastrophic_1989?</strong></a>)</span>. Overfitting afflicts small target datasets, where the model memorizes training examples rather than learning generalizable patterns. Computational expense can be prohibitive for models with billions of parameters. When negative transfer occurs (pretraining initialization actually hurts optimization), full fine-tuning may underperform training from scratch despite the additional expense.</p>
 <p>The conservative strategy is to start with simpler methods and escalate only when they demonstrably fail. Establish frozen feature baselines first. If frozen features outperform random initialization, try PEFT methods before committing to full fine-tuning. Compare fine-tuned models against properly-tuned from-scratch baselines on the same target data. Monitor for overfitting through validation curves and early stopping. The goal is achieving required performance with minimal adaptation complexity.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Figure Recommendation: Adaptation Strategy Spectrum
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Visual comparison of frozen features, LoRA, adapters, and full fine-tuning. For each strategy: (1) schematic showing which parameters update (highlighted) versus remain frozen (grayed), (2) typical parameter count as percentage of full model, (3) representative data requirements for effective use, (4) risk of catastrophic forgetting. Illustrate the tradeoff frontier between preservation and flexibility.</p>
-</div>
-</div>
 </section>
 </section>
 <section id="probing-representations" class="level2" data-number="9.5">
@@ -839,6 +833,16 @@ window.Quarto = {
 <section id="choosing-an-adaptation-strategy" class="level2" data-number="9.6">
 <h2 data-number="9.6" class="anchored" data-anchor-id="choosing-an-adaptation-strategy"><span class="header-section-number">9.6</span> Choosing an Adaptation Strategy</h2>
 <p>A clinical genomics laboratory evaluating foundation models for deployment must translate abstract transfer learning principles into concrete decisions. The molecular diagnostics team has 2,000 validated enhancer sequences: should they use frozen features, LoRA, or full fine-tuning? Which approach maximizes performance given available data? When should transfer be abandoned entirely in favor of task-specific training? Making the wrong choice means either leaving performance on the table or wasting months on approaches that will fail.</p>
+<div id="fig-adaptation-decision-tree" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-adaptation-decision-tree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-adaptation-decision-tree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.3: [Essential] Flowchart guiding adaptation strategy selection. Decision nodes: (1) “Labeled data quantity?” with branches &lt;500, 500-5000, &gt;10000. (2) “Task similarity to pretraining?” with branches high/moderate/low. (3) “Computational constraints?” with branches limited/moderate/substantial. Terminal nodes recommend: Linear probing, LoRA/Adapters, Full fine-tuning, or From-scratch training. Include expected tradeoffs at each terminal (accuracy, compute, overfitting risk).
+</figcaption>
+</figure>
+</div>
 <section id="data-quantity-determines-what-is-possible" class="level3" data-number="9.6.1">
 <h3 data-number="9.6.1" class="anchored" data-anchor-id="data-quantity-determines-what-is-possible"><span class="header-section-number">9.6.1</span> Data Quantity Determines What Is Possible</h3>
 <p>Data quantity provides the primary decision axis, though the thresholds depend on model size and task complexity.</p>
@@ -851,19 +855,6 @@ window.Quarto = {
 <p>Task similarity provides the second decision axis. When target tasks closely resemble pretraining patterns (predicting transcription factor binding after sequence pretraining), frozen features often suffice because relevant patterns were already learned. When tasks diverge moderately (tissue-specific expression after genome-wide pretraining), PEFT enables selective adaptation. When tasks fundamentally differ from pretraining (three-dimensional chromatin contact prediction from sequence-only pretraining), full fine-tuning may be necessary to learn features the pretraining objective never emphasized.</p>
 <p>Computational constraints impose practical limits. Linear probing requires minutes on CPUs. LoRA fine-tuning requires hours on single GPUs. Full fine-tuning of large models requires days on multiple GPUs or specialized hardware. When infrastructure is limited, simpler approaches may be the only feasible option regardless of what would theoretically be optimal.</p>
 <p>Empirical validation supersedes heuristics. No rule reliably predicts which strategy will succeed for any specific combination of model, task, and data. The guidelines above indicate which strategies merit trying first, but final selection requires comparing approaches on held-out validation data matching the intended deployment distribution.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Figure Recommendation: Adaptation Strategy Decision Tree
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Flowchart guiding adaptation strategy selection. Decision nodes based on: (1) labeled data quantity (&lt;500, 500-5000, &gt;10000), (2) task similarity to pretraining, (3) computational constraints. Terminal nodes recommend specific approaches with expected tradeoffs. Include example scenarios for each pathway.</p>
-</div>
-</div>
 </section>
 </section>
 <section id="domain-shift-and-cross-context-transfer" class="level2" data-number="9.7">
@@ -880,18 +871,25 @@ window.Quarto = {
 <h3 data-number="9.7.2" class="anchored" data-anchor-id="detecting-and-mitigating-shift"><span class="header-section-number">9.7.2</span> Detecting and Mitigating Shift</h3>
 <p>Detecting domain shift before deployment prevents silent clinical failures. Statistical divergence measures comparing source and target distributions quantify distribution differences. Embedding visualizations (t-SNE or UMAP projections) reveal whether target examples fall within the source distribution or occupy unfamiliar regions of representation space. Monitoring performance on canary examples (known easy cases that should always be predicted correctly) provides early warning of severe shift during deployment.</p>
 <p>When domain shift is detected, mitigation strategies include domain-adaptive fine-tuning, importance weighting of training examples, and explicit modeling of shift through domain-adversarial training <span class="citation" data-cites="ganin_domain-adversarial_2016">(<a href="references.html#ref-ganin_domain-adversarial_2016" role="doc-biblioref"><strong>ganin_domain-adversarial_2016?</strong></a>)</span>. When shift is severe and cannot be mitigated, acknowledging that transfer is inappropriate for this context prevents overconfident deployment of models that will fail.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<div id="fig-domain-shift-detection" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-domain-shift-detection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Figure Recommendation: Domain Shift Detection
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
 </div>
 </div>
-<div class="callout-body-container callout-body">
-<p>Three-panel visualization of domain shift. Panel A: UMAP projection of embeddings showing training distribution (dense cluster) and test examples (scattered points indicating varying degrees of shift). Panel B: Calibration curves comparing confidence versus accuracy for in-distribution versus out-of-distribution examples. Panel C: Performance degradation curve showing accuracy as a function of distributional distance from training data.</p>
 </div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-domain-shift-detection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.4: [High] Three-panel visualization of domain shift detection. Panel A: UMAP/t-SNE projection of embeddings showing training distribution (dense cluster) and test examples at varying distances, with out-of-distribution examples clearly separated. Panel B: Calibration curves comparing confidence vs.&nbsp;accuracy for in-distribution (well-calibrated diagonal) vs.&nbsp;out-of-distribution examples (overconfident, curve below diagonal). Panel C: Performance degradation curve showing accuracy declining as distributional distance from training data increases.
+</figcaption>
+</figure>
 </div>
 </section>
 </section>
@@ -949,6 +947,31 @@ window.Quarto = {
 <section id="validation-and-common-pitfalls" class="level2" data-number="9.11">
 <h2 data-number="9.11" class="anchored" data-anchor-id="validation-and-common-pitfalls"><span class="header-section-number">9.11</span> Validation and Common Pitfalls</h2>
 <p>A research group reports that their foundation model adaptation achieves 95% accuracy for splice variant classification, far exceeding previous methods. Six months later, clinical deployment reveals performance closer to 70%, with systematic failures on the rare variants that matter most. The initial evaluation was not wrong, but it was misleading. <strong>Proper validation separates genuine transfer success from evaluation artifacts that dissolve on contact with clinical reality.</strong></p>
+<div id="fig-validation-pitfalls" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-validation-pitfalls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-validation-pitfalls-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.5: [High] Multi-panel figure illustrating common validation failures. Panel A: Venn diagram showing pretraining data / test data overlap creating leakage (inflated performance). Panel B: Timeline showing temporal leakage when training on variants annotated after test set creation. Panel C: Bar chart comparing foundation model against weak baseline (large gap, misleading) vs.&nbsp;properly-tuned baseline (small gap, realistic). Panel D: Stratified performance showing aggregate accuracy (90%) vs.&nbsp;rare-variant accuracy (50%), revealing hidden failures.
+</figcaption>
+</figure>
+</div>
 <section id="sources-of-spurious-success" class="level3" data-number="9.11.1">
 <h3 data-number="9.11.1" class="anchored" data-anchor-id="sources-of-spurious-success"><span class="header-section-number">9.11.1</span> Sources of Spurious Success</h3>
 <p>Test set overlap with pretraining data creates artificial performance inflation. Foundation models trained on massive genomic corpora may inadvertently include sequences later used for evaluation. When benchmarking on variants that appeared in pretraining data (even if unlabeled at pretraining time), the model has seen the sequences and may have memorized relevant patterns. Verifying that test sequences were excluded from pretraining requires careful provenance tracking, which published benchmarks often lack <span class="citation" data-cites="lee_pre-training_2020">(<a href="references.html#ref-lee_pre-training_2020" role="doc-biblioref"><strong>lee_pre-training_2020?</strong></a>)</span>. Chromosome-based splits help but do not fully address the problem when pretraining spans multiple species or includes population-level diversity.</p>
@@ -959,19 +982,6 @@ window.Quarto = {
 <h3 data-number="9.11.2" class="anchored" data-anchor-id="evaluation-practices-that-reveal-true-performance"><span class="header-section-number">9.11.2</span> Evaluation Practices That Reveal True Performance</h3>
 <p>Single-metric reporting obscures important performance characteristics. A model achieving 90% overall accuracy may show 95% accuracy on common variants and 50% accuracy on rare variants, with the clinically important rare cases hidden by aggregate metrics. Stratified evaluation by allele frequency, variant type, gene family, and other clinically relevant categories reveals whether transfer benefits generalize or concentrate in particular subgroups.</p>
 <p>Confidence interval reporting and multiple training runs reveal performance variability. A single training run may produce misleadingly good or bad results through random initialization effects or data sampling. Testing on multiple independent datasets rather than a single benchmark reveals whether gains generalize beyond the specific evaluation setting.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Figure Recommendation: Validation Pitfalls
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Multi-panel figure illustrating common validation failures. Panel A: Venn diagram showing pretraining/test set overlap creating leakage. Panel B: Timeline showing temporal leakage from future-dated annotations. Panel C: Bar chart comparing foundation model against weak versus strong baselines, showing inflated versus realistic transfer benefit estimates. Panel D: Stratified performance showing aggregate versus rare-variant accuracy divergence.</p>
-</div>
-</div>
 </section>
 </section>
 <section id="emerging-directions" class="level2" data-number="9.12">

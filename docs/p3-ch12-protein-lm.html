@@ -719,6 +719,31 @@ window.Quarto = {
 <p>More remarkably, ESM-1b captures residue-residue contacts. Amino acids that are distant in the linear sequence but close in three-dimensional space attend to each other in the model’s attention matrices. This emergent capability suggests the model learns aspects of protein folding purely from sequence statistics. When attention weights were converted to contact predictions, they achieved accuracy approaching dedicated contact prediction methods that were explicitly trained for that task.</p>
 <p>The model’s masked token predictions correlate strongly with position-specific conservation scores derived from multiple sequence alignments. ESM effectively learns which positions tolerate variation and which are evolutionarily constrained, extracting this information from the statistical patterns across 33 million sequences rather than from explicit conservation annotations. Positions where the model confidently predicts specific amino acids correspond to positions that are conserved across protein families.</p>
 <p>Perhaps most striking, attention concentrates on functionally important positions. Catalytic residues, binding sites, and other sites of biological importance receive elevated attention even without explicit functional annotation in the training data. The model discovers that certain sequence positions are more informative about surrounding context, and these positions frequently correspond to sites where nature has constrained variation because they perform essential functions.</p>
+<div id="fig-plm-emergent" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-plm-emergent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-plm-emergent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.1: [Essential] Multi-panel figure. Panel A (Training Objective): Protein sequence with 15% masked; model predicting from context; “No structure, function, or evolutionary labels.” Panel B (Secondary Structure in Attention): Attention heatmap with alpha helix and beta sheet regions highlighted; attention concentrating along structural patterns. Panel C (Residue Contacts from Attention): Attention weights converted to contact map; ground truth from crystal structure overlaid; strong correspondence. Panel D (Functional Site Discovery): Protein structure cartoon; positions with elevated attention highlighted; overlap with catalytic residues, binding sites.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="esm-2-scaling-up" class="level3" data-number="12.1.3">
 <h3 data-number="12.1.3" class="anchored" data-anchor-id="esm-2-scaling-up"><span class="header-section-number">12.1.3</span> ESM-2: Scaling Up</h3>
@@ -781,6 +806,26 @@ window.Quarto = {
 </table>
 <p>Performance scales smoothly with model size across structure prediction, contact prediction, and variant effect tasks. The scaling relationship is not linear: doubling parameters does not double accuracy. But gains remain consistent through even the largest models, suggesting that the 15-billion parameter ceiling reflects computational constraints rather than fundamental limits on what sequence statistics can teach.</p>
 <p>The scaling behavior mirrors observations in natural language processing, where larger models consistently capture more nuanced patterns. This predictable relationship between scale and capability provides a roadmap for model development: if more biological knowledge is needed, train a larger model on more data. The practical implications shaped how the field approached subsequent genomic foundation models.</p>
+<div id="fig-esm2-scaling" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-esm2-scaling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-esm2-scaling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.2: [Essential] Scaling analysis. Panel A (Performance vs.&nbsp;Parameters): Log-log plot; x-axis parameters (8M → 15B); y-axis performance on structure-related tasks; multiple curves; no sign of saturation. Panel B (Model Family Table): ESM-2 variants stacked by size; visual encoding of layers, hidden dimension, performance; annotate where capabilities emerge (~150M useful embeddings, ~650M structural understanding, ~3B near-optimal single-sequence structure, ~15B approaches MSA methods). Panel C (Capability Thresholds): Specific capabilities as step functions; contact prediction gradual; zero-shot structure emergent at ~650M.
+</figcaption>
+</figure>
+</div>
 </section>
 </section>
 <section id="alternative-architectures" class="level2" data-number="12.2">
@@ -807,6 +852,31 @@ window.Quarto = {
 <p>ESMFold eliminates this requirement entirely. The architecture couples ESM-2 (using the 15-billion parameter variant) with a structure module adapted from AlphaFold2’s Evoformer and structure module. The language model embeddings replace MSA-derived features, providing the evolutionary context that the structure module needs to predict atomic coordinates. The model takes a single sequence as input and outputs predicted 3D coordinates for all atoms.</p>
 <p>The computational speedup is substantial: approximately 60-fold faster than AlphaFold2 for typical proteins. This speed advantage makes it feasible to predict structures for the millions of protein sequences emerging from environmental sequencing projects, where computing MSAs would be prohibitively expensive. Metagenomic proteins, often lacking close homologs in existing databases, represent exactly the cases where MSA-based methods struggle and where single-sequence predictions become essential.</p>
 <p>ESMFold achieves atomic-level accuracy for many proteins, though slightly below AlphaFold2 for proteins that benefit strongly from MSA information. The accuracy gap is largest for proteins with sparse evolutionary sampling, where explicit alignments provide information that single-sequence analysis cannot fully recover. For well-represented protein families, ESMFold approaches AlphaFold2 accuracy at a fraction of the computational cost.</p>
+<div id="fig-esmfold" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-esmfold-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-esmfold-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.3: [High] Four-panel figure. Panel A (Architecture Pipeline): Single sequence → ESM-2 (15B) embeddings → Structure module → 3D coordinates; “No MSA required.” Panel B (Speed Comparison): Bar chart of AlphaFold2 (hours) vs ESMFold (minutes); 60× speedup. Panel C (Accuracy Comparison): Scatter plot ESMFold vs AlphaFold2 colored by MSA depth; well-represented proteins both accurate; sparse MSA proteins ESMFold more robust. Panel D (Metagenomic Application): Earth Microbiome Project proteins; many lack homologs; ESMFold enables scale.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="what-esmfold-reveals-about-plms" class="level3" data-number="12.4.2">
 <h3 data-number="12.4.2" class="anchored" data-anchor-id="what-esmfold-reveals-about-plms"><span class="header-section-number">12.4.2</span> What ESMFold Reveals About PLMs</h3>
@@ -830,6 +900,31 @@ window.Quarto = {
 <p><span class="math display">\[\Delta \text{score} = \log P(b \mid \text{context}) - \log P(a \mid \text{context})\]</span></p>
 <p>If the model assigns higher probability to the mutant amino acid than the wild-type, the variant is predicted benign; if lower, deleterious. This zero-shot prediction requires no labeled training data. The model’s evolutionary knowledge, learned from sequence databases, directly informs variant interpretation.</p>
 <p>The intuition is straightforward. Evolution has shaped protein sequences such that certain positions strongly prefer certain amino acids. Substitutions that violate these preferences are more likely to disrupt function. The language model captures these preferences through training on millions of evolutionarily successful sequences. Variants that the model finds surprising are more likely to be functionally disruptive.</p>
+<div id="fig-plm-variant-scoring" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-plm-variant-scoring-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-plm-variant-scoring-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.4: [High] Four-panel figure. Panel A (The Scoring Mechanism): Protein sequence with variant position; P(ref|context) vs P(var|context); Score = log P(var) - log P(ref). Panel B (Intuition): Evolution tested billions of substitutions; low probability variants = evolutionarily disfavored = likely disruptive. Panel C (Benchmark Performance): ROC curves ESM-1v vs classical methods on DMS data; competitive without variant labels. Panel D (AlphaMissense Enhancement): ESM embeddings + AlphaFold2 structural features; combined model; 71M precomputed scores; performance boost from structure.
+</figcaption>
+</figure>
+</div>
 <p>Brandes and colleagues applied ESM-1b to predict effects for all approximately 450 million possible missense variants in the human genome, providing a precomputed resource for clinical variant interpretation <span class="citation" data-cites="brandes_genome-wide_2023">(<a href="references.html#ref-brandes_genome-wide_2023" role="doc-biblioref">Brandes et al. 2023</a>)</span>. On ClinVar benchmarks, ESM-1b outperformed existing methods in classifying variants as pathogenic or benign.</p>
 <p>AlphaMissense extended this approach by combining PLM representations with structural context from predicted protein structures <span class="citation" data-cites="cheng_alphamissense_2023">(<a href="references.html#ref-cheng_alphamissense_2023" role="doc-biblioref">Cheng et al. 2023</a>)</span>. The integration of sequence-based and structure-based signals improves accuracy, particularly for variants affecting protein stability or buried residues. AlphaMissense provides predictions for all approximately 71 million possible single amino acid substitutions in the human proteome.</p>
 <p>The detailed comparison of variant effect prediction methods, including how PLM-based scores integrate with clinical classification frameworks, is covered in <a href="p3-ch14-vep-fm.html" class="quarto-xref"><span>Chapter 14</span></a>. Here, the key point is that protein language models provide the foundational representations that make accurate zero-shot variant prediction possible.</p>
@@ -846,6 +941,16 @@ window.Quarto = {
 <section id="limitations" class="level2" data-number="12.8">
 <h2 data-number="12.8" class="anchored" data-anchor-id="limitations"><span class="header-section-number">12.8</span> Limitations</h2>
 <p>Despite their success, protein language models face several limitations that inform the development of genomic models and guide appropriate application.</p>
+<div id="fig-plm-limitations" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-plm-limitations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-plm-limitations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.5: [Enhancing] Grid of limitation categories with visual examples. Orphan Proteins: Phylogenetic tree with isolated lineage; no homologs = no evolutionary context; performance degradation curve. Novel Folds: Designed protein with non-natural topology; predictions unreliable outside training. Conformational Flexibility: Protein with multiple conformations; PLM produces single embedding. Epistasis: Two distant positions; individual mutations benign; combination deleterious; models assume independence. Interpretability: Attention correlates with biology but mechanism remains opaque.
+</figcaption>
+</figure>
+</div>
 <section id="orphan-and-dark-proteins" class="level3" data-number="12.8.1">
 <h3 data-number="12.8.1" class="anchored" data-anchor-id="orphan-and-dark-proteins"><span class="header-section-number">12.8.1</span> Orphan and Dark Proteins</h3>
 <p>PLMs learn from evolutionary statistics, performing best for proteins with rich representation in training databases. Orphan proteins, those unique to specific lineages without detectable homologs, lack the evolutionary context that PLMs exploit. For these proteins, the model has no basis for distinguishing likely from unlikely amino acids at each position, and predictions degrade accordingly.</p>

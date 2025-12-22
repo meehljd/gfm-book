@@ -677,6 +677,16 @@ div.csl-indent {
 
 <p>The models throughout this book learn from labels, and those labels come from somewhere. A variant effect predictor trained on ClinVar classifications learns whatever biases clinical laboratories embedded in those classifications. A chromatin accessibility model trained on ENCODE cell lines may fail on primary tissues absent from the training compendium. A constraint metric derived from European-ancestry cohorts will be poorly calibrated for variants private to other populations. Every machine learning model in genomics inherits both the signal and the systematic gaps of its training data. Understanding what genomic resources contain, and what they systematically miss, is prerequisite to interpreting what models learn.</p>
 <p>No single dataset captures the complexity of genomic function. The field depends on a mosaic of complementary resources: reference genomes and gene annotations that define the coordinate system, population variant catalogs that reveal what survives in healthy individuals, biobank datasets that link genetic variation to phenotypes at scale, functional genomics atlases that map biochemical activity across cell types and conditions, and clinical databases that aggregate expert variant interpretations. Each resource contributes a different type of evidence. Reference genomes provide the scaffold against which all variants are defined. Population databases like gnomAD establish baseline expectations for variant frequency. Functional assays from ENCODE and Roadmap Epigenomics indicate where the genome shows evidence of regulatory activity. Clinical databases like ClinVar provide ground-truth labels for pathogenic and benign variants, at least for the subset of variants that have been expertly reviewed.</p>
+<div id="fig-data-ecosystem" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-data-ecosystem-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-data-ecosystem-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.1: [Essential] Conceptual map showing how major data resources interconnect and flow into downstream applications. Organize into layers: (1) Foundation layer: Reference genomes (GRCh38, T2T-CHM13) and gene annotations (GENCODE, RefSeq, MANE); (2) Population layer: Variant catalogs (gnomAD, 1000 Genomes) and biobanks (UK Biobank, All of Us); (3) Functional layer: ENCODE, Roadmap Epigenomics, Cistrome, GTEx; (4) Clinical layer: ClinVar, ClinGen, OMIM, PharmGKB. Draw arrows showing dependencies. Indicate which resources provide “coordinates,” “frequencies,” “functions,” or “labels.”
+</figcaption>
+</figure>
+</div>
 <p>This chapter surveys the major data resources that underpin genomic machine learning, emphasizing what each resource measures, how it was constructed, and where its coverage breaks down. The goal is not encyclopedic completeness but critical literacy: the ability to recognize when a model’s training data may not represent the population, condition, or variant class at hand. This literacy becomes essential when deploying models in clinical contexts where failures have consequences.</p>
 <section id="reference-genomes-and-gene-annotations" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="reference-genomes-and-gene-annotations"><span class="header-section-number">2.1</span> Reference Genomes and Gene Annotations</h2>
@@ -699,6 +709,16 @@ div.csl-indent {
 <section id="population-variant-catalogs-and-allele-frequencies" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="population-variant-catalogs-and-allele-frequencies"><span class="header-section-number">2.2</span> Population Variant Catalogs and Allele Frequencies</h2>
 <p>A clinical geneticist evaluates a child with an undiagnosed syndrome and identifies a novel missense variant in a candidate gene. The question that determines what happens next is deceptively simple: has anyone else carried this variant? If the variant appears in thousands of healthy adults, it is almost certainly benign. If it has never been observed across hundreds of thousands of sequenced genomes, that absence becomes evidence of selective pressure against the variant, strongly suggesting functional consequence. Without population-scale variant catalogs, this inference is impossible, and every rare variant would demand the same level of scrutiny regardless of its actual likelihood of causing disease.</p>
+<div id="fig-ancestry-representation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ancestry-representation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ancestry-representation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.2: [High] Stacked bar chart or waffle plot showing ancestry composition across key resources: gnomAD v4, UK Biobank, ClinVar submissions, GTEx donors, GWAS Catalog participants. Highlight the persistent European overrepresentation (approximately 78% of GWAS participants as of 2019) against global population proportions. Include a small world map inset showing which continental ancestries are represented vs underrepresented.
+</figcaption>
+</figure>
+</div>
 <p><strong>Allele frequency</strong>, the proportion of chromosomes in a reference population carrying a given variant, serves as one of the most powerful priors in variant interpretation. Beyond simple filtering, allele frequencies inform statistical frameworks for case-control association, provide training signal for deleteriousness predictors, and enable <strong>imputation</strong> of ungenotyped variants through <strong>linkage disequilibrium</strong>. The catalogs described below have progressively expanded in sample size, ancestral diversity, and annotation depth, transforming variant interpretation from an ad hoc exercise into a quantitative discipline.</p>
 <p>A crucial nuance shapes everything that follows: these catalogs record variants that are compatible with being sampled in the first place. Gene-lethal variants that cause embryonic death or severe childhood disease rarely appear, even when they are biologically informative. Variants causing late-onset conditions (Alzheimer’s risk alleles, adult-onset cancer predisposition) can persist at appreciable frequencies because selection has not had time to remove them. Throughout this book, models trained on population data can only learn from variants present in these catalogs, which means they systematically underrepresent the most severe loss-of-function mutations.</p>
 <section id="dbsnp-and-variant-identifiers" class="level3" data-number="2.2.1">
@@ -745,6 +765,16 @@ div.csl-indent {
 <p>A single ChIP-seq experiment for one transcription factor in one cell line provides useful signal, but models that learn general regulatory grammar require thousands of such experiments spanning many factors, marks, and cell types. A researcher training a regulatory model on her own laboratory’s data will produce a model that works well in her specific experimental context but fails to generalize. The key insight behind ENCODE and Roadmap was that coordinated experimental campaigns, with standardized methods and quality control, could create reference datasets serving the entire field.</p>
 <p>The Encyclopedia of DNA Elements (ENCODE) and Roadmap Epigenomics consortia designed coordinated experimental campaigns that profiled transcription factor binding (ChIP-seq), histone modifications, chromatin accessibility (DNase-seq, ATAC-seq), and chromatin conformation (Hi-C) across cell lines and primary tissues <span class="citation" data-cites="kagda_encode_2025 kundaje_roadmap_2015">(<a href="references.html#ref-kagda_encode_2025" role="doc-biblioref">Kagda et al. 2025</a>; <a href="references.html#ref-kundaje_roadmap_2015" role="doc-biblioref">Kundaje et al. 2015</a>)</span>. Gene Expression Omnibus (GEO) archives these and many other functional genomics datasets with standardized metadata <span class="citation" data-cites="edgar_geo_2002">(<a href="references.html#ref-edgar_geo_2002" role="doc-biblioref">Edgar, Domrachev, and Lash 2002</a>)</span>.</p>
 <p>The significance of these consortia lies less in any individual experiment than in the scale and standardization they provide. By generating hundreds of assays across dozens of cell types with consistent protocols, ENCODE and Roadmap created canonical reference datasets that define the regulatory landscape for the cell types they profiled. Many regulatory deep learning models in <a href="p3-ch13-regulatory.html" class="quarto-xref"><span>Chapter 13</span></a> and <a href="p2-ch06-cnn.html" class="quarto-xref"><span>Chapter 6</span></a> are effectively trained on these resources, learning to predict multi-task label vectors where each task corresponds to a ChIP-seq or accessibility experiment. The consequence is that models trained on ENCODE data inherit ENCODE’s choices about which cell types, factors, and experimental conditions merit inclusion.</p>
+<div id="fig-functional-genomics-matrix" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-functional-genomics-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-functional-genomics-matrix-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.3: [High] Heatmap-style visualization showing the ENCODE/Roadmap data compendium structure. Rows represent cell types or tissues (group by category: cell lines, primary cells, tissues). Columns represent assay types (ChIP-seq for various TFs and histone marks, DNase-seq, ATAC-seq, RNA-seq). Color intensity indicates data availability (present/absent or coverage depth). Highlight which cell types have comprehensive coverage vs sparse coverage. Annotate example cell types that are well-profiled (K562, GM12878, HepG2) vs disease-relevant tissues that remain undersampled.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="cistrome-data-browser" class="level3" data-number="2.4.2">
 <h3 data-number="2.4.2" class="anchored" data-anchor-id="cistrome-data-browser"><span class="header-section-number">2.4.2</span> Cistrome Data Browser</h3>
@@ -796,6 +826,26 @@ div.csl-indent {
 <p>Circularity with computational predictors represents a subtle but important concern. Clinical submissions increasingly incorporate computational scores like CADD, REVEL, and AlphaMissense as supporting evidence for pathogenicity classification. When these same ClinVar labels are then used to train or evaluate computational predictors, circularity emerges <span class="citation" data-cites="schubach_cadd_2024">(<a href="references.html#ref-schubach_cadd_2024" role="doc-biblioref">Schubach et al. 2024</a>)</span>. If a laboratory used a high CADD score as supporting evidence for classifying a variant as likely pathogenic, and that variant later appears as a positive label in ClinVar, models trained on ClinVar may partly learn to reproduce CADD itself rather than discovering independent signal. This circularity operates at two levels: evaluation circularity (when models are assessed on benchmarks influenced by the model’s own predictions) and training circularity (when features used in training derive from the same underlying information as the labels). Both forms inflate apparent performance without demonstrating genuine predictive power. We return to these issues in <a href="p1-ch04-vep-classical.html" class="quarto-xref"><span>Chapter 4</span></a> and <a href="p5-ch22-confounding.html" class="quarto-xref"><span>Chapter 22</span></a>.</p>
 <p>Variants of uncertain significance constitute the majority of rare variant classifications, reflecting genuinely limited evidence. These variants are both targets for predictive modeling (can computational methods resolve uncertainty?) and potential pitfalls (models trained only on confidently classified variants may not generalize to VUS with different characteristics).</p>
 <p>Despite these limitations, ClinVar remains invaluable. The key is using it appropriately: recognizing biases when training models, accounting for version differences when comparing studies, stratifying performance by ancestry and gene coverage, and treating computational predictions as one line of evidence rather than definitive classifications.</p>
+<div id="fig-clinvar-landscape" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clinvar-landscape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clinvar-landscape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.4: [High] Three-panel figure. Panel A: Pie or bar chart showing distribution of ClinVar classifications (Pathogenic, Likely Pathogenic, VUS, Likely Benign, Benign, Conflicting). Highlight that VUS dominates. Panel B: Heatmap showing classification density by gene, with well-studied genes (BRCA1, BRCA2, CFTR) having many submissions vs sparse coverage elsewhere. Panel C: Timeline showing how classifications evolve (example of a variant reclassified from VUS to Pathogenic over time, illustrating version sensitivity).
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="complementary-clinical-databases" class="level3" data-number="2.6.2">
 <h3 data-number="2.6.2" class="anchored" data-anchor-id="complementary-clinical-databases"><span class="header-section-number">2.6.2</span> Complementary Clinical Databases</h3>

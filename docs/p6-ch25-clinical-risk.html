@@ -689,6 +689,26 @@ div.csl-indent {
 <h2 data-number="25.3" class="anchored" data-anchor-id="feature-integration-architectures"><span class="header-section-number">25.3</span> Feature Integration Architectures</h2>
 <p>The features available for clinical risk models draw on multiple foundation model families, each capturing different aspects of genetic and molecular risk.</p>
 <p>DNA-level foundation models provide variant effect predictions without requiring trait-specific training. Systems like Nucleotide Transformer, HyenaDNA, and GPN compute sequence-based deleteriousness scores that reflect how mutations disrupt regulatory grammar, splice sites, or protein-coding sequences <span class="citation" data-cites="dalla-torre_nucleotide_2023 nguyen_hyenadna_2023 benegas_gpn_2023">(<a href="references.html#ref-dalla-torre_nucleotide_2023" role="doc-biblioref">Dalla-Torre et al. 2023</a>; <a href="references.html#ref-nguyen_hyenadna_2023" role="doc-biblioref">Nguyen et al. 2023</a>; <a href="references.html#ref-benegas_gpn_2023" role="doc-biblioref">Benegas, Batra, and Song 2023</a>)</span>. These zero-shot predictions transfer across traits and ancestries because they derive from sequence properties rather than population-specific association statistics. Fine-mapping models like MIFM integrate such functional priors with association evidence to estimate which variants within a locus are likely causal, providing principled weights for aggregation <span class="citation" data-cites="rakowski_mifm_2025">(<a href="references.html#ref-rakowski_mifm_2025" role="doc-biblioref">Rakowski and Lippert 2025</a>)</span>.</p>
+<div id="fig-feature-integration" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-feature-integration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-feature-integration-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;25.1: [Essential] Three-column comparison. Column 1 (Early Fusion): All features concatenated → single model → risk. Column 2 (Intermediate Fusion): Separate encoders (FM as genomic encoder) → embeddings → fusion → risk. Column 3 (Late Fusion): Independent models → scores → ensemble → risk. For each: pros/cons, missing data handling, compute. Comparison table: Cross-modal interactions, missing data, modularity, best for. Key insight: Intermediate balances modularity with interaction learning.
+</figcaption>
+</figure>
+</div>
 <p>Protein language models add coding variant interpretation. AlphaMissense and related systems predict pathogenicity for missense mutations based on evolutionary conservation patterns learned from millions of protein sequences, as discussed in <a href="p3-ch12-protein-lm.html" class="quarto-xref"><span>Chapter 12</span></a>. For conditions with strong coding variant contributions (Mendelian cardiomyopathies, cancer predisposition syndromes), these predictions provide crucial signal beyond what noncoding regulatory models capture.</p>
 <p>Multi-omics foundation models extend beyond germline sequence. Cell-type-resolved representations from GLUE, scGLUE, and CpGPT capture regulatory state across chromatin accessibility, methylation, and expression (<a href="p4-ch16-single-cell.html" class="quarto-xref"><span>Chapter 16</span></a>) <span class="citation" data-cites="cao_glue_2022 camillo_cpgpt_2024">(<a href="references.html#ref-cao_glue_2022" role="doc-biblioref">Cao and Gao 2022</a>; <a href="references.html#ref-camillo_cpgpt_2024" role="doc-biblioref">Camillo et al. 2024</a>)</span>. Rare variant burden scores from DeepRVAT aggregate predicted effects across genes into pathway-level impairment measures <span class="citation" data-cites="clarke_deeprvat_2024">(<a href="references.html#ref-clarke_deeprvat_2024" role="doc-biblioref">Clarke et al. 2024</a>)</span>. For oncology applications, tumor embedding models like SetQuence and graph neural network-based subtypers encode complex somatic mutation landscapes into patient-level representations <span class="citation" data-cites="jurenaite_setquence_2024 li_mogcn_2022">(<a href="references.html#ref-jurenaite_setquence_2024" role="doc-biblioref">Jurenaite et al. 2024</a>; <a href="references.html#ref-li_mogcn_2022" role="doc-biblioref">Li et al. 2022</a>)</span>.</p>
 <p>Electronic health record features provide the clinical context without which genomic predictions lack meaning. Demographics, vital signs, laboratory values, medication lists, problem codes, and procedure histories characterize the patient’s current state and trajectory. Time-varying biomarker trajectories (estimated glomerular filtration rate trends, hemoglobin A1c patterns, tumor marker dynamics) capture disease evolution that static snapshots miss.</p>
@@ -702,6 +722,26 @@ div.csl-indent {
 <h2 data-number="25.4" class="anchored" data-anchor-id="temporal-modeling-architectures"><span class="header-section-number">25.4</span> Temporal Modeling Architectures</h2>
 <p>Clinical risk prediction spans diverse temporal structures, and the choice of modeling framework must match the prediction task. A screening tool estimating whether a patient will develop diabetes within ten years faces different statistical challenges than a monitoring system tracking whether a patient’s kidney function trajectory signals imminent decline. Foundation model features can integrate into each framework, but the integration patterns differ.</p>
 <p>Survival models address time-to-event outcomes where patients are followed until an event occurs or observation ends. The Cox proportional hazards model remains the workhorse of clinical risk prediction, estimating hazard ratios for features while making minimal assumptions about baseline hazard shape. Foundation model embeddings enter as covariates alongside clinical variables, with the proportional hazards assumption requiring that genomic risk effects remain constant over time. When this assumption fails (as when genetic effects on cancer recurrence differ between early and late periods), stratified or time-varying coefficient extensions accommodate the violation.</p>
+<div id="fig-temporal-modeling" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-temporal-modeling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-temporal-modeling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;25.2: [High] Three-panel comparison. Panel A (Survival Models): Timeline with events (X) or censoring (O); Cox PH diagram; FM embeddings as static covariates; “10-year CV risk at baseline.” Panel B (Longitudinal Models): Repeated measurements over time; time-varying features; FM re-encodes at each timepoint; “Updated prognosis as disease evolves.” Panel C (Hybrid/Joint): Baseline genomic risk + trajectory updating; static genomic embedding + dynamic clinical transformer; “Genetic predisposition modified by treatment response.”
+</figcaption>
+</figure>
+</div>
 <p>Deep survival models extend this framework through neural network architectures that learn nonlinear feature interactions. DeepSurv replaces the linear Cox predictor with a multilayer network while preserving the partial likelihood objective <span class="citation" data-cites="katzman_deepsurv_2018">(<a href="references.html#ref-katzman_deepsurv_2018" role="doc-biblioref"><strong>katzman_deepsurv_2018?</strong></a>)</span>. Deep Survival Machines model the survival distribution as a mixture of parametric components, enabling richer distributional assumptions than the semiparametric Cox approach <span class="citation" data-cites="nagpal_deep_2021">(<a href="references.html#ref-nagpal_deep_2021" role="doc-biblioref"><strong>nagpal_deep_2021?</strong></a>)</span>. These architectures naturally accommodate the high-dimensional embeddings that foundation models produce, though the risk of overfitting increases and careful regularization becomes essential.</p>
 <p>Longitudinal models address a different challenge: patients observed repeatedly over time, with measurements that evolve and interact. A patient’s hemoglobin A1c trajectory over five years contains information that a single baseline measurement cannot capture. Whether values are stable, rising, or fluctuating conveys prognostic signal beyond their current level. Joint longitudinal-survival models connect these repeated measurements to event outcomes, modeling how biomarker trajectories associate with hazard while accounting for informative dropout when sicker patients are measured more frequently or die before later observations.</p>
 <p>Foundation model features integrate into longitudinal frameworks at multiple levels. Static genomic embeddings (computed once from germline sequence) serve as time-invariant covariates influencing both trajectory shape and event hazard. Time-varying molecular features (expression profiles, methylation states, circulating tumor DNA levels) can be encoded through foundation models at each measurement occasion, producing sequences of embeddings that recurrent or attention-based architectures process into trajectory representations. The computational cost of re-encoding molecular data at each timepoint is substantial, making efficient inference strategies essential for deployment.</p>
@@ -730,6 +770,16 @@ div.csl-indent {
 <section id="the-validation-hierarchy" class="level3" data-number="25.5.4">
 <h3 data-number="25.5.4" class="anchored" data-anchor-id="the-validation-hierarchy"><span class="header-section-number">25.5.4</span> The Validation Hierarchy</h3>
 <p>Evidence strength depends critically on validation design. Internal validation through cross-validation or temporal splits within development data is useful but insufficient due to potential overfitting and subtle data leakage issues discussed in <a href="p5-ch22-confounding.html" class="quarto-xref"><span>Chapter 22</span></a>. External validation across institutions and ancestries tests the same locked model in independent health systems and diverse populations. This step is essential for assessing whether performance reflects genuine biological signal versus idiosyncratic features of the development dataset.</p>
+<div id="fig-validation-hierarchy" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-validation-hierarchy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-validation-hierarchy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;25.3: [Essential] Pyramid/staircase with evidence levels. Levels bottom to top: (1) Internal validation (CV, temporal splits; low evidence; proof of concept; overfitting risk); (2) External validation (same locked model in independent systems; moderate; transportability; multiple institutions/ancestries); (3) Prospective observational (model runs silently; moderate-high; real-time performance, drift detection; months-years); (4) Prospective interventional (randomized/quasi-experimental; high; clinical outcome improvement; trial registration, IRB). Annotations: Cost/time increasing; regulatory requirements; “Most FM tools stop here” at external validation.
+</figcaption>
+</figure>
+</div>
 <p>Prospective observational validation runs the model silently alongside clinical care without influencing decisions, measuring real-time performance and drift in deployment conditions. Prospective interventional trials use randomized or quasi-experimental designs to assess whether model-guided care actually improves outcomes, equity, and cost-effectiveness compared to usual care.</p>
 <p>For most foundation model-based tools, regulators and health systems expect robust external validation at minimum. High-stakes applications (cancer prognosis affecting treatment intensity, pharmacogenomic predictions affecting drug choice) may require prospective interventional evidence. The investment required increases at each level of the hierarchy, but so does the confidence that deployment will produce benefit rather than harm.</p>
 </section>
@@ -738,6 +788,16 @@ div.csl-indent {
 <h2 data-number="25.6" class="anchored" data-anchor-id="uncertainty-quantification"><span class="header-section-number">25.6</span> Uncertainty Quantification</h2>
 <p>In clinical settings, models must know when they do not know. A risk prediction offered with false confidence is more dangerous than one accompanied by appropriate uncertainty bounds, because the former invites unwarranted action while the latter prompts appropriate caution or additional evaluation.</p>
 <p>Two sources of uncertainty require distinction. Aleatoric uncertainty reflects irreducible noise in the outcome: even with perfect input features, some patients with identical measured characteristics will experience different outcomes due to unmeasured variables, stochastic biology, or measurement error. Epistemic uncertainty reflects model limitations: insufficient training data, architectural constraints, or distributional shift between training and deployment conditions. Aleatoric uncertainty cannot be reduced by collecting more data or improving models; epistemic uncertainty can.</p>
+<div id="fig-clinical-uncertainty" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clinical-uncertainty-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clinical-uncertainty-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;25.4: [High] Uncertainty decomposition. Components: (1) Genomic Uncertainty (under-represented ancestry, rare variants, novel genes; detection: embedding distance; response: flag for review); (2) Clinical Uncertainty (extrapolation to new settings; detection: feature distribution monitoring; response: local calibration); (3) Outcome Uncertainty/Aleatoric (biological variability, incomplete penetrance; detection: heteroscedastic models; response: communicate irreducible). Visualization: Venn or stacked bar. Example patient profiles with different compositions. Decision support: When total exceeds threshold → abstain/flag.
+</figcaption>
+</figure>
+</div>
 <p>Practical uncertainty quantification methods include ensemble approaches, where multiple models trained with different random seeds provide prediction intervals based on their disagreement. Monte Carlo dropout approximates Bayesian uncertainty by averaging predictions across stochastic forward passes. Conformal prediction provides principled prediction intervals with guaranteed coverage under exchangeability assumptions, avoiding the distributional assumptions required by parametric methods. Temperature scaling post-hoc adjusts model outputs to improve calibration without retraining.</p>
 <p>For foundation model-based systems, uncertainty decomposes into genomic and clinical components. Genomic uncertainty reflects confidence in variant effect predictions, fine-mapping probabilities, or embedding reliability; it increases for variants from underrepresented populations, rare variants with limited training examples, or sequences falling outside the distribution seen during pretraining. Clinical uncertainty reflects extrapolation to new care settings, practice patterns, or patient populations not represented in development data.</p>
 <p>Selective prediction allows models to abstain when uncertainty exceeds thresholds, flagging cases for human review rather than providing potentially misleading predictions. This is particularly important for patients from rare ancestries underrepresented in training data or with unusual clinical presentations. The tension between coverage (providing predictions for all patients) and reliability (ensuring predictions are trustworthy) must be navigated thoughtfully, ideally with input from the clinicians who will use the system.</p>
@@ -746,6 +806,31 @@ div.csl-indent {
 <h2 data-number="25.7" class="anchored" data-anchor-id="fairness-and-health-equity"><span class="header-section-number">25.7</span> Fairness and Health Equity</h2>
 <p>Many genomic and electronic health record datasets encode historical inequities in who gets genotyped, which populations are recruited into biobanks, and how healthcare is documented and delivered. Risk models trained on such data can amplify disparities if not carefully evaluated and designed.</p>
 <p>The ancestry bias in genome-wide association studies persists in foundation model applications. As discussed in <a href="p1-ch03-gwas.html" class="quarto-xref"><span>Chapter 3</span></a>, polygenic scores derived from European-ancestry data substantially underperform in other populations. Foundation models have the opportunity but not the guarantee to improve portability by leveraging functional priors that transfer across ancestries (sequence-based deleteriousness does not depend on population-specific linkage disequilibrium) and by incorporating multi-ancestry training data. Whether they succeed depends on training data composition, evaluation practices, and explicit attention to cross-ancestry performance throughout development.</p>
+<div id="fig-fairness-assessment" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-fairness-assessment-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fairness-assessment-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;25.5: [High] Equity dashboard. Panel A (Performance Disparity): Bar chart AUROC by ancestry; confidence intervals; reference line; highlight underperformance. Panel B (Calibration Disparity): Multiple reliability diagrams overlaid; ECE per group. Panel C (Clinical Utility Disparity): Decision curves by subgroup; net benefit at thresholds; model improves over treat-all/treat-none? Panel D (Access and Outcome Metrics): Who receives testing? Who benefits? Model reduces or amplifies disparities? Mitigation callout: Reweighting, group-wise calibration, expanding sequencing access.
+</figcaption>
+</figure>
+</div>
 <p>Electronic health record features introduce additional bias sources. Which patients receive genetic testing, which laboratory tests are ordered, how diagnoses are coded, and how thoroughly clinical notes are documented all differ systematically across patient populations, care settings, and health systems. A model trained on one institution’s data may encode those institutional patterns rather than underlying biology.</p>
 <p>Health equity evaluation requires disparity metrics measuring performance differences in discrimination, calibration, and clinical utility across subgroups defined by ancestry, sex, socioeconomic proxies, and care site. Access metrics assess whether financial, geographic, or systemic barriers limit which patients can benefit from genomic risk tools. Outcome metrics evaluate whether clinical actions triggered by predictions differ across groups and whether benefits accrue equitably or concentrate among already-advantaged populations.</p>
 <p>Technical mitigation strategies include reweighting training data to reduce representation disparities, group-wise calibration ensuring equitable performance across subgroups, and localized fine-tuning using deployment-site data. However, technical interventions alone cannot overcome structural inequities. Non-technical approaches including expanding sequencing access, subsidizing testing for underserved populations, and designing workflows that accommodate diverse care settings are equally essential.</p>
@@ -754,6 +839,16 @@ div.csl-indent {
 <section id="clinical-integration" class="level2" data-number="25.8">
 <h2 data-number="25.8" class="anchored" data-anchor-id="clinical-integration"><span class="header-section-number">25.8</span> Clinical Integration</h2>
 <p>Even a comprehensively validated model can fail in practice if it does not integrate into clinical workflows. Genomic risk predictions must reach clinicians at decision points, in formats that support rather than disrupt care delivery, with appropriate interpretability and uncertainty communication.</p>
+<div id="fig-clinical-workflow" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clinical-workflow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clinical-workflow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;25.6: [High] Workflow diagram. Clinical workflow: Patient presents → Assessment → Decision point → Action. Integration patterns: (1) Laboratory Interpretation Augmentation (FM scores in variant report; human geneticist reviews; variant classification); (2) Risk Embedded in EHR (precomputed scores in structured fields; dashboard at point of care; clinical decision support); (3) Pharmacogenomic Alert (synchronous alert at prescription entry; drug-gene interaction flagged; medication ordering). For each: When computation happens, who sees output, what action triggered. System architecture: Model serving, adapters, logging, version control.
+</figcaption>
+</figure>
+</div>
 <section id="workflow-integration-patterns" class="level3" data-number="25.8.1">
 <h3 data-number="25.8.1" class="anchored" data-anchor-id="workflow-integration-patterns"><span class="header-section-number">25.8.1</span> Workflow Integration Patterns</h3>
 <p>Clinical genomics has established pathways for returning results through CLIA-certified laboratories, structured reports, and genetic counseling. Foundation model-based risk tools can augment these pathways in two primary ways. Laboratory interpretation augmentation uses foundation model predictions to prioritize variants for manual review, provide richer functional annotations, and suggest likely disease mechanisms supporting differential diagnosis. Direct risk embedding in electronic health records precomputes risk scores for patients with genomic data, surfaces them in structured fields or clinical dashboards, and triggers alerts when thresholds are crossed.</p>
@@ -786,6 +881,16 @@ div.csl-indent {
 <h3 data-number="25.10.1" class="anchored" data-anchor-id="cardiometabolic-risk-stratification"><span class="header-section-number">25.10.1</span> Cardiometabolic Risk Stratification</h3>
 <p>A 52-year-old man presents to his primary care physician for an annual wellness visit. His LDL cholesterol is 145 mg/dL, blood pressure is 138/88 mmHg, and hemoglobin A1c is 5.9%, placing him in the prediabetic range. His father had a myocardial infarction at age 58. The standard Pooled Cohort Equations estimate his 10-year atherosclerotic cardiovascular disease risk at 8.2%, just below the threshold where guidelines recommend statin therapy.</p>
 <p>A foundation model-augmented risk system could refine this assessment. Variant effect scores from DNA foundation models annotate variants in cardiometabolic risk loci with predicted regulatory and coding impacts. A polygenic embedding model like Delphi or G2PT produces a genome-wide representation capturing nonlinear risk structure beyond simple effect size sums <span class="citation" data-cites="georgantas_delphi_2024 lee_g2pt_2025">(<a href="references.html#ref-georgantas_delphi_2024" role="doc-biblioref">Georgantas, Kutalik, and Richiardi 2024</a>; <a href="references.html#ref-lee_g2pt_2025" role="doc-biblioref">Lee et al. 2025</a>)</span>. This genomic embedding combines with electronic health record features through an intermediate fusion architecture, producing an updated 10-year risk estimate of 11.4%, above the treatment threshold.</p>
+<div id="fig-cardio-case-study" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cardio-case-study-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cardio-case-study-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;25.7: [Enhancing] Patient journey diagram. Patient profile: 52yo man, LDL 145, BP 138/88, HbA1c 5.9%; family history (father MI at 58); traditional risk 8.2% (below statin threshold). FM integration: DNA FMs annotate variants; polygenic embedding (Delphi/G2PT) captures nonlinear risk; fusion with EHR; updated estimate 11.4% (above threshold). Clinical decision impact: Threshold crossed → statin indicated; pathway attribution → LDL metabolism (supports mechanism); attention attribution → regions for counseling. Validation requirements: External validation, equity analysis. Key insight: Value depends on whether refined estimate enables different action.
+</figcaption>
+</figure>
+</div>
 <p>The clinical value depends on what this refined estimate enables. If genomic foundation model features merely replicate traditional polygenic score information with higher computational cost, the benefit is marginal. But if the embedding captures pathway-level structure that identifies this patient’s risk as concentrating in LDL metabolism pathways rather than inflammatory or thrombotic mechanisms, that information might strengthen the indication for statin therapy specifically. Attention-based attributions highlighting which genomic regions contribute most to the elevated risk could inform counseling about heritability and family screening.</p>
 <p>External validation across multiple health systems and ancestries would need to demonstrate that the foundation model approach provides calibrated predictions and meaningful reclassification improvement over traditional tools. Equity analysis would verify that performance holds across the diverse populations the health system serves rather than degrading for non-European ancestries underrepresented in training data.</p>
 </section>

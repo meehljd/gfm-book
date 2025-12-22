@@ -693,6 +693,16 @@ div.csl-indent {
 <p>Every benchmark measures a proxy. ClinVar pathogenicity labels proxy clinical impact. AUROC on held-out variants proxies discrimination ability in deployment. Chromatin accessibility predictions proxy regulatory function. The gap between proxy and target varies across benchmarks, across variant types, and across populations. A model achieving state-of-the-art performance on ClinVar may systematically miscalibrate predictions for the rare variants that matter most clinically, because ClinVar’s composition does not reflect the distribution of variants clinicians actually encounter. A DNA language model excelling at enhancer classification may have learned GC content rather than regulatory grammar, because the benchmark’s negative examples differ from positives in ways that have nothing to do with enhancer function.</p>
 <p>Understanding what benchmarks actually measure, and how that differs from what we need to know, is prerequisite to interpreting any leaderboard result. The genomic AI field has accumulated substantial evaluation infrastructure. Dozens of benchmark suites target different modalities: protein structure and function, DNA regulatory elements, variant pathogenicity, gene expression prediction, and more. Hundreds of individual tasks probe specific capabilities. Thousands of models have reported results, creating leaderboards that rank approaches and track progress over time. This infrastructure enables comparison and drives methodological improvement. Yet the relationship between benchmark success and deployment value remains poorly characterized. A foundation model that dominates protein benchmarks may fail on the specific protein family relevant to a drug discovery campaign. A variant effect predictor that leads regulatory benchmarks may provide no clinical utility for the variant classes that lack representation in evaluation data.</p>
 <p>This chapter surveys the benchmark landscape for genomic foundation models, organized by biological modality. We examine protein benchmarks first, as the most mature evaluation ecosystem, then DNA and regulatory benchmarks, variant effect prediction benchmarks, and trait-level benchmarks linking genetics to phenotypes. Throughout, we attend not only to what these benchmarks measure but to their construction, their biases, and their limitations. The methodological principles for using benchmarks properly are covered in <a href="p5-ch21-eval.html" class="quarto-xref"><span>Chapter 21</span></a>. Here we focus on cataloging what exists and developing the critical perspective necessary to interpret benchmark claims.</p>
+<div id="fig-benchmark-landscape" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-benchmark-landscape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-benchmark-landscape-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20.1: [Essential] Navigational map organized as matrix. Rows (modalities): Protein, DNA/Regulatory, Variant Effect, Trait-Level. Columns (benchmark types): Structure, Function, Effect Prediction, Clinical Relevance. Include: TAPE, FLIP, ProteinGym, Genomic Benchmarks, BEND, ClinVar, CAGI, DMS/MaveDB, TraitGym, EmbedGEM. Visual encoding: icons per modality, color intensity for maturity, size for scale. Annotations: typical evaluation progression, prospective vs retrospective benchmarks.
+</figcaption>
+</figure>
+</div>
 <section id="protein-language-model-benchmarks" class="level2" data-number="20.1">
 <h2 data-number="20.1" class="anchored" data-anchor-id="protein-language-model-benchmarks"><span class="header-section-number">20.1</span> Protein Language Model Benchmarks</h2>
 <p>Protein language models (<a href="p3-ch12-protein-lm.html" class="quarto-xref"><span>Chapter 12</span></a>) benefit from the longest-established and most systematic evaluation ecosystem in genomic AI. The maturity of protein benchmarks reflects both the longer history of computational protein science and the relative tractability of protein structure and function prediction compared to regulatory genomics.</p>
@@ -833,6 +843,16 @@ div.csl-indent {
 <p>How benchmarks partition data into training and test sets determines whether evaluation measures generalization or memorization. Random splitting, where examples are assigned to splits uniformly at random, represents the weakest form of evaluation. In genomics, random splits often permit homology-based leakage: training and test sequences may share sufficient similarity that memorization suffices for good performance.</p>
 <p>Homology-aware splitting clusters sequences by similarity before assigning clusters to splits, ensuring that test sequences are evolutionarily distant from training sequences. This approach is standard for protein benchmarks (using tools like CD-HIT or MMseqs2) but less consistently applied for DNA benchmarks.</p>
 <p>Chromosome-based splitting holds out entire chromosomes for testing, preventing any position-based leakage within chromosomes. This approach is common for regulatory benchmarks but does not account for homologous sequences on different chromosomes. Temporal splitting reserves recent data for testing, appropriate when benchmarks derive from databases with submission timestamps. Each splitting strategy tests different aspects of generalization; the choice should match the intended deployment scenario.</p>
+<div id="fig-leakage-pathways" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-leakage-pathways-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-leakage-pathways-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20.2: [High] Flow diagram showing data flow with leakage highlighted. Central pipeline: Pretraining → FM → Fine-tuning → Benchmark. Leakage pathways (red): Direct overlap, homology leakage, label circularity, resource sharing, community iteration. Specific examples: ESM/UniRef→ProteinGym, ClinVar/CADD circularity, ENCODE in both. Visual encoding: legitimate flow blue, leakage red dashed.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="metric-selection-and-aggregation" class="level3" data-number="20.5.3">
 <h3 data-number="20.5.3" class="anchored" data-anchor-id="metric-selection-and-aggregation"><span class="header-section-number">20.5.3</span> Metric Selection and Aggregation</h3>
@@ -858,6 +878,23 @@ div.csl-indent {
 <p>Saturation is problematic because it removes the benchmark’s value for model selection. When all reasonable models achieve 0.97 AUROC, differences between 0.970 and 0.975 are unlikely to reflect meaningful capability differences. Yet benchmark reporting conventions often emphasize such decimal places, creating an illusion of progress.</p>
 <p>Detecting saturation requires estimating the irreducible error. For benchmarks with replicate measurements, comparing model performance to replicate concordance provides an upper bound: models cannot systematically outperform the reproducibility of the underlying assay. For benchmarks without replicates, saturation is harder to diagnose. One heuristic is tracking the rate of improvement: when new methods provide diminishing gains despite substantial architectural innovations, saturation is likely.</p>
 <p>The response to saturation should be moving to harder benchmarks that still discriminate between methods, developing new benchmarks that capture aspects of performance that existing benchmarks miss, and retiring saturated benchmarks from active leaderboard competition while retaining them as sanity checks.</p>
+<div id="fig-benchmark-saturation" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-benchmark-saturation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-benchmark-saturation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20.3: [High] Two-panel figure. Panel A (Saturation curve): Time vs benchmark performance; multiple lines; ceiling line; saturation zone annotation. Panel B (Staleness timeline): Benchmark creation dates above; data collection/annotation dates; current year below; growing gap; examples (ENCODE 2012, ClinVar evolving).
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="staleness-when-benchmarks-diverge-from-practice" class="level3" data-number="20.6.2">
 <h3 data-number="20.6.2" class="anchored" data-anchor-id="staleness-when-benchmarks-diverge-from-practice"><span class="header-section-number">20.6.2</span> Staleness: When Benchmarks Diverge from Practice</h3>
@@ -875,6 +912,16 @@ div.csl-indent {
 <section id="the-benchmark-deployment-gap" class="level2" data-number="20.7">
 <h2 data-number="20.7" class="anchored" data-anchor-id="the-benchmark-deployment-gap"><span class="header-section-number">20.7</span> The Benchmark-Deployment Gap</h2>
 <p>High benchmark performance does not guarantee deployment success. Understanding why requires examining the systematic differences between benchmark settings and real-world applications.</p>
+<div id="fig-proxy-target-gap" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-proxy-target-gap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-proxy-target-gap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20.4: [Essential] Conceptual diagram with layers. Left column (What we measure): ClinVar labels, held-out AUROC, DMS correlation, expression prediction accuracy. Right column (What we want): True clinical impact, deployment discrimination, actual protein function, regulatory mechanism. Center: Arrows with gap indicators. Gap factors: label quality, distribution shift, metric mismatch, temporal drift. Width of arrows indicates strength of proxy. Key insight: gap not uniform.
+</figcaption>
+</figure>
+</div>
 <section id="distribution-shift" class="level3" data-number="20.7.1">
 <h3 data-number="20.7.1" class="anchored" data-anchor-id="distribution-shift"><span class="header-section-number">20.7.1</span> Distribution Shift</h3>
 <p>Benchmark test sets sample from the same distribution as training sets. Deployment populations may differ systematically. For variant effect prediction, benchmark variants are typically common enough to appear in multiple databases, while deployment often targets rare variants seen in single individuals. For regulatory prediction, benchmarks derive from well-studied cell types and tissues, while deployment may require prediction in understudied contexts.</p>
@@ -901,6 +948,16 @@ div.csl-indent {
 <p>Despite the proliferation of benchmark suites, systematic gaps remain in the genomic evaluation landscape.</p>
 <p><strong>Variant types</strong>: Structural variants, inversions, copy number variants, and complex rearrangements are rarely evaluated despite accounting for substantial genomic variation and disease burden. Repeat regions are often excluded or masked. Multi-variant effects and haplotype-specific phenomena receive minimal attention.</p>
 <p><strong>Populations</strong>: Non-European ancestry groups remain severely underrepresented. Performance stratified by ancestry reveals gaps that aggregate metrics conceal. Environmental diversity (lifestyle, exposures, treatments) that shapes phenotypic expression is rarely incorporated.</p>
+<div id="fig-cross-population-performance" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cross-population-performance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cross-population-performance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20.5: [High] Grouped bar chart or heatmap. Rows: Different tasks/models. Columns: Ancestry groups (European, African, East Asian, South Asian, Admixed). Values: Performance metrics. Specific comparisons: PGS 40-75% reduction non-European; ClinVar-trained models across ancestries. Annotations: sample sizes, significance, training data representation. Key insight: aggregate conceals systematic failures.
+</figcaption>
+</figure>
+</div>
 <p><strong>Modalities</strong>: Long-read sequencing data is scarce in benchmarks despite its advantages for structural variants and phasing. Single-cell benchmarks are emerging but remain limited compared to bulk assay benchmarks. Spatial transcriptomics and other emerging modalities have minimal coverage.</p>
 <p><strong>Clinical endpoints</strong>: Most benchmarks use molecular surrogates rather than hard clinical endpoints. Disease incidence, progression, treatment response, and patient-reported outcomes are rarely the direct prediction target. The gap between molecular proxy accuracy and clinical utility remains poorly characterized.</p>
 <p>These gaps mean that strong benchmark performance may not predict utility for underserved populations, understudied variant classes, or clinical applications that depend on endpoints the benchmarks don’t measure.</p>

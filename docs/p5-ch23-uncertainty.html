@@ -724,6 +724,23 @@ window.Quarto = {
 <section id="epistemic-uncertainty" class="level3" data-number="23.1.2">
 <h3 data-number="23.1.2" class="anchored" data-anchor-id="epistemic-uncertainty"><span class="header-section-number">23.1.2</span> Epistemic Uncertainty</h3>
 <p>A model trained exclusively on European-ancestry data encounters its first genome from an individual of African ancestry. The model’s predictions may be statistically valid within the distribution it has seen, yet unreliable for this new input due to limited exposure to ancestry-specific patterns of variation, linkage disequilibrium, and regulatory architecture. This uncertainty about what the model has learned, as distinct from noise inherent in the prediction task itself, constitutes epistemic uncertainty.</p>
+<div id="fig-uncertainty-types" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-uncertainty-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-uncertainty-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.1: [Essential] Two-panel conceptual diagram. Panel A (Epistemic, reducible): Novel protein fold not in training; embedding space with dense clusters and isolated test point; could reduce with more data; ensemble members disagree; examples (under-represented ancestry, rare gene, novel pathogen). Panel B (Aleatoric, irreducible): Incomplete penetrance in BRCA1; same variant, different outcomes; inherent randomness; examples (penetrance variation, DMS noise, context-dependent regulation). Bottom: Decomposition formula; practical implication (high epistemic → more data; high aleatoric → accept limits).
+</figcaption>
+</figure>
+</div>
 <p>Epistemic uncertainty arises from limitations in training data that could, in principle, be reduced by gathering more examples. In genomic foundation models, epistemic uncertainty concentrates in predictable regions of biological space. Proteins from poorly characterized families, where training data contained few homologs, exhibit high epistemic uncertainty because the model has limited basis for inference. Genes with few characterized variants in ClinVar or gnomAD provide sparse supervision, leaving the model uncertain about which sequence features distinguish pathogenic from benign variation. Rare variant classes, such as in-frame deletions in specific protein domains, appear infrequently in training data and consequently generate uncertain predictions. Populations under-represented in biobanks contribute fewer training examples, creating systematic epistemic uncertainty for individuals from these backgrounds.</p>
 <p>Mathematically, epistemic uncertainty reflects uncertainty over model parameters or learned representations. A Bayesian perspective treats the trained model as one sample from a posterior distribution over possible models consistent with the training data. Different plausible models may disagree on predictions for inputs far from training examples while agreeing on well-represented inputs. This disagreement manifests as high variance in predictions across model variants, sensitivity to random initialization, or instability under small perturbations to training data.</p>
 <p>Foundation models exhibit epistemic uncertainty through several observable signatures. Embeddings for unfamiliar sequences cluster in sparse regions of representation space, distant from the dense clusters formed by well-represented sequence families. Ensemble members trained with different random seeds produce divergent predictions for novel inputs while converging for familiar ones. Fine-tuning on the same downstream task with different random seeds yields inconsistent results for edge cases. These signatures provide practical diagnostics for identifying when epistemic uncertainty is high.</p>
@@ -743,6 +760,31 @@ window.Quarto = {
 </section>
 <section id="sec-calibration" class="level2" data-number="23.2">
 <h2 data-number="23.2" class="anchored" data-anchor-id="sec-calibration"><span class="header-section-number">23.2</span> Calibration: Do Confidence Scores Mean What They Say?</h2>
+<div id="fig-calibration-diagrams" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-calibration-diagrams-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER D]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-calibration-diagrams-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.2: [Essential] Four-panel figure. Panel A (Perfect calibration): Reliability diagram on diagonal; “Predictions match reality.” Panel B (Overconfident): Points below diagonal; model predicts 0.9, true frequency 0.6; common for DNNs; “Dangerous for clinical use.” Panel C (Underconfident): Points above diagonal; “May miss actionable variants.” Panel D (Miscalibration by subgroup): Two curves (European, African); one calibrated, one poor; “Aggregate can mask disparities.” Annotations: ECE, prediction histograms, “Calibration ≠ discrimination.”
+</figcaption>
+</figure>
+</div>
 <section id="the-calibration-problem" class="level3" data-number="23.2.1">
 <h3 data-number="23.2.1" class="anchored" data-anchor-id="the-calibration-problem"><span class="header-section-number">23.2.1</span> The Calibration Problem</h3>
 <p>AlphaMissense outputs a continuous score between 0 and 1 for each possible missense variant in the human proteome. When it reports 0.85 for a particular variant, what does this number mean? If the model is calibrated, collecting all variants scored near 0.85 and checking their true clinical status should reveal that approximately 85% are pathogenic. Perfect calibration means that predicted probabilities match observed frequencies across the entire range of model outputs: among variants scored at 0.30, roughly 30% should be pathogenic; among variants scored at 0.95, roughly 95% should be pathogenic. This alignment between stated confidence and empirical accuracy is calibration, and most foundation models fail to achieve it.</p>
@@ -775,6 +817,26 @@ window.Quarto = {
 </section>
 <section id="sec-post-hoc-calibration" class="level2" data-number="23.3">
 <h2 data-number="23.3" class="anchored" data-anchor-id="sec-post-hoc-calibration"><span class="header-section-number">23.3</span> Post-Hoc Calibration Methods</h2>
+<div id="fig-calibration-methods" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-calibration-methods-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-calibration-methods-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.3: [High] Three-column comparison with before/after. Column 1 (Temperature scaling): Formula p = softmax(z/T); single parameter T; before/after reliability; preserves ranking; can’t fix complex patterns. Column 2 (Platt scaling): Formula p = σ(az + b); two parameters; handles bias and confidence; assumes logistic. Column 3 (Isotonic regression): Non-parametric monotonic fit; flexible, no assumptions; overfits with limited data. Bottom: Decision guide for method selection.
+</figcaption>
+</figure>
+</div>
 <section id="temperature-scaling" class="level3" data-number="23.3.1">
 <h3 data-number="23.3.1" class="anchored" data-anchor-id="temperature-scaling"><span class="header-section-number">23.3.1</span> Temperature Scaling</h3>
 <p>The simplest calibration fix is often the most effective. Temperature scaling applies a single learned parameter to adjust model confidence, dramatically improving calibration with minimal computational overhead and no change to model predictions’ ranking.</p>
@@ -806,6 +868,16 @@ window.Quarto = {
 </section>
 <section id="sec-uq-methods" class="level2" data-number="23.4">
 <h2 data-number="23.4" class="anchored" data-anchor-id="sec-uq-methods"><span class="header-section-number">23.4</span> Uncertainty Quantification Methods for Foundation Models</h2>
+<div id="fig-uq-methods" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-uq-methods-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-uq-methods-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.4: [High] Method comparison. Deep ensembles: 5 models independently trained; variance/entropy across predictions; 5× training/inference; gold standard for epistemic. MC Dropout: Single model, multiple stochastic passes; variance across dropout samples; 1× training, N× inference; approximates ensemble. Last-layer ensembles: Frozen backbone, ensemble of heads; head disagreement; 1× pretraining, 5× heads (cheap); fine-tuning uncertainty only. Heteroscedastic networks: Single model outputs mean + variance; learned per input; 1× training/inference; aleatoric not epistemic. Comparison table: Epistemic, Aleatoric, Cost, FM-friendly.
+</figcaption>
+</figure>
+</div>
 <section id="deep-ensembles" class="level3" data-number="23.4.1">
 <h3 data-number="23.4.1" class="anchored" data-anchor-id="deep-ensembles"><span class="header-section-number">23.4.1</span> Deep Ensembles</h3>
 <p>If one model expresses uncertainty about a prediction, querying multiple models reveals whether that uncertainty reflects genuine ambiguity in the data or an artifact of a particular training run. When five independently trained models agree on a prediction, confidence is warranted; when they disagree, the disagreement itself signals uncertainty. Ensemble disagreement provides one of the most reliable uncertainty estimates available in deep learning, at the cost of training and maintaining multiple models.</p>
@@ -836,6 +908,16 @@ window.Quarto = {
 </section>
 <section id="sec-conformal" class="level2" data-number="23.5">
 <h2 data-number="23.5" class="anchored" data-anchor-id="sec-conformal"><span class="header-section-number">23.5</span> Conformal Prediction: Distribution-Free Guarantees</h2>
+<div id="fig-conformal-prediction" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-conformal-prediction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-conformal-prediction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.5: [High] Workflow with examples. Steps: (1) Calibration: Score variants on held-out set; (2) Threshold: Find threshold for 90% coverage; (3) Prediction sets: Include classes above threshold. Example outputs: High confidence {Pathogenic}, moderate {Pathogenic, VUS}, low {P, VUS, B}, abstention {}. Key properties: Coverage guarantee (≥90% marginal); set size conveys uncertainty; no probability interpretation needed. Visualization: Score distributions; threshold line; set sizes. Limitation: Marginal not conditional coverage.
+</figcaption>
+</figure>
+</div>
 <section id="the-conformal-prediction-framework" class="level3" data-number="23.5.1">
 <h3 data-number="23.5.1" class="anchored" data-anchor-id="the-conformal-prediction-framework"><span class="header-section-number">23.5.1</span> The Conformal Prediction Framework</h3>
 <p>Most uncertainty quantification methods make assumptions about model behavior or data distributions that may not hold in practice. Temperature scaling assumes miscalibration follows a particular functional form. Ensembles assume that disagreement reflects epistemic uncertainty rather than artifacts of training. Bayesian methods assume specific priors over model parameters. When these assumptions fail, uncertainty estimates may be unreliable precisely when reliability matters most.</p>
@@ -864,6 +946,28 @@ window.Quarto = {
 </section>
 <section id="sec-ood-detection" class="level2" data-number="23.6">
 <h2 data-number="23.6" class="anchored" data-anchor-id="sec-ood-detection"><span class="header-section-number">23.6</span> Out-of-Distribution Detection</h2>
+<div id="fig-ood-detection" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ood-detection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ood-detection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.6: [High] Embedding space visualization. Main panel: UMAP/t-SNE; dense training clusters (blue); isolated OOD points (red); examples (novel archaeal sequence, synthetic protein, variant in poorly characterized gene). Detection methods (side panels): Mahalanobis distance (histogram ID vs OOD, threshold), nearest neighbor distance, ensemble disagreement. Key insight: Flag for manual review rather than automate.
+</figcaption>
+</figure>
+</div>
 <section id="the-out-of-distribution-problem" class="level3" data-number="23.6.1">
 <h3 data-number="23.6.1" class="anchored" data-anchor-id="the-out-of-distribution-problem"><span class="header-section-number">23.6.1</span> The Out-of-Distribution Problem</h3>
 <p>A DNA language model trained on mammalian genomes encounters a novel archaeal sequence. The model’s embedding places this sequence in an unfamiliar region of representation space, far from the clusters formed by training examples. Yet the model still produces a prediction, potentially with high confidence, because standard neural networks are not designed to recognize when inputs lie outside their training distribution. Detecting out-of-distribution (OOD) inputs is essential for safe deployment of foundation models in settings where novel sequences are inevitable.</p>
@@ -892,6 +996,16 @@ window.Quarto = {
 </section>
 <section id="sec-selective-prediction" class="level2" data-number="23.7">
 <h2 data-number="23.7" class="anchored" data-anchor-id="sec-selective-prediction"><span class="header-section-number">23.7</span> Selective Prediction and Abstention</h2>
+<div id="fig-selective-prediction" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-selective-prediction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-selective-prediction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23.7: [Enhancing] Accuracy-coverage tradeoff. Main plot: Coverage (x) vs Accuracy (y); curve rising as coverage decreases (more selective = more accurate). Operating point selection: Clinical applications need different tradeoffs. Reject option: High uncertainty → abstain. Example: 90% coverage with 85% accuracy vs 70% coverage with 95% accuracy. Connection to clinical workflow: Rejected variants → expert review.
+</figcaption>
+</figure>
+</div>
 <section id="when-to-abstain" class="level3" data-number="23.7.1">
 <h3 data-number="23.7.1" class="anchored" data-anchor-id="when-to-abstain"><span class="header-section-number">23.7.1</span> When to Abstain</h3>
 <p>A variant effect predictor achieving 95% accuracy overall provides more clinical value if it can identify which predictions are reliable. Selective prediction allows models to abstain on difficult cases, concentrating predictions on inputs where confidence is warranted. The trade-off between coverage (fraction of inputs receiving predictions) and accuracy (correctness among predictions made) defines the selective prediction problem.</p>

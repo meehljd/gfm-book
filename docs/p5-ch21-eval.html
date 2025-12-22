@@ -725,6 +725,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="21.1" class="anchored" data-anchor-id="why-random-splits-fail"><span class="header-section-number">21.1</span> Why Random Splits Fail</h2>
 <p>The standard machine learning recipe calls for randomly partitioning data into training, validation, and test sets. For image classification or sentiment analysis, this approach works well because individual examples are approximately independent. A photograph of a cat shares no special relationship with another photograph of a different cat beyond their common label. Random assignment ensures that training and test distributions match, and performance on the test set provides an unbiased estimate of performance on new examples from the same distribution.</p>
 <p>Genomic data violates these assumptions at every level. Consider a protein dataset where the goal is to predict stability from sequence. Proteins in the same family share evolutionary history and often similar structures. If a training set includes beta-lactamase variants from <em>E. coli</em> and the test set includes beta-lactamase variants from <em>Klebsiella</em>, the model may appear to generalize to “new” proteins while actually recognizing sequence patterns it saw during training. The test performance reflects memorization of family-specific features rather than general principles of protein stability.</p>
+<div id="fig-random-splits-fail" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-random-splits-fail-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-random-splits-fail-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21.1: [Essential] Three-panel comparison. Panel A (Image classification): Grid of images; random assignment works; independent. Panel B (Protein classification): Family tree; random split places related across train/test; 80% identity highlighted; “memorization pathway.” Panel C (Variant prediction): Gene diagram with variants; same gene in train/test; family pedigree spanning splits; population structure. Annotations: sequence identity, relatedness, pseudo-replication.
+</figcaption>
+</figure>
+</div>
 <p>The problem compounds when sequence identity is high. Two proteins sharing 80% sequence identity will typically have similar structures and functions. A model trained on one and tested on the other is not really being tested on a novel example; it is being asked to interpolate within a region of sequence space it has already explored. Even at 30% sequence identity, the so-called “twilight zone” of homology detection, proteins often share structural and functional similarities that can be exploited by sufficiently powerful models.</p>
 <p>Variant-level data presents analogous challenges. Variants within the same gene share genomic context, and variants affecting the same protein domain share structural environment. Variants from the same individual share haplotype background. Variants from the same population share allele frequency distributions shaped by demographic history. Each of these relationships creates opportunities for models to learn shortcuts that generalize within the training distribution but fail on genuinely novel examples.</p>
 <p>The consequence is that random splits systematically overestimate generalization. A model that achieves 0.90 AUROC with random splitting might achieve only 0.75 AUROC when evaluated on truly held-out examples, with the gap reflecting how much the model learned about biology versus how much it learned about the structure of the training data. Recognizing this problem is the first step toward solving it.</p>
@@ -732,6 +752,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="homology-aware-splitting" class="level2" data-number="21.2">
 <h2 data-number="21.2" class="anchored" data-anchor-id="homology-aware-splitting"><span class="header-section-number">21.2</span> Homology-Aware Splitting</h2>
 <p>The solution to homology-driven leakage is to explicitly account for sequence similarity when constructing data splits. Rather than random assignment, examples are clustered by sequence identity, and entire clusters are assigned to training, validation, or test sets. This ensures that no test example is “too similar” to any training example, forcing the model to demonstrate genuine generalization.</p>
+<div id="fig-homology-splitting" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-homology-splitting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-homology-splitting-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21.2: [Essential] Step-by-step workflow. Steps: (1) All sequences; (2) Clustering (CD-HIT/MMseqs2 at threshold); (3) Cluster visualization; (4) Split assignment (entire clusters to train/val/test); (5) Validation (no test &gt;X% identity to training). Code snippets. Comparison table (strategy, strictness, efficiency, use case). Key insight: threshold determines hardness.
+</figcaption>
+</figure>
+</div>
 <section id="clustering-tools-and-workflows" class="level3" data-number="21.2.1">
 <h3 data-number="21.2.1" class="anchored" data-anchor-id="clustering-tools-and-workflows"><span class="header-section-number">21.2.1</span> Clustering Tools and Workflows</h3>
 <p>Two tools dominate homology-aware splitting in practice. <strong>CD-HIT</strong> clusters sequences by greedy incremental clustering, assigning each sequence to an existing cluster if it exceeds a similarity threshold to the cluster representative, or creating a new cluster otherwise. The algorithm is fast and scales to millions of sequences. For proteins, a typical workflow clusters at 40% sequence identity for stringent splitting or 70% for moderate splitting. For nucleotide sequences, thresholds are typically higher (80-95%) due to different evolutionary rates.</p>
@@ -758,6 +788,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="splitting-by-biological-axis" class="level2" data-number="21.3">
 <h2 data-number="21.3" class="anchored" data-anchor-id="splitting-by-biological-axis"><span class="header-section-number">21.3</span> Splitting by Biological Axis</h2>
 <p>Beyond sequence homology, genomic data admits multiple axes along which splits can be constructed. The choice of axis determines what kind of generalization is being tested.</p>
+<div id="fig-splitting-strategies" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-splitting-strategies-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-splitting-strategies-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21.3: [High] Matrix: Splitting strategies vs.&nbsp;what they test. Rows: Random, individual-aware, family-aware, chromosome, gene/protein family, cohort/site, temporal, ancestry. Columns: Sequence generalization, individual, population, temporal robustness, cross-site. Cells: ✓, ✗, ~. Schematics for each strategy; performance drop annotations; combinable strategies note.
+</figcaption>
+</figure>
+</div>
 <section id="splitting-by-individual" class="level3" data-number="21.3.1">
 <h3 data-number="21.3.1" class="anchored" data-anchor-id="splitting-by-individual"><span class="header-section-number">21.3.1</span> Splitting by Individual</h3>
 <p>For tasks involving human genetic variation, ensuring that data from the same individual (or related individuals) does not appear in both training and test sets is essential. A variant effect predictor trained on variants from person A and tested on other variants from person A may learn individual-specific patterns, such as haplotype structure or ancestry-correlated allele frequencies, that do not generalize to new individuals.</p>
@@ -794,6 +834,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="leakage-taxonomy-and-detection" class="level2" data-number="21.4">
 <h2 data-number="21.4" class="anchored" data-anchor-id="leakage-taxonomy-and-detection"><span class="header-section-number">21.4</span> Leakage Taxonomy and Detection</h2>
 <p>Even with careful splitting, leakage can enter evaluations through multiple pathways. Understanding common leakage patterns helps practitioners design cleaner evaluations and critically assess published results.</p>
+<div id="fig-leakage-taxonomy" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-leakage-taxonomy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-leakage-taxonomy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21.4: [High] Taxonomy tree. Top: Data Leakage. Branches: Feature Leakage (features encode target; conservation→pathogenicity; detection via ablation), Label Leakage (labels derived from model-accessible info; ClinVar circularity; temporal validation), Benchmark Leakage (pretraining overlaps evaluation; ENCODE everywhere; document and check overlap). For each: red warning, genomic example, detection strategy, mitigation.
+</figcaption>
+</figure>
+</div>
 <section id="feature-leakage" class="level3" data-number="21.4.1">
 <h3 data-number="21.4.1" class="anchored" data-anchor-id="feature-leakage"><span class="header-section-number">21.4.1</span> Feature Leakage</h3>
 <p>Feature leakage occurs when input features encode information about the target that would not be available at prediction time. In genomics, conservation scores are a common source. If a model uses PhyloP scores as features and the target is pathogenicity, the model may learn that “conserved positions are more likely pathogenic” without learning anything about variant biology. This would be fine if conservation scores are intended to be part of the prediction pipeline, but problematic if the goal is to develop a model that can predict pathogenicity from sequence alone.</p>
@@ -820,6 +870,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="metrics-for-genomic-tasks" class="level2" data-number="21.5">
 <h2 data-number="21.5" class="anchored" data-anchor-id="metrics-for-genomic-tasks"><span class="header-section-number">21.5</span> Metrics for Genomic Tasks</h2>
 <p>Metrics quantify model performance but different metrics answer different questions. Choosing appropriate metrics requires clarity about what aspect of performance matters for the intended application.</p>
+<div id="fig-metric-selection" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-metric-selection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<p><strong>[FIGURE PLACEHOLDER]</strong></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-metric-selection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21.5: [High] Decision flowchart. Decision points: Binary vs continuous? Balanced? Ranking vs probability? Clinical decisions? Metric recommendations at each terminal. Metric descriptions: AUROC, AUPRC, calibration, net benefit. Warning callouts: “AUROC invariant to monotonic transforms”; “High correlation ≠ clinically meaningful.”
+</figcaption>
+</figure>
+</div>
 <section id="discrimination-metrics" class="level3" data-number="21.5.1">
 <h3 data-number="21.5.1" class="anchored" data-anchor-id="discrimination-metrics"><span class="header-section-number">21.5.1</span> Discrimination Metrics</h3>
 <p>For binary outcomes (pathogenic versus benign, bound versus unbound, accessible versus closed), discrimination metrics assess how well the model separates classes. The <strong>area under the receiver operating characteristic curve (AUROC)</strong> measures the probability that a randomly selected positive example is ranked above a randomly selected negative example. AUROC is threshold-independent and widely reported but can be misleading when classes are highly imbalanced.</p>
@@ -914,6 +974,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="evaluating-foundation-models" class="level2" data-number="21.9">
 <h2 data-number="21.9" class="anchored" data-anchor-id="evaluating-foundation-models"><span class="header-section-number">21.9</span> Evaluating Foundation Models</h2>
 <p>Genomic foundation models (<a href="p3-ch10-fm-principles.html" class="quarto-xref"><span>Chapter 10</span></a>) admit multiple evaluation paradigms, each testing different aspects of learned representations.</p>
+<div id="fig-fm-evaluation-paradigms" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-fm-evaluation-paradigms-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER A]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER B]</strong></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<p><strong>[FIGURE PLACEHOLDER C]</strong></p>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fm-evaluation-paradigms-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21.6: [Enhancing] Three-column comparison. Column 1 (Zero-shot): Frozen model → direct prediction; tests alignment; ESM-1v log-likelihood example; pros/cons. Column 2 (Linear Probing): Frozen → embeddings → linear classifier; tests linear accessibility; isolates representation quality; pros/cons. Column 3 (Fine-tuning): Gradients → adaptation; tests total potential; best performance but conflates representation with adaptation. Bottom: Data efficiency curve; “Pretraining value = gap at low data.”
+</figcaption>
+</figure>
+</div>
 <section id="zero-shot-evaluation" class="level3" data-number="21.9.1">
 <h3 data-number="21.9.1" class="anchored" data-anchor-id="zero-shot-evaluation"><span class="header-section-number">21.9.1</span> Zero-Shot Evaluation</h3>
 <p>In zero-shot evaluation, the pretrained model is applied without any task-specific training. For masked language models, this typically means using token probabilities to score variants or classify sequences. A variant that disrupts a position the model predicts with high confidence may indicate functional importance.</p>
