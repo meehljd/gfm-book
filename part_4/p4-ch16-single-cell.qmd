@@ -2,9 +2,9 @@
 
 The foundation models in Part 3 operate on sequence: DNA nucleotides, amino acids, RNA bases. They learn what the genome encodes, what proteins it produces, how regulatory elements respond to transcription factors. Yet sequence alone cannot explain why a neuron and a hepatocyte, carrying identical genomes, perform utterly different functions. The answer lies not in sequence but in state: which genes are active, which regulatory elements are accessible, which epigenetic marks are present. A neuron expresses synaptic genes and silences metabolic pathways; a hepatocyte does the reverse. The genome is the same; the cellular interpretation differs. Capturing this interpretation at single-cell resolution has become possible only in the past decade, and the resulting data now approach the scale that enabled language models in text.
 
-Single-cell technologies decompose cellular mixtures that bulk assays average over. A tumor biopsy contains malignant cells, immune infiltrates, stromal fibroblasts, and endothelial cells in varying proportions. Bulk RNA-seq reports average expression across this mixture, potentially masking the drug-resistant subpopulation that will cause relapse. Single-cell RNA-seq profiles each cell individually, revealing which cells express which genes and how composition shifts during disease progression. The challenge is that single-cell data are sparse, with most genes showing zero counts in most cells; noisy, as technical dropout obscures biological signal; and high-dimensional, spanning tens of thousands of features across millions of cells. Traditional analysis methods struggle with this combination; foundation models offer a path through.
+Single-cell technologies decompose cellular mixtures that bulk assays average over. A tumor biopsy contains malignant cells, immune infiltrates, stromal fibroblasts, and endothelial cells in varying proportions. Bulk **RNA sequencing** (RNA-seq) reports average expression across this mixture, potentially masking the drug-resistant subpopulation that will cause relapse. Single-cell RNA-seq profiles each cell individually, revealing which cells express which genes and how composition shifts during disease progression. The challenge is that single-cell data are sparse, with most genes showing zero counts in most cells; noisy, as technical **dropout** obscures biological signal; and high-dimensional, spanning tens of thousands of features across millions of cells. Traditional analysis methods struggle with this combination; foundation models offer a path through.
 
-This chapter examines foundation models for single-cell and epigenomic data across three interconnected scales. Cellular language models treat gene expression profiles as documents and learn the grammar of which genes co-occur in different cellular contexts. Epigenomic models capture regulatory state encoded in DNA methylation and chromatin accessibility. Integration methods align cells across modalities when different assays are performed on different cells from the same tissue. Throughout, the central question remains: can models trained on cellular state representations learn regulatory logic that generalizes across tissues, conditions, and species? The answer determines whether single-cell foundation models can achieve the transfer learning successes that protein and DNA models have demonstrated.
+This chapter examines foundation models for single-cell and epigenomic data across three interconnected scales. Cellular language models treat gene expression profiles as documents and learn the grammar of which genes co-occur in different cellular contexts. Epigenomic models capture regulatory state encoded in DNA methylation and **chromatin accessibility**. Integration methods align cells across modalities when different assays are performed on different cells from the same tissue. Throughout, the central question remains: can models trained on cellular state representations learn regulatory logic that generalizes across tissues, conditions, and species? The answer determines whether single-cell foundation models can achieve the **transfer learning** successes that protein and DNA models have demonstrated.
 
 ## The Single-Cell Data Landscape
 
@@ -12,20 +12,20 @@ This chapter examines foundation models for single-cell and epigenomic data acro
 
 Traditional transcriptomic studies measure gene expression in bulk tissue, producing a single measurement per gene that represents the average across thousands to millions of cells. This averaging is both a strength and a limitation. It provides robust, reproducible measurements that have powered decades of biological discovery. It also fundamentally limits what questions can be asked. If a gene appears moderately expressed in bulk, is it uniformly expressed across all cells, or highly expressed in a rare subpopulation while silent elsewhere? Bulk data cannot distinguish these scenarios.
 
-Single-cell RNA sequencing (scRNA-seq) resolves this ambiguity by measuring gene expression in individual cells. The technology has evolved rapidly since its introduction in 2009. Early methods captured hundreds of cells per experiment; current platforms routinely profile hundreds of thousands of cells, with some studies exceeding a million. Public repositories now contain tens of millions of single-cell transcriptomes spanning diverse tissues, developmental stages, disease states, and species. This scale approaches the data volumes that enabled large language models in natural language processing.
+**Single-cell RNA sequencing** (scRNA-seq) resolves this ambiguity by measuring gene expression in individual cells. The technology has evolved rapidly since its introduction in 2009. Early methods captured hundreds of cells per experiment; current platforms routinely profile hundreds of thousands of cells, with some studies exceeding a million. Public repositories now contain tens of millions of single-cell transcriptomes spanning diverse tissues, developmental stages, disease states, and species. This scale approaches the data volumes that enabled large language models in natural language processing.
 
 The analogy between cells and documents runs deeper than dataset size. In language, words combine according to grammatical rules to form sentences that convey meaning. In cells, genes combine according to regulatory programs to form expression profiles that define cellular identity. A hepatocyte expresses genes for drug metabolism, albumin synthesis, and bile production; a neuron expresses genes for synaptic transmission, ion channels, and neurotransmitter receptors. These expression programs are not random: transcription factors activate coherent sets of target genes, signaling pathways coordinate cellular responses, and developmental programs establish cell type identities through cascades of regulatory events. Just as language models learn syntax and semantics by predicting masked words, single-cell foundation models might learn regulatory logic by predicting masked genes.
 
 ::: {#fig-cellular-lm-analogy layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
+![**FIGURE PLACEHOLDER A**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20A`)
 
-![**FIGURE PLACEHOLDER B**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B)
+![**FIGURE PLACEHOLDER B**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20B`)
 
-![**FIGURE PLACEHOLDER C**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C)
+![**FIGURE PLACEHOLDER C**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20C`)
 
-![**FIGURE PLACEHOLDER D**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D)
+![**FIGURE PLACEHOLDER D**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20D`)
 
-[Essential] Visual analogy. Panel A (Language Model): Sentence "The cat sat on the mat"; words as tokens; grammar rules; BERT predicts masked words. Panel B (Cellular Language Model): Cell expression profile as "sentence"; genes as tokens (~20,000 vocabulary); regulatory programs as "grammar"; Geneformer/scGPT predict masked genes. Panel C (Parallel Structure Table): NLP ↔ Single-Cell mapping. Panel D (What Models Learn): Language (syntax, semantics) ↔ Cellular (co-expression modules, cell type programs, perturbation effects).
+[Essential] Visual analogy. Panel A (Language Model): Sentence "The cat sat on the mat"; words as **tokens**; grammar rules; BERT predicts masked words. Panel B (Cellular Language Model): Cell expression profile as "sentence"; genes as tokens (~20,000 vocabulary); regulatory programs as "grammar"; Geneformer/scGPT predict masked genes. Panel C (Parallel Structure Table): NLP ↔ Single-Cell mapping. Panel D (What Models Learn): Language (syntax, semantics) ↔ Cellular (co-expression modules, cell type programs, perturbation effects).
 :::
 
 
@@ -40,15 +40,15 @@ Batch effects arise because technical variation between experiments often exceed
 Dynamic range spans orders of magnitude, from highly expressed housekeeping genes to rare transcription factors present at a few copies per cell. Normalizing across this range while preserving biologically meaningful variation requires careful preprocessing choices that can affect downstream results.
 
 ::: {#fig-single-cell-challenges layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
+![**FIGURE PLACEHOLDER A**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20A`)
 
-![**FIGURE PLACEHOLDER B**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B)
+![**FIGURE PLACEHOLDER B**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20B`)
 
-![**FIGURE PLACEHOLDER C**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C)
+![**FIGURE PLACEHOLDER C**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20C`)
 
-![**FIGURE PLACEHOLDER D**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D)
+![**FIGURE PLACEHOLDER D**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20D`)
 
-[Essential] Data challenges. Panel A (Dropout/Sparsity): Gene × Cell matrix mostly zero (90%+); "Zero can mean silent OR undetected." Panel B (Batch Effects): UMAP colored by cell type (mixed) vs batch (clustered); "Technical variation can exceed biological." Panel C (Dynamic Range): Histogram spanning orders of magnitude; few copies for some genes. Panel D (How Foundation Models Address): Rank-based encoding handles range; large corpus learns robust patterns; contrastive objectives for batch-invariance.
+[Essential] Data challenges. Panel A (Dropout/Sparsity): Gene × Cell matrix mostly zero (90%+); "Zero can mean silent OR undetected." Panel B (Batch Effects): Uniform Manifold Approximation and Projection (UMAP) colored by cell type (mixed) vs batch (clustered); "Technical variation can exceed biological." Panel C (Dynamic Range): Histogram spanning orders of magnitude; few copies for some genes. Panel D (How Foundation Models Address): Rank-based encoding handles range; large corpus learns robust patterns; contrastive objectives for batch-invariance.
 :::
 
 Despite these challenges, the scale of available data creates opportunities. Tens of millions of cells, spanning hundreds of cell types across dozens of tissues and multiple species, provide training corpora large enough to learn general representations. The question is whether foundation model architectures can extract biological signal from noisy, sparse, high-dimensional measurements.
@@ -57,24 +57,24 @@ Despite these challenges, the scale of available data creates opportunities. Ten
 
 ### Geneformer: Learning Network Biology
 
-Geneformer exemplifies the cellular language model approach, treating each cell as a sentence where genes serve as tokens [@theodoris_geneformer_2023]. The model was pretrained on approximately 30 million single-cell transcriptomes to learn context-aware representations that capture how genes function within cellular regulatory networks. The key insight was that during pretraining, the model gained understanding of network dynamics in a completely self-supervised manner, encoding network hierarchy in its attention weights without explicit supervision on network structure.
+Geneformer exemplifies the cellular language model approach, treating each cell as a sentence where genes serve as tokens [@theodoris_geneformer_2023]. The model was pretrained on approximately 30 million single-cell transcriptomes to learn context-aware representations that capture how genes function within cellular regulatory networks. The **key** insight was that during **pretraining**, the model gained understanding of network dynamics in a completely self-supervised manner, encoding network hierarchy in its attention weights without explicit supervision on network structure.
 
 Rather than using raw expression counts, Geneformer employs rank-based encoding that emphasizes relative expression. For each cell, genes are ranked by their expression level compared to their typical expression across the training corpus. This transformation highlights which genes are unusually active or silent in each cellular context. A gene ranked highly in a given cell is one whose expression deviates from its baseline, potentially indicating context-specific regulatory activation. The representation discards absolute counts, which vary with sequencing depth and capture efficiency, while preserving the relative ordering that reflects cellular state.
 
 Pretraining uses a masked gene prediction objective analogous to BERT-style language modeling. A fraction of genes are masked in each cell, and the model learns to predict which genes were masked based on the remaining expression context. This forces the model to learn co-expression patterns: which genes tend to appear together at high ranks in the same cells, and which genes predict each other's presence. The objective implicitly captures regulatory modules, signaling pathways, and cell-type-specific programs.
 
-After pretraining, Geneformer supports diverse downstream applications through fine-tuning or feature extraction. Cell type annotation achieves high accuracy even with limited labeled examples, leveraging general biological knowledge acquired during pretraining. The model identified candidate therapeutic targets for cardiomyopathy by analyzing how disease-associated genes fit within learned network structure, demonstrating potential for accelerating discovery in rare diseases where large disease-specific datasets are unavailable [@theodoris_geneformer_2023].
+After pretraining, Geneformer supports diverse downstream applications through **fine-tuning** or feature extraction. Cell type annotation achieves high accuracy even with limited labeled examples, leveraging general biological knowledge acquired during pretraining. The model identified candidate therapeutic targets for cardiomyopathy by analyzing how disease-associated genes fit within **learned** network structure, demonstrating potential for accelerating discovery in rare diseases where large disease-specific datasets are unavailable [@theodoris_geneformer_2023].
 
 ::: {#fig-geneformer-architecture layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
+![**FIGURE PLACEHOLDER A**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20A`)
 
-![**FIGURE PLACEHOLDER B**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B)
+![**FIGURE PLACEHOLDER B**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20B`)
 
-![**FIGURE PLACEHOLDER C**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C)
+![**FIGURE PLACEHOLDER C**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20C`)
 
-![**FIGURE PLACEHOLDER D**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D)
+![**FIGURE PLACEHOLDER D**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20D`)
 
-[High] Geneformer innovations. Panel A (Rank-Based Encoding): Raw expression → ranks relative to corpus baseline → tokens; "Highlights unusually active/silent genes." Panel B (Architecture): Ranked gene sequence → transformer encoder (BERT-style) → masked gene prediction → gene/cell embeddings. Panel C (What Attention Learns): Network diagram showing gene-gene attention; correspondence to regulatory relationships; "Network hierarchy emerges without supervision." Panel D (Transfer Applications): Cell type annotation, therapeutic target ID, disease gene prioritization.
+[High] Geneformer innovations. Panel A (Rank-Based Encoding): Raw expression → ranks relative to corpus baseline → tokens; "Highlights unusually active/silent genes." Panel B (Architecture): Ranked gene sequence → transformer encoder (BERT-style) → masked gene prediction → gene/cell **embeddings**. Panel C (What Attention Learns): Network diagram showing gene-gene attention; correspondence to regulatory relationships; "Network hierarchy emerges without supervision." Panel D (Transfer Applications): Cell type annotation, therapeutic target ID, disease gene prioritization.
 :::
 
 ### scGPT: Generative Pretraining for Single-Cell Analysis
@@ -83,17 +83,17 @@ scGPT extends the foundation model paradigm with a generative architecture train
 
 The architecture incorporates several innovations tailored to single-cell data characteristics. Gene tokens combine learnable embeddings with position encodings that can capture genomic location when relevant. Expression values are discretized into bins to handle the wide dynamic range and zero-inflation characteristic of single-cell measurements; rather than predicting continuous values, the model predicts which expression bin a gene falls into. Special tokens mark cell boundaries and indicate modality when multi-omic data are available.
 
-scGPT uses multiple pretraining objectives simultaneously. Masked gene prediction encourages learning of co-expression patterns, similar to Geneformer. Autoregressive generation predicts expression of one set of genes conditioned on others, enabling the model to generate synthetic expression profiles or impute missing values. Contrastive objectives push cells from the same type to cluster in embedding space while separating different types, providing discriminative signal that complements the generative objectives.
+scGPT uses multiple pretraining objectives simultaneously. Masked gene prediction encourages learning of co-expression patterns, similar to Geneformer. **Autoregressive generation** predicts expression of one set of genes conditioned on others, enabling the model to generate synthetic expression profiles or impute missing values. Contrastive objectives push cells from the same type to cluster in **embedding** space while separating different types, providing discriminative signal that complements the generative objectives.
 
-The combination of objectives enables scGPT to excel across multiple applications. Cell type annotation benefits from rich pretrained representations, including identification of fine-grained subtypes that might be missed by simpler methods. Multi-batch integration aligns cells from different experiments while preserving genuine biological variation, addressing the pervasive batch effect problem. Perturbation response prediction anticipates how cells will respond to genetic knockouts or drug treatments, providing a foundation for in silico experimentation.
+The combination of objectives enables scGPT to excel across multiple applications. Cell type annotation benefits from rich pretrained representations, including identification of fine-grained subtypes that might be missed by simpler methods. Multi-batch integration aligns cells from different experiments while preserving genuine biological variation, addressing the pervasive batch effect problem. Perturbation response prediction anticipates how cells will respond to genetic knockouts or drug treatments, providing a foundation for *in silico* experimentation.
 
 ### scFoundation and Scaling Single-Cell Models
 
-scFoundation pushes the scale of single-cell foundation models further, training on over 50 million cells with an architecture designed for both representation learning and generation [@hao_scfoundation_2024]. The model explores how scaling laws observed in language models translate to cellular data, finding that larger models trained on more diverse data produce embeddings that transfer better across tasks and contexts.
+scFoundation pushes the scale of single-cell foundation models further, training on over 50 million cells with an architecture designed for both **representation learning** and generation [@hao_scfoundation_2024]. The model explores how **scaling laws** observed in language models translate to cellular data, finding that larger models trained on more diverse data produce embeddings that transfer better across tasks and contexts.
 
 The pretraining corpus spans diverse tissues, developmental stages, and disease states, including both human and mouse data. This diversity proves essential: models trained on narrow datasets (a single tissue or condition) learn representations that capture that specific context but fail to generalize. Models trained on diverse corpora learn more abstract representations of cellular state that transfer across biological contexts.
 
-scFoundation emphasizes the importance of tokenization and normalization choices for downstream performance. The model systematically compared different approaches to handling zero-inflation, normalization across sequencing depth, and gene vocabulary selection. These preprocessing decisions, often treated as implementation details, significantly affect what biological signals the model can capture.
+scFoundation emphasizes the importance of **tokenization** and normalization choices for downstream performance. The model systematically compared different approaches to handling zero-inflation, normalization across sequencing depth, and gene vocabulary selection. These preprocessing decisions, often treated as implementation details, significantly affect what biological signals the model can capture.
 
 ### TranscriptFormer: Cross-Species Cellular Models
 
@@ -101,11 +101,11 @@ TranscriptFormer extends single-cell foundation models across evolutionary time,
 
 The model uses a novel autoregressive architecture that jointly predicts genes and their expression levels. Rather than treating gene identity and expression as separate prediction problems, TranscriptFormer generates them together, enabling it to produce synthetic cells conditioned on prompts specifying species, tissue, or cell type. Because the vocabulary spans multiple species with ortholog mappings, the model can transfer cell type annotations across evolutionary distances.
 
-In zero-shot settings, TranscriptFormer demonstrates strong performance on both in-distribution and out-of-distribution cell type classification. Remarkably, models trained predominantly on mouse and human data can annotate cell types in zebrafish and other species separated by hundreds of millions of years of evolution. This cross-species transfer reveals that core principles of cellular regulation are deeply conserved, and that foundation models can capture these conserved principles when trained on evolutionarily diverse data.
+In zero-shot settings, TranscriptFormer demonstrates strong performance on both in-distribution and out-of-distribution cell type classification. Remarkably, models trained predominantly on mouse and human data can annotate cell types in zebrafish and other species separated by hundreds of millions of years of evolution. This **cross-species transfer** reveals that core principles of cellular regulation are deeply conserved, and that foundation models can capture these conserved principles when trained on evolutionarily diverse data.
 
 ## Perturbation Response Prediction
 
-### The In Silico Experiment Promise
+### The *In Silico* Experiment Promise
 
 One of the most compelling applications of cellular foundation models is predicting how cells will respond to perturbations. If a model truly understands regulatory logic, it should be able to anticipate the transcriptional consequences of knocking out a gene, activating a pathway, or treating with a drug. Such predictions could accelerate drug discovery by prioritizing candidates before expensive wet-lab validation, identify synthetic lethal interactions for cancer therapy, and suggest targets for diseases without known interventions.
 
@@ -120,13 +120,13 @@ Foundation models approach this task through transfer learning. A model pretrain
 scGPT and Geneformer both demonstrate perturbation prediction capabilities, though performance varies across perturbation types and cellular contexts. Predictions are most accurate for well-characterized genes with many training examples and clear regulatory relationships. Performance degrades for poorly characterized genes, complex combinatorial perturbations, and cell types underrepresented in training data.
 
 ::: {#fig-perturbation-prediction layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
+![**FIGURE PLACEHOLDER A**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20A`)
 
-![**FIGURE PLACEHOLDER B**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B)
+![**FIGURE PLACEHOLDER B**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20B`)
 
-![**FIGURE PLACEHOLDER C**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C)
+![**FIGURE PLACEHOLDER C**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20C`)
 
-![**FIGURE PLACEHOLDER D**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D)
+![**FIGURE PLACEHOLDER D**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20D`)
 
 [High] Perturbation response. Panel A (The Task): Unperturbed cell + perturbation identity → predicted post-perturbation profile → comparison to Perturb-seq. Panel B (Training Data): CRISPR knockout library + single-cell readout; thousands of genes × cells; "Supervised signal." Panel C (What Models Must Learn): Directional relationships (A activates B → KO A reduces B); network cascades; context dependence. Panel D (Current Performance): Strong for well-characterized genes; weak for poorly characterized; "Predictions most accurate where we need them least."
 :::
@@ -151,7 +151,7 @@ After pretraining, CpGPT supports several capabilities with minimal additional s
 
 ### Chromatin Accessibility Models
 
-Chromatin accessibility, measured by ATAC-seq and related assays, provides a complementary view of regulatory state. Accessible chromatin regions mark active regulatory elements: promoters, enhancers, and insulators where transcription factors can bind. The accessibility landscape varies across cell types and conditions, reflecting the regulatory programs that define cellular identity.
+Chromatin accessibility, measured by **assay for transposase-accessible chromatin sequencing** (ATAC-seq) and related assays, provides a complementary view of regulatory state. Accessible chromatin regions mark active regulatory elements: promoters, enhancers, and insulators where transcription factors can bind. The accessibility landscape varies across cell types and conditions, reflecting the regulatory programs that define cellular identity.
 
 Foundation models for chromatin accessibility face the challenge of representing accessibility peaks, which are genomic intervals of variable width rather than single values at fixed positions. Different approaches tokenize this data differently: some treat peaks as binary features (accessible or not), others use continuous accessibility scores, and some operate directly on the underlying sequence to predict accessibility.
 
@@ -178,15 +178,15 @@ The feature graph encodes biological prior knowledge about relationships between
 A graph variational autoencoder learns feature embeddings from the guidance graph. These embeddings are used in the decoders, tying different modalities to a common regulatory backbone. Biologically related features (a gene and its putative enhancer) have similar representations, helping align the latent spaces.
 
 ::: {#fig-glue-architecture layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
+![**FIGURE PLACEHOLDER A**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20A`)
 
-![**FIGURE PLACEHOLDER B**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B)
+![**FIGURE PLACEHOLDER B**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20B`)
 
-![**FIGURE PLACEHOLDER C**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C)
+![**FIGURE PLACEHOLDER C**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20C`)
 
-![**FIGURE PLACEHOLDER D**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D)
+![**FIGURE PLACEHOLDER D**](`https:`//placehold.co/300x200`?text=FIGURE%20PLACEHOLDER%20D`)
 
-[High] Multi-omics integration. Panel A (Unpaired Integration Problem): RNA-seq in cells A,B,C; ATAC-seq in D,E,F; no direct correspondence; goal: unified embedding. Panel B (GLUE Architecture): Modality-specific VAE encoders; feature graph linking genes ↔ peaks; shared latent space; adversarial alignment. Panel C (Feature Graph as Prior): Nodes (genes, peaks, TF sites); edges (proximity, regulatory); graph VAE learns embeddings; "Biological knowledge constrains alignment." Panel D (Applications): Cross-modal prediction, regulatory inference, triple-omics integration.
+[High] **Multi-omics** integration. Panel A (Unpaired Integration Problem): RNA-seq in cells A,B,C; ATAC-seq in D,E,F; no direct correspondence; goal: unified embedding. Panel B (GLUE Architecture): Modality-specific VAE encoders; feature graph linking genes ↔ peaks; shared latent space; adversarial alignment. Panel C (Feature Graph as Prior): Nodes (genes, peaks, **transcription factor** (TF) sites); edges (proximity, regulatory); graph VAE learns embeddings; "Biological knowledge constrains alignment." Panel D (Applications): Cross-modal prediction, regulatory inference, triple-omics integration.
 :::
 
 Adversarial alignment ensures that cell embeddings from different modalities are truly integrated. A discriminator tries to distinguish which modality produced each embedding, and encoders are trained to fool the discriminator. This forces the encoders to produce modality-invariant embeddings where cells from different assays occupy a shared manifold reflecting biological rather than technical variation.
@@ -195,7 +195,7 @@ Adversarial alignment ensures that cell embeddings from different modalities are
 
 GLUE enables several applications beyond basic integration. Triple-omics integration combines gene expression, chromatin accessibility, and DNA methylation measured in different cells, producing unified cell type annotations that leverage all data types. Regulatory inference uses learned feature embeddings to identify candidate enhancer-gene links, providing a principled alternative to simple distance-based assignment.
 
-Cross-modal prediction becomes possible once cells are aligned. The model can predict chromatin accessibility from expression or vice versa, enabling imputation of missing modalities. If a new dataset contains only scRNA-seq, the integrated model can predict which accessibility peaks would likely be active in each cell type based on expression patterns.
+Cross-modal prediction becomes possible once cells are aligned. The model can predict chromatin accessibility from expression or vice versa, enabling **imputation** of missing modalities. If a new dataset contains only scRNA-seq, the integrated model can predict which accessibility peaks would likely be active in each cell type based on expression patterns.
 
 SCGLUE extends the framework with optimizations for single-cell scale and sparsity [@cao_glue_2022]. The adversarial alignment handles batch effects common in single-cell experiments, and the graph structure incorporates tissue-specific regulatory relationships. The model scales to millions of cells while maintaining biological grounding from the guidance graph.
 

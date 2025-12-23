@@ -1,10 +1,10 @@
 # Evaluation Principles {#sec-evaluation}
 
-Genomic data makes it exceptionally easy to fool yourself. Sequences share evolutionary history, so a model that memorizes training sequences may appear to generalize when tested on homologs. Variants cluster in families and populations, so ancestry-stratified performance can masquerade as genuine prediction. Experimental measurements carry batch effects invisible to the untrained eye, so a model can learn to distinguish sequencing centers rather than biological states. Training labels often derive from the very databases used for evaluation, creating circular validations that inflate performance without testing genuine predictive power. Every shortcut that simplifies evaluation in other machine learning domains becomes an opportunity for false confidence in genomics.
+Genomic data makes it exceptionally easy to fool yourself. Sequences share evolutionary history, so a model that memorizes training sequences may appear to generalize when tested on homologs. Variants cluster in families and populations, so ancestry-stratified performance can masquerade as genuine prediction. Experimental measurements carry **batch effect**s invisible to the untrained eye, so a model can learn to distinguish sequencing centers rather than biological states. Training labels often derive from the very databases used for evaluation, creating circular validations that inflate performance without testing genuine predictive power. Every shortcut that simplifies evaluation in other machine learning domains becomes an opportunity for false confidence in genomics.
 
 Random data splits that work perfectly well for natural images become actively misleading when applied to biological sequences. A protein held out for testing may share 90% sequence identity with a training protein, allowing the model to succeed through memorization rather than generalization. A variant classified as pathogenic in the test set may come from the same gene family as training variants, letting the model exploit gene-level signals rather than learning variant-specific effects. A cell line in the test set may have been processed at the same sequencing center as training samples, enabling the model to recognize batch signatures rather than biological patterns. These leakages are not hypothetical; they have inflated reported performance across the genomic machine learning literature.
 
-This chapter addresses how to use benchmarks appropriately to draw valid conclusions about model performance. @sec-benchmarks catalogs what benchmark tasks exist, how they are constructed, and what capabilities they probe. Here we address the complementary question: given a benchmark, how do we apply it to produce trustworthy results? The difference between valid and misleading evaluation often lies not in benchmark choice but in methodological details: data splitting strategies, metric selection, baseline comparisons, ablation designs, and statistical testing. These principles apply across all benchmark categories, from chromatin state prediction to clinical variant classification. By mastering evaluation methodology, practitioners can distinguish genuine advances from artifacts that will not survive deployment.
+This chapter addresses how to use benchmarks appropriately to draw valid conclusions about model performance. @sec-benchmarks catalogs what **benchmark** tasks exist, how they are constructed, and what capabilities they probe. Here we address the complementary question: given a benchmark, how do we apply it to produce trustworthy results? The difference between valid and misleading evaluation often lies not in benchmark choice but in methodological details: data splitting strategies, metric selection, baseline comparisons, ablation designs, and statistical testing. These principles apply across all benchmark categories, from chromatin state prediction to clinical variant classification. By mastering evaluation methodology, practitioners can distinguish genuine advances from artifacts that will not survive deployment.
 
 ## Why Random Splits Fail
 
@@ -26,7 +26,7 @@ The problem compounds when sequence identity is high. Two proteins sharing 80% s
 
 Variant-level data presents analogous challenges. Variants within the same gene share genomic context, and variants affecting the same protein domain share structural environment. Variants from the same individual share haplotype background. Variants from the same population share allele frequency distributions shaped by demographic history. Each of these relationships creates opportunities for models to learn shortcuts that generalize within the training distribution but fail on genuinely novel examples.
 
-The consequence is that random splits systematically overestimate generalization. A model that achieves 0.90 AUROC with random splitting might achieve only 0.75 AUROC when evaluated on truly held-out examples, with the gap reflecting how much the model learned about biology versus how much it learned about the structure of the training data. Recognizing this problem is the first step toward solving it.
+The consequence is that random splits systematically overestimate generalization. A model that achieves 0.90 area under the receiver operating characteristic curve (**AUROC**) with random splitting might achieve only 0.75 AUROC when evaluated on truly held-out examples, with the gap reflecting how much the model learned about biology versus how much it learned about the structure of the training data. Recognizing this problem is the first step toward solving it.
 
 ## Homology-Aware Splitting
 
@@ -59,7 +59,7 @@ mmseqs cluster DB DB_clu tmp --min-seq-id 0.3
 mmseqs createtsv DB DB DB_clu clusters.tsv
 ```
 
-The choice of identity threshold involves trade-offs. Stricter thresholds (lower identity for proteins, higher for nucleotides) create harder generalization tests but may leave insufficient data for training if clusters are small. Permissive thresholds retain more training data but allow more leakage through homologous sequences. For protein function prediction, 30-40% identity thresholds are common; for variant effect prediction within genes, even stricter gene-family-level splits may be necessary.
+The choice of identity threshold involves trade-offs. Stricter thresholds (lower identity for proteins, higher for nucleotides) create harder generalization tests but may leave insufficient data for training if clusters are small. Permissive thresholds retain more training data but allow more leakage through homologous sequences. For protein function prediction, 30-40% identity thresholds are common; for **variant effect prediction** within genes, even stricter gene-family-level splits may be necessary.
 
 ### Practical Considerations
 
@@ -85,7 +85,7 @@ Beyond sequence homology, genomic data admits multiple axes along which splits c
 
 For tasks involving human genetic variation, ensuring that data from the same individual (or related individuals) does not appear in both training and test sets is essential. A variant effect predictor trained on variants from person A and tested on other variants from person A may learn individual-specific patterns, such as haplotype structure or ancestry-correlated allele frequencies, that do not generalize to new individuals.
 
-Family structure creates subtler leakage. First-degree relatives share approximately 50% of their genomes identical by descent. Even distant relatives share genomic segments that can be exploited by sufficiently powerful models. Best practice involves computing kinship coefficients across all individuals and either excluding one member of each related pair or assigning entire family clusters to the same split. The UK Biobank provides pre-computed relatedness estimates; other cohorts may require explicit calculation using tools like KING or PLINK.
+Family structure creates subtler leakage. First-degree relatives share approximately 50% of their genomes identical by descent. Even distant relatives share genomic segments that can be exploited by sufficiently powerful models. Best practice involves computing kinship coefficients across all individuals and either excluding one member of each related pair or assigning entire family clusters to the same split. The UK Biobank provides pre-computed relatedness estimates; other cohorts may require explicit calculation using tools like KING or `PLINK`.
 
 ### Splitting by Genomic Region
 
@@ -95,7 +95,7 @@ Region-based splits hold out contiguous segments (e.g., 1 Mb windows) distribute
 
 ### Splitting by Gene or Protein Family
 
-For variant effect prediction, holding out entire genes or protein families tests whether models learn general principles versus gene-specific patterns. A model that achieves high accuracy by memorizing that TP53 variants are often pathogenic has not demonstrated understanding of mutational mechanisms. Gene-level splits force models to generalize to genes they have never seen, providing stronger evidence of biological insight.
+For variant effect prediction, holding out entire genes or protein families tests whether models learn general principles versus gene-specific patterns. A model that achieves high accuracy by memorizing that *TP53* variants are often pathogenic has not demonstrated understanding of mutational mechanisms. Gene-level splits force models to generalize to genes they have never seen, providing stronger evidence of biological insight.
 
 Family-level splits extend this logic to groups of related genes. Holding out all kinases or all GPCRs tests whether models can generalize across evolutionary families. This is particularly stringent for protein structure and function prediction, where family membership strongly predicts properties.
 
@@ -107,15 +107,15 @@ Similarly, models can be split by assay type (e.g., training on ATAC-seq, testin
 
 ### Splitting by Ancestry
 
-For human genomic applications, ancestry-stratified evaluation has become essential. Models trained predominantly on European ancestry cohorts often show degraded performance in African, East Asian, South Asian, and admixed populations. This degradation reflects both differences in allele frequency spectra and differences in linkage disequilibrium patterns that affect which variants are informative.
+For human genomic applications, ancestry-stratified evaluation has become essential. Models trained predominantly on European ancestry cohorts often show degraded performance in African, East Asian, South Asian, and admixed populations. This degradation reflects both differences in allele frequency spectra and differences in **linkage disequilibrium** patterns that affect which variants are informative.
 
-Best practice reports performance separately for each major ancestry group represented in the data. When held-out ancestry groups are available (e.g., training on Europeans and testing on Africans), this provides the strongest test of cross-population generalization. When only European data are available, this limitation should be explicitly acknowledged, and claims about generalization should be appropriately modest. The confounding effects of ancestry on genomic predictions are detailed in @sec-confounding.
+Best practice reports performance separately for each major ancestry group represented in the data. When held-out ancestry groups are available (e.g., training on Europeans and testing on Africans), this provides the strongest test of cross-population generalization. When only European data are available, this limitation should be explicitly acknowledged, and claims about generalization should be appropriately modest. The **confounding** effects of ancestry on genomic predictions are detailed in @sec-confounding.
 
 ### Splitting by Time
 
 Temporal splits assign data to training and test sets based on when observations were collected, annotations were created, or variants were classified. This strategy tests whether models generalize forward in time, the actual deployment scenario for any predictive system.
 
-For variant pathogenicity prediction, temporal splits are particularly revealing. Training on ClinVar annotations from 2018 and testing on variants first classified in 2022 asks whether the model can predict labels that did not yet exist during training. This avoids the circularity that arises when training and test labels were assigned by similar processes at similar times. Variants classified more recently may reflect updated curation standards, new functional evidence, or reclassifications of previously uncertain variants; a model that performs well on these genuinely new classifications demonstrates predictive validity rather than recapitulation of historical curation patterns.
+For variant pathogenicity prediction, temporal splits are particularly revealing. Training on **ClinVar** annotations from 2018 and testing on variants first classified in 2022 asks whether the model can predict labels that did not yet exist during training. This avoids the circularity that arises when training and test labels were assigned by similar processes at similar times. Variants classified more recently may reflect updated curation standards, new functional evidence, or reclassifications of previously uncertain variants; a model that performs well on these genuinely new classifications demonstrates predictive validity rather than recapitulation of historical curation patterns.
 
 Implementing temporal splits requires metadata that many datasets lack. ClinVar provides submission dates, enabling clean temporal partitioning. UniProt tracks annotation dates for functional assignments. Clinical cohorts with longitudinal follow-up naturally admit temporal splits based on diagnosis dates. When temporal metadata is unavailable, publication dates of source literature can serve as proxies, though these may not perfectly reflect when information became available to model developers.
 
@@ -128,7 +128,7 @@ Even with careful splitting, leakage can enter evaluations through multiple path
 ::: {#fig-leakage-taxonomy}
 ![**FIGURE PLACEHOLDER**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
 
-[High] Taxonomy tree. Top: Data Leakage. Branches: Feature Leakage (features encode target; conservation→pathogenicity; detection via ablation), Label Leakage (labels derived from model-accessible info; ClinVar circularity; temporal validation), Benchmark Leakage (pretraining overlaps evaluation; ENCODE everywhere; document and check overlap). For each: red warning, genomic example, detection strategy, mitigation.
+[High] Taxonomy tree. Top: **Data Leakage**. Branches: Feature Leakage (features encode target; conservation→pathogenicity; detection via ablation), Label Leakage (labels derived from model-accessible info; ClinVar circularity; temporal validation), Benchmark Leakage (pretraining overlaps evaluation; ENCODE everywhere; document and check overlap). For each: red warning, genomic example, detection strategy, mitigation.
 :::
 
 ### Feature Leakage
@@ -166,7 +166,7 @@ Metrics quantify model performance but different metrics answer different questi
 ::: {#fig-metric-selection}
 ![**FIGURE PLACEHOLDER**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
 
-[High] Decision flowchart. Decision points: Binary vs continuous? Balanced? Ranking vs probability? Clinical decisions? Metric recommendations at each terminal. Metric descriptions: AUROC, AUPRC, calibration, net benefit. Warning callouts: "AUROC invariant to monotonic transforms"; "High correlation ≠ clinically meaningful."
+[High] Decision flowchart. Decision points: Binary vs continuous? Balanced? Ranking vs probability? Clinical decisions? Metric recommendations at each terminal. Metric descriptions: AUROC, area under the **precision**-**recall** curve (**AUPRC**), **calibration**, net benefit. Warning callouts: "AUROC invariant to monotonic transforms"; "High correlation ≠ clinically meaningful."
 :::
 
 ### Discrimination Metrics
@@ -193,7 +193,7 @@ These metrics align with how predictions are actually used. If experimental capa
 
 Calibration assesses whether predicted probabilities match observed frequencies. A well-calibrated model that predicts 0.8 probability of pathogenicity should be correct about 80% of the time across all variants receiving that score. **Reliability diagrams** plot predicted probabilities against observed frequencies within binned intervals, with deviations from the diagonal indicating miscalibration. **Expected calibration error (ECE)** summarizes miscalibration as the weighted average absolute deviation across bins.
 
-Calibration matters whenever predictions inform decisions. A miscalibrated model that reports 0.95 probability when the true probability is 0.60 will lead to inappropriate confidence in uncertain predictions. Even models with excellent discrimination can be poorly calibrated, requiring post-hoc calibration methods such as Platt scaling or isotonic regression. @sec-uncertainty addresses calibration and uncertainty quantification in greater depth.
+Calibration matters whenever predictions inform decisions. A miscalibrated model that reports 0.95 probability when the true probability is 0.60 will lead to inappropriate confidence in uncertain predictions. Even models with excellent discrimination can be poorly calibrated, requiring post-hoc calibration methods such as Platt scaling or isotonic regression. @sec-uncertainty addresses calibration and **uncertainty quantification** in greater depth.
 
 ### Clinical Utility Metrics
 
@@ -211,7 +211,7 @@ The temptation to compare against weak baselines inflates apparent contributions
 
 For sequence-based predictions, position weight matrices (PWMs) and k-mer logistic regression provide classical baselines that capture sequence composition without deep learning. If a convolutional model barely outperforms logistic regression on k-mer counts, the convolutional architecture may not be contributing as much as claimed.
 
-For variant effect prediction, simple features like allele frequency, conservation scores, and amino acid properties provide baselines that any sophisticated model should substantially exceed. CADD (@sec-vep-classical) serves as a well-calibrated baseline that combines many hand-crafted features; outperforming CADD demonstrates that learning provides value beyond feature engineering.
+For variant effect prediction, simple features like allele frequency, conservation scores, and amino acid properties provide baselines that any sophisticated model should substantially exceed. CADD (@sec-vep-classical) serves as a well-calibrated baseline that combines many hand-crafted features; outperforming *CADD* demonstrates that learning provides value beyond feature engineering.
 
 For foundation models, comparisons should include both randomly initialized models of similar architecture (to isolate the value of pretraining) and simpler pretrained models (to isolate the value of scale or architectural innovations). Claiming that pretraining helps requires demonstrating improvement over training from scratch on the same downstream data.
 
@@ -225,7 +225,7 @@ Field-wide progress tracking benefits from persistent benchmarks with frozen tes
 
 Deep learning models should be compared against strong non-deep alternatives. Gradient-boosted trees, random forests, and regularized linear models often achieve competitive performance with far less computation. If a 100-million-parameter transformer barely outperforms XGBoost on tabular features, the complexity may not be justified.
 
-This comparison is especially important for clinical deployment, where simpler models may be preferred for interpretability, computational efficiency, or regulatory approval. Demonstrating that deep learning provides substantial gains over strong non-deep baselines strengthens the case for adoption.
+This comparison is especially important for clinical deployment, where simpler models may be preferred for **interpretability**, computational efficiency, or regulatory approval. Demonstrating that deep learning provides substantial gains over strong non-deep baselines strengthens the case for adoption.
 
 ## Ablation Studies
 
@@ -255,7 +255,7 @@ Performance differences between models may reflect genuine capability difference
 
 ### Significance Testing
 
-For classification metrics, significance tests ask whether observed differences exceed what would be expected from sampling variation. **Bootstrap confidence intervals** resample the test set with replacement, recompute metrics on each resample, and report the distribution of metric values. Non-overlapping 95% confidence intervals suggest significant differences. **Permutation tests** shuffle predictions between models and measure how often shuffled differences exceed observed differences.
+For classification metrics, significance tests ask whether observed differences exceed what would be expected from sampling variation. **Bootstrap **confidence interval**s** resample the test set with replacement, recompute metrics on each resample, and report the distribution of metric values. Non-overlapping 95% confidence intervals suggest significant differences. **Permutation tests** shuffle predictions between models and measure how often shuffled differences exceed observed differences.
 
 For comparing multiple models across multiple benchmarks, correction for multiple testing becomes important. Without correction, 20 pairwise comparisons will produce an expected one false positive at the 0.05 level even when all models perform equally. The **Bonferroni correction** divides the significance threshold by the number of tests; the **Benjamini-Hochberg procedure** controls false discovery rate with more power than Bonferroni.
 
@@ -329,7 +329,7 @@ Post-hoc recalibration adjusts predicted probabilities to improve calibration wi
 
 These methods require held-out calibration data distinct from training and test sets. Calibrating on test data and then evaluating calibration on the same test data produces overoptimistic estimates.
 
-For detailed treatment of calibration and uncertainty quantification, including epistemic versus aleatoric uncertainty and selective prediction, see @sec-uncertainty.
+For detailed treatment of calibration and uncertainty quantification, including epistemic versus **aleatoric uncertainty** and selective prediction, see @sec-uncertainty.
 
 ## Putting It All Together
 
@@ -356,6 +356,6 @@ This checklist is not exhaustive but covers the most common evaluation pitfalls.
 ## The Question Behind the Metric
 The question is never simply "what is the AUROC?" but rather "what has been demonstrated, and how much should we trust it?" A reported metric summarizes one aspect of model behavior on one dataset under one evaluation protocol. Whether that metric predicts performance in deployment depends on details that standard reporting obscures: how data were split, whether leakage occurred, which subgroups were evaluated, what baselines were compared, and whether statistical conclusions account for multiple comparisons and estimation uncertainty.
 
-The shortcuts that accelerate research in other machine learning domains produce misleading conclusions when applied to genomic data. Random train-test splits ignore homology that creates pseudo-replication. Single-metric comparisons miss failure modes in clinically relevant subgroups. Significance tests without effect sizes conflate statistical and practical importance. Benchmark evaluation without temporal awareness allows indirect leakage through shared community resources. Homology, population structure, batch effects, and label circularity create countless opportunities for self-deception, and genomic data exhibit all of these in abundance.
+The shortcuts that accelerate research in other machine learning domains produce misleading conclusions when applied to genomic data. Random **train-test split**s ignore homology that creates pseudo-replication. Single-metric comparisons miss failure modes in clinically relevant subgroups. Significance tests without effect sizes conflate statistical and practical importance. Benchmark evaluation without temporal awareness allows indirect leakage through shared community resources. Homology, population structure, batch effects, and label circularity create countless opportunities for self-deception, and genomic data exhibit all of these in abundance.
 
-Rigorous evaluation requires sustained effort at every stage, from experimental design through statistical analysis. The chapters that follow address complementary aspects of this challenge. Confounding and leakage (@sec-confounding) examines how population stratification, batch effects, and ascertainment bias produce results that evaporate under deployment. Uncertainty quantification (@sec-uncertainty) extends calibration assessment to epistemic versus aleatoric uncertainty and selective prediction. Interpretability (@sec-interpretability) addresses whether models have learned genuine biology or exploited confounded patterns. For clinical applications specifically, risk prediction frameworks (@sec-clinical-risk) develop evaluation approaches tailored to decision-making, where net benefit and decision curves supplement discrimination metrics. Together, these chapters provide the critical apparatus for engaging with genomic foundation model claims.
+Rigorous evaluation requires sustained effort at every stage, from experimental design through statistical analysis. The chapters that follow address complementary aspects of this challenge. Confounding and leakage (@sec-confounding) examines how **population stratification**, batch effects, and ascertainment bias produce results that evaporate under deployment. Uncertainty quantification (@sec-uncertainty) extends calibration assessment to epistemic versus aleatoric uncertainty and selective prediction. Interpretability (@sec-interpretability) addresses whether models have learned genuine biology or exploited confounded patterns. For clinical applications specifically, risk prediction frameworks (@sec-clinical-risk) develop evaluation approaches tailored to decision-making, where net benefit and decision curves supplement discrimination metrics. Together, these chapters provide the critical apparatus for engaging with genomic foundation model claims.
