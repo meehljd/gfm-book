@@ -4,11 +4,11 @@
 # List of .qmd files to exclude from the "main" total
 # (Edit this list to match your project)
 exclude_list=(
-  "app-c-glossary.qmd"
+  "appendix/app-f-glossary.qmd"
 )
 
 # Path to rendered references page
-refs_html="./docs/references.html"
+refs_html="./docs/bib/references.html"
 
 total_qmd_all=0       # total for all .qmd files
 total_qmd_included=0  # total excluding the files in exclude_list
@@ -26,20 +26,23 @@ is_excluded() {
 
 echo "=== .qmd files ==="
 
-for f in *.qmd; do
-    # Skip if no files match the pattern
-    [[ -e "$f" ]] || continue
+# Find all .qmd files in current and child directories (excluding docs/), sort alphabetically
+{
+  while read -r f; do
+    # Remove leading ./ for display and exclusion check
+    f_display="${f#./}"
 
     words=$(quarto pandoc "$f" -f markdown -t plain 2>/dev/null | wc -w)
     total_qmd_all=$((total_qmd_all + words))
 
-    if is_excluded "$f"; then
-        printf "%-40s %8d   %s\n" "$f" "$words" "[excluded from main total]"
+    if is_excluded "$f_display"; then
+      printf "%-40s %8d   %s\n" "$f_display" "$words" "[excluded from main total]"
     else
-        printf "%-40s %8d\n" "$f" "$words"
-        total_qmd_included=$((total_qmd_included + words))
+      printf "%-40s %8d\n" "$f_display" "$words"
+      total_qmd_included=$((total_qmd_included + words))
     fi
-done
+  done < <(find . -type f -name '*.qmd' ! -path './docs/*' | sort)
+}
 
 echo
 echo "=== References (HTML) ==="
