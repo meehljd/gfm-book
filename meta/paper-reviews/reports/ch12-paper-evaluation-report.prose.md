@@ -333,7 +333,7 @@ Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transforme
 
 ---
 
-### rao_transformer_2021
+### rao_transformer_2020
 
 Transformer protein language models are unsupervised structure learners — Rao, Roshan and Meier, Joshua and Sercu, Tom and Ovchinnikov, Sergey and Rives, Alexander — bioRxiv (2020) — DOI: 10.1101/2020.12.15.422761 — URL: https://www.biorxiv.org/content/10.1101/2020.12.15.422761v1
 

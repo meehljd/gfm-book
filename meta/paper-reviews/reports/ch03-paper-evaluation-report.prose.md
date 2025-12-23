@@ -90,7 +90,7 @@ No arXiv/bioRxiv/medRxiv entries were detected from BibTeX venue metadata for th
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @khera_genetics_2017
+### @khera_genome-wide_2017
 
 **Bibliographic anchor.** *Genetics of coronary artery disease: discovery, biology and clinical translation* (2017; Nature Reviews Genetics).
 
@@ -116,7 +116,7 @@ No arXiv/bioRxiv/medRxiv entries were detected from BibTeX venue metadata for th
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @khera_genome-wide_2018
+### @khera_genome-wide_2017
 
 **Bibliographic anchor.** *Genome-wide polygenic scores for common diseases identify individuals with risk equivalent to monogenic mutations* (2018; Nature Genetics).
 

@@ -300,7 +300,7 @@ On Calibration of Modern Neural Networks — (2017)
 
 ---
 
-### jaganathan_predicting_2019
+### jaganathan_spliceai_2019
 
 Predicting splicing from primary sequence with deep learning (SpliceAI) — (2019)
 

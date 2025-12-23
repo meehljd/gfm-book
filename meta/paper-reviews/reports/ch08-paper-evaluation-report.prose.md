@@ -69,7 +69,7 @@ BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding
 
 ---
 
-### encode_project_integrated_2012
+### kagda_encode_2025
 
 Placeholder: encode project integrated 2012 — (2012)
 
@@ -300,7 +300,7 @@ ClinVar: improving access to variant interpretations and supporting evidence —
 
 ---
 
-### lin_evolutionary_2023
+### lin_esm-2_2022
 
 Placeholder: lin evolutionary 2023 — (2023)
 
@@ -333,7 +333,7 @@ Placeholder: lin evolutionary 2023 — (2023)
 
 ---
 
-### linder_borzoi_2023
+### linder_borzoi_2025
 
 [Borzoi] Predicting RNA-seq coverage from DNA sequence as a unifying model of gene regulation — Linder, Johannes and Srivastava, Divyanshi and Yuan, Han and Agarwal, Vikram and Kelley, David R. — Nature Genetics (2025) — DOI: 10.1038/s41588-024-02053-6 — URL: https://www.nature.com/articles/s41588-024-02053-6
 
@@ -498,7 +498,7 @@ Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transforme
 
 ---
 
-### suzek_uniref_2015
+### suzek_uniref_2007
 
 UniRef: comprehensive and non-redundant UniProt reference clusters — Suzek, Baris E. and Huang, Hongzhan and McGarvey, Peter and Mazumder, Raja and Wu, Cathy H. — Bioinformatics (2007) — DOI: 10.1093/bioinformatics/btm098 — URL: https://doi.org/10.1093/bioinformatics/btm098
 
@@ -531,7 +531,7 @@ UniRef: comprehensive and non-redundant UniProt reference clusters — Suzek, Ba
 
 ---
 
-### zhou_dnabert2_2023
+### zhou_dnabert-2_2024
 
 DNABERT-2: Efficient Foundation Model and Benchmark For Multi-Species Genome — Zhou, Zhihan and Ji, Yanrong and Li, Weijian and Dutta, Pratik and Davuluri, Ramana and Liu, Han — arXiv (2024) — DOI: 10.48550/arXiv.2306.15006 — URL: http://arxiv.org/abs/2306.15006
 

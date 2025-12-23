@@ -69,9 +69,9 @@ AlphaGenome: AI for better understanding the genome — Avsec, Ziga and Latyshev
 
 ---
 
-### chen_sequence_2022
+### chen_deepsea_2022
 
-chen_sequence_2022
+chen_deepsea_2022
 
 **Scope fit.** Scope fit is unclear from the BibTeX metadata alone; the title/venue do not unambiguously signal deep learning over genomic or protein sequences.
 

@@ -597,7 +597,7 @@ Placeholder: mccloskey catastrophic 1989 — (1989)
 
 ---
 
-### meier_language_2021
+### meier_esm-1v_2021
 
 Placeholder: meier language 2021 — (2021)
 
@@ -762,7 +762,7 @@ Placeholder: snell prototypical 2017 — (2017)
 
 ---
 
-### suzek_uniref_2015
+### suzek_uniref_2007
 
 UniRef: comprehensive and non-redundant UniProt reference clusters — Suzek, Baris E. and Huang, Hongzhan and McGarvey, Peter and Mazumder, Raja and Wu, Cathy H. — Bioinformatics (2007) — DOI: 10.1093/bioinformatics/btm098 — URL: https://doi.org/10.1093/bioinformatics/btm098
 
@@ -894,7 +894,7 @@ Placeholder: zaken bitfit 2022 — (2022)
 
 ---
 
-### zhou_dnabert-2_2023
+### zhou_dnabert-2_2024
 
 DNABERT-2: Efficient Foundation Model and Benchmark For Multi-Species Genome — Zhou, Zhihan and Ji, Yanrong and Li, Weijian and Dutta, Pratik and Davuluri, Ramana and Liu, Han — arXiv (2024) — DOI: 10.48550/arXiv.2306.15006 — URL: http://arxiv.org/abs/2306.15006
 
