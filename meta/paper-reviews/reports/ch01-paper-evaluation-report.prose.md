@@ -8,11 +8,11 @@ Chapter 1 cites 31 papers. Status breakdown: INCLUDE: 31.
 
 ## Preprints and publication status
 
-The following citations are preprints or cite preprint versions based on venue metadata: @li_bwa-mem_2013 (Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM). Where a peer-reviewed version is known, it is noted in the per-paper section.
+The following citations are preprints or cite preprint versions based on venue metadata: @li_aligning_2013 (Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM). Where a peer-reviewed version is known, it is noted in the per-paper section.
 
 ## Per-paper evaluations
 
-### @browning_beagle_2021
+### @browning_fast_2021
 
 **Bibliographic anchor.** *Fast two-stage phasing of large-scale sequence data* (2021; Am J Hum Genet).
 
@@ -40,7 +40,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Notes.** Two-stage phasing; cohort-scale speed/accuracy evidence
 
-### @bycroft_ukbiobank_2018
+### @bycroft_uk_2018
 
 **Bibliographic anchor.** *UK Biobank resource w/ deep phenotyping & genomic data* (2018; Nature).
 
@@ -68,7 +68,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Notes.** Canonical biobank-scale cohort + QC/imputation context
 
-### @dabernig_ont_2024
+### @dabernig-heinz_multicenter_2024
 
 **Bibliographic anchor.** *Multicenter ONT genotyping accuracy & reproducibility* (2024; J Clin Microbiol).
 
@@ -96,7 +96,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Notes.** Multi-lab ONT study; strain-specific errors; mitigations via models/polish
 
-### @depristo_gatk_2011
+### @depristo_framework_2011
 
 **Bibliographic anchor.** *Framework for variation discovery & genotyping (NGS)* (2011; Nat Genet).
 
@@ -124,7 +124,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Notes.** Foundational pipeline stages + validation across technologies/designs
 
-### @garrison_vgtool_2018
+### @garrison_variation_2018
 
 **Bibliographic anchor.** *Variation graph toolkit improves read mapping (vg)* (2018; Nat Biotechnol).
 
@@ -152,7 +152,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Notes.** Graph references reduce mapping bias; practical human-scale toolkit
 
-### @goodwin_10year_2016
+### @goodwin_coming_2016
 
 **Bibliographic anchor.** *Coming of age: ten years of next-generation sequencing technologies* (2016; Nat Rev Genet).
 
@@ -180,7 +180,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Notes.** High-level tech evolution + limitations; good framing citation
 
-### @jiang_cutesv_2020
+### @jiang_long-read-based_2020
 
 **Bibliographic anchor.** *Long-read-based human genomic structural variation detection with cuteSV* (2020; Genome Biology).
 
@@ -208,7 +208,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Notes.** cuteSV signatures + clustering/refinement; benchmarked on sim+real data
 
-### @karczewski_gnomad_2020
+### @karczewski_mutational_2020
 
 **Bibliographic anchor.** *Mutational constraint spectrum from variation in 141,456 humans (gnomAD)* (2020; Nature).
 
@@ -236,7 +236,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Notes.** Constraint metrics; addendum highlights pLoF artefact risk and need for curation
 
-### @krusche_happy_2019
+### @krusche_best_2019
 
 **Bibliographic anchor.** *Best practices for benchmarking germline small-variant calls in human genomes* (2019; Nat Biotechnol).
 
@@ -264,7 +264,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Notes.** GA4GH benchmarking framework; standard metrics/stratification; hap.py ecosystem
 
-### @li_bwa-mem_2013
+### @li_aligning_2013
 
 **Bibliographic anchor.** *Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM* (2013; arXiv).
 
@@ -292,7 +292,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Notes.** SMEM seeding + re-seeding; banded affine-gap DP; chimeric/PE rescue; sim benchmarking + runtimes
 
-### @li_mapping_2014
+### @li_towards_2014
 
 **Bibliographic anchor.** *Towards {Better} {Understanding} of {Artifacts} in {Variant} {Calling} from {High}-{Coverage} {Samples}* (2014; Bioinformatics).
 
@@ -346,7 +346,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @liao_pangenome_2023
+### @liao_draft_2023
 
 **Bibliographic anchor.** *A draft human pangenome reference* (2023; Nature).
 
@@ -372,7 +372,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @loh_eagle_2016
+### @loh_reference-based_2016
 
 **Bibliographic anchor.** *Reference-based phasing using the {Haplotype} {Reference} {Consortium} panel* (2016; Nature Genetics).
 
@@ -398,7 +398,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @mallal_abacavir_2008
+### @mallal_hla-b5701_2008
 
 **Bibliographic anchor.** *{HLA}-{B}*5701 {Screening} for {Hypersensitivity} to {Abacavir}* (2008; New England Journal of Medicine).
 
@@ -424,7 +424,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @nielsen_error_2011
+### @nielsen_genotype_2011
 
 **Bibliographic anchor.** *Genotype and {SNP} calling from next-generation sequencing data* (2011; Nature Reviews. Genetics).
 
@@ -450,7 +450,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @noauthor_pbsv_2025
+### @noauthor_pacificbiosciencespbsv_2025
 
 **Bibliographic anchor.** *{PacificBiosciences}/pbsv* (2025; PacBio).
 
@@ -476,7 +476,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @noauthor_rtg-core_2025
+### @noauthor_realtimegenomicsrtg-core_2025
 
 **Bibliographic anchor.** *{RealTimeGenomics}/rtg-core* (2025; Real Time Genomics).
 
@@ -528,7 +528,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @oconnell_shapeit2_2014
+### @oconnell_general_2014
 
 **Bibliographic anchor.** *A {General} {Approach} for {Haplotype} {Phasing} across the {Full} {Spectrum} of {Relatedness}* (2014; PLOS Genetics).
 
@@ -580,7 +580,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @robinson_hla-db_2020
+### @robinson_ipd-imgthla_2020
 
 **Bibliographic anchor.** *{IPD}-{IMGT}/{HLA} {Database}* (2020; Nucleic Acids Research).
 
@@ -606,7 +606,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @sakaue_hla_2023
+### @sakaue_tutorial_2023
 
 **Bibliographic anchor.** *Tutorial: a statistical genetics guide to identifying {HLA} alleles driving complex disease* (2023; Nature Protocols).
 
@@ -632,7 +632,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @shafin_pepper_2021
+### @shafin_haplotype-aware_2021
 
 **Bibliographic anchor.** *Haplotype-aware variant calling with {PEPPER}-{Margin}-{DeepVariant} enables high accuracy in nanopore long-reads* (2021; Nature Methods).
 
@@ -658,7 +658,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @smolka_sniffles2_2024
+### @smolka_detection_2024
 
 **Bibliographic anchor.** *Detection of mosaic and population-level structural variants with {Sniffles2}* (2024; Nature Biotechnology).
 
@@ -712,7 +712,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Notes.** Published version: Genome Research 2023 (doi:10.1101/gr.277585.122).
 
-### @van_der_auwera_gatk_best_2018
+### @van_der_auwera_fastq_2018
 
 **Bibliographic anchor.** *From {FastQ} {Data} to {High}-{Confidence} {Variant} {Calls}: {The} {Genome} {Analysis} {Toolkit} {Best} {Practices} {Pipeline}* (2018; Current Protocols in Bioinformatics).
 
@@ -738,7 +738,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @wenger_pacbiohifi_2019
+### @wenger_accurate_2019
 
 **Bibliographic anchor.** *Accurate circular consensus long-read sequencing improves variant detection and assembly of a human genome* (2019; Nature Biotechnology).
 
@@ -790,7 +790,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @zheng_clair3_2022
+### @zheng_symphonizing_2022
 
 **Bibliographic anchor.** *Symphonizing pileup and full-alignment for deep learning-based long-read variant calling* (2022; Nature Computational Science).
 
@@ -816,7 +816,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @zook_giab_2019
+### @zook_open_2019
 
 **Bibliographic anchor.** *An open resource for accurately benchmarking small variant and reference calls* (2019; Nature biotechnology).
 

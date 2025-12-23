@@ -234,7 +234,7 @@ Placeholder: kaplan scaling 2020 — (2020)
 
 ---
 
-### karczewski_gnomad_2020
+### karczewski_mutational_2020
 
 The mutational constraint spectrum quantified from variation in 141,456 humans — Karczewski, Konrad J. and Francioli, Laurent C. and Tiao, Grace and Cummings, Beryl B. and Alföldi, Jessica and Wang, Qingbo and Collins, Ryan L. and Laricchia, Kristen M. and Ganna, Andrea and Birnbaum, Daniel P. and Gauthier, Laura D. and Brand, Harrison and Solomonson, Matthew and Watts, Nicholas A. and Rhodes, Daniel and Singer-Berk, Moriel and England, Eleina M. and Seaby, Eleanor G. and Kosmicki, Jack A. and Walters, Raymond K. and Tashman, Katherine and Farjoun, Yossi and Banks, Eric and Poterba, Timothy and Wang, Arcturus and Seed, Cotton and Whiffin, Nicola and Chong, Jessica X. and Samocha, Kaitlin E. and Pierce-Hoffman, Emma and Zappala, Zachary and O’Donnell-Luria, Anne H. and Minikel, Eric Vallabh and Weisburd, Ben and Lek, Monkol and Ware, James S. and Vittal, Christopher and Armean, Irina M. and Bergelson, Louis and Cibulskis, Kristian and Connolly, Kristen M. and Covarrubias, Miguel and Donnelly, Stacey and Ferriera, Steven and Gabriel, Stacey and Gentry, Jeff and Gupta, Namrata and Jeandet, Thibault and Kaplan, Diane and Llanwarne, Christopher and Munshi, Ruchi and Novod, Sam and Petrillo, Nikelle and Roazen, David and Ruano-Rubio, Valentin and Saltzman, Andrea and Schleicher, Molly and Soto, Jose and Tibbetts, Kathleen and Tolonen, Charlotte and Wade, Gordon and Talkowski, Michael E. and Neale, Benjamin M. and Daly, Mark J. and MacArthur, Daniel G. — Nature (2020) — DOI: 10.1038/s41586-020-2308-7 — URL: https://www.nature.com/articles/s41586-020-2308-7
 

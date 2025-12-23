@@ -92,7 +92,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Notes.** Preprint; benchmark study. Re-check for journal publication.
 
-### @bycroft_ukbiobank_2018
+### @bycroft_uk_2018
 
 **Bibliographic anchor.** *The {UK} {Biobank} resource with deep phenotyping and genomic data* (2018; Nature).
 
@@ -326,7 +326,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @karczewski_gnomad_2020
+### @karczewski_mutational_2020
 
 **Bibliographic anchor.** *The mutational constraint spectrum quantified from variation in 141,456 humans* (2020; Nature).
 
@@ -456,7 +456,7 @@ The following citations are preprints or cite preprint versions based on venue m
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
 
-### @liao_pangenome_2023
+### @liao_draft_2023
 
 **Bibliographic anchor.** *A draft human pangenome reference* (2023; Nature).
 
