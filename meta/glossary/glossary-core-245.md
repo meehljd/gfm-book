@@ -1,4 +1,4 @@
-# Glossary {#sec-apx-glossary}
+# Glossary (Core, ~245 terms)
 
 This curated glossary is intended for an interdisciplinary audience with advanced degrees. It keeps terms that are:
 - used repeatedly or central to the book’s arguments,
