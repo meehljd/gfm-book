@@ -386,7 +386,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_2/p2-ch05-representations.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Tokens and Embeddings</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title"><strong>Tokens</strong> and <strong>Embeddings</strong></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -404,7 +404,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_2/p2-ch08-pretraining.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Pretraining Strategies</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title"><strong>Pretraining</strong> Strategies</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -439,7 +439,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_3/p3-ch12-protein-lm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Protein Language Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Protein <em>Language</em> Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -492,7 +492,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_4/p4-ch19-multi-omics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Multi-Omics Integration</span></span></a>
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title"><strong>Multi-Omics</strong> Integration</span></span></a>
   </div>
 </li>
       </ul>
@@ -527,13 +527,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_5/p5-ch23-uncertainty.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Uncertainty Quantification</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title"><strong>Uncertainty Quantification</strong></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_5/p5-ch24-interpretability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Interpretability</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title"><strong>Interpretability</strong></span></span></a>
   </div>
 </li>
       </ul>
@@ -710,12 +710,12 @@ window.Quarto = {
 </header>
 
 
-<p>Genome-wide association studies do not identify causal variants; they identify signposts. When a GWAS reports that a particular SNP associates with coronary artery disease, that SNP is almost certainly not the variant that alters cardiac biology. It is correlated with the causal variant through linkage disequilibrium, the non-random association of nearby alleles that persists across generations. The statistical machinery of GWAS is exquisitely sensitive to these correlations but fundamentally agnostic about mechanism. It can identify a region of the genome that harbors trait-relevant variation without distinguishing the causal variant from its correlated neighbors, without explaining which genes or pathways are affected, and without revealing whether the same associations hold in populations with different linkage patterns.</p>
+<p><strong>Genome-wide association studies (GWAS)</strong> do not identify causal variants; they identify signposts. When a GWAS reports that a particular <strong>single nucleotide polymorphism (SNP)</strong> associates with coronary artery disease, that SNP is almost certainly not the variant that alters cardiac biology. It is correlated with the causal variant through linkage disequilibrium, the non-random association of nearby alleles that persists across generations. The statistical machinery of GWAS is exquisitely sensitive to these correlations but fundamentally agnostic about mechanism. It can identify a region of the genome that harbors trait-relevant variation without distinguishing the causal variant from its correlated neighbors, without explaining which genes or pathways are affected, and without revealing whether the same associations hold in populations with different linkage patterns.</p>
 <p>This distinction between association and causation defines the central intellectual challenge of statistical genetics. GWAS have identified thousands of genomic regions associated with hundreds of complex traits, from height and blood pressure to schizophrenia and type 2 diabetes. These associations replicate across studies with remarkable consistency, confirming that the signals are real. Yet the path from associated region to biological mechanism remains obscure for most loci. The majority of GWAS signals fall in non-coding regions where there is no obvious gene to implicate. Even when a signal overlaps a gene, whether it affects expression, splicing, or protein function is rarely apparent from the association alone.</p>
 <p>Polygenic scores aggregate these associations into predictions, summing risk alleles across thousands of loci to estimate an individual’s genetic predisposition. For some traits, these scores achieve clinically meaningful discrimination: individuals in the top percentile of coronary artery disease risk have odds ratios comparable to monogenic familial hypercholesterolemia. Yet polygenic scores inherit all the limitations of the associations they aggregate. They predict without explaining, correlate without identifying mechanism, and transfer poorly across populations with different allele frequencies and linkage patterns. Understanding both their power and their limitations is essential for the mechanistic approaches developed throughout this book, where regulatory sequence models and variant effect predictors attempt to move from statistical association to biological explanation.</p>
 <section id="the-gwas-framework" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="the-gwas-framework"><span class="header-section-number">3.1</span> The GWAS Framework</h2>
-<p>Consider a clinician counseling a patient about cardiovascular disease risk. Traditional risk factors (age, smoking, cholesterol, blood pressure) explain roughly 50% of the variation in who develops disease <span class="citation" data-cites="khera_genome-wide_2017">(<a href="../bib/references.html#ref-khera_genome-wide_2017" role="doc-biblioref">Khera and Kathiresan 2017</a>)</span>. Family history suggests that genetics contributes substantially to the remainder, but which genetic variants matter, and how much does each contribute? <strong>Genome-wide association studies (GWAS)</strong> provide a systematic approach to answering these questions by testing each of millions of variants for association with the trait of interest.</p>
+<p>Consider a clinician counseling a patient about cardiovascular disease risk. Traditional risk factors (age, smoking, cholesterol, blood pressure) explain roughly 50% of the variation in who develops disease <span class="citation" data-cites="khera_genome-wide_2017">(<a href="../bib/references.html#ref-khera_genome-wide_2017" role="doc-biblioref">Khera and Kathiresan 2017</a>)</span>. Family history suggests that genetics contributes substantially to the remainder, but which genetic variants matter, and how much does each contribute? GWAS provide a systematic approach to answering these questions by testing each of millions of variants for association with the trait of interest.</p>
 <p>The scale required for well-powered GWAS explains why large-scale biobanks (<a href="p1-ch02-data.html" class="quarto-xref"><span>Chapter 2</span></a>) have become essential infrastructure for statistical genetics. UK Biobank, with its 500,000 participants genotyped across hundreds of thousands of variants and linked to extensive phenotypic data, has enabled GWAS for thousands of traits at sample sizes that were unimaginable a decade ago. Similar resources, including the Million Veteran Program, FinnGen, and All of Us, continue to expand the scope of discoverable associations. The biobank paradigm of combining dense genotyping with rich phenotyping at population scale has transformed GWAS from underpowered fishing expeditions into reliable discovery engines.</p>
 <p>The core logic is straightforward. For each variant in turn, researchers ask whether individuals carrying more copies of a particular allele tend to have higher or lower values of the phenotype (for quantitative traits) or higher or lower probability of disease (for binary outcomes). They estimate an effect size, compute a test statistic under the null hypothesis of no association, and record a p-value. After testing millions of variants, those exceeding a stringent significance threshold are identified, the associated loci reported, and interpretation begins regarding which genes and pathways might be involved.</p>
 <p>This apparently simple procedure requires careful attention to study design, quality control, and statistical modeling. The phenotype must be measured consistently across individuals. The genotypes must be accurate and the variants well-defined. Confounders that correlate with both genotype and phenotype (most notably population structure) must be controlled. Multiple testing across millions of variants demands stringent significance thresholds. Only after addressing these challenges can GWAS results be trusted and translated into downstream applications.</p>
@@ -750,7 +750,7 @@ y_i = \alpha + \beta_j g_{ij} + \gamma^\top c_i + \varepsilon_i
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER.png" class="img-fluid figure-img"></p>
-<figcaption><strong>FIGURE PLACEHOLDER</strong></figcaption>
+<figcaption>FIGURE PLACEHOLDER</figcaption>
 </figure>
 </div>
 </div>
@@ -776,7 +776,7 @@ Figure&nbsp;3.1: [Essential] Annotated Manhattan plot from a real or realistic G
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER.png" class="img-fluid figure-img"></p>
-<figcaption><strong>FIGURE PLACEHOLDER</strong></figcaption>
+<figcaption>FIGURE PLACEHOLDER</figcaption>
 </figure>
 </div>
 </div>
@@ -816,7 +816,7 @@ Figure&nbsp;3.2: [High] Conceptual diagram showing nested components of phenotyp
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A.png" class="img-fluid figure-img"></p>
-<figcaption><strong>FIGURE PLACEHOLDER A</strong></figcaption>
+<figcaption>FIGURE PLACEHOLDER A</figcaption>
 </figure>
 </div>
 </div>
@@ -824,7 +824,7 @@ Figure&nbsp;3.2: [High] Conceptual diagram showing nested components of phenotyp
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B.png" class="img-fluid figure-img"></p>
-<figcaption><strong>FIGURE PLACEHOLDER B</strong></figcaption>
+<figcaption>FIGURE PLACEHOLDER B</figcaption>
 </figure>
 </div>
 </div>
@@ -832,7 +832,7 @@ Figure&nbsp;3.2: [High] Conceptual diagram showing nested components of phenotyp
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C.png" class="img-fluid figure-img"></p>
-<figcaption><strong>FIGURE PLACEHOLDER C</strong></figcaption>
+<figcaption>FIGURE PLACEHOLDER C</figcaption>
 </figure>
 </div>
 </div>
@@ -895,7 +895,7 @@ Figure&nbsp;3.3: [Essential] Three-panel figure. Panel A: Haplotype diagram show
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A.png" class="img-fluid figure-img"></p>
-<figcaption><strong>FIGURE PLACEHOLDER A</strong></figcaption>
+<figcaption>FIGURE PLACEHOLDER A</figcaption>
 </figure>
 </div>
 </div>
@@ -903,7 +903,7 @@ Figure&nbsp;3.3: [Essential] Three-panel figure. Panel A: Haplotype diagram show
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B.png" class="img-fluid figure-img"></p>
-<figcaption><strong>FIGURE PLACEHOLDER B</strong></figcaption>
+<figcaption>FIGURE PLACEHOLDER B</figcaption>
 </figure>
 </div>
 </div>
@@ -981,7 +981,7 @@ Figure&nbsp;3.4: [High] Side-by-side comparison of C+T vs LD-aware Bayesian meth
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER.png" class="img-fluid figure-img"></p>
-<figcaption><strong>FIGURE PLACEHOLDER</strong></figcaption>
+<figcaption>FIGURE PLACEHOLDER</figcaption>
 </figure>
 </div>
 </div>

@@ -102,7 +102,7 @@ TODO — TODO — (TODO)
 
 ---
 
-### landrum_clinvar_2024
+### landrum_clinvar_2018
 
 ClinVar: improving access to variant interpretations and supporting evidence — Landrum, Melissa J and Lee, Jennifer M and Benson, Mark and Brown, Garth R and Chao, Chen and Chitipiralla, Shanmuga and Gu, Baoshan and Hart, Jennifer and Hoffman, Douglas and Jang, Wonhee and Karapetyan, Karen and Katz, Kenneth and Liu, Chunlei and Maddipatla, Zenith and Malheiro, Adriana and McDaniel, Kurt and Ovetsky, Michael and Riley, George and Zhou, George and Holmes, J Bradley and Kattman, Brandi L and Maglott, Donna R — Nucleic Acids Research (2018) — DOI: 10.1093/nar/gkx1153 — URL: https://doi.org/10.1093/nar/gkx1153
 

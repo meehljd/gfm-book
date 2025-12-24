@@ -43,7 +43,7 @@ Missense variants (single amino acid substitutions) account for approximately ha
 
 The simplest foundation model approach to missense VEP requires no task-specific training. A protein *language* model trained on masked token prediction assigns probabilities to each amino acid at each position given surrounding context. Variant effect scores emerge from comparing the probability of the reference amino acid to the probability of the variant amino acid.
 
-*ESM*-1v operationalizes this approach using the *ESM*-2 architecture fine-tuned for single-sequence variant effect prediction [@`meier_esm`-1v_2021]. For a variant substituting amino acid $a_\text{ref}$ with $a_\text{var}$ at position $i$, the score is computed as:
+*ESM*-1v operationalizes this approach using the *ESM*-2 architecture fine-tuned for single-sequence variant effect prediction [@meier_esm-1v_2021]. For a variant substituting amino acid $a_\text{ref}$ with $a_\text{var}$ at position $i$, the score is computed as:
 
 $$\Delta \text{LLR} = \log P(a_\text{var} | \text{context}) - \log P(a_\text{ref} | \text{context})$$
 
@@ -53,17 +53,17 @@ This zero-shot capability reflects what protein *language* models learn during p
 
 ### Alignment-Based Models: EVE and popEVE
 
-An alternative approach explicitly models multiple sequence alignments rather than relying on implicit evolutionary information in single-sequence representations. *EVE* (Evolutionary Model of Variant Effect) fits a variational autoencoder to the MSA for each protein, learning a generative model that captures position-specific and pairwise constraints [@`frazer_eve_2021`]. Variant scores derive from the change in sequence probability under this model.
+An alternative approach explicitly models multiple sequence alignments rather than relying on implicit evolutionary information in single-sequence representations. *EVE* (Evolutionary Model of Variant Effect) fits a variational autoencoder to the MSA for each protein, learning a generative model that captures position-specific and pairwise constraints [@frazer_eve_2021]. Variant scores derive from the change in sequence probability under this model.
 
 The *EVE* architecture consists of an encoder that maps sequences to a latent space and a decoder that reconstructs sequences from latent representations. Training maximizes a lower bound on sequence likelihood across the MSA. For variant scoring, *EVE* computes the log-likelihood ratio between mutant and wild-type sequences, capturing how surprising the substitution appears given the evolutionary record for that specific protein.
 
-popEVE extends this framework with improved training procedures and explicit modeling of population allele frequencies [@`orenbuch_popeve_2025`]. By incorporating frequency information, popEVE better separates rare deleterious variants from common benign polymorphisms. The model achieves strong performance on ClinVar classification while providing uncertainty estimates through ensemble disagreement.
+popEVE extends this framework with improved training procedures and explicit modeling of population allele frequencies [@orenbuch_popeve_2025]. By incorporating frequency information, popEVE better separates rare deleterious variants from common benign polymorphisms. The model achieves strong performance on ClinVar classification while providing uncertainty estimates through ensemble disagreement.
 
 The tradeoff between single-sequence and MSA-based approaches involves coverage versus depth. *ESM*-1v scores any protein *sequence* without requiring alignment construction. *EVE* provides stronger performance when high-quality MSAs are available but cannot score proteins lacking sufficient homologs. For well-studied protein *families* with deep evolutionary sampling, MSA-based methods remain competitive; for orphan proteins or rapidly evolving sequences, single-sequence models offer the only foundation model option.
 
 ### *AlphaMissense*: Structure-Informed Pathogenicity Prediction
 
-*AlphaMissense* represents the current state of the art for proteome-wide missense pathogenicity prediction, combining protein *language* model representations with structural information from AlphaFold2 [@`cheng_alphamissense_2023`]. The system provides precomputed scores for 71 million possible missense variants across the human proteome, enabling instant lookup for any variant in any protein-coding gene.
+*AlphaMissense* represents the current state of the art for proteome-wide missense pathogenicity prediction, combining protein *language* model representations with structural information from AlphaFold2 [@cheng_alphamissense_2023]. The system provides precomputed scores for 71 million possible missense variants across the human proteome, enabling instant lookup for any variant in any protein-coding gene.
 
 The architecture integrates multiple information sources. Sequence representations come from a protein *language* model encoding the wild-type sequence and mutation position. Structural representations derive from AlphaFold2 predictions, capturing local geometry (secondary structure, solvent accessibility, packing density) and longer-range contacts. A neural network combines these representations to produce a pathogenicity probability between 0 and 1.
 
@@ -96,7 +96,7 @@ Approximately 98% of the human genome lies outside protein-coding regions, yet n
 
 Splicing variants illustrate both the promise and current limitations of deep learning for noncoding VEP. Approximately 10% of pathogenic variants in ClinVar act through splicing mechanisms, disrupting the precise excision of introns from pre-mRNA. Classical approaches relied on position weight matrices matching consensus splice site sequences, achieving limited sensitivity for variants outside the core GT-AG dinucleotides.
 
-SpliceAI applies the dilated convolutional architecture introduced in @sec-cnn to predict splice site usage from raw DNA sequence [@`jaganathan_spliceai_2019`]. The architecture processes 10,000 nucleotides of context through 32 residual blocks with dilated convolutions (dilation rates increasing from 1 to 128), enabling the **receptive field** to span several kilobases while maintaining nucleotide resolution. Output heads predict splice donor probability, splice acceptor probability, and junction usage at each position.
+SpliceAI applies the dilated convolutional architecture introduced in @sec-cnn to predict splice site usage from raw DNA sequence [@jaganathan_spliceai_2019]. The architecture processes 10,000 nucleotides of context through 32 residual blocks with dilated convolutions (dilation rates increasing from 1 to 128), enabling the **receptive field** to span several kilobases while maintaining nucleotide resolution. Output heads predict splice donor probability, splice acceptor probability, and junction usage at each position.
 
 For variant effect prediction, SpliceAI compares predictions between reference and alternate sequences. The **delta score** quantifies the change in splice site probability, with positive values indicating gained splice sites and negative values indicating lost sites. Scores exceeding 0.2 correlate with experimentally validated splicing changes; scores above 0.5 have high specificity for pathogenic splicing variants.
 
@@ -106,27 +106,27 @@ Limitations reflect the model's training data. SpliceAI learned from annotated t
 
 ### Regulatory Variant Prediction with Enformer
 
-While SpliceAI addresses one specific noncoding mechanism, regulatory variants that alter enhancer activity, promoter function, or chromatin organization require different approaches. *Enformer* (@sec-regulatory) predicts multiple molecular phenotypes (**histone modifications**, **transcription factor** binding, chromatin accessibility, gene *expression*) from 196,608 base pairs of DNA sequence, providing a substrate for regulatory VEP [@`avsec_enformer_2021`].
+While SpliceAI addresses one specific noncoding mechanism, regulatory variants that alter enhancer activity, promoter function, or chromatin organization require different approaches. *Enformer* (@sec-regulatory) predicts multiple molecular phenotypes (**histone modifications**, **transcription factor** binding, chromatin accessibility, gene *expression*) from 196,608 base pairs of DNA sequence, providing a substrate for regulatory VEP [@avsec_enformer_2021].
 
 Variant effect prediction with *Enformer* compares predicted tracks between reference and alternate sequences. For a variant in an enhancer, the model might predict reduced H3K27ac signal and decreased CAGE expression at the target promoter. These molecular predictions can be aggregated into variant effect scores, with larger predicted changes indicating greater functional impact.
 
 Several challenges complicate *Enformer*-based VEP. The model predicts relative effects (fold changes in predicted signal) rather than absolute deleteriousness. Calibrating these predictions against pathogenicity labels requires additional supervised training. Cell-type specificity adds complexity: a variant might strongly affect predictions in cardiac tissue while showing no effect in liver, requiring prior knowledge of relevant tissues for clinical interpretation.
 
-Sei extends this approach by learning a regulatory vocabulary: clusters of predicted effects that correspond to interpretable categories like "active promoter," "strong enhancer," or "CTCF binding site" [@`chen_sei_2022`]. Variant scores reflect shifts between these categories, providing more interpretable outputs than raw track changes. A variant that converts an enhancer prediction to a quiescent state has clearer implications than one that reduces H3K27ac by 0.3 log-fold.
+Sei extends this approach by learning a regulatory vocabulary: clusters of predicted effects that correspond to interpretable categories like "active promoter," "strong enhancer," or "CTCF binding site" [@chen_sei_2022]. Variant scores reflect shifts between these categories, providing more interpretable outputs than raw track changes. A variant that converts an enhancer prediction to a quiescent state has clearer implications than one that reduces H3K27ac by 0.3 log-fold.
 
 ### DNA Language Models: GPN-MSA and Evo 2
 
 DNA language models provide an alternative to phenotype prediction: scoring variants by how unexpected they appear in learned sequence context, analogous to protein *language* model approaches for missense variants.
 
-*GPN*-MSA combines DNA language modeling with multi-species sequence alignments [@`benegas_gpn`-`msa_2024`]. The model processes aligned sequences from dozens of vertebrate species, learning which positions are conserved and which tolerate variation. Variant scores derive from likelihood ratios: how much less probable is the variant allele compared to reference given the alignment context? This approach captures deep evolutionary constraint missed by simple conservation scores while providing genome-wide coverage including noncoding regions.
+*GPN*-MSA combines DNA language modeling with multi-species sequence alignments [@benegas_gpn-msa_2024]. The model processes aligned sequences from dozens of vertebrate species, learning which positions are conserved and which tolerate variation. Variant scores derive from likelihood ratios: how much less probable is the variant allele compared to reference given the alignment context? This approach captures deep evolutionary constraint missed by simple conservation scores while providing genome-wide coverage including noncoding regions.
 
-Evo 2 pushes context length to approximately one megabase, enabling single models to capture local motifs and long-range dependencies simultaneously [@`brixi_evo_2025`]. The StripedHyena architecture provides computational efficiency at this scale through state-space-based sequence modeling rather than quadratic attention. Training on diverse genomes across the tree of life teaches general principles of sequence organization that transfer to human variant interpretation.
+Evo 2 pushes context length to approximately one megabase, enabling single models to capture local motifs and long-range dependencies simultaneously [@brixi_evo_2025]. The StripedHyena architecture provides computational efficiency at this scale through state-space-based sequence modeling rather than quadratic attention. Training on diverse genomes across the tree of life teaches general principles of sequence organization that transfer to human variant interpretation.
 
 Zero-shot variant scoring with Evo 2 follows the standard likelihood ratio approach. Initial benchmarks show performance competitive with conservation-based scores for coding variants and potentially superior performance for noncoding variants where local sequence context matters more than position-specific conservation. The extremely long context enables modeling of effects mediated by distal elements, though whether this theoretical capability translates to improved VEP remains under investigation.
 
 ### AlphaGenome: Unified Multi-Omic Variant Effect Prediction
 
-AlphaGenome (@sec-dna-lm) represents the most ambitious current attempt at comprehensive VEP, predicting multiple molecular phenotypes from megabase-scale DNA sequence and using those predictions to assess variant effects across modalities [@`avsec_alphagenome_2025`]. The architecture and training procedure are detailed in Chapter 13; here we focus on VEP-specific applications.
+AlphaGenome (@sec-dna-lm) represents the most ambitious current attempt at comprehensive VEP, predicting multiple molecular phenotypes from megabase-scale DNA sequence and using those predictions to assess variant effects across modalities [@avsec_alphagenome_2025]. The architecture and training procedure are detailed in Chapter 13; here we focus on VEP-specific applications.
 
 Variant effect prediction with AlphaGenome provides mechanistically interpretable outputs. A promoter variant might show reduced accessibility and decreased expression prediction. An enhancer variant might show weakened contact with its target promoter in addition to reduced local histone acetylation. A splicing variant triggers SpliceAI-like splice site changes while also affecting regulatory track predictions near the affected exon.
 
@@ -187,7 +187,7 @@ Expected calibration error (ECE) quantifies miscalibration as the weighted avera
 
 ### Calibration Methods
 
-Temperature scaling applies a learned scalar divisor to logits before softmax, effectively "softening" overconfident predictions [@`guo_calibration_2017`]. The temperature parameter is optimized on a held-out calibration set to minimize negative log-likelihood. This simple approach often substantially improves ECE with no change to discrimination.
+Temperature scaling applies a learned scalar divisor to logits before softmax, effectively "softening" overconfident predictions [@guo_calibration_2017]. The temperature parameter is optimized on a held-out calibration set to minimize negative log-likelihood. This simple approach often substantially improves ECE with no change to discrimination.
 
 Isotonic regression learns a monotonic mapping from raw scores to calibrated probabilities. The method fits a step function that preserves ranking while adjusting probability estimates to match observed frequencies. Isotonic regression handles more complex miscalibration patterns than temperature scaling but requires larger calibration sets to avoid **overfitting**.
 
@@ -209,7 +209,7 @@ Calibration should use data representative of deployment conditions. Calibrating
 
 ### Mapping to ACMG Categories
 
-The ACMG-AMP variant classification framework defines five categories: pathogenic, likely pathogenic, uncertain significance, likely benign, and benign [@`richards_standards_2015`]. Computational evidence contributes to classification through specific criteria: *PP3* (computational evidence for pathogenicity) and *BP4* (computational evidence for benignity).
+The ACMG-AMP variant classification framework defines five categories: pathogenic, likely pathogenic, uncertain significance, likely benign, and benign [@richards_standards_2015]. Computational evidence contributes to classification through specific criteria: *PP3* (computational evidence for pathogenicity) and *BP4* (computational evidence for benignity).
 
 Mapping continuous foundation model scores to these discrete criteria requires threshold selection. Conservative thresholds ensure high precision at the cost of low recall: only variants with very high (or very low) scores receive computational evidence designation. Lenient thresholds increase recall but admit more false positives, potentially inflating pathogenicity classifications.
 
@@ -236,7 +236,7 @@ Ensemble methods train multiple models on different data subsets or with differe
 
 Monte Carlo dropout approximates Bayesian inference by applying dropout at test time and averaging predictions across multiple stochastic forward passes. Variance across passes estimates uncertainty without training multiple models. This approach adds modest computational overhead and can be applied to any dropout-containing architecture.
 
-Conformal prediction provides distribution-free uncertainty quantification with coverage guarantees [@`angelopoulos_conformal_2023`]. Given a calibration set, conformal methods construct prediction sets guaranteed to contain the true label with specified probability (e.g., 90%). For variant classification, this might produce sets like {pathogenic, uncertain} or {benign} depending on the variant and desired coverage. Larger prediction sets indicate greater uncertainty; single-element sets indicate confident predictions.
+Conformal prediction provides distribution-free uncertainty quantification with coverage guarantees [@angelopoulos_conformal_2023]. Given a calibration set, conformal methods construct prediction sets guaranteed to contain the true label with specified probability (e.g., 90%). For variant classification, this might produce sets like {pathogenic, uncertain} or {benign} depending on the variant and desired coverage. Larger prediction sets indicate greater uncertainty; single-element sets indicate confident predictions.
 
 ### Out-of-Distribution Detection
 

@@ -11,7 +11,7 @@ This chapter develops the concepts and methods for quantifying, calibrating, and
 
 ### Why Uncertainty Matters
 
-Clinical genetics operates under fundamental uncertainty. When a laboratory reports a variant of uncertain significance (VUS), they acknowledge that current evidence cannot confidently classify the variant as pathogenic or benign. **ClinVar** contains approximately two million VUS compared to roughly 250,000 variants classified as pathogenic [@landrum_clinvar_2024], reflecting the reality that most genetic variation remains incompletely understood. Foundation models inherit and sometimes amplify this uncertainty: they may produce confident-seeming scores for variants where the underlying biology remains genuinely unknown.
+Clinical genetics operates under fundamental uncertainty. When a laboratory reports a variant of uncertain significance (VUS), they acknowledge that current evidence cannot confidently classify the variant as pathogenic or benign. **ClinVar** contains approximately two million VUS compared to roughly 250,000 variants classified as pathogenic [@landrum_clinvar_2018], reflecting the reality that most genetic variation remains incompletely understood. Foundation models inherit and sometimes amplify this uncertainty: they may produce confident-seeming scores for variants where the underlying biology remains genuinely unknown.
 
 The consequences of ignoring uncertainty extend beyond statistical abstraction. An overconfident pathogenic prediction may trigger unnecessary interventions, from prophylactic surgeries to reproductive decisions that alter family planning. An overconfident benign prediction may provide false reassurance, delaying diagnosis while a treatable condition progresses. In both cases, the harm stems not from prediction error per se but from the mismatch between stated confidence and actual reliability. A model that accurately conveys its uncertainty enables appropriate clinical reasoning even when the prediction itself is imperfect.
 
@@ -167,7 +167,7 @@ Temporal stability of calibration deserves consideration. As ClinVar annotations
 ::: {#fig-uq-methods}
 ![**FIGURE PLACEHOLDER**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
 
-[High] Method comparison. Deep ensembles: 5 models independently trained; variance/entropy across predictions; 5× training/inference; gold standard for epistemic. MC `Dropout`: Single model, multiple stochastic passes; variance across `dropout` samples; 1× training, N× inference; approximates ensemble. Last-layer ensembles: Frozen backbone, ensemble of heads; head disagreement; 1× pretraining, 5× heads (cheap); fine-tuning uncertainty only. Heteroscedastic networks: Single model outputs mean + variance; learned per input; 1× training/inference; aleatoric not epistemic. Comparison table: Epistemic, Aleatoric, Cost, FM-friendly.
+[High] Method comparison. Deep ensembles: 5 models independently trained; variance/entropy across predictions; 5× training/inference; gold standard for epistemic. MC Dropout: Single model, multiple stochastic passes; variance across dropout samples; 1× training, N× inference; approximates ensemble. Last-layer ensembles: Frozen backbone, ensemble of heads; head disagreement; 1× pretraining, 5× heads (cheap); fine-tuning uncertainty only. Heteroscedastic networks: Single model outputs mean + variance; learned per input; 1× training/inference; aleatoric not epistemic. Comparison table: Epistemic, Aleatoric, Cost, FM-friendly.
 :::
 
 ### Deep Ensembles
@@ -180,15 +180,15 @@ The theoretical basis for ensemble uncertainty estimation rests on the observati
 
 For foundation models with billions of parameters, training full ensembles becomes prohibitively expensive. Training five copies of *ESM*-2 requires approximately five times the compute of a single model, potentially millions of dollars in cloud computing costs. Several practical alternatives reduce this burden. Last-layer ensembles freeze the pretrained backbone and train only an ensemble of prediction heads, reducing cost by orders of magnitude while still capturing uncertainty from the fine-tuning process. Snapshot ensembles save model checkpoints at various points during optimization and use these snapshots as ensemble members, requiring only single-model training time. Multi-seed fine-tuning trains the same architecture from multiple random seeds on the fine-tuning task, which is far cheaper than multi-seed pretraining.
 
-### Monte Carlo `Dropout`
+### Monte Carlo Dropout
 
-Monte Carlo (MC) `dropout` provides uncertainty estimates from a single trained model by treating `dropout` regularization as approximate Bayesian inference. During standard training with `dropout`, random subsets of neurons are zeroed at each forward pass. MC `dropout` keeps `dropout` active at test time and performs multiple stochastic forward passes, treating the variation across passes as a measure of model uncertainty.
+Monte Carlo (MC) dropout provides uncertainty estimates from a single trained model by treating dropout regularization as approximate Bayesian inference. During standard training with dropout, random subsets of neurons are zeroed at each forward pass. MC dropout keeps dropout active at test time and performs multiple stochastic forward passes, treating the variation across passes as a measure of model uncertainty.
 
-Gal and Ghahramani showed that this procedure approximates variational inference over the model's weights [@gal_dropout_2016]. Each forward pass with `dropout` samples a different subnetwork, and the distribution of predictions across samples approximates the predictive distribution under a particular prior over weights. High variance across MC samples indicates epistemic uncertainty about the model's parameters for that input.
+Gal and Ghahramani showed that this procedure approximates variational inference over the model's weights [@gal_dropout_2016]. Each forward pass with dropout samples a different subnetwork, and the distribution of predictions across samples approximates the predictive distribution under a particular prior over weights. High variance across MC samples indicates epistemic uncertainty about the model's parameters for that input.
 
-MC `dropout` offers the significant advantage of requiring only a single trained model, avoiding the computational overhead of ensembles. Implementation is straightforward: enable `dropout` during inference and average predictions over 10 to 50 stochastic forward passes. The variance or entropy of these predictions serves as the uncertainty estimate.
+MC dropout offers the significant advantage of requiring only a single trained model, avoiding the computational overhead of ensembles. Implementation is straightforward: enable dropout during inference and average predictions over 10 to 50 stochastic forward passes. The variance or entropy of these predictions serves as the uncertainty estimate.
 
-Limitations temper the method's appeal. Modern transformer architectures often do not use `dropout` in their standard configurations, or use `dropout` only in specific locations (attention `dropout`, residual `dropout`) where the approximation may be less accurate. The quality of uncertainty estimates depends on the `dropout` rate and architecture, with higher `dropout` rates providing better uncertainty estimates but potentially degrading mean predictions. Empirical comparisons often find that MC `dropout` underestimates uncertainty relative to deep ensembles, particularly in low-data regimes where epistemic uncertainty should be high.
+Limitations temper the method's appeal. Modern transformer architectures often do not use dropout in their standard configurations, or use dropout only in specific locations (attention dropout, residual dropout) where the approximation may be less accurate. The quality of uncertainty estimates depends on the dropout rate and architecture, with higher dropout rates providing better uncertainty estimates but potentially degrading mean predictions. Empirical comparisons often find that MC dropout underestimates uncertainty relative to deep ensembles, particularly in low-data regimes where epistemic uncertainty should be high.
 
 ### Heteroscedastic Models
 
@@ -206,7 +206,7 @@ Evidential deep learning places a prior distribution over the class probabilitie
 
 Low total concentration indicates high uncertainty: the model is unsure which class is correct. High total concentration with one dominant class indicates confident prediction. This framework provides a principled way to separate epistemic uncertainty (low concentration) from confident predictions (high concentration), all from a single forward pass without ensembling or MC sampling.
 
-Critics have noted that evidential deep learning can produce unreliable uncertainty estimates when the distributional assumptions are violated or when training data is limited. Practical experience suggests that ensembles and MC `dropout` often provide more robust uncertainty estimates, though evidential methods continue to be refined.
+Critics have noted that evidential deep learning can produce unreliable uncertainty estimates when the distributional assumptions are violated or when training data is limited. Practical experience suggests that ensembles and MC dropout often provide more robust uncertainty estimates, though evidential methods continue to be refined.
 
 
 ## **Conformal Prediction**: Distribution-Free Guarantees {#sec-conformal}

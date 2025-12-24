@@ -3,9 +3,9 @@
 Processed in alphabetical order by citation key. Date: 2025-12-22.
 
 
-### agarwal_predicting_2015
+### agarwal_predicting_2020
 
-MISSING BIB ENTRY: agarwal_predicting_2015 — (2015)
+MISSING BIB ENTRY: agarwal_predicting_2020 — (2015)
 
 **Scope fit.** Scope fit is unclear from the BibTeX metadata alone; the title/venue do not unambiguously signal deep learning over genomic or protein sequences.
 
@@ -36,9 +36,9 @@ MISSING BIB ENTRY: agarwal_predicting_2015 — (2015)
 
 ---
 
-### agarwal_predicting_2022
+### agarwal_predicting_2020
 
-MISSING BIB ENTRY: agarwal_predicting_2022 — (2022)
+MISSING BIB ENTRY: agarwal_predicting_2020 — (2022)
 
 **Scope fit.** Scope fit is unclear from the BibTeX metadata alone; the title/venue do not unambiguously signal deep learning over genomic or protein sequences.
 

@@ -106,4 +106,4 @@ Date: 2025-12-23
 - Location: `/mnt/data/p1-ch03-gwas.qmd` lines 7-7
 - Heading path: GWAS and Polygenic Scores
 - Evidence: …es achieve clinically meaningful discrimination: individuals in the top percentile of coronary artery disease risk have odds ratios comparable to monogenic familial hypercholesterolemia. Yet polygenic scores inherit all the limitations of the associat…
-- Recommendation: Add a supporting citation near this statement (likely the same sources cited later: [@khera_genome-wide_2018] and related PGS clinical stratification work), or soften the comparison to avoid an unsupported performance claim in the introduction.
+- Recommendation: Add a supporting citation near this statement (likely the same sources cited later: [@khera_genome-wide_2017] and related PGS clinical stratification work), or soften the comparison to avoid an unsupported performance claim in the introduction.

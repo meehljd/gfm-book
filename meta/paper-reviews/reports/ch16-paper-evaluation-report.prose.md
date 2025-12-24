@@ -135,9 +135,9 @@ Missing reference for dixit_perturb-seq_2016
 
 ---
 
-### hao_scfoundation_2024
+### hao_large-scale_2024
 
-Missing reference for hao_scfoundation_2024
+Missing reference for hao_large-scale_2024
 
 **Scope fit.** Scope fit is unclear from the BibTeX metadata alone; the title/venue do not unambiguously signal deep learning over genomic or protein sequences.
 
