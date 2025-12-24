@@ -49,7 +49,7 @@
 ### MEDIUM
 #### MEDIUM-01: POTENTIAL_MISSING_CITATION_FOR_NUMBER
 - Location: Line 3 (Section: Confounders and Leakage)
-- Evidence: A variant effect predictor trained on **ClinVar** achieves 0.92 AUC on held-out variants from the same database, yet performance drops to 0.71 when evaluated on a prospectively collected clinical cohort. A **polygenic risk score** for coronary artery disease stratifies European-ancestry individuals with impressive discrimination, then fails almost completely when applied to individuals of African ancestry. A gene expression model trained on GTEx data predicts tissue-specific patterns with apparent **precision**, until deployment reveals it learned to distinguish sequencing centers rather than biological states. Each model worked brilliantly in evaluation and failed quietly in practice.
+- Evidence: A variant effect predictor trained on **ClinVar** achieves 0.92 auROC on held-out variants from the same database, yet performance drops to 0.71 when evaluated on a prospectively collected clinical cohort. A **polygenic risk score** for coronary artery disease stratifies European-ancestry individuals with impressive discrimination, then fails almost completely when applied to individuals of African ancestry. A gene expression model trained on GTEx data predicts tissue-specific patterns with apparent **precision**, until deployment reveals it learned to distinguish sequencing centers rather than biological states. Each model worked brilliantly in evaluation and failed quietly in practice.
 - Recommendation: If this number/metric comes from a source (not a purely illustrative example), add an appropriate citation.
 
 #### MEDIUM-02: POTENTIAL_MISSING_CITATION_FOR_NUMBER
@@ -59,7 +59,7 @@
 
 #### MEDIUM-03: POTENTIAL_MISSING_CITATION_FOR_NUMBER
 - Location: Line 158 (Section: Confounders and Leakage > Detecting Confounding)
-- Evidence: **Split sensitivity analysis** varies the splitting strategy to probe for leakage. Re-evaluate performance under locus-level splits, cohort holdouts, or temporal splits. Large drops in performance under stricter splitting indicate that initial results were inflated. A model that achieves 0.90 AUC with random splits but only 0.75 AUC with locus-level splits has likely memorized site-specific patterns.
+- Evidence: **Split sensitivity analysis** varies the splitting strategy to probe for leakage. Re-evaluate performance under locus-level splits, cohort holdouts, or temporal splits. Large drops in performance under stricter splitting indicate that initial results were inflated. A model that achieves 0.90 auROC with random splits but only 0.75 auROC with locus-level splits has likely memorized site-specific patterns.
 - Recommendation: If this number/metric comes from a source (not a purely illustrative example), add an appropriate citation.
 
 

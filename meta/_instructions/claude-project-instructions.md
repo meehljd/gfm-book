@@ -192,9 +192,30 @@ Can be brief but must be present:
 - "In terms of performance..." → "Performance..."
 
 **Strategic use of colons and semicolons**:
-- Colons introduce explanations or lists naturally
-- Semicolons link closely related independent clauses
-- Both preferable to em-dashes for formal prose
+Colons and semicolons are legitimate punctuation tools, but overuse creates a distinctive, overly formal cadence. Use them judiciously for specific rhetorical effect, not as default sentence connectors.
+
+- Colons introduce explanations, elaborations, or lists naturally
+- Semicolons link closely related independent clauses where a period feels too abrupt
+- Both are preferable to em-dashes for formal prose
+
+**Signs of overuse:**
+- More than 2-3 semicolons per page
+- Multiple colons in a single paragraph
+- Semicolons becoming a crutch to avoid writing separate sentences
+- Prose that reads as a series of clause; clause; clause constructions
+
+**When colons work well:**
+- Introducing a key definition or elaboration: "The fundamental question is this: can we..."
+- Setting up a memorable statement after buildup
+- Introducing embedded lists in prose
+
+**When semicolons work well:**
+- Linking two clauses where the connection must be explicit and a period would lose it
+- Creating deliberate parallel structure: "Short reads capture breadth; long reads capture continuity"
+
+**When to use periods instead:**
+- Most of the time. Two clear sentences often read better than one compound sentence
+- When in doubt, split the sentence. The prose will breathe better.
 
 ### Parenthetical Precision
 
@@ -624,6 +645,44 @@ Use subsections freely as cognitive guideposts. Dense technical prose benefits f
 ## From Convolutions to Attention
 ```
 
+### No Orphaned Headers
+
+Every header must be followed by at least one paragraph of prose before any subheader. Headers exist to organize content, not to create empty containers.
+
+**Correct:**
+```markdown
+## Variant Calling Approaches
+
+Variant calling methods have evolved through three distinct generations, each representing fundamentally different assumptions about how to distinguish true variants from sequencing artifacts. Understanding this progression illuminates why deep learning approaches succeeded where earlier methods struggled.
+
+### Statistical Methods
+
+The earliest variant callers relied on...
+```
+
+**Incorrect:**
+```markdown
+## Variant Calling Approaches
+
+### Statistical Methods
+
+The earliest variant callers relied on...
+```
+
+**Why this matters:**
+- Orphaned headers signal missing connective tissue between concepts
+- Readers need orientation before diving into subsections
+- The introductory paragraph establishes scope and previews the section's arc
+- Without it, the hierarchy feels like an outline, not prose
+
+**What to include in the bridging paragraph:**
+- Why this section matters (stakes)
+- How the subsections relate to each other
+- What the reader will understand after reading
+- Scope boundaries (what's covered, what's deferred)
+
+**Minimum requirement:** At least 2-3 sentences between any header and its first subheader. A single transitional sentence is insufficient; provide genuine orientation.
+
 ## Information Density and Technical Depth
 
 ### Core Principle
@@ -957,6 +1016,31 @@ After first mention, use term normally without formatting.
 - Code elements: `batch_size`, `learning_rate`, `num_layers`
 - Command-line tools: `bedtools`, `samtools`, `bcftools`
 - URLs and paths (when referenced): `https://...`, `/path/to/file`
+
+### Acronym and Metric Conventions
+
+**Prefer full metric names over ambiguous abbreviations:**
+
+| Preferred | Avoid | Why |
+|-----------|-------|-----|
+| auROC | ROC, AUC, AUROC | "ROC" alone refers to the curve, not the area; "AUC" is ambiguous |
+| auPRC | PRC, AUPRC | "PRC" alone refers to the curve, not the area |
+| F1 score | F1, F-score | Include "score" on first use for clarity |
+| MCC | Matthews correlation coefficient | Spell out on first use, then MCC |
+
+**Metric formatting:**
+- First use: "area under the receiver operating characteristic curve (auROC)"
+- Subsequent uses: "auROC"
+- In comparisons: "auROC of 0.94" not "AUC = 0.94"
+
+**Rationale:** "ROC" and "PRC" are curves; "auROC" and "auPRC" are scalar metrics derived from those curves. Using the prefix "au" (area under) eliminates ambiguity about whether you mean the curve or the summary statistic. This distinction matters when discussing threshold-dependent vs. threshold-independent evaluation.
+
+**Other common acronyms to expand on first use:**
+- NGS (next-generation sequencing)
+- WGS (whole-genome sequencing)
+- WES (whole-exome sequencing)
+- VUS (variant of uncertain significance)
+- MAF (minor allele frequency)
 
 ### What NOT to Emphasize
 

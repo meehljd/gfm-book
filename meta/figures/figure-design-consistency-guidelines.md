@@ -121,7 +121,7 @@ Assign consistent colors to specific methods for all comparison figures:
 
 ### ROC/PR Curves
 - Include random baseline (diagonal for ROC, prevalence for PR)
-- Annotate AUC/AUPRC values
+- Annotate auROC/AUPRC values
 - Mark operating points with specific thresholds
 
 ### Heatmaps

@@ -181,7 +181,7 @@ Location: Line 218, at section "Ancestry, Portability, and Fairness"
 ::: {#fig-pgs-portability}
 ![**FIGURE PLACEHOLDER**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
 
-[High] Bar chart showing relative prediction accuracy (R² or AUC ratio) of European-derived PGS when applied to different ancestry groups. European as reference (100%), then decreasing accuracy for East Asian, South Asian, Hispanic/Latino, and African-ancestry populations (often 25-60% of European performance). Include error bars. Overlay or annotate factors contributing to the gap: LD differences, allele frequency differences, potential effect heterogeneity, training sample size disparities.
+[High] Bar chart showing relative prediction accuracy (R² or auROC ratio) of European-derived PGS when applied to different ancestry groups. European as reference (100%), then decreasing accuracy for East Asian, South Asian, Hispanic/Latino, and African-ancestry populations (often 25-60% of European performance). Include error bars. Overlay or annotate factors contributing to the gap: LD differences, allele frequency differences, potential effect heterogeneity, training sample size disparities.
 :::
 
 ---
