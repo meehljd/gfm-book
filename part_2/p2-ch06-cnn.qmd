@@ -95,7 +95,7 @@ DanQ explored whether regulatory grammar involves sequential dependencies that c
 These variations illustrated a broader principle: multiple architectures could learn useful regulatory representations from sequence. The specific choices (filter sizes, layer depths, recurrent components) mattered less than the fundamental framework of learning from one-hot encoded sequence to predict chromatin labels. This robustness suggested that the underlying signal, sequence determinants of regulatory activity, was strong enough to be captured by diverse architectural approaches. For clinical applications, prediction quality depends more on training data quality and task definition than on architectural details within the CNN family.
 
 
-## ExPecto: From Chromatin to Expression {#sec-expecto}
+## *ExPecto*: From Chromatin to Expression {#sec-expecto}
 
 ### Beyond Intermediate Phenotypes
 
@@ -131,7 +131,7 @@ Variant effect prediction follows the same logic as *DeepSEA*: compare expressio
 The 40 kb window represents an empirically optimized trade-off. Smaller windows decreased performance; larger windows showed negligible improvement. Most promoter-proximal regulatory information lies within 40 kb of the TSS, at least within ExPecto's linear modeling framework. Distal enhancers beyond this window, while biologically important, require architectural approaches that can model longer-range dependencies. This limitation points toward the **transformer architecture**s examined in @sec-regulatory.
 
 
-## SpliceAI: Clinical-Grade Splicing Prediction {#sec-spliceai}
+## *SpliceAI*: Clinical-Grade Splicing Prediction {#sec-spliceai}
 
 ### The Cryptic Splice Problem
 
@@ -227,7 +227,7 @@ Information rarely survives. Training RNNs requires backpropagating gradients th
 
 These gated architectures extended effective memory from tens to hundreds of positions, sometimes thousands. For natural language, where most dependencies span fewer than 50 words, LSTMs proved transformative. For genomic sequences, where relevant context can span tens of kilobases (tens of thousands of nucleotides), even gated recurrence falls short. The mathematics of gradient propagation through recurrent connections imposes limits that no gating mechanism fully overcomes.
 
-### DanQ: Combining Convolutions and Recurrence
+### *DanQ*: Combining Convolutions and Recurrence
 
 The DanQ model [@quang_danq_2016] represented the most influential attempt to apply recurrent architectures to regulatory genomics. Rather than replacing convolutions entirely, DanQ combined them: convolutional layers first extracted local sequence motifs, then a bidirectional LSTM integrated these motif detections across the 1,000 base pair input window. The architecture recognized that convolutions excel at detecting local patterns while recurrence might capture their long-range relationships.
 

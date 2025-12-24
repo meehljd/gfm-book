@@ -1,4 +1,4 @@
-# Protein *Language* Models {#sec-protein-lm}
+# Protein Language Models {#sec-protein-lm}
 
 Evolution is the most thorough experiment ever conducted on protein *sequences*. Over billions of years, natural selection tested trillions of amino acid combinations, ruthlessly eliminating sequences that failed to fold or function while preserving those that worked. The sequences populating modern databases are not random strings but successful solutions to biological problems, each implicitly encoding information about structure, stability, and function. The central insight of protein *language* models is that this evolutionary record, comprising hundreds of millions of sequences in databases like UniRef, contains sufficient information to learn the fundamental principles of protein *biology* without ever being shown a crystal structure or a functional assay.
 
@@ -9,7 +9,7 @@ This chapter examines how protein *language* models pioneered biological foundat
 
 ## The *ESM* Model Family
 
-### *ESM*-1b: Establishing the Paradigm
+### *ESM-1b*: Establishing the Paradigm
 
 The Evolutionary Scale Modeling project, developed at Meta AI Research, demonstrated that transformer language models trained on protein *sequences* learn biologically meaningful representations without explicit supervision [@rives_esm_2021]. The approach was strikingly simple: take the BERT architecture that had revolutionized natural language processing, replace words with amino acids, and train on protein *sequence* databases. The resulting models **learned** far more than anyone expected.
 
@@ -41,7 +41,7 @@ Perhaps most striking, attention concentrates on functionally important position
 [Essential] Multi-panel figure. Panel A (Training Objective): Protein *sequence* with 15% masked; model predicting from context; "No structure, function, or evolutionary labels." Panel B (Secondary Structure in Attention): Attention heatmap with alpha helix and beta sheet regions highlighted; attention concentrating along structural patterns. Panel C (Residue Contacts from Attention): Attention weights converted to contact map; ground truth from crystal structure overlaid; strong correspondence. Panel D (Functional Site Discovery): Protein *structure* cartoon; positions with elevated attention highlighted; overlap with catalytic residues, binding sites.
 :::
 
-### *ESM*-2: Scaling Up
+### *ESM-2*: Scaling Up
 
 *ESM*-2 extended the *ESM* approach across a range of model scales, from 8 million to 15 billion parameters, enabling systematic study of how biological knowledge scales with model capacity [@lin_esm-2_2022]. The results confirmed a pattern familiar from natural language processing: bigger models learn more.
 
@@ -97,7 +97,7 @@ The attention-based approach offers several advantages over traditional covarian
 Rao and colleagues demonstrated this connection directly by extracting attention weights from *ESM* and converting them to contact predictions [@rao_transformer_2020]. The resulting predictions approached the accuracy of dedicated contact prediction methods, despite the model never being trained to predict contacts. The **attention mechanism**, optimized purely for masked token prediction, discovers the coevolutionary structure of protein *sequences* as a byproduct.
 
 
-## ESMFold: Structure from Sequence
+## *ESMFold*: Structure from Sequence
 
 ### Eliminating the Alignment Bottleneck
 
@@ -121,7 +121,7 @@ ESMFold achieves atomic-level accuracy for many proteins, though slightly below 
 [High] Four-panel figure. Panel A (Architecture Pipeline): Single sequence → *ESM*-2 (15B) embeddings → Structure module → 3D coordinates; "No MSA required." Panel B (Speed Comparison): Bar chart of AlphaFold2 (hours) vs ESMFold (minutes); 60× speedup. Panel C (Accuracy Comparison): Scatter plot ESMFold vs AlphaFold2 colored by MSA depth; well-represented proteins both accurate; sparse MSA proteins ESMFold more robust. Panel D (Metagenomic Application): Earth Microbiome Project proteins; many lack homologs; ESMFold enables scale.
 :::
 
-### What ESMFold Reveals About PLMs
+### What *ESMFold* Reveals About PLMs
 
 ESMFold's success demonstrates that *ESM*-2's internal representations encode sufficient information to determine 3D structure. The language model has learned not merely local sequence patterns but global folding principles, capturing what makes a sequence fold into a particular three-dimensional shape.
 

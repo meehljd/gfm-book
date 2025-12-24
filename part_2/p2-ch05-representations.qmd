@@ -31,7 +31,7 @@ For **transformer architecture**s, one-hot encoding creates a fundamental mismat
 
 This mismatch produces severe context limitation. Transformer context windows of 512 to 4,096 tokens translate to only 512 to 4,096 base pairs when using one-hot encoding, representing a tiny fraction of genes or regulatory regions. Compare this to *Enformer*'s 200 kb **receptive field** or *SpliceAI*'s 10 kb context, both achieved through architectural innovations operating on one-hot encoded sequence. **For transformer-based foundation models, one-hot encoding forces an impossible choice between the long contexts needed for regulatory modeling and computational tractability.** This tension motivated the search for alternative representations that could compress genomic sequences into fewer tokens while preserving information needed for biological prediction.
 
-## K-mer Tokenization: The DNABERT Approach
+## $K$-mer Tokenization: The DNABERT Approach
 
 The computational constraints of one-hot encoding for transformers led researchers to explore sequence compression through *k*-mer tokenization. This approach treats overlapping subsequences of length $k$ as tokens, drawing an analogy between *k*-mers and words in natural language. Just as sentences compose words carrying meaning through sequence and combination, genomic sequences might be understood as *k*-mer "words" encoding biological function through their arrangement. *DNABERT* pioneered this approach for genomic transformers in 2021, using 6-mers as tokens and training a BERT-style masked language model on human reference sequences [@ji_dnabert_2021].
 
@@ -142,11 +142,11 @@ A regulatory variant 50 kilobases upstream of *MYC* can drive oncogenesis by dis
 
 The standard solution adds positional information to token embeddings before attention computation. The combined representation carries both content (what nucleotide or *k*-mer) and position (where in the sequence). Several strategies have emerged, each with distinct properties that matter for genomic applications.
 
-### Absolute **Positional Embeddings**
+### Absolute Positional Embeddings
 
 Absolute positional embeddings assign a learnable vector to each position in the sequence. Position 1 receives embedding $p_1$, position 2 receives $p_2$, and so forth. These embeddings add to the token embeddings, creating combined representations carrying both identity and location. *BERT* and early genomic transformers like *DNABERT* used this approach. The limitation is that the model can only handle sequences up to the maximum position seen during training. A model trained with 512-position embeddings cannot process position 513; no embedding exists for it. This fixed maximum context proves particularly restrictive for genomics, where biological phenomena span scales from individual binding sites to megabase regulatory domains.
 
-### Sinusoidal **Positional Encoding**s
+### Sinusoidal Positional Encodings
 
 Sinusoidal positional encodings address the fixed-length limitation by computing position embeddings from mathematical functions rather than learning them. The original Transformer paper used sinusoids of different frequencies: $PE_{(pos, 2i)} = \sin(pos / 10000^{2i/d})$ and $PE_{(pos, 2i+1)} = \cos(pos / 10000^{2i/d})$. Each position receives a unique pattern of sines and cosines, with lower-frequency components capturing coarse position and higher-frequency components capturing fine position. The mathematical structure means any position, even one never seen during training, can receive a well-defined encoding. Sinusoidal encodings also have the property that relative positions are represented consistently: the relationship between positions 10 and 20 mirrors that between positions 110 and 120.
 

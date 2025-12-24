@@ -439,7 +439,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_3/p3-ch12-protein-lm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Protein <em>Language</em> Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Protein Language Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -648,7 +648,7 @@ window.Quarto = {
   </ul></li>
   <li><a href="#protein-based-variant-effect-prediction" id="toc-protein-based-variant-effect-prediction" class="nav-link" data-scroll-target="#protein-based-variant-effect-prediction"><span class="header-section-number">14.2</span> Protein-Based Variant Effect Prediction</a>
   <ul class="collapse">
-  <li><a href="#zero-shot-scoring-with-protein-language-models" id="toc-zero-shot-scoring-with-protein-language-models" class="nav-link" data-scroll-target="#zero-shot-scoring-with-protein-language-models"><span class="header-section-number">14.2.1</span> Zero-Shot Scoring with Protein <em>Language</em> Models</a></li>
+  <li><a href="#zero-shot-scoring-with-protein-language-models" id="toc-zero-shot-scoring-with-protein-language-models" class="nav-link" data-scroll-target="#zero-shot-scoring-with-protein-language-models"><span class="header-section-number">14.2.1</span> Zero-Shot Scoring with Protein Language Models</a></li>
   <li><a href="#alignment-based-models-eve-and-popeve" id="toc-alignment-based-models-eve-and-popeve" class="nav-link" data-scroll-target="#alignment-based-models-eve-and-popeve"><span class="header-section-number">14.2.2</span> Alignment-Based Models: EVE and popEVE</a></li>
   <li><a href="#alphamissense-structure-informed-pathogenicity-prediction" id="toc-alphamissense-structure-informed-pathogenicity-prediction" class="nav-link" data-scroll-target="#alphamissense-structure-informed-pathogenicity-prediction"><span class="header-section-number">14.2.3</span> <em>AlphaMissense</em>: Structure-Informed Pathogenicity Prediction</a></li>
   </ul></li>
@@ -789,7 +789,7 @@ Figure&nbsp;14.1: [Essential] Paradigm comparison. Panel A (Classical Approach):
 <h2 data-number="14.2" class="anchored" data-anchor-id="protein-based-variant-effect-prediction"><span class="header-section-number">14.2</span> Protein-Based Variant Effect Prediction</h2>
 <p>Missense variants (single amino acid substitutions) account for approximately half of known pathogenic variants in ClinVar, making protein-level prediction a central challenge. Foundation model approaches exploit a simple insight: evolution has already tested billions of amino acid substitutions across millions of years; variants that repeatedly survive natural selection are likely tolerable, while those never observed in homologous proteins likely disrupt function.</p>
 <section id="zero-shot-scoring-with-protein-language-models" class="level3" data-number="14.2.1">
-<h3 data-number="14.2.1" class="anchored" data-anchor-id="zero-shot-scoring-with-protein-language-models"><span class="header-section-number">14.2.1</span> Zero-Shot Scoring with Protein <em>Language</em> Models</h3>
+<h3 data-number="14.2.1" class="anchored" data-anchor-id="zero-shot-scoring-with-protein-language-models"><span class="header-section-number">14.2.1</span> Zero-Shot Scoring with Protein Language Models</h3>
 <p>The simplest foundation model approach to missense VEP requires no task-specific training. A protein <em>language</em> model trained on masked token prediction assigns probabilities to each amino acid at each position given surrounding context. Variant effect scores emerge from comparing the probability of the reference amino acid to the probability of the variant amino acid.</p>
 <p><em>ESM</em>-1v operationalizes this approach using the <em>ESM</em>-2 architecture fine-tuned for single-sequence variant effect prediction <span class="citation" data-cites="meier_esm-1v_2021">(<a href="../bib/references.html#ref-meier_esm-1v_2021" role="doc-biblioref">Meier et al. 2021</a>)</span>. For a variant substituting amino acid <span class="math inline">\(a_\text{ref}\)</span> with <span class="math inline">\(a_\text{var}\)</span> at position <span class="math inline">\(i\)</span>, the score is computed as:</p>
 <p><span class="math display">\[\Delta \text{LLR} = \log P(a_\text{var} | \text{context}) - \log P(a_\text{ref} | \text{context})\]</span></p>

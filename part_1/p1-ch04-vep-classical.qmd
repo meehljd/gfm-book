@@ -67,7 +67,7 @@ Computational predictions occupy the supporting tier: PP3 when algorithms predic
 
 A diagnostic laboratory receives exome sequencing results for a 45-year-old woman with early-onset breast cancer and a family history suggesting hereditary cancer syndrome. Among hundreds of rare variants, one stands out: a missense change in *BRCA2* substituting glycine for arginine at a conserved position. Is this the explanation for her cancer, or an incidental finding? No previous case report exists for this exact variant. No functional assay has tested its effect. The question of whether this amino acid substitution disrupts *BRCA2* function determines whether her siblings should be tested and whether she qualifies for PARP inhibitor therapy. The clinical stakes could not be higher, yet the evidence available is entirely computational. Protein-level predictors attempt to answer such questions by encoding biological intuition about which amino acid changes matter.
 
-### SIFT: Sequence Homology as Functional Constraint
+### *SIFT*: Sequence Homology as Functional Constraint
 
 Conservation scores can identify constrained positions, but they cannot distinguish which substitutions at those positions are tolerated. A position might be highly conserved overall yet accept certain amino acid changes that preserve function. For missense variants specifically, the relevant question is not whether the position is constrained but whether the specific amino acid substitution disrupts function. Sorting Intolerant From Tolerant (SIFT) addresses this distinction by examining which amino acids have been accepted at each position across evolutionary history [@ng_sift_2003].
 
@@ -77,7 +77,7 @@ The method computes a normalized probability for each possible amino acid at eac
 
 SIFT's simplicity is both its strength and its limitation. The method requires only protein sequence information and a database of homologs; it makes no assumptions about protein structure, physicochemistry, or mechanism of damage. This generality allows application to any protein with sufficient homologs in sequence databases. For proteins with few homologs, young gene families, or positions with limited alignment depth, predictions may be unreliable. The method captures only the evolutionary signal present in the alignment, missing functional constraints that arose recently or affect only a subset of species.
 
-### PolyPhen-2: Integrating Structure and Sequence
+### *PolyPhen-2*: Integrating Structure and Sequence
 
 SIFT's reliance on sequence alone ignores substantial information about how amino acid substitutions affect protein function. A glycine buried in a protein's hydrophobic core will disrupt structure differently than one on a surface loop. A substitution at a catalytic site matters more than one far from any functional region. Polymorphism Phenotyping (PolyPhen-2) extends sequence-based prediction by incorporating protein structure features and amino acid physicochemistry, recognizing that the same substitution can have different consequences depending on its structural context [@adzhubei_polyphen_2010].
 
@@ -105,7 +105,7 @@ Protein-level predictors inherit the training data biases present in their under
 
 SIFT and PolyPhen-2 remain widely used in clinical practice and serve as features within more sophisticated ensemble methods. Their scores appear in diagnostic reports, contribute to ACMG-AMP classification criteria, and inform variant prioritization in research and clinical pipelines. Understanding their construction and limitations is essential for appropriate interpretation.
 
-## The CADD Framework
+## The *CADD* Framework
 
 The protein-level predictors and conservation scores examined above each capture one aspect of variant function, yet clinical interpretation requires weighing multiple lines of evidence simultaneously. A variant might fall in a conserved region, alter a moderately constrained amino acid, and overlap a predicted enhancer. How should these signals be combined? More fundamentally, how can we train a predictor when curated pathogenic variants number in the hundreds of thousands while the genome contains billions of possible mutations? These questions expose a fundamental tension: the variants we most need to interpret (rare, novel, never before seen) are precisely those for which training labels do not exist.
 
@@ -173,7 +173,7 @@ These limitations are not failures of implementation but consequences of the pro
 
 The clinical geneticist focused exclusively on rare missense variants in Mendelian disease faces a different optimization problem than the researcher screening the entire genome for regulatory variants. CADD's genome-wide generality may sacrifice accuracy within specific variant classes, accepting modest performance everywhere to achieve coverage anywhere. For diagnostic laboratories where missense variants in known disease genes dominate the caseload, specialized ensemble methods offer an alternative: models trained directly on curated disease variants, optimized for the specific task rather than general prioritization. **This tension between generality and specialization recurs throughout computational biology, and different clinical contexts demand different tradeoffs.**
 
-### REVEL
+### *REVEL*
 
 A missense variant in a known disease gene presents a narrower interpretive challenge than an arbitrary variant anywhere in the genome. The variant is protein-coding, the gene has established disease associations, and the question is specifically whether this amino acid substitution is pathogenic. This focused scope permits a different training strategy than CADD's evolutionary proxy approach.
 
@@ -183,7 +183,7 @@ REVEL integrates predictions from a panel of individual tools: SIFT, PolyPhen-2,
 
 REVEL scores range from 0 to 1, with higher values implying greater pathogenicity likelihood. Common interpretation thresholds treat scores above 0.5 as supporting evidence for pathogenicity, with scores above 0.75 providing stronger evidence. REVEL is restricted to missense single-nucleotide variants, making it more specialized than CADD but often more accurate within its scope. This specialization reflects a deliberate choice: by giving up coverage of non-coding and structural variants, REVEL gains the ability to train on directly relevant labels rather than evolutionary proxies.
 
-### M-CAP
+### *M-CAP*
 
 Diagnostic laboratories evaluating potential Mendelian disease variants face asymmetric consequences for errors. Calling a benign variant pathogenic can lead to unnecessary surgeries, psychological burden, and inappropriate cascade testing of family members. Missing a pathogenic variant delays diagnosis but typically permits later reclassification as evidence accumulates. This asymmetry argues for prioritizing specificity over sensitivity in clinical settings.
 

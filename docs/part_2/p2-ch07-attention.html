@@ -439,7 +439,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_3/p3-ch12-protein-lm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Protein <em>Language</em> Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Protein Language Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -642,7 +642,7 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#the-self-attention-mechanism" id="toc-the-self-attention-mechanism" class="nav-link active" data-scroll-target="#the-self-attention-mechanism"><span class="header-section-number">7.1</span> The <strong>Self-Attention</strong> Mechanism</a>
+  <li><a href="#the-self-attention-mechanism" id="toc-the-self-attention-mechanism" class="nav-link active" data-scroll-target="#the-self-attention-mechanism"><span class="header-section-number">7.1</span> The Self-Attention Mechanism</a>
   <ul class="collapse">
   <li><a href="#query-key-and-value-vectors" id="toc-query-key-and-value-vectors" class="nav-link" data-scroll-target="#query-key-and-value-vectors"><span class="header-section-number">7.1.1</span> Query, Key, and Value Vectors</a></li>
   <li><a href="#multi-head-attention" id="toc-multi-head-attention" class="nav-link" data-scroll-target="#multi-head-attention"><span class="header-section-number">7.1.2</span> Multi-Head Attention</a></li>
@@ -716,7 +716,7 @@ window.Quarto = {
 <p>The <strong>attention mechanism</strong>, introduced for machine translation by Vaswani et al. <span class="citation" data-cites="vaswani_attention_2017">(<a href="../bib/references.html#ref-vaswani_attention_2017" role="doc-biblioref">Vaswani et al. 2023</a>)</span>, resolved a tension that had constrained sequence modeling for years. Recurrent networks could maintain context across arbitrary distances but processed sequences one position at a time, creating training bottlenecks that limited practical sequence length. Convolutional networks processed sequences in parallel but could only integrate information within fixed receptive fields. Attention achieves both: parallel computation across all positions with direct modeling of arbitrary-range dependencies. For genomic sequences, where enhancer-promoter interactions span tens of kilobases and topologically associating domains organize contacts across megabases, this capacity for long-range modeling proved transformative.</p>
 <p>This chapter examines the attention mechanism and <strong>transformer architecture</strong> from the perspective of genomic applications. The treatment emphasizes how attention enables capabilities that convolutions cannot achieve: modeling regulatory interactions across distances that exceed ****convolutional neural network** (CNN)** receptive fields, learning position-dependent patterns through attention heads that specialize for different relationship types, and scaling to the context lengths that genomic applications require. The goal is not comprehensive coverage of transformer variants (which would fill its own textbook) but targeted understanding of the components most relevant to genomic foundation models. Understanding how attention works, what biological patterns attention heads learn to detect, and where attention mechanisms still struggle establishes the foundation for the models examined throughout the remainder of this book.</p>
 <section id="the-self-attention-mechanism" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="the-self-attention-mechanism"><span class="header-section-number">7.1</span> The <strong>Self-Attention</strong> Mechanism</h2>
+<h2 data-number="7.1" class="anchored" data-anchor-id="the-self-attention-mechanism"><span class="header-section-number">7.1</span> The Self-Attention Mechanism</h2>
 <p>A 28-year-old woman presents with dilated cardiomyopathy and a variant of uncertain significance in the <em>LMNA</em> gene’s promoter region. Her clinician needs to determine whether this variant disrupts regulatory elements that control <em>LMNA</em> expression in cardiac tissue. The relevant information spans thousands of base pairs: transcription factor binding sites flanking the variant, enhancers that drive cardiac-specific expression, and insulators that constrain regulatory interactions. A model that can only aggregate local context (through convolutional or recurrent operations) must pass information through many intermediate layers, each adding noise and limiting what survives the journey. When this information pathway fails, the variant appears as noise rather than the pathogenic regulatory disruption it may represent. The fundamental question is how to let any position in a sequence directly access information from any other position, regardless of distance.</p>
 <div id="fig-self-attention" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">

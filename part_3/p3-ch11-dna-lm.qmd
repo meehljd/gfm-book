@@ -47,7 +47,7 @@ The *Nucleotide Transformer* project introduced a benchmark panel that has becom
 Scaling experiments revealed predictable relationships between model size, training data, and performance. Larger models with more pretraining data and longer context windows achieved better downstream performance, following patterns observed in natural language and protein *modeling*. These scaling trends suggest that continued investment in larger genomic language models will yield further improvements, though the optimal allocation between parameters, data, and compute remains an active research question (@sec-fm-principles).
 
 
-## GPN: Cross-Species **Pretraining** for Variant Effect Prediction
+## *GPN*: Cross-Species Pretraining for Variant Effect Prediction
 
 While the *Nucleotide Transformer* demonstrated the **value** of scaling, the **Genomic Pre-trained Network (*GPN*)** explored a complementary direction: what can be learned from cross-species pretraining on relatively small, well-annotated genomes [@benegas_gpn_2023]. Rather than scaling to maximum size, *GPN* asked whether self-supervision could yield useful variant effect predictors even in constrained settings.
 
@@ -80,7 +80,7 @@ Processing megabase-scale windows allows the model to capture entire gene *bodie
 
 On *Nucleotide Transformer* benchmarks, *HyenaDNA* achieved state-of-the-art results on the majority of tasks with orders of magnitude fewer parameters. On GenomicBenchmarks, it surpassed prior state-of-the-art on seven of eight datasets. Perhaps most notably, *HyenaDNA* demonstrated **in-context learning** in genomics: performance improved when examples were included in the input context without updating model weights. This capability, familiar from large language models, had not previously been observed for genomic sequences and suggests that sufficient context length combined with appropriate architecture enables qualitatively new forms of biological reasoning.
 
-### Caduceus: Bidirectional Processing with Reverse-Complement Equivariance
+### *Caduceus*: Bidirectional Processing with Reverse-Complement Equivariance
 
 DNA is double-stranded, and any sequence can be read from either strand. The reverse complement of a sequence encodes the same information from the opposite strand's perspective. For many biological processes, predictions should be identical or related consistently regardless of which strand is presented. Standard neural networks can produce divergent predictions for a sequence and its reverse complement, even with data augmentation during training.
 
@@ -88,7 +88,7 @@ DNA is double-stranded, and any sequence can be read from either strand. The rev
 
 On downstream benchmarks, *Caduceus* outperformed previous long-range models. On challenging long-range variant effect prediction tasks, it exceeded models with ten times as many parameters that lacked bidirectionality or equivariance. **The **key** insight was that incorporating appropriate biological inductive biases can substitute for raw scale.** Strand symmetry is a known property of DNA; building it into the architecture avoids wasting model capacity learning what could be specified directly.
 
-### Evo 2: Genome-Scale Modeling Across the Tree of Life
+### *Evo 2*: Genome-Scale Modeling Across the Tree of Life
 
 *Evo 2* represents the current frontier: training at genome scale across all domains of life [@brixi_evo_2025]. While previous models focused on specific organisms (*DNABERT* on human, *GPN* on plants) or trained on multi-species corpora at limited scale (*Nucleotide Transformer*), *Evo 2* aims to learn universal genomic patterns spanning bacteria, archaea, eukaryotes, and phages.
 

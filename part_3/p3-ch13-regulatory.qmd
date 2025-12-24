@@ -77,7 +77,7 @@ Validation against GTEx expression quantitative trait loci (eQTLs) demonstrated 
 :::
 
 
-## Borzoi: From Chromatin to Transcriptome
+## *Borzoi*: From Chromatin to Transcriptome
 
 While *Enformer* predicts transcription initiation through CAGE, RNA-seq captures a richer picture of gene *expression*: not just where transcription begins, but how the transcript *is* spliced, which isoforms dominate, where transcription terminates, and how stable the resulting mRNA is. Borzoi [@linder_borzoi_2025] extends the hybrid architecture paradigm to predict full RNA-seq coverage profiles, enabling a unified view of how sequence variation affects the entire transcriptional program.
 
@@ -114,24 +114,24 @@ Polyadenylation site choice affects 3' UTR length and content. Shorter 3' UTRs m
 :::
 
 
-## Sei: A Regulatory Vocabulary from Sequence
+## *Sei*: A Regulatory Vocabulary from Sequence
 
 While *Enformer* and Borzoi predict continuous coverage tracks, Sei [@chen_deepsea_2022] takes a complementary approach: learning a discrete vocabulary of sequence classes that capture distinct regulatory activities. Rather than predicting thousands of individual assays, Sei maps sequences to a reduced set of regulatory states, each associated with characteristic chromatin and transcription patterns.
 
 ### Approach
 
-Sei builds on observations that chromatin states cluster into interpretable categories: active promoters, strong enhancers, poised enhancers, heterochromatin, and so forth. Previous methods like ChromHMM defined such states from observed chromatin marks in specific cell types. Sei learns to predict sequence class membership directly from DNA, asking what regulatory identity a sequence carries based on its intrinsic properties.
+*Sei* builds on observations that chromatin states cluster into interpretable categories: active promoters, strong enhancers, poised enhancers, heterochromatin, and so forth. Previous methods like ChromHMM defined such states from observed chromatin marks in specific cell types. Sei learns to predict sequence class membership directly from DNA, asking what regulatory identity a sequence carries based on its intrinsic properties.
 
 The model predicts 40 sequence classes derived from clustering patterns across chromatin accessibility, histone modifications, and **transcription factor** binding. Each class corresponds to a recognizable regulatory state: promoter-like sequences, enhancer-like sequences, CTCF binding sites, repressed regions, and various intermediate states. The output is not a single class assignment but a probability distribution over classes, reflecting the observation that many sequences have context-dependent regulatory potential.
 
 ### Complementary to Track Prediction
 
-Sei and *Enformer*-style models serve complementary purposes. *Enformer* provides detailed, quantitative predictions across specific assays and cell types; Sei provides a compressed, interpretable summary of regulatory identity. For variant interpretation, both perspectives can be valuable. *Enformer* might reveal that a variant reduces predicted H3K27ac signal in liver but not heart; Sei might reveal that the same variant shifts sequence class membership from "strong enhancer" toward "weak enhancer," a more immediately interpretable characterization.
+*Sei* and *Enformer*-style models serve complementary purposes. *Enformer* provides detailed, quantitative predictions across specific assays and cell types; Sei provides a compressed, interpretable summary of regulatory identity. For variant interpretation, both perspectives can be valuable. *Enformer* might reveal that a variant reduces predicted H3K27ac signal in liver but not heart; Sei might reveal that the same variant shifts sequence class membership from "strong enhancer" toward "weak enhancer," a more immediately interpretable characterization.
 
 The regulatory vocabulary approach also facilitates systematic analysis across many variants. Rather than tracking changes in thousands of individual tracks, researchers can ask how a set of variants affects the distribution of regulatory classes, identifying patterns that might be obscured in high-dimensional track space.
 
 
-## AlphaGenome: Unifying Modalities at Megabase Scale
+## *AlphaGenome*: Unifying Modalities at Megabase Scale
 
 AlphaGenome [@avsec_alphagenome_2025] extends the hybrid modeling paradigm in two directions: longer context windows (approximately one megabase) and broader output modalities spanning chromatin, expression, splicing, and three-dimensional contacts. The goal is a single model that provides a comprehensive view of how sequence determines regulatory state.
 

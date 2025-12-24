@@ -439,7 +439,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_3/p3-ch12-protein-lm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Protein <em>Language</em> Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Protein Language Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -674,7 +674,7 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#the-conformal-prediction-framework" id="toc-the-conformal-prediction-framework" class="nav-link" data-scroll-target="#the-conformal-prediction-framework"><span class="header-section-number">23.5.1</span> The Conformal Prediction Framework</a></li>
   <li><a href="#split-conformal-prediction" id="toc-split-conformal-prediction" class="nav-link" data-scroll-target="#split-conformal-prediction"><span class="header-section-number">23.5.2</span> Split Conformal Prediction</a></li>
-  <li><a href="#conformal-prediction-for-variant-effect-prediction" id="toc-conformal-prediction-for-variant-effect-prediction" class="nav-link" data-scroll-target="#conformal-prediction-for-variant-effect-prediction"><span class="header-section-number">23.5.3</span> Conformal Prediction for <strong>Variant Effect Prediction</strong></a></li>
+  <li><a href="#conformal-prediction-for-variant-effect-prediction" id="toc-conformal-prediction-for-variant-effect-prediction" class="nav-link" data-scroll-target="#conformal-prediction-for-variant-effect-prediction"><span class="header-section-number">23.5.3</span> Conformal Prediction for Variant Effect Prediction**</a></li>
   <li><a href="#limitations-and-practical-considerations" id="toc-limitations-and-practical-considerations" class="nav-link" data-scroll-target="#limitations-and-practical-considerations"><span class="header-section-number">23.5.4</span> Limitations and Practical Considerations</a></li>
   </ul></li>
   <li><a href="#sec-ood-detection" id="toc-sec-ood-detection" class="nav-link" data-scroll-target="#sec-ood-detection"><span class="header-section-number">23.6</span> Out-of-Distribution Detection</a>
@@ -1006,7 +1006,7 @@ Figure&nbsp;23.5: [High] Workflow with examples. Steps: (1) Calibration: Score v
 <p>The construction ensures coverage because calibration scores are exchangeable with test scores under the exchangeability assumption. The quantile threshold is set so that a random calibration score exceeds the threshold with probability at most <span class="math inline">\(\alpha\)</span>; by exchangeability, the same holds for test scores. This elegant argument yields exact coverage guarantees without requiring the model to be accurate or well-calibrated.</p>
 </section>
 <section id="conformal-prediction-for-variant-effect-prediction" class="level3" data-number="23.5.3">
-<h3 data-number="23.5.3" class="anchored" data-anchor-id="conformal-prediction-for-variant-effect-prediction"><span class="header-section-number">23.5.3</span> Conformal Prediction for <strong>Variant Effect Prediction</strong></h3>
+<h3 data-number="23.5.3" class="anchored" data-anchor-id="conformal-prediction-for-variant-effect-prediction"><span class="header-section-number">23.5.3</span> Conformal Prediction for Variant Effect Prediction**</h3>
 <p>Variant effect prediction, examined in detail in <a href="../part_3/p3-ch14-vep-fm.html" class="quarto-xref"><span>Chapter 14</span></a>, concentrates the challenges of uncertainty quantification. Instead of reporting a single pathogenicity score, a conformalized variant classifier outputs a prediction set from the possibilities: {pathogenic}, {benign}, {pathogenic, benign}, or the empty set. The set is guaranteed to contain the true label at the specified coverage rate.</p>
 <p>Adaptive set sizes convey uncertainty naturally. Confident predictions yield small sets ({pathogenic} alone), while uncertain predictions yield larger sets ({pathogenic, benign}). The set size itself communicates the model’s confidence without requiring users to interpret numerical probabilities. A clinician seeing {pathogenic, benign} knows immediately that the model cannot distinguish between these possibilities, whereas a score of 0.55 might be misinterpreted as mild confidence in pathogenicity.</p>
 <p>Calibration set construction requires careful thought. Holding out variants at random may not prevent information leakage if related variants (same gene, same protein domain) appear in both calibration and test sets. Holding out entire genes or protein families provides more stringent evaluation but may reduce calibration set size for rare gene families. For applications intended to work across populations, calibration sets should include diverse ancestries to ensure coverage guarantees hold across patient populations.</p>
