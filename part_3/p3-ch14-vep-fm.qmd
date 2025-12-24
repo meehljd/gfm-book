@@ -4,7 +4,7 @@ Classical variant effect prediction required labels: pathogenic variants to defi
 
 This zero-shot capability does not eliminate the need for labeled data but changes its role. Rather than training classifiers from scratch, practitioners fine-tune foundation models on modest variant datasets, leveraging pretrained knowledge to achieve performance impossible for models that start from random initialization. The combination of self-supervised pretraining and supervised **fine-tuning** produces variant effect predictors that outperform classical methods across most benchmarks while requiring far less task-specific data. AlphaMissense, ESM-1v, and similar systems demonstrate that foundation model representations capture variant effects across protein *families*, including families with no labeled variants in training data.
 
-Yet significant challenges remain. Foundation models predict that variants are damaging without explaining why. Calibration varies across variant types, protein *families*, and populations, creating uncertainty about when predictions can be trusted. The distinction between "evolutionarily unusual" and "clinically pathogenic" is real: not every rare substitution causes disease, and not every disease-causing variant appears evolutionarily constrained. This chapter examines how foundation models transform variant effect prediction, what they add beyond classical methods, and where the gaps between computational prediction and clinical interpretation remain substantial.
+Yet significant challenges remain. Foundation models predict that variants are damaging without explaining why. Calibration varies across variant types, protein *families*, and populations, creating uncertainty about when predictions can be trusted. The distinction between "evolutionarily unusual" and "clinically pathogenic" is real: not every rare substitution causes disease, and not every disease-causing variant appears evolutionarily constrained.
 
 
 ## The Foundation Model Paradigm for Variant Interpretation
@@ -15,7 +15,7 @@ Foundation models invert this relationship. Rather than engineering features, th
 
 This paradigm shift has practical consequences. Coverage extends to any variant in any gene, not just those with extensive prior annotation. Representations capture subtle patterns (co-evolution between distant residues, context-dependent motif strength) that resist manual feature engineering. **Transfer learning** enables rapid adaptation to new tasks and variant classes. The cost is interpretability: understanding why a foundation model assigns a particular score requires specialized analysis techniques rather than simple inspection of feature weights.
 
-Three architectural families dominate current VEP applications. Protein *language* models (@sec-protein-lm) encode amino acid sequences and score missense variants by measuring likelihood changes. DNA language models (@sec-dna-lm) operate on nucleotide sequences and can score variants of any type. Regulatory models (@sec-regulatory) predict molecular phenotypes (**chromatin accessibility**, gene *expression*, splicing) and score variants by their predicted impact on these phenotypes. The most powerful systems combine elements from multiple families.
+Three architectural families dominate current VEP applications. Protein *language* models (@sec-protein-lm) encode amino acid sequences and score missense variants by measuring likelihood changes. DNA language models (@sec-dna-lm) operate on nucleotide sequences and can score variants of any type. Regulatory models (@sec-regulatory) predict molecular phenotypes (**chromatin accessibility**, gene *expression*, splicing) and score variants by their predicted impact on these phenotypes. The strongest-performing systems combine elements from multiple families.
 
 ::: {#fig-fm-vep-paradigm layout-ncol=2}
 ![**FIGURE PLACEHOLDER A**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
@@ -26,7 +26,7 @@ Three architectural families dominate current VEP applications. Protein *languag
 
 ![**FIGURE PLACEHOLDER D**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D)
 
-[Essential] Paradigm comparison. Panel A (Classical Approach): Variant → hand-crafted features (conservation, Grantham, domains, regulatory marks) → feature vector → classifier → score; limitation: coverage limited by annotations. Panel B (Foundation Model Approach): Same variant → pretrained model → learned representations → adaptation → score; strength: extends to any position. Panel C (What Changes): Classical features explicit/interpretable/manual; foundation features learned/opaque/automatic; trade-off arrow. Panel D (Three Families): Protein *LMs* → missense; DNA LMs → all variants; Regulatory models → noncoding mechanism; arrow: "Most powerful combine families."
+[Essential] Paradigm comparison. Panel A (Classical Approach): Variant → hand-crafted features (conservation, Grantham, domains, regulatory marks) → feature vector → classifier → score; limitation: coverage limited by annotations. Panel B (Foundation Model Approach): Same variant → pretrained model → learned representations → adaptation → score; strength: extends to any position. Panel C (What Changes): Classical features explicit/interpretable/manual; foundation features learned/opaque/automatic; trade-off arrow. Panel D (Three Families): Protein *LMs* → missense; DNA LMs → all variants; Regulatory models → noncoding mechanism; arrow: "Combined approaches."
 :::
 
 ### Zero-Shot and Supervised Approaches
@@ -47,7 +47,7 @@ The simplest foundation model approach to missense VEP requires no task-specific
 
 $$\Delta \text{LLR} = \log P(a_\text{var} | \text{context}) - \log P(a_\text{ref} | \text{context})$$
 
-Negative scores indicate that the variant amino acid is less probable than reference in learned evolutionary context, suggesting potential deleteriousness. The model sees only the single **query** sequence, not multiple sequence alignments, yet achieves discrimination competitive with alignment-based methods on deep mutational scanning benchmarks.
+Negative scores indicate that the variant amino acid is less probable than reference in learned evolutionary context, suggesting potential deleteriousness. The model sees only the single query sequence, not multiple sequence alignments, yet achieves discrimination competitive with alignment-based methods on deep mutational scanning benchmarks.
 
 This zero-shot capability reflects what protein *language* models learn during pretraining: structural constraints (buried positions are hydrophobic), functional constraints (active sites are conserved), and co-evolutionary patterns (compensating mutations at contacting residues). The model has never seen pathogenicity labels, yet its predictions correlate with disease association because evolution and disease share underlying biology.
 
@@ -126,7 +126,7 @@ Zero-shot variant scoring with Evo 2 follows the standard likelihood ratio appro
 
 ### AlphaGenome: Unified Multi-Omic Variant Effect Prediction
 
-AlphaGenome (@sec-dna-lm) represents the most ambitious current attempt at comprehensive VEP, predicting multiple molecular phenotypes from megabase-scale DNA sequence and using those predictions to assess variant effects across modalities [@avsec_alphagenome_2025]. The architecture and training procedure are detailed in Chapter 13; here we focus on VEP-specific applications.
+AlphaGenome (@sec-dna-lm) represents the most ambitious current attempt at comprehensive VEP, predicting multiple molecular phenotypes from megabase-scale DNA sequence and using those predictions to assess variant effects across modalities [@avsec_alphagenome_2025].
 
 Variant effect prediction with AlphaGenome provides mechanistically interpretable outputs. A promoter variant might show reduced accessibility and decreased expression prediction. An enhancer variant might show weakened contact with its target promoter in addition to reduced local histone acetylation. A splicing variant triggers SpliceAI-like splice site changes while also affecting regulatory track predictions near the affected exon.
 
@@ -258,7 +258,7 @@ Distance-based methods compare new inputs to training examples in representation
 [High] Four-panel figure. Panel A (Sources of Uncertainty): Epistemic (model hasn't seen similar, reducible) vs aleatoric (inherent noise, irreducible); training distribution vs query position. Panel B (Ensemble Methods): Multiple models trained differently; prediction variance; high disagreement = high epistemic uncertainty. Panel C (Conformal Prediction): Calibration set → conformal scores; prediction sets with coverage guarantee; confident {Benign} vs uncertain {P, VUS, B}. Panel D (OOD Detection): Embedding space; training examples dense region; query variant isolated = OOD; flag for manual review.
 :::
 
-Chapter @sec-uncertainty develops uncertainty quantification methods in detail, including practical implementation guidance and evaluation metrics. For VEP applications, the **key** insight is that uncertainty estimates complement point predictions: high-confidence predictions can inform clinical decisions; low-confidence predictions should prompt additional evidence gathering rather than blind acceptance of model outputs.
+@sec-uncertainty develops uncertainty quantification methods in detail, including practical implementation guidance and evaluation metrics. For VEP applications, the key insight is that uncertainty estimates complement point predictions: high-confidence predictions can inform clinical decisions; low-confidence predictions should prompt additional evidence gathering rather than blind acceptance of model outputs.
 
 
 ## What Foundation Models Add
@@ -304,7 +304,7 @@ The comparison to classical methods reveals diminishing returns on certain axes.
 
 ## Clinical Integration Considerations
 
-Foundation model VEP tools require thoughtful integration into clinical workflows. Their impressive benchmark performance does not automatically translate to improved patient outcomes without attention to deployment context, validation requirements, and human factors.
+Foundation model VEP tools require thoughtful integration into clinical workflows. Their benchmark performance does not automatically translate without attention to deployment context, validation requirements, and human factors.
 
 ### Laboratory Validation
 
@@ -356,4 +356,4 @@ Foundation models have transformed variant effect prediction from feature engine
 
 Yet benchmark performance does not automatically translate to clinical utility. Calibration requires careful attention: a model may discriminate pathogenic from benign variants while systematically overestimating or underestimating probabilities. Uncertainty quantification remains immature; models often produce confident predictions for inputs that fall outside their training distribution. Population bias persists despite foundation model advances; improvements over classical methods are smallest for ancestry groups underrepresented in training data. Complex variant types, combinatorial effects, and tissue-specific consequences remain beyond current capabilities.
 
-Clinical deployment demands humility alongside enthusiasm. Foundation model VEP tools are aids to human interpretation, not autonomous classifiers. Their predictions inform rather than determine variant classification, complementing population frequency data, functional assay evidence, segregation analysis, and clinical judgment. Used appropriately, they accelerate diagnosis and reduce missed findings. Used as oracles, they create false confidence and may perpetuate existing inequities in genomic medicine. The chapters that follow examine how these predictions integrate into clinical workflows (@sec-rare-disease, @sec-clinical-risk), the broader challenges of uncertainty quantification (@sec-uncertainty), and the interpretability methods that probe what foundation models have learned (@sec-interpretability). Variant effect prediction sits at the center of genomic medicine; foundation models have raised its ceiling while the work of achieving its potential continues.
+Clinical deployment demands humility alongside enthusiasm. Foundation model VEP tools are aids to human interpretation, not autonomous classifiers. Their predictions inform rather than determine variant classification, complementing population frequency data, functional assay evidence, segregation analysis, and clinical judgment. Used appropriately, they accelerate diagnosis and reduce missed findings. Used as oracles, they create false confidence and may perpetuate existing inequities in genomic medicine. Clinical workflows (@sec-rare-disease, @sec-clinical-risk) integrate these predictions alongside uncertainty quantification (@sec-uncertainty) and interpretability methods that probe what foundation models have learned (@sec-interpretability). Variant effect prediction sits at the center of genomic medicine; foundation models have raised its ceiling while the work of achieving its potential continues.

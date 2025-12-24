@@ -390,7 +390,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_3/p3-ch12-protein-lm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Protein <em>Language</em> Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Protein Language Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -666,9 +666,380 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The first genomic foundation model to receive U.S. Food and Drug Administration (FDA) clearance as a medical device will face a peculiar regulatory challenge: demonstrating that a system trained on millions of sequences from research biobanks, academic databases, and public repositories can safely inform clinical decisions for individual patients who never consented to such use. Clinical-grade variant interpretation tools already incorporate deep learning predictions, yet the regulatory frameworks governing their deployment were designed for deterministic software with traceable decision logic, not for neural networks whose internal representations resist simple explanation. As of 2024, more than 500 AI-enabled medical devices have received FDA authorization, but fewer than a dozen involve genomic interpretation, and none yet deploys a foundation model at the scale described in this book. The gap between technical capability and regulatory readiness defines one of the central tensions facing the field.</p>
-<p>This asymmetry between what models can do <em>in silico</em> and what they may do in clinical practice shapes every translational decision. A variant effect predictor achieving 0.95 area under the receiver operating characteristic curve (AUROC) on a curated benchmark may fail unpredictably on the rare variants that matter most for diagnosis. A regulatory sequence model that accurately predicts chromatin accessibility in well-characterized cell lines may produce unreliable predictions in patient-derived tissues never seen during training. The technical achievements documented throughout this book represent necessary but insufficient conditions for clinical impact. Realizing the benefits of genomic foundation models while managing their risks requires navigating regulatory pathways designed for different technologies, building governance structures for data that spans generations and continents, and confronting ethical questions that genomics and artificial intelligence raise independently but compound when combined.</p>
-<p>This chapter examines the regulatory, ethical, and frontier challenges that will shape how genomic foundation models move from research tools to clinical practice. We address the regulatory landscape for AI medical devices, the data governance frameworks needed for responsible model development, the equity considerations that determine whether genomic AI reduces or amplifies health disparities, and the emerging capabilities (from protein design to cellular reprogramming) that will define the field’s trajectory. The goal is not comprehensive coverage of rapidly evolving policy, but a framework for reasoning about the sociotechnical challenges that accompany powerful predictive and generative capabilities.</p>
+<div class="content-visible callout callout-style-default callout-warning callout-titled" data-when-profile="draft">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><span class="citation" data-cites="fda_aiml_devices_2024">(<a href="../bib/references.html#ref-fda_aiml_devices_2024" role="doc-biblioref"><strong>fda_aiml_devices_2024?</strong></a>)</span> — FDA AI/ML device count (opening hook)</li>
+<li><span class="citation" data-cites="abramoff_pivotal_2018">(<a href="../bib/references.html#ref-abramoff_pivotal_2018" role="doc-biblioref"><strong>abramoff_pivotal_2018?</strong></a>)</span> — First autonomous diagnostic AI (IDx-DR)</li>
+<li><span class="citation" data-cites="eu_mdr_2017">(<a href="../bib/references.html#ref-eu_mdr_2017" role="doc-biblioref"><strong>eu_mdr_2017?</strong></a>)</span> — EU MDR regulation</li>
+<li><span class="citation" data-cites="eu_ai_act_2024">(<a href="../bib/references.html#ref-eu_ai_act_2024" role="doc-biblioref"><strong>eu_ai_act_2024?</strong></a>)</span> — EU AI Act</li>
+<li><span class="citation" data-cites="fda_ldt_final_rule_2024">(<a href="../bib/references.html#ref-fda_ldt_final_rule_2024" role="doc-biblioref"><strong>fda_ldt_final_rule_2024?</strong></a>)</span> — FDA LDT oversight</li>
+<li><span class="citation" data-cites="sudlow_uk_biobank_2015">(<a href="../bib/references.html#ref-sudlow_uk_biobank_2015" role="doc-biblioref"><strong>sudlow_uk_biobank_2015?</strong></a>)</span> — UK Biobank</li>
+<li><span class="citation" data-cites="myriad_2013">(<a href="../bib/references.html#ref-myriad_2013" role="doc-biblioref"><strong>myriad_2013?</strong></a>)</span> — Supreme Court DNA patent case</li>
+<li><span class="citation" data-cites="imdrf_samd_2014">(<a href="../bib/references.html#ref-imdrf_samd_2014" role="doc-biblioref"><strong>imdrf_samd_2014?</strong></a>)</span> — SaMD framework definition</li>
+<li><span class="citation" data-cites="gymrek_identifying_2013">(<a href="../bib/references.html#ref-gymrek_identifying_2013" role="doc-biblioref"><strong>gymrek_identifying_2013?</strong></a>)</span> — Genomic re-identification risk</li>
+<li><span class="citation" data-cites="zhu_deep_leakage_2019">(<a href="../bib/references.html#ref-zhu_deep_leakage_2019" role="doc-biblioref"><strong>zhu_deep_leakage_2019?</strong></a>)</span> — Gradient leakage</li>
+</ul>
+<p>Required Citations</p>
+<p>Priority Legend - <strong>[REQUIRED]</strong> - Specific factual claim requiring source - <strong>[RECOMMENDED]</strong> - Would strengthen argument but not strictly necessary - <strong>[FRAMEWORK]</strong> - Cites a framework, definition, or methodology</p>
+<hr>
+<p>Opening (Lines 3-5)</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 31%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Line</th>
+<th>Claim</th>
+<th>Citation Key</th>
+<th>Suggested Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>3</td>
+<td>“As of 2024, more than 500 AI-enabled medical devices have received FDA authorization”</td>
+<td><strong>[REQUIRED]</strong> <code>@fda_aiml_devices_2024</code></td>
+<td>FDA’s official AI/ML-enabled medical devices list (updated quarterly)</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>“fewer than a dozen involve genomic interpretation”</td>
+<td><strong>[REQUIRED]</strong> <code>@fda_aiml_devices_2024</code></td>
+<td>Same source, filtered for genomic/genetic devices</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>Regulatory Frameworks for Genomic AI (Lines 21-43)</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 31%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Line</th>
+<th>Claim</th>
+<th>Citation Key</th>
+<th>Suggested Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>23</td>
+<td>IMDRF SaMD risk tier definitions</td>
+<td><strong>[FRAMEWORK]</strong> <code>@imdrf_samd_2014</code></td>
+<td>IMDRF “Software as a Medical Device”: Possible Framework for Risk Categorization (2014)</td>
+</tr>
+<tr class="even">
+<td>25</td>
+<td>Analytical validity, clinical validity, clinical utility framework</td>
+<td><strong>[FRAMEWORK]</strong> <code>@acce_framework_2004</code> or <code>@sachdeva_acce_2014</code></td>
+<td>CDC ACCE Model or ACMG standards</td>
+</tr>
+<tr class="odd">
+<td>27</td>
+<td>“the agency cleared the first autonomous diagnostic AI in 2018”</td>
+<td><strong>[REQUIRED]</strong> <code>@abramoff_pivotal_2018</code></td>
+<td>Abràmoff et al., “Pivotal trial of an autonomous AI-based diagnostic system for detection of diabetic retinopathy” (IDx-DR)</td>
+</tr>
+<tr class="even">
+<td>27</td>
+<td>FDA locked vs.&nbsp;adaptive algorithm distinction</td>
+<td><strong>[FRAMEWORK]</strong> <code>@fda_aiml_framework_2021</code></td>
+<td>FDA “Artificial Intelligence/Machine Learning-Based Software as a Medical Device Action Plan” (2021)</td>
+</tr>
+<tr class="odd">
+<td>31</td>
+<td>“EU Medical Device Regulation (MDR), which fully replaced prior directives in 2021”</td>
+<td><strong>[REQUIRED]</strong> <code>@eu_mdr_2017</code></td>
+<td>Regulation (EU) 2017/745</td>
+</tr>
+<tr class="even">
+<td>31</td>
+<td>“The AI Act, which entered force in 2024”</td>
+<td><strong>[REQUIRED]</strong> <code>@eu_ai_act_2024</code></td>
+<td>Regulation (EU) 2024/1689</td>
+</tr>
+<tr class="odd">
+<td>33</td>
+<td>IMDRF harmonization frameworks</td>
+<td><strong>[FRAMEWORK]</strong> <code>@imdrf_samd_convergence_2020</code></td>
+<td>IMDRF convergence documents</td>
+</tr>
+<tr class="even">
+<td>35</td>
+<td>FDA intent to increase LDT oversight</td>
+<td><strong>[REQUIRED]</strong> <code>@fda_ldt_final_rule_2024</code></td>
+<td>FDA “Laboratory Developed Tests” Final Rule (2024)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>Data Governance and Consent (Lines 45-69)</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 31%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Line</th>
+<th>Claim</th>
+<th>Citation Key</th>
+<th>Suggested Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>51</td>
+<td>GDPR genetic data as special category</td>
+<td><strong>[FRAMEWORK]</strong> <code>@gdpr_2016</code></td>
+<td>Regulation (EU) 2016/679, Article 9</td>
+</tr>
+<tr class="even">
+<td>51</td>
+<td>US Common Rule secondary research provisions</td>
+<td><strong>[FRAMEWORK]</strong> <code>@common_rule_2018</code></td>
+<td>45 CFR 46 (revised 2018)</td>
+</tr>
+<tr class="odd">
+<td>51</td>
+<td>Genomic data resist complete deidentification</td>
+<td><strong>[REQUIRED]</strong> <code>@gymrek_identifying_2013</code> or <code>@erlich_identity_2014</code></td>
+<td>Gymrek et al.&nbsp;(2013) or Erlich &amp; Narayanan (2014) on re-identification</td>
+</tr>
+<tr class="even">
+<td>53</td>
+<td>Dynamic consent systems</td>
+<td><strong>[FRAMEWORK]</strong> <code>@kaye_dynamic_2015</code></td>
+<td>Kaye et al., “Dynamic consent: a patient interface for twenty-first century research networks”</td>
+</tr>
+<tr class="odd">
+<td>57</td>
+<td>UK Biobank governance and ~500,000 participants</td>
+<td><strong>[REQUIRED]</strong> <code>@sudlow_uk_biobank_2015</code></td>
+<td>Sudlow et al.&nbsp;(2015), UK Biobank resource description</td>
+</tr>
+<tr class="even">
+<td>61</td>
+<td>Federated learning for genomics</td>
+<td><strong>[RECOMMENDED]</strong> <code>@rieke_federated_2020</code></td>
+<td>Rieke et al., “The future of digital health with federated learning”</td>
+</tr>
+<tr class="odd">
+<td>61</td>
+<td>Gradient updates can reveal individual information</td>
+<td><strong>[REQUIRED]</strong> <code>@zhu_deep_leakage_2019</code></td>
+<td>Zhu et al., “Deep Leakage from Gradients”</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>Privacy and Genomic Data (Lines 71-94)</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 31%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Line</th>
+<th>Claim</th>
+<th>Citation Key</th>
+<th>Suggested Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>93</td>
+<td>GINA prohibitions</td>
+<td><strong>[FRAMEWORK]</strong> <code>@gina_2008</code></td>
+<td>Genetic Information Nondiscrimination Act of 2008</td>
+</tr>
+<tr class="even">
+<td>(implicit)</td>
+<td>Membership inference attacks on genomic models</td>
+<td><strong>[RECOMMENDED]</strong> <code>@homer_membership_2008</code></td>
+<td>Homer et al.&nbsp;(2008), or more recent ML-specific attacks</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>Intellectual Property (Lines 95-119)</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 31%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Line</th>
+<th>Claim</th>
+<th>Citation Key</th>
+<th>Suggested Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>99</td>
+<td>“<em>Myriad</em> decision held that naturally occurring DNA sequences cannot be patented”</td>
+<td><strong>[REQUIRED]</strong> <code>@myriad_2013</code></td>
+<td>Association for Molecular Pathology v. Myriad Genetics, 569 U.S. 576 (2013)</td>
+</tr>
+<tr class="even">
+<td>101</td>
+<td>AI inventorship legal questions</td>
+<td><strong>[RECOMMENDED]</strong> <code>@thaler_dabus_2021</code></td>
+<td>Thaler v. Vidal or related DABUS patent cases</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>Responsible Development Practices (Lines 121-145)</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 31%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Line</th>
+<th>Claim</th>
+<th>Citation Key</th>
+<th>Suggested Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>125</td>
+<td>Model cards framework</td>
+<td><strong>[FRAMEWORK]</strong> <code>@mitchell_model_cards_2019</code></td>
+<td>Mitchell et al., “Model Cards for Model Reporting”</td>
+</tr>
+<tr class="even">
+<td>125</td>
+<td>Datasheets for datasets</td>
+<td><strong>[FRAMEWORK]</strong> <code>@gebru_datasheets_2021</code></td>
+<td>Gebru et al., “Datasheets for Datasets”</td>
+</tr>
+<tr class="odd">
+<td>133</td>
+<td>Training data bias inheritance in genomic models</td>
+<td><strong>[RECOMMENDED]</strong> <code>@martin_clinical_2019</code></td>
+<td>Martin et al., “Clinical use of current polygenic risk scores may exacerbate health disparities”</td>
+</tr>
+<tr class="even">
+<td>145</td>
+<td>Automation bias</td>
+<td><strong>[FRAMEWORK]</strong> <code>@parasuraman_automation_bias_2010</code></td>
+<td>Parasuraman &amp; Manzey, “Complacency and Bias in Human Use of Automation”</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>Dual Use and Biosecurity (Lines 147-169)</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 31%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Line</th>
+<th>Claim</th>
+<th>Citation Key</th>
+<th>Suggested Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>159</td>
+<td>Gap between computational generation and biological realization</td>
+<td><strong>[RECOMMENDED]</strong> <code>@soice_biosecurity_2023</code></td>
+<td>Soice et al., “Can large language models democratize access to dual-use biotechnology?” or similar biosecurity assessments</td>
+</tr>
+<tr class="even">
+<td>161</td>
+<td>Staged deployment strategies</td>
+<td><strong>[RECOMMENDED]</strong> <code>@shevlane_model_release_2022</code></td>
+<td>Shevlane, “Structured access: an emerging paradigm for safe AI deployment”</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>Open Technical Problems (Lines 171-201)</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 31%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Line</th>
+<th>Claim</th>
+<th>Citation Key</th>
+<th>Suggested Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>175</td>
+<td>“largest foundation models in natural language processing now exceed a trillion parameters”</td>
+<td><strong>[REQUIRED]</strong> <code>@fedus_switch_2022</code> or <code>@chowdhery_palm_2022</code></td>
+<td>Switch Transformer or PaLM publications</td>
+</tr>
+<tr class="even">
+<td>175</td>
+<td>“human genome spans 3 billion base pairs…20,000 protein-coding genes”</td>
+<td>Textbook fact, no citation needed</td>
+<td>—</td>
+</tr>
+<tr class="odd">
+<td>179</td>
+<td>State space models for sequences</td>
+<td><strong>[RECOMMENDED]</strong> <code>@gu_mamba_2023</code></td>
+<td>Gu &amp; Dao, “Mamba: Linear-Time Sequence Modeling with Selective State Spaces”</td>
+</tr>
+<tr class="even">
+<td>197</td>
+<td>Mendelian randomization</td>
+<td><strong>[FRAMEWORK]</strong> <code>@davey_smith_mr_2003</code></td>
+<td>Davey Smith &amp; Ebrahim (2003) or more recent review</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The first genomic foundation model to receive U.S. Food and Drug Administration (FDA) clearance as a medical device will face a peculiar regulatory challenge: demonstrating that a system trained on millions of sequences from research biobanks, academic databases, and public repositories can safely inform clinical decisions for individual patients who never consented to such use. Clinical-grade variant interpretation tools already incorporate deep learning predictions, yet the regulatory frameworks governing their deployment were designed for deterministic software with traceable decision logic, not for neural networks whose internal representations resist simple explanation. As of 2024, more than 500 AI-enabled medical devices have received FDA authorization, but fewer than a dozen involve genomic interpretation, and none yet deploys a foundation model at scale. The gap between technical capability and regulatory readiness defines one of the central tensions facing the field.</p>
+<p>This asymmetry between what models can do in silico and what they may do in clinical practice shapes every translational decision. A variant effect predictor achieving 0.95 area under the receiver operating characteristic curve (auROC) on a curated benchmark may fail unpredictably on the rare variants that matter most for diagnosis. A regulatory sequence model that accurately predicts chromatin accessibility in well-characterized cell lines may produce unreliable predictions in patient-derived tissues never seen during training. Technical achievements in genomic deep learning represent necessary but insufficient conditions for clinical impact. Realizing the benefits of genomic foundation models while managing their risks requires navigating regulatory pathways designed for different technologies, building governance structures for data that spans generations and continents, and confronting ethical questions that genomics and artificial intelligence raise independently but compound when combined.</p>
 <section id="regulatory-frameworks-for-genomic-ai" class="level2" data-number="29.1">
 <h2 data-number="29.1" class="anchored" data-anchor-id="regulatory-frameworks-for-genomic-ai"><span class="header-section-number">29.1</span> Regulatory Frameworks for Genomic AI</h2>
 <div id="fig-regulatory-pathways" class="quarto-layout-panel">
@@ -903,7 +1274,7 @@ Figure&nbsp;29.5: [High] Autonomous design cycle with oversight. Cycle component
 </div>
 <section id="multimodal-integration" class="level3" data-number="29.8.1">
 <h3 data-number="29.8.1" class="anchored" data-anchor-id="multimodal-integration"><span class="header-section-number">29.8.1</span> Multimodal Integration</h3>
-<p>The foundation models discussed throughout this book largely operate on single modalities: DNA sequence, protein sequence, gene expression counts, chromatin accessibility signals. Biological reality is irreducibly multimodal, with information flowing across modalities through transcription, translation, signaling, and metabolism. The next generation of genomic foundation models will need to integrate across modalities more deeply.</p>
+<p>Current genomic foundation models largely operate on single modalities: DNA sequence, protein sequence, gene expression counts, chromatin accessibility signals. Biological reality is irreducibly multimodal, with information flowing across modalities through transcription, translation, signaling, and metabolism. The next generation of genomic foundation models will need to integrate across modalities more deeply.</p>
 <p>Early multimodal genomic models combine encoders trained separately on different modalities, using cross-attention or shared embedding spaces to enable cross-modal reasoning. More ambitious architectures train end-to-end on multimodal data, learning unified representations that capture relationships between sequence and structure, expression and chromatin state, genotype and phenotype. The data requirements for such training are substantial, requiring aligned measurements across modalities at scale.</p>
 <p>Clinical applications particularly benefit from multimodal integration. A diagnostic model that combines genomic variants with electronic health record data, imaging findings, and laboratory values can capture patterns invisible to any single modality. A prognostic model that integrates germline genetics with tumor transcriptomics and treatment history can personalize predictions in ways that purely genetic models cannot. Building such systems requires not just technical capability but also data governance frameworks that permit multimodal combination while protecting privacy.</p>
 </section>
@@ -933,14 +1304,14 @@ Figure&nbsp;29.6: [Enhancing] Circular learning system. Components: (1) Clinical
 </figcaption>
 </figure>
 </div>
-<p>Realizing this vision requires infrastructure for secure data sharing, governance frameworks that enable learning while protecting privacy, regulatory pathways that accommodate evolving systems, and clinical workflows that support appropriate use and oversight. The technical capabilities described in this book are necessary but not sufficient. Genomic foundation models will achieve their potential only through sustained collaboration among technologists, clinicians, patients, policymakers, and communities working together to build systems that are both capable and trustworthy.</p>
+<p>Realizing this vision requires infrastructure for secure data sharing, governance frameworks that enable learning while protecting privacy, regulatory pathways that accommodate evolving systems, and clinical workflows that support appropriate use and oversight. Technical capabilities alone are necessary but not sufficient. Genomic foundation models will achieve their potential only through sustained collaboration among technologists, clinicians, patients, policymakers, and communities working together to build systems that are both capable and trustworthy.</p>
 </section>
 </section>
 <section id="the-work-ahead" class="level2" data-number="29.9">
 <h2 data-number="29.9" class="anchored" data-anchor-id="the-work-ahead"><span class="header-section-number">29.9</span> The Work Ahead</h2>
-<p>The ultimate test of genomic foundation models is whether they improve health outcomes. The technical capabilities surveyed throughout this book, from sequence representations through foundation model architectures to clinical applications, are necessary but not sufficient for that goal. Between a model that predicts well on benchmarks and a patient whose diagnosis comes faster or whose treatment works better lies the full complexity of clinical translation: validation across populations, integration into workflows, regulatory approval, equitable access, and ongoing monitoring for drift and harm.</p>
+<p>The ultimate test of genomic foundation models is whether they improve health outcomes. The technical capabilities surveyed in the preceding chapters, from sequence representations through foundation model architectures to clinical applications, are necessary but not sufficient for that goal. Between a model that predicts well on benchmarks and a patient whose diagnosis comes faster or whose treatment works better lies the full complexity of clinical translation: validation across populations, integration into workflows, regulatory approval, equitable access, and ongoing monitoring for drift and harm.</p>
 <p>Learning health systems provide a framework for bridging this gap: clinical use generates data that feeds back into model refinement, creating virtuous cycles where models improve as they serve more patients. Such systems raise governance questions as important as the technical ones. Who controls the learning process? How are improvements validated before deployment? How are benefits and risks distributed across patients, providers, and technology developers? How do we ensure that populations underrepresented in training data are not further disadvantaged by systems that learn primarily from others?</p>
-<p>Genomic foundation models will achieve their potential only through sustained collaboration among technologists, clinicians, patients, policymakers, and communities working together to build systems that are both capable and trustworthy. Capability without trustworthiness is dangerous: models that predict accurately but fail silently for certain populations cause harm even as they help others. Trustworthiness without capability is insufficient: systems that are transparent and fair but do not improve on existing practice offer nothing worth adopting. The technical achievements described in this book enable new capabilities; the human systems that govern their development and deployment will determine whether those capabilities translate into genuine benefit for the patients and populations that genomic medicine aims to serve.</p>
+<p>Genomic foundation models will achieve their potential only through sustained collaboration among technologists, clinicians, patients, policymakers, and communities working together to build systems that are both capable and trustworthy. Capability without trustworthiness is dangerous: models that predict accurately but fail silently for certain populations cause harm even as they help others. Trustworthiness without capability is insufficient: systems that are transparent and fair but do not improve on existing practice offer nothing worth adopting. Technical achievements in genomic deep learning enable new capabilities; the human systems that govern their development and deployment will determine whether those capabilities translate into genuine benefit for the patients and populations that genomic medicine aims to serve.</p>
 
 
 </section>

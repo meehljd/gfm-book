@@ -4,8 +4,6 @@ A pathogenicity score of 0.73 means nothing unless we know what 0.73 means. If t
 
 Foundation models produce continuous scores, but clinical decisions require categorical actions: test or do not test, treat or do not treat, report to the family or continue monitoring. This translation from probability to action only works when probabilities are trustworthy. A model that systematically overstates confidence will trigger unnecessary interventions. A model that understates confidence will miss actionable findings. A model that reports high confidence on inputs it has never seen before fails at a fundamental level regardless of its average performance on familiar data. Uncertainty quantification provides the tools to assess when model predictions deserve trust.
 
-This chapter develops the concepts and methods for quantifying, calibrating, and communicating prediction uncertainty. We distinguish **aleatoric uncertainty** (irreducible randomness in the data) from **epistemic uncertainty** (reducible uncertainty from limited training data or model capacity). We examine **calibration** methods that align predicted probabilities with empirical frequencies, including temperature scaling, isotonic regression, and Bayesian approaches. We address **out-of-distribution** detection, identifying when inputs differ sufficiently from training data that predictions should not be trusted. Throughout, we connect to the clinical workflows examined in @sec-clinical-risk and @sec-rare-disease, where uncertainty estimates determine which predictions are actionable and which require human review.
-
 
 ## Types of Uncertainty in Genomic Prediction {#sec-uncertainty-types}
 
@@ -227,7 +225,7 @@ The coverage guarantee is finite-sample: it holds exactly for any sample size, n
 
 ### Split Conformal Prediction
 
-The most practical conformal method, split conformal prediction, proceeds in five steps. First, split available labeled data into a proper training set and a calibration set. Second, train the model on the training set only. Third, compute non-conformity scores on the calibration set, where higher scores indicate poorer fit between the model's prediction and the true label. Fourth, find the threshold $q$ at the $(1-\alpha)(1+1/n)$ quantile of calibration scores, where $n$ is the calibration set size. Fifth, at test time, include in the prediction set all labels whose non-conformity score falls below $q$.
+The most practical conformal method, split conformal prediction, begins by partitioning labeled data into training and calibration subsets. After training the model exclusively on the training portion, non-conformity scores are computed for each calibration example, where higher scores indicate poorer agreement between prediction and true label. The threshold $q$ is then set at the $(1-\alpha)(1+1/n)$ quantile of these calibration scores. At test time, the prediction set includes all labels whose non-conformity score falls below this threshold.
 
 Non-conformity scores measure how "strange" a candidate label is given the model's output. For classification, a common choice is $1 - \hat{p}_y$, where $\hat{p}_y$ is the predicted probability of the true class. High predicted probability means low non-conformity (the label conforms to the model's expectations); low predicted probability means high non-conformity. For regression, absolute residuals $|y - \hat{y}|$ serve as non-conformity scores.
 
@@ -241,7 +239,7 @@ Adaptive set sizes convey uncertainty naturally. Confident predictions yield sma
 
 Calibration set construction requires careful thought. Holding out variants at random may not prevent information leakage if related variants (same gene, same protein domain) appear in both calibration and test sets. Holding out entire genes or protein families provides more stringent evaluation but may reduce calibration set size for rare gene families. For applications intended to work across populations, calibration sets should include diverse ancestries to ensure coverage guarantees hold across patient populations.
 
-Conformal **prediction interval**s for regression tasks (expression prediction, quantitative trait prediction) provide bounds rather than sets. Conformalized quantile regression produces intervals guaranteed to contain the true value with specified probability, directly applicable to predicting gene expression changes or polygenic score uncertainty.
+Conformal **prediction intervals** for regression tasks (expression prediction, quantitative trait prediction) provide bounds rather than sets. Conformalized quantile regression produces intervals guaranteed to contain the true value with specified probability, directly applicable to predicting gene expression changes or polygenic score uncertainty.
 
 ### Limitations and Practical Considerations
 
@@ -398,7 +396,7 @@ This framing integrates uncertainty with action, helping users understand how un
 
 ## Necessary but Insufficient
 
-Uncertainty quantification transforms foundation model outputs from opaque scores into components of rational decision processes. A well-calibrated pathogenicity prediction that honestly communicates its limitations enables appropriate clinical reasoning: high confidence warrants action, low confidence warrants additional testing or expert review. An overconfident score that claims false precision causes harm through both false positives (unnecessary interventions) and false negatives (missed diagnoses). The methods developed in this chapter, from temperature scaling through conformal prediction to out-of-distribution detection, provide the technical foundation for trustworthy genomic AI.
+Uncertainty quantification transforms foundation model outputs from opaque scores into components of rational decision processes. A well-calibrated pathogenicity prediction that honestly communicates its limitations enables appropriate clinical reasoning: high confidence warrants action, low confidence warrants additional testing or expert review. An overconfident score that claims false precision causes harm through both false positives (unnecessary interventions) and false negatives (missed diagnoses). Temperature scaling, conformal prediction, and out-of-distribution detection together provide the technical foundation for trustworthy genomic AI.
 
 The path from uncertainty quantification to clinical impact requires integrating these methods into operational workflows. Selective prediction enables triage between automated handling and expert review based on model confidence. Conformal prediction sets provide coverage guarantees that support risk-aware decision-making. Out-of-distribution detection prevents confident predictions on inputs that fall outside the training distribution. Calibration ensures that numerical probabilities mean what they claim to mean. Together, these tools enable foundation models to participate in clinical decisions without overstating their reliability.
 

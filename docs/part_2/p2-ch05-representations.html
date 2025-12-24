@@ -695,52 +695,26 @@ window.Quarto = {
 
 <p>Before a genomic model learns any parameters, before it sees any training data, before architecture choices are made, a prior decision has already constrained what it can discover: how will sequence be represented? This decision is not merely technical. A <strong>tokenization</strong> scheme that merges nucleotides into coarse multi-base units may obscure the single-nucleotide resolution needed to detect pathogenic splice variants. An <strong>embedding</strong> strategy that encodes local context may lose the long-range dependencies that connect distal enhancers to their target genes. A position encoding that assumes fixed sequence length may fail on the variable-length inputs that clinical applications require. These choices propagate through every subsequent design decision, shaping what patterns the model can detect, what resolution it can achieve, and ultimately which biological questions it can answer.</p>
 <p>The challenge is that biological structure operates at multiple scales simultaneously, and no single representation captures all scales equally well. Transcription factor binding sites span 6 to 12 nucleotides; the regulatory grammar linking multiple sites extends over hundreds of base pairs. Coding sequences follow a strict three-nucleotide codon structure; noncoding regions have no such constraint. A splice acceptor consists of just two nucleotides (the AG dinucleotide marking exon boundaries), yet splice regulation depends on sequences spanning the entire intron. Any representation scheme must navigate these biological realities while remaining computationally tractable for sequences that dwarf typical language model inputs by orders of magnitude.</p>
-<p>An analogy to natural language processing illuminates the fundamental tradeoffs. Training a language model on English text requires deciding how to segment the continuous character stream into discrete tokens. Character-level tokenization preserves maximum resolution but creates sequences too long for efficient processing. Word-level tokenization compresses the sequence but loses information about morphology and subword structure. Learned subword vocabularies (byte-pair encoding, SentencePiece) balance these concerns by letting corpus statistics guide segmentation. DNA presents similar choices but with critical differences: only four letters rather than dozens, no natural word boundaries, and the biological structure operating at multiple scales that language lacks. This chapter examines the representation strategies that genomic foundation models employ, from fixed <em>k</em>-mer vocabularies through learned tokenization schemes, and traces how each choice shapes what downstream models can learn.</p>
-<div id="fig-tokenization-comparison" class="quarto-layout-panel">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-tokenization-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A.png" class="img-fluid figure-img"></p>
-<figcaption><strong>FIGURE PLACEHOLDER A</strong></figcaption>
-</figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p>An analogy to natural language processing illuminates the fundamental tradeoffs. Training a language model on English text requires deciding how to segment the continuous character stream into discrete tokens. Character-level tokenization preserves maximum resolution but creates sequences too long for efficient processing. Word-level tokenization compresses the sequence but loses information about morphology and subword structure. Learned subword vocabularies (byte-pair encoding, SentencePiece) balance these concerns by letting corpus statistics guide segmentation. DNA presents similar choices but with critical differences: only four letters rather than dozens, no natural word boundaries, and the biological structure operating at multiple scales that language lacks. The representation strategies that genomic foundation models employ range from fixed <em>k</em>-mer vocabularies through learned tokenization schemes, each choice shaping what downstream models can learn. ::: {#fig-tokenization-comparison layout-ncol=2} <img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A.png" class="img-fluid" alt="FIGURE PLACEHOLDER A"></p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B.png" class="img-fluid figure-img"></p>
 <figcaption><strong>FIGURE PLACEHOLDER B</strong></figcaption>
 </figure>
 </div>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C.png" class="img-fluid figure-img"></p>
 <figcaption><strong>FIGURE PLACEHOLDER C</strong></figcaption>
 </figure>
 </div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D.png" class="img-fluid figure-img"></p>
 <figcaption><strong>FIGURE PLACEHOLDER D</strong></figcaption>
 </figure>
 </div>
-</div>
-</div>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tokenization-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5.1: [Essential] Four-panel comparison showing the same 30-nucleotide regulatory sequence tokenized four different ways. Panel A (One-hot): 30 tokens, one per nucleotide, shown as 4×30 binary matrix with color-coded nucleotides. Panel B (Overlapping 6-mers): Still ~30 tokens due to overlap, with brackets showing how tokens share nucleotides. Panel C (BPE): ~10-15 variable-length tokens, with token boundaries marked showing compression of repetitive regions. Panel D (Single-nucleotide for Hyena/Mamba): 30 tokens like one-hot but with learned embeddings indicated. Annotate sequence length, token count, and effective compression ratio for each.
-</figcaption>
-</figure>
-</div>
+<p>[Essential] Four-panel comparison showing the same 30-nucleotide regulatory sequence tokenized four different ways. Panel A (One-hot): 30 tokens, one per nucleotide, shown as 4×30 binary matrix with color-coded nucleotides. Panel B (Overlapping 6-mers): Still ~30 tokens due to overlap, with brackets showing how tokens share nucleotides. Panel C (BPE): ~10-15 variable-length tokens, with token boundaries marked showing compression of repetitive regions. Panel D (Single-nucleotide for Hyena/Mamba): 30 tokens like one-hot but with learned embeddings indicated. Annotate sequence length, token count, and effective compression ratio for each. :::</p>
 <section id="one-hot-encoding-the-cnn-foundation" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="one-hot-encoding-the-cnn-foundation"><span class="header-section-number">5.1</span> One-Hot Encoding: The CNN Foundation</h2>
 <p>A child inherits a <em>DMD</em> variant from her mother. Whether this variant causes Duchenne muscular dystrophy or remains clinically silent depends on its exact position relative to the exon-intron boundary: one nucleotide can determine whether the splicing machinery recognizes the junction. This is why single-nucleotide resolution is not a technical nicety but a clinical necessity. The earliest deep learning approaches to genomic sequence modeling recognized this requirement and adopted the simplest representation capable of preserving it: one-hot encoding, where each nucleotide becomes a sparse binary vector with a single active element indicating its identity. Adenine is encoded as [1, 0, 0, 0], cytosine as [0, 1, 0, 0], guanine as [0, 0, 1, 0], and thymine as [0, 0, 0, 1]. A sequence of length <span class="math inline">\(L\)</span> thus becomes a matrix of dimensions <span class="math inline">\(4 \times L\)</span>, interpretable as four channels analogous to the RGB channels of an image plus one.</p>
@@ -791,7 +765,7 @@ Figure&nbsp;5.1: [Essential] Four-panel comparison showing the same 30-nucleotid
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-biological-tokenization-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5.2: [Enhancing] Comparison of standard vs.&nbsp;biologically-informed tokenization on a gene structure diagram. Show: (1) Standard BPE tokenizing across codon boundaries in coding regions; (2) Codon-aware tokenization (GenSLMs/Life-Code) respecting reading frame with 64-codon vocabulary; (3) BioToken-style representation with explicit variant tokens, regulatory element markers, and structural annotations. Highlight how biological structure can be encoded directly into tokenization.
+Figure&nbsp;5.1: [Enhancing] Comparison of standard vs.&nbsp;biologically-informed tokenization on a gene structure diagram. Show: (1) Standard BPE tokenizing across codon boundaries in coding regions; (2) Codon-aware tokenization (GenSLMs/Life-Code) respecting reading frame with 64-codon vocabulary; (3) BioToken-style representation with explicit variant tokens, regulatory element markers, and structural annotations. Highlight how biological structure can be encoded directly into tokenization.
 </figcaption>
 </figure>
 </div>
@@ -830,7 +804,7 @@ Figure&nbsp;5.2: [Enhancing] Comparison of standard vs.&nbsp;biologically-inform
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-embedding-space-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5.3: [High] UMAP or t-SNE visualization of <em>k</em>-mer or BPE token embeddings from a trained DNA language model (e.g., <em>DNABERT-2</em> or GROVER). Color points by: Panel A: GC content (gradient from AT-rich to GC-rich). Panel B: Token frequency (common vs.&nbsp;rare). Panel C: Genomic context (coding, regulatory, repetitive). Show how biologically meaningful structure emerges without explicit supervision.
+Figure&nbsp;5.2: [High] UMAP or t-SNE visualization of <em>k</em>-mer or BPE token embeddings from a trained DNA language model (e.g., <em>DNABERT-2</em> or GROVER). Color points by: Panel A: GC content (gradient from AT-rich to GC-rich). Panel B: Token frequency (common vs.&nbsp;rare). Panel C: Genomic context (coding, regulatory, repetitive). Show how biologically meaningful structure emerges without explicit supervision.
 </figcaption>
 </figure>
 </div>
@@ -848,7 +822,7 @@ Figure&nbsp;5.3: [High] UMAP or t-SNE visualization of <em>k</em>-mer or BPE tok
 </section>
 <section id="position-encodings-where-tokens-live" class="level2" data-number="5.7">
 <h2 data-number="5.7" class="anchored" data-anchor-id="position-encodings-where-tokens-live"><span class="header-section-number">5.7</span> Position Encodings: Where Tokens Live</h2>
-<p>A regulatory variant 50 kilobases upstream of <em>MYC</em> can drive oncogenesis by disrupting an enhancer; the identical sequence change at a different genomic location might have no phenotypic consequence. Position is not merely metadata but fundamental biological information. Yet transformers process tokens as sets rather than sequences. The attention mechanism computes interactions between all pairs of tokens regardless of their positions, treating a sequence as a bag of elements with no inherent order. For language, this creates a problem: “dog bites man” and “man bites dog” contain identical tokens but mean very different things. In language, this positional dependency operates at the scale of sentences or paragraphs; word order determines syntax and meaning, but the relevant context rarely extends beyond a few hundred tokens. Genomic position dependencies operate across fundamentally different scales. A transcription factor binding site functions differently depending on whether it sits in a promoter, an intron, or an intergenic desert, and these distinctions can span tens of kilobases. Enhancer-promoter interactions routinely bridge 50 to 500 kilobases of intervening sequence. Moreover, absolute genomic coordinates carry accumulated knowledge with no linguistic analog: the position <em>chr17</em>:41,276,045 indexes decades of clinical observations, population frequencies, and functional studies that inform variant interpretation before a model processes a single nucleotide. For genomics, the problem is more severe: a transcription factor binding site has entirely different effects depending on whether it appears in a promoter, an enhancer, or a gene body. <strong>Position must somehow be encoded, and the encoding strategy determines what spatial relationships the model can learn.</strong></p>
+<p>A regulatory variant 50 kilobases upstream of <em>MYC</em> can drive oncogenesis by disrupting an enhancer; the identical sequence change at a different genomic location might have no phenotypic consequence. Position is not merely metadata but fundamental biological information. Yet transformers process tokens as sets rather than sequences. The attention mechanism computes interactions between all pairs of tokens regardless of their positions, treating a sequence as a bag of elements with no inherent order. For language, this creates a problem: “dog bites man” and “man bites dog” contain identical tokens but mean very different things. In language, this positional dependency operates at the scale of sentences or paragraphs; word order determines syntax and meaning, but the relevant context rarely extends beyond a few hundred tokens. Genomic position dependencies operate across fundamentally different scales. A transcription factor binding site functions differently depending on whether it sits in a promoter, an intron, or an intergenic desert, and these distinctions can span tens of kilobases. Enhancer-promoter interactions routinely bridge 50 to 500 kilobases of intervening sequence. Absolute genomic coordinates carry accumulated knowledge with no linguistic analog: the position <em>chr17</em>:41,276,045 indexes decades of clinical observations, population frequencies, and functional studies that inform variant interpretation before a model processes a single nucleotide. For genomics, the problem is more severe: a transcription factor binding site has entirely different effects depending on whether it appears in a promoter, an enhancer, or a gene body. Position must somehow be encoded, and the encoding strategy determines what spatial relationships the model can learn.</p>
 <div id="fig-position-encodings" class="quarto-layout-panel">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-position-encodings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -890,7 +864,7 @@ Figure&nbsp;5.3: [High] UMAP or t-SNE visualization of <em>k</em>-mer or BPE tok
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-position-encodings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5.4: [High] Four-panel comparison of position encoding approaches. Panel A (Absolute/Learned): Heatmap showing learned position embeddings across dimensions, with note about fixed maximum length. Panel B (Sinusoidal): Wave patterns at different frequencies across positions, showing how different dimensions capture different scales. Panel C (ALiBi): Attention bias matrix showing linear decay with distance, highlighting the implicit local preference. Panel D (RoPE): 2D rotation visualization in embedding subspace showing how relative position is encoded through rotation angle.
+Figure&nbsp;5.3: [High] Four-panel comparison of position encoding approaches. Panel A (Absolute/Learned): Heatmap showing learned position embeddings across dimensions, with note about fixed maximum length. Panel B (Sinusoidal): Wave patterns at different frequencies across positions, showing how different dimensions capture different scales. Panel C (ALiBi): Attention bias matrix showing linear decay with distance, highlighting the implicit local preference. Panel D (RoPE): 2D rotation visualization in embedding subspace showing how relative position is encoded through rotation angle.
 </figcaption>
 </figure>
 </div>
@@ -968,12 +942,12 @@ Figure&nbsp;5.4: [High] Four-panel comparison of position encoding approaches. P
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-compression-resolution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5.5: [High] Two-axis plot with “Sequence Compression” on x-axis (tokens per kilobase) and “Nucleotide Resolution” on y-axis. Position different approaches: One-hot/single-nucleotide (no compression, full resolution), overlapping <em>k</em>-mers (no compression, k-nucleotide resolution), non-overlapping <em>k</em>-mers (k-fold compression, k-nucleotide resolution), BPE (variable compression, variable resolution). Annotate practical context lengths achievable with standard transformers (~4K tokens) for each approach. Include callout showing clinical implication: “Single SNP affects…” with number of tokens per approach.
+Figure&nbsp;5.4: [High] Two-axis plot with “Sequence Compression” on x-axis (tokens per kilobase) and “Nucleotide Resolution” on y-axis. Position different approaches: One-hot/single-nucleotide (no compression, full resolution), overlapping <em>k</em>-mers (no compression, k-nucleotide resolution), non-overlapping <em>k</em>-mers (k-fold compression, k-nucleotide resolution), BPE (variable compression, variable resolution). Annotate practical context lengths achievable with standard transformers (~4K tokens) for each approach. Include callout showing clinical implication: “Single SNP affects…” with number of tokens per approach.
 </figcaption>
 </figure>
 </div>
 <p>These choices propagate through every subsequent modeling decision. Position encodings in transformers must align with token boundaries. Convolutional receptive fields span tokens, not nucleotides, making effective genomic range dependent on tokenization. <strong>Transfer learning</strong> inherits the tokenization of the pretrained model, constraining how representations can be adapted to new tasks. A model pretrained with 6-mer tokenization cannot be fine-tuned for single-nucleotide variant interpretation without architectural modification.</p>
-<p>The field has moved from treating tokenization as fixed preprocessing to recognizing it as a fundamental design decision shaping what models can learn. Some architectures now learn tokenization jointly with prediction, discovering representations optimized for specific tasks rather than fixed in advance. As contexts extend to chromosome scale and models grow to billions of parameters, the representation problem will remain central to genomic foundation model design. Understanding these trade-offs is prerequisite to understanding the architectural choices examined throughout the remainder of this book.</p>
+<p>The field has moved from treating tokenization as fixed preprocessing to recognizing it as a fundamental design decision shaping what models can learn. Some architectures now learn tokenization jointly with prediction, discovering representations optimized for specific tasks rather than fixed in advance. As contexts extend to chromosome scale and models grow to billions of parameters, the representation problem will remain central to genomic foundation model design. Understanding these trade-offs is prerequisite to understanding architectural choices in sequence modeling.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">

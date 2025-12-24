@@ -4,7 +4,7 @@ An enhancer 80 kilobases from a promoter can determine whether a gene *is* expre
 
 The attention mechanisms introduced in @sec-attention could theoretically model arbitrary-range dependencies, but naive transformer application to hundred-kilobase windows is computationally prohibitive. Attention scales quadratically with sequence length: doubling context length quadruples memory and computation. Processing 200 kilobases at single-nucleotide resolution would require attending over 200,000 positions simultaneously, far beyond practical limits. The field needed architectures that could span regulatory distances without the quadratic penalty.
 
-Hybrid architectures resolve this tension by combining the strengths of both paradigms. A convolutional front-end efficiently extracts local sequence features and compresses the input to a manageable length, reducing 200 kilobases of sequence to a few thousand feature vectors. A transformer backbone then propagates information across this compressed representation through attention. The result is a new class of regulatory models that can capture enhancer-promoter interactions, predict the effects of distal variants on gene *expression*, and provide mechanistic hypotheses about long-range regulation. Enformer, the first widely adopted model in this class, processes 200-kilobase windows and predicts chromatin state, transcription initiation, and gene *expression* from sequence alone. This chapter examines *Enformer* and its successors, tracing the architectural innovations that enabled long-range regulatory modeling and assessing what these models reveal about the grammar of gene *regulation*.
+Hybrid architectures resolve this tension by combining the strengths of both paradigms. A convolutional front-end efficiently extracts local sequence features and compresses the input to a manageable length, reducing 200 kilobases of sequence to a few thousand feature vectors. A transformer backbone then propagates information across this compressed representation through attention. The result is a new class of regulatory models that can capture enhancer-promoter interactions, predict the effects of distal variants on gene *expression*, and provide mechanistic hypotheses about long-range regulation. Enformer, the first widely adopted model in this class, processes 200-kilobase windows and predicts chromatin state, transcription initiation, and gene *expression* from sequence alone.
 
 
 ## The Long-Range Regulation Problem
@@ -64,7 +64,7 @@ The training objective combines losses across all tracks, positions, and species
 
 ### Variant Effect Prediction
 
-The clinical and scientific **value** of *Enformer* lies substantially in its ability to predict how sequence variants alter regulatory activity. The procedure follows a straightforward logic: extract a 200 kilobase window containing the variant, compute predictions for the reference allele, compute predictions for the alternative allele, and compare the outputs across all tracks and positions.
+The clinical and scientific value of *Enformer* lies substantially in its ability to predict how sequence variants alter regulatory activity. The procedure follows a straightforward logic: extract a 200 kilobase window containing the variant, compute predictions for the reference allele, compute predictions for the alternative allele, and compare the outputs across all tracks and positions.
 
 The resulting variant effect scores span thousands of dimensions, one for each assay and cell type. A variant might increase predicted DNase accessibility in one cell type while decreasing predicted CAGE signal in another, suggesting context-dependent regulatory effects. By aggregating predictions around gene *promoters*, researchers can estimate variant effects on gene *expression* in specific tissues.
 
@@ -147,7 +147,7 @@ Unifying these modalities in a single model offers several advantages. The backb
 
 AlphaGenome is primarily available through an API interface rather than as a downloadable model. This arrangement simplifies use for many applications: researchers can score variants without managing large model weights or specialized hardware. It also introduces constraints around data privacy, customization, and integration with local pipelines. Clinical applications that cannot send patient sequence data to external services may be unable to use API-only models directly, motivating interest in openly available alternatives.
 
-From the perspective of variant interpretation workflows, AlphaGenome provides a comprehensive set of predictions from a single **query**. A variant can be assessed for effects on local chromatin state, expression of nearby genes, splicing of overlapping transcripts, and potential disruption of chromatin contacts, all from the same underlying model. The challenge lies in synthesizing these multiple outputs into actionable conclusions, a topic addressed further in @sec-vep-fm.
+From the perspective of variant interpretation workflows, AlphaGenome provides a comprehensive set of predictions from a single query. A variant can be assessed for effects on local chromatin state, expression of nearby genes, splicing of overlapping transcripts, and potential disruption of chromatin contacts, all from the same underlying model. The challenge lies in synthesizing these multiple outputs into actionable conclusions, a topic addressed further in @sec-vep-fm.
 
 
 ## What Hybrid Architectures Accomplish
@@ -195,7 +195,7 @@ Hybrid models learn correlations between sequence and functional readouts, not c
 
 ### Interpretability Challenges
 
-The scale of these models (hundreds of millions of parameters) makes mechanistic interpretation difficult. Attention patterns provide some insight into which positions the model considers related, but attention weights are not guaranteed to reflect the model's actual computational strategy. Attribution methods (saliency maps, integrated gradients) can highlight important input positions, but the features the model constructs from those positions remain opaque. Chapter @sec-interpretability examines these interpretability methods and their limitations in detail.
+The scale of these models (hundreds of millions of parameters) makes mechanistic interpretation difficult. Attention patterns provide some insight into which positions the model considers related, but attention weights are not guaranteed to reflect the model's actual computational strategy. Attribution methods (saliency maps, integrated gradients) can highlight important input positions, but the features the model constructs from those positions remain opaque. @sec-interpretability examines these interpretability methods and their limitations in detail.
 
 ::: {#fig-regulatory-limitations layout-ncol=2}
 ![**FIGURE PLACEHOLDER A**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
@@ -211,7 +211,7 @@ The scale of these models (hundreds of millions of parameters) makes mechanistic
 
 ## Relationship to Foundation Models
 
-Long-context regulatory models occupy an interesting position in the genomic foundation model landscape. They share **key** characteristics with foundation models: large scale, broad training data, strong performance across tasks, and utility as feature extractors for downstream applications. Yet they differ from self-supervised DNA language models in their heavy reliance on supervised, task-specific training signals.
+Long-context regulatory models occupy an interesting position in the genomic foundation model landscape. They share key characteristics with foundation models: large scale, broad training data, strong performance across tasks, and utility as feature extractors for downstream applications. Yet they differ from self-supervised DNA language models in their heavy reliance on supervised, task-specific training signals.
 
 *Enformer* and its descendants can be viewed as highly specialized foundation models, pre-trained on the specific task of regulatory prediction and adaptable to related applications. Their representations encode regulatory logic **learned** from functional genomics supervision, complementing the sequence patterns learned by self-supervised models from raw DNA. In practice, the two approaches may prove most powerful in combination: self-supervised models provide sequence representations from evolutionary context, while supervised regulatory models provide representations from functional genomics context. Integrating these representations for tasks like variant effect prediction is an active area of development, explored further in @sec-vep-fm.
 
@@ -220,7 +220,7 @@ From a practical standpoint, hybrid regulatory models remain among the most dire
 
 ## Prediction Without Explanation
 
-The models examined in this chapter demonstrate that long-range regulatory prediction from sequence is tractable. *Enformer* established that hybrid **convolutional neural network (CNN)**-transformer architectures could span 200 kilobases and predict expression-related chromatin features. Borzoi extended coverage to the full transcriptome with improved quantitative accuracy. AlphaGenome unified multiple regulatory modalities at megabase scale, predicting chromatin accessibility, histone modifications, transcription factor binding, and gene *expression* from a single architecture. Each generation captures more of the regulatory landscape with greater fidelity to experimental measurements.
+Long-range regulatory prediction from sequence is tractable. Enformer established that hybrid convolutional neural network (CNN)-transformer architectures could span 200 kilobases and predict expression-related chromatin features. Borzoi extended coverage to the full transcriptome with improved quantitative accuracy. AlphaGenome unified multiple regulatory modalities at megabase scale, predicting chromatin accessibility, histone modifications, transcription factor binding, and gene expression from a single architecture. Each generation captures more of the regulatory landscape with greater fidelity to experimental measurements.
 
 Yet these models predict regulatory outcomes without explaining regulatory mechanism. They learn that certain sequence patterns associate with certain expression levels, but they do not represent enhancer-promoter contacts, transcription factor cascades, or the causal chain from sequence to phenotype. The attention patterns that span long distances may correspond to genuine regulatory interactions or may reflect confounded sequence features that happen to predict expression. Interpretability methods (@sec-interpretability) can probe what patterns models have learned, but high prediction accuracy does not guarantee mechanistic insight.
 

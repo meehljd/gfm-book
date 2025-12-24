@@ -1,10 +1,18 @@
+::: {.callout-warning .content-visible when-profile="draft"}
+* Integrated Gradients [@sundararajan_axiomatic_2017]
+* DeepLIFT [@shrikumar_learning_2017]
+* TF-MoDISco [@shrikumar_technical_2018]
+* SpliceAI [@jaganathan_predicting_2019]
+* ACMG-AMP criteria [@richards_standards_2015]
+:::
+
 # Interpretability {#sec-interpretability}
 
 An attribution method highlights a GATA motif when explaining why a model predicts enhancer activity. The explanation is biologically plausible: GATA transcription factors bind this motif and drive tissue-specific expression. But plausibility is not faithfulness. The model may have learned a completely different pattern (perhaps GC content correlating with enhancer labels in the training data) and the attribution method may be highlighting the GATA motif because human-interpretable explanations tend to find human-interpretable patterns. The explanation matches biological intuition without accurately reflecting model computation. This distinction between plausible and faithful interpretation structures the entire field of model interpretability, and failing to respect it produces explanations that provide false comfort rather than genuine insight.
 
 The stakes extend beyond scientific curiosity. Variant interpretation guidelines from the American College of Medical Genetics require that computational evidence be weighed alongside functional assays, segregation data, and population frequency. A pathogenicity score alone satisfies only weak evidence criteria; knowing that a variant disrupts a specific CTCF binding site in a cardiac enhancer provides interpretable mechanistic evidence that can be combined with clinical presentation and family history. When models cannot explain their predictions faithfully, clinicians cannot integrate computational evidence with biological reasoning. The same limitation affects research: a model that predicts enhancer activity cannot generate testable hypotheses about regulatory grammar unless its internal computations can be translated into statements about motifs, spacing constraints, and combinatorial logic that can be experimentally validated.
 
-This chapter examines methods for understanding what genomic foundation models learn and how they make predictions. Attribution methods identify important input positions. Motif discovery algorithms translate attributions into regulatory vocabularies. Probing classifiers diagnose what representations encode. Mechanistic interpretability traces computational circuits within transformer architectures. Throughout, the plausible-versus-faithful distinction guides interpretation. We examine how to validate interpretability claims experimentally, distinguishing explanations that accurately reflect model computation from those that merely satisfy human intuition. Understanding when these diverge determines whether model explanations accelerate discovery or mislead researchers pursuing patterns the model never actually learned.
+Attribution methods identify important input positions. Motif discovery algorithms translate attributions into regulatory vocabularies. Probing classifiers diagnose what representations encode. Mechanistic interpretability traces computational circuits within transformer architectures. Throughout, the plausible-versus-faithful distinction guides interpretation. We examine how to validate interpretability claims experimentally, distinguishing explanations that accurately reflect model computation from those that merely satisfy human intuition. Understanding when these diverge determines whether model explanations accelerate discovery or mislead researchers pursuing patterns the model never actually learned.
 
 ## Attribution Methods and Input Importance
 
