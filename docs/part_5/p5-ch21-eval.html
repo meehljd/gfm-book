@@ -372,7 +372,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_2/p2-ch05-representations.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title"><strong>Tokens</strong> and <strong>Embeddings</strong></span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Tokens and Embeddings</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -390,7 +390,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_2/p2-ch08-pretraining.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title"><strong>Pretraining</strong> Strategies</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Pretraining Strategies</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -478,7 +478,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_4/p4-ch19-multi-omics.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title"><strong>Multi-Omics</strong> Integration</span></span></a>
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Multi-Omics Integration</span></span></a>
   </div>
 </li>
       </ul>
@@ -513,13 +513,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_5/p5-ch23-uncertainty.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title"><strong>Uncertainty Quantification</strong></span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Uncertainty Quantification</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_5/p5-ch24-interpretability.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title"><strong>Interpretability</strong></span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Interpretability</span></span></a>
   </div>
 </li>
       </ul>
@@ -919,6 +919,9 @@ Figure&nbsp;21.5: [High] Decision flowchart. Decision points: Binary vs continuo
 <h3 data-number="21.5.1" class="anchored" data-anchor-id="discrimination-metrics"><span class="header-section-number">21.5.1</span> Discrimination Metrics</h3>
 <p>For binary outcomes (pathogenic versus benign, bound versus unbound, accessible versus closed), discrimination metrics assess how well the model separates classes. The <strong>area under the receiver operating characteristic curve (AUROC)</strong> measures the probability that a randomly selected positive example is ranked above a randomly selected negative example. AUROC is threshold-independent and widely reported but can be misleading when classes are highly imbalanced.</p>
 <p>The <strong>area under the precision-recall curve (AUPRC)</strong> better reflects performance when positives are rare. For variant pathogenicity prediction, where perhaps 1% of variants are truly pathogenic, a model achieving 0.95 AUROC might still have poor precision at useful recall levels. AUPRC directly captures the precision-recall trade-off that matters for applications requiring both high sensitivity and manageable false positive rates.</p>
+<p>The distinction between these metrics reflects a mathematical property with practical consequences. AUROC is invariant to class imbalance: a model’s AUROC remains identical whether 1% or 50% of examples are positive, because it measures pairwise ranking between one positive and one negative. This invariance makes AUROC valuable for comparing models across datasets with different prevalence. A variant effect predictor can be compared against the same model on a different benchmark without performance differences being confounded by differing positive rates in each benchmark.</p>
+<p>This same invariance becomes a liability when evaluating for deployment. A model with 0.95 AUROC applied to a dataset where 0.1% of variants are pathogenic might flag 100 false positives for every true pathogenic variant at a threshold capturing 80% of positives. The AUROC provides no warning of this behavior because it treats a positive-to-negative pair the same regardless of how many negatives exist. For any application where false positives carry real costs (manual curation, clinical follow-up, unnecessary patient anxiety), AUROC presents an optimistic picture that collapses upon deployment.</p>
+<p>AUPRC explicitly accounts for the negative class size. When positives are rare, achieving high precision requires a model that scores the vast majority of negatives lower than positives, not just a typical negative. This makes AUPRC sensitive to class imbalance in exactly the way deployment is sensitive to class imbalance. A model moving from a balanced benchmark to a 1000:1 imbalanced application will show stable AUROC but declining AUPRC, mirroring the actual increase in false discovery rate users will experience. For this reason, AUPRC (or equivalently, average precision) should be the primary metric when the deployment class distribution is known and imbalanced.</p>
 <p><strong>Sensitivity</strong>, <strong>specificity</strong>, <strong>positive predictive value</strong>, and <strong>negative predictive value</strong> require specifying a decision threshold. These metrics are more interpretable for specific use cases (e.g., “the model identifies 90% of pathogenic variants while flagging only 5% of benign variants as false positives”) but require choosing thresholds that may not generalize across settings.</p>
 </section>
 <section id="regression-and-correlation-metrics" class="level3" data-number="21.5.2">
