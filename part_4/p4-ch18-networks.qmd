@@ -9,6 +9,8 @@ The practical implications are substantial. Disease gene prioritization leverage
 
 ## Biological Networks and Data Resources
 
+Graph neural networks can only learn from relationships encoded in their input graphs. The choice of network, its source, and its inherent biases determine what a model can discover and what it will miss. Understanding the landscape of available biological networks, their construction methods, and their systematic limitations is therefore prerequisite to effective graph-based modeling.
+
 ### The Landscape of Biological Graphs
 
 Before examining **graph neural network** architectures, it is essential to understand what biological networks exist and where they come from. The choice of network fundamentally shapes what a model can learn, and the biases inherent in network construction propagate through all downstream analyses.
@@ -53,6 +55,8 @@ The distinction between physical and functional associations matters for interpr
 
 
 ## Graph Neural Network Fundamentals
+
+The mathematical machinery underlying graph neural networks differs fundamentally from the architectures examined in previous chapters. Where convolutional and transformer models operate on regular structures (sequences, grids), GNNs must handle irregular topology with variable-degree nodes, no inherent ordering, and arbitrary connectivity. This section develops the message passing framework that addresses these challenges, then surveys the canonical architectures that have become standard tools for biological applications.
 
 ### Why Message Passing?
 
@@ -104,6 +108,8 @@ The expressiveness of GNNs is bounded by their ability to distinguish different 
 
 ## Foundation Model Embeddings as Node Features
 
+The power of combining foundation models with graph neural networks lies in their complementary strengths. Foundation models extract rich biological information from sequence, but they operate on isolated entities without relational context. Graph neural networks reason over relationships, but they require informative node features to propagate meaningful signal. This section examines how to integrate these approaches effectively, from the architectural principle underlying the combination to practical patterns for implementation.
+
 ### The Integration Principle
 
 The central architectural insight for genomic graph learning is that foundation models and graph neural networks operate at complementary levels of abstraction. Sequence-based foundation models excel at extracting biological information from linear sequences: ESM-2 learns **evolutionary constraints** and structural propensities from protein sequences; DNABERT and its successors capture regulatory motifs and sequence grammar; single-cell foundation models like scGPT learn cell state representations from expression profiles. These representations encode rich biological knowledge but operate on individual entities without explicit relational information.
@@ -149,6 +155,8 @@ In single-cell analysis, scGPT embeddings combined with cell-cell communication 
 These results suggest that the integration principle generalizes across biological domains. The specific foundation models and graph types vary, but the architectural pattern (rich entity embeddings + relational structure + message passing) consistently outperforms simpler alternatives.
 
 ## Applications
+
+The integration of foundation model embeddings with graph neural networks enables applications across the translational pipeline. Disease gene prioritization leverages network context to identify causal genes from GWAS loci. Drug-target prediction exploits both sequence-derived druggability features and pathway positioning. Knowledge graph reasoning supports multi-hop inference for drug repurposing. Pathway analysis identifies dysregulated modules in patient-specific contexts. Each application follows the same architectural pattern (rich node features from foundation models, relational structure from biological networks, refinement through message passing) while addressing distinct biological questions.
 
 ### Disease Gene Prioritization
 
@@ -226,6 +234,8 @@ The foundation model integration follows the standard pattern: scGPT or similar 
 
 ## Practical Considerations
 
+Deploying graph neural networks on biological data requires navigating choices that profoundly affect model behavior. Graph construction determines what relationships the model can exploit. Scalability strategies determine whether training is feasible on large networks. Robustness techniques determine whether predictions generalize beyond well-characterized network regions. Interpretation methods determine whether outputs provide actionable biological insight. The following subsections address each consideration in turn.
+
 ### Graph Construction Quality
 
 The impact of graph construction choices cannot be overstated. A GNN can only learn from relationships encoded in its input graph; missing edges prevent information flow, spurious edges introduce noise, and biased edge sets propagate ascertainment artifacts.
@@ -269,6 +279,8 @@ A key advantage of graph models is interpretability: the graph structure itself 
 Interpretation is not an afterthought but a central goal. The most impactful applications are those where GNN predictions generate testable hypotheses about biological mechanism, ultimately validated by experiment. Attention weights highlighting a regulatory edge or gradient attribution implicating a signaling pathway should prompt follow-up experiments, not immediate clinical action.
 
 ## Limitations and Open Challenges
+
+Graph neural networks inherit the biases and limitations of their input networks. Network incompleteness means critical relationships may be absent. Ascertainment bias means well-studied genes dominate predictions. Correlational structure may not reflect causal mechanisms. These limitations do not invalidate the approach but constrain its appropriate use and interpretation.
 
 ### The Study Bias Problem
 

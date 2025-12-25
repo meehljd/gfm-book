@@ -8,6 +8,8 @@ Cellular language models treat gene expression profiles as documents and learn t
 
 ## The Single-Cell Data Landscape
 
+Understanding single-cell foundation models requires understanding the data they learn from. Single-cell technologies produce measurements fundamentally different from bulk assays: sparse, noisy, and high-dimensional, yet rich with information about cellular heterogeneity that bulk measurements obscure. The transition from bulk to single-cell resolution created new analytical challenges and new opportunities, while technical artifacts impose constraints that shape how foundation models must be designed.
+
 ### From Bulk to Single-Cell Resolution
 
 Traditional transcriptomic studies measure gene expression in bulk tissue, producing a single measurement per gene that represents the average across thousands to millions of cells. This averaging is both a strength and a limitation. It provides robust, reproducible measurements that have powered decades of biological discovery. It also fundamentally limits what questions can be asked. If a gene appears moderately expressed in bulk, is it uniformly expressed across all cells, or highly expressed in a rare subpopulation while silent elsewhere? Bulk data cannot distinguish these scenarios.
@@ -54,6 +56,8 @@ Dynamic range spans orders of magnitude, from highly expressed housekeeping gene
 Despite these challenges, the scale of available data creates opportunities. Tens of millions of cells, spanning hundreds of cell types across dozens of tissues and multiple species, provide training corpora large enough to learn general representations. The question is whether foundation model architectures can extract biological signal from noisy, sparse, high-dimensional measurements.
 
 ## Cellular Language Models
+
+The analogy between gene expression and language has proven remarkably productive. If cells are sentences and genes are words, then cellular regulatory programs are grammar: the rules governing which genes appear together in which contexts. Several foundation models now operationalize this analogy, treating single-cell transcriptomes as documents and learning to predict masked genes from expression context. These models differ in their tokenization strategies, pretraining objectives, and architectural choices, but share a common premise: that self-supervised learning on millions of cells can capture regulatory logic that transfers to diverse downstream tasks.
 
 ### Geneformer: Learning Network Biology
 
@@ -105,6 +109,8 @@ In zero-shot settings, TranscriptFormer demonstrates strong performance on both 
 
 ## Perturbation Response Prediction
 
+The ultimate test of whether cellular foundation models understand regulatory biology is prediction: can they anticipate how cells will respond to interventions they have never seen? Perturbation prediction moves beyond pattern recognition toward mechanistic understanding. If a model has learned the causal structure of gene regulatory networks, it should predict the downstream consequences of knocking out a transcription factor or activating a signaling pathway. This capability would transform drug discovery and target identification, but achieving it requires models to distinguish causation from correlation in observational data.
+
 ### The *In Silico* Experiment Promise
 
 One of the most compelling applications of cellular foundation models is predicting how cells will respond to perturbations. The molecular perspective treats RNA sequence as input and predicts structure, function, or design properties, it should be able to anticipate the transcriptional consequences of knocking out a gene, activating a pathway, or treating with a drug. Such predictions could accelerate drug discovery by prioritizing candidates before expensive wet-lab validation, identify synthetic lethal interactions for cancer therapy, and suggest targets for diseases without known interventions.
@@ -139,6 +145,8 @@ More fundamentally, correlation-based learning from expression data cannot relia
 
 ## Epigenomic Foundation Models
 
+Gene expression profiles capture one layer of cellular state, but the regulatory machinery determining which genes can be expressed operates through epigenomic modifications. DNA methylation silences genes by blocking transcription factor binding; chromatin accessibility determines which regulatory elements are available for activation. These epigenomic layers sit upstream of expression, establishing the potential for transcription before any RNA is produced. Foundation models that learn from epigenomic data capture this regulatory potential, complementing expression-based models with a mechanistic view of how cellular identity is encoded and maintained.
+
 ### DNA Methylation and CpGPT
 
 DNA methylation occupies a privileged position in the regulatory hierarchy, sitting at a junction between genotype, environment, and phenotype. Methylation patterns integrate genetic influences, since sequence context affects which CpG sites can be methylated and polymorphisms can create or destroy CpG dinucleotides. They also integrate developmental programs, since methylation landscapes are extensively remodeled during differentiation and establish cell-type-specific regulatory states. Environmental exposures including diet, smoking, and stress leave lasting methylation signatures that persist long after the exposure ends.
@@ -160,6 +168,8 @@ Models that predict chromatin accessibility from DNA sequence, such as those bui
 Single-cell ATAC-seq (scATAC-seq) provides cell-type-resolved accessibility profiles, revealing which regulatory elements are active in which cells. Foundation models for scATAC-seq face similar challenges to scRNA-seq models (sparsity, dropout, batch effects) with the additional complexity that the feature space (accessibility peaks) varies across datasets depending on peak calling procedures. Models that operate on fixed genomic coordinates can integrate across datasets more readily than those that rely on dataset-specific peak sets.
 
 ## Cross-Modality Integration
+
+Single-cell technologies have expanded beyond transcriptomics to profile chromatin accessibility, DNA methylation, protein levels, and spatial position. Each modality captures a different aspect of cellular state: expression reflects current activity, accessibility reflects regulatory potential, methylation reflects developmental history. Integrating these perspectives into unified representations requires solving a fundamental challenge: aligning cells profiled with different assays when the feature spaces share no direct correspondence. Foundation model approaches to this integration problem combine learned embeddings with biological prior knowledge, producing unified atlases that leverage all available modalities.
 
 ### The Unpaired Integration Challenge
 
@@ -202,6 +212,8 @@ SCGLUE extends the framework with optimizations for single-cell scale and sparsi
 The success of graph-guided integration demonstrates that biological prior knowledge can regularize learning and improve alignment. The feature graph constrains what the model learns, ensuring consistency with known regulatory relationships while allowing discovery of new patterns. This combination of learned representations with structured biological knowledge provides a template for integrating foundation model embeddings with domain expertise (see @sec-networks for further discussion of graph-based approaches).
 
 ## Practical Challenges and Limitations
+
+The promise of single-cell foundation models comes with significant caveats. Evaluation remains difficult when ground truth is uncertain, training corpora reflect biases in what tissues and populations have been studied, and the distinction between learning biology and memorizing artifacts is not always clear. These challenges do not invalidate the approach, but they constrain what claims can be made and what applications are appropriate. Understanding these limitations is essential for responsible deployment of single-cell foundation models in research and clinical settings.
 
 ### Batch Effects and Technical Artifacts
 

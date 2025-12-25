@@ -7,6 +7,8 @@ Foundation models produce continuous scores, but clinical decisions require cate
 
 ## Types of Uncertainty in Genomic Prediction {#sec-uncertainty-types}
 
+Uncertainty in genomic prediction arises from two fundamentally different sources that demand different responses. One source reflects limitations in what the model has learned from available data; this uncertainty can, in principle, be reduced by gathering more examples or improving model architecture. The other source reflects genuine randomness in the biological system itself, where identical genotypes produce variable phenotypes through stochastic developmental processes, environmental interactions, or incomplete penetrance. Distinguishing between these sources determines whether additional data collection would help or whether we must accept irreducible limits on predictive confidence.
+
 ### Why Uncertainty Matters
 
 Clinical genetics operates under fundamental uncertainty. When a laboratory reports a variant of uncertain significance (VUS), they acknowledge that current evidence cannot confidently classify the variant as pathogenic or benign. **ClinVar** contains approximately two million VUS compared to roughly 250,000 variants classified as pathogenic [@landrum_clinvar_2018], reflecting the reality that most genetic variation remains incompletely understood. Foundation models inherit and sometimes amplify this uncertainty: they may produce confident-seeming scores for variants where the underlying biology remains genuinely unknown.
@@ -334,6 +336,8 @@ Comparison across methods requires matched coverage levels. A method that achiev
 
 ## Uncertainty for Specific Genomic Tasks {#sec-genomic-uq}
 
+The general principles of uncertainty quantification apply differently across genomic prediction tasks. Variant effect prediction, regulatory variant interpretation, and cross-population generalization each present distinct challenges for calibration, coverage, and out-of-distribution detection. The sources of uncertainty vary: coding variants benefit from stronger evolutionary constraint and clearer functional readouts, while regulatory variants operate through context-dependent mechanisms that introduce irreducible noise. Population-specific uncertainty reflects training data composition and has direct implications for equitable clinical deployment.
+
 ### Variant Effect Prediction Uncertainty
 
 Variant effect prediction concentrates the challenges of uncertainty quantification. Epistemic uncertainty arises from poorly characterized genes, novel protein folds, and under-represented populations in training data. Aleatoric uncertainty stems from incomplete penetrance, variable expressivity, and noise in functional assay labels. Both types of uncertainty must be estimated and communicated for variant predictions to inform clinical decisions appropriately.
@@ -343,8 +347,6 @@ Calibration challenges for VEP include the evolving nature of ground truth label
 Population-specific calibration addresses the reality that training data predominantly derive from European-ancestry cohorts. For patients from other ancestral backgrounds, both epistemic uncertainty (fewer training examples) and calibration (different baseline pathogenicity rates, different patterns of variation) may differ from the aggregate. Stratified reliability diagrams by ancestry reveal these differences; ancestry-conditional calibration may be necessary for equitable performance across populations.
 
 ### Regulatory Variant Uncertainty
-
-
 
 Regulatory variants present distinct uncertainty challenges. Unlike coding variants where effects can be localized to specific amino acid changes, regulatory variants act through complex mechanisms involving transcription factor binding, chromatin accessibility, and three-dimensional genome organization. This mechanistic complexity translates to higher aleatoric uncertainty: even perfectly characterized regulatory variants may have context-dependent effects that vary across cell types, developmental stages, and genetic backgrounds. A variant that disrupts a transcription factor binding site may have dramatic effects in tissues where that factor is active and negligible effects elsewhere, yet the model must predict across all contexts simultaneously.
 
@@ -362,6 +364,8 @@ Transparent reporting of population-stratified uncertainty metrics enables infor
 
 
 ## Communicating Uncertainty to End Users {#sec-uncertainty-communication}
+
+Statistical uncertainty estimates serve clinical decisions only when they reach end users in interpretable form. The translation from model outputs to actionable information involves choices about categorical versus continuous reporting, numerical versus visual presentation, and whether to frame results as probabilities or as expected outcomes under alternative decisions. Different stakeholders require different presentations: clinicians need actionable categories, researchers need distributional information, and patients need accessible risk communication.
 
 ### The Communication Challenge
 
