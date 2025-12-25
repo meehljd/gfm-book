@@ -7,7 +7,7 @@ The attention mechanisms introduced in @sec-attention could theoretically model 
 Hybrid architectures resolve this tension by combining the strengths of both paradigms. A convolutional front-end efficiently extracts local sequence features and compresses the input to a manageable length, reducing 200 kilobases of sequence to a few thousand feature vectors. A transformer backbone then propagates information across this compressed representation through attention. The result is a new class of regulatory models that can capture enhancer-promoter interactions, predict the effects of distal variants on gene *expression*, and provide mechanistic hypotheses about long-range regulation. Enformer, the first widely adopted model in this class, processes 200-kilobase windows and predicts chromatin state, transcription initiation, and gene expression from sequence alone.
 
 
-## The Long-Range Regulation Problem
+##  Long-Range Regulation Problem
 
 Consider a canonical mammalian gene with complex tissue-specific expression. The promoter sits at the transcription start site, but the sequences that determine when and where the gene is expressed may be scattered across a 200 kilobase neighborhood. Multiple enhancers drive expression in different tissues; silencers suppress expression in inappropriate contexts; insulators demarcate regulatory domains. Chromatin looping brings these distal elements into physical proximity with the promoter, but the loops themselves are dynamic and cell-type-specific.
 
@@ -81,7 +81,7 @@ Validation against GTEx expression quantitative trait loci (eQTLs) demonstrated 
 
 While *Enformer* predicts transcription initiation through CAGE, RNA-seq captures a richer picture of gene *expression*: not just where transcription begins, but how the transcript is spliced, which isoforms dominate, where transcription terminates, and how stable the resulting mRNA is. Borzoi [@linder_borzoi_2025] extends the hybrid architecture paradigm to predict full RNA-seq coverage profiles, enabling a unified view of how sequence variation affects the entire transcriptional program.
 
-### Motivation
+### Beyond Transcription Initiation
 
 A single gene can produce multiple transcript isoforms through alternative promoter usage, alternative splicing, and alternative polyadenylation. These isoforms may have different stabilities, different translation efficiencies, and different functions. A variant that shifts isoform ratios without changing total expression could have substantial phenotypic consequences: a switch from a cytoplasmic to a nuclear isoform, for instance, or inclusion of a premature stop codon in the predominant transcript.
 
@@ -118,7 +118,7 @@ Polyadenylation site choice affects 3' UTR length and content. Shorter 3' UTRs m
 
 While *Enformer* and Borzoi predict continuous coverage tracks, Sei [@chen_deepsea_2022] takes a complementary approach: learning a discrete vocabulary of sequence classes that capture distinct regulatory activities. Rather than predicting thousands of individual assays, Sei maps sequences to a reduced set of regulatory states, each associated with characteristic chromatin and transcription patterns.
 
-### Approach
+### Discrete Regulatory States
 
 *Sei* builds on observations that chromatin states cluster into interpretable categories: active promoters, strong enhancers, poised enhancers, heterochromatin, and so forth. Previous methods like ChromHMM defined such states from observed chromatin marks in specific cell types. Sei learns to predict sequence class membership directly from DNA, asking what regulatory identity a sequence carries based on its intrinsic properties.
 

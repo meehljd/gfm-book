@@ -116,7 +116,7 @@ Every soft landing follows three beats across 2-3 paragraphs:
 - End with a memorable, quotable sentence suitable for reviews or syllabi
 - Do NOT summarize contents; instead, state what matters
 
-### The Honest Limitation Pattern
+###  Honest Limitation Pattern
 
 Every soft landing should acknowledge what the chapter's approach cannot do. This builds credibility and sets appropriate expectations:
 
@@ -131,7 +131,7 @@ Every soft landing should acknowledge what the chapter's approach cannot do. Thi
 | Interpretability | "plausible explanations ≠ faithful explanations" |
 | VEP | "benchmark performance does not automatically translate to clinical utility" |
 
-### The Memorable Final Sentence
+###  Memorable Final Sentence
 
 Every soft landing should end with a sentence designed to stick. Test: Would a professor quote this in a lecture?
 

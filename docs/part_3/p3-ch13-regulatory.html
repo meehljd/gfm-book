@@ -328,7 +328,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_1/p1-ch02-data.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">The Data Landscape</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Landscape</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -545,7 +545,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_6/p6-ch29-future.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Ethical and Frontiers</span></span></a>
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Ethics and Frontiers</span></span></a>
   </div>
 </li>
       </ul>
@@ -613,7 +613,7 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#the-long-range-regulation-problem" id="toc-the-long-range-regulation-problem" class="nav-link active" data-scroll-target="#the-long-range-regulation-problem"><span class="header-section-number">13.1</span> The Long-Range Regulation Problem</a></li>
+  <li><a href="#long-range-regulation-problem" id="toc-long-range-regulation-problem" class="nav-link active" data-scroll-target="#long-range-regulation-problem"><span class="header-section-number">13.1</span> Long-Range Regulation Problem</a></li>
   <li><a href="#enformer-attention-meets-regulatory-genomics" id="toc-enformer-attention-meets-regulatory-genomics" class="nav-link" data-scroll-target="#enformer-attention-meets-regulatory-genomics"><span class="header-section-number">13.2</span> <em>Enformer</em>: Attention Meets Regulatory Genomics</a>
   <ul class="collapse">
   <li><a href="#architecture" id="toc-architecture" class="nav-link" data-scroll-target="#architecture"><span class="header-section-number">13.2.1</span> Architecture</a></li>
@@ -622,13 +622,13 @@ div.csl-indent {
   </ul></li>
   <li><a href="#borzoi-from-chromatin-to-transcriptome" id="toc-borzoi-from-chromatin-to-transcriptome" class="nav-link" data-scroll-target="#borzoi-from-chromatin-to-transcriptome"><span class="header-section-number">13.3</span> <em>Borzoi</em>: From Chromatin to Transcriptome</a>
   <ul class="collapse">
-  <li><a href="#motivation" id="toc-motivation" class="nav-link" data-scroll-target="#motivation"><span class="header-section-number">13.3.1</span> Motivation</a></li>
+  <li><a href="#beyond-transcription-initiation" id="toc-beyond-transcription-initiation" class="nav-link" data-scroll-target="#beyond-transcription-initiation"><span class="header-section-number">13.3.1</span> Beyond Transcription Initiation</a></li>
   <li><a href="#architecture-and-training" id="toc-architecture-and-training" class="nav-link" data-scroll-target="#architecture-and-training"><span class="header-section-number">13.3.2</span> Architecture and Training</a></li>
   <li><a href="#applications-beyond-expression-level" id="toc-applications-beyond-expression-level" class="nav-link" data-scroll-target="#applications-beyond-expression-level"><span class="header-section-number">13.3.3</span> Applications Beyond Expression Level</a></li>
   </ul></li>
   <li><a href="#sei-a-regulatory-vocabulary-from-sequence" id="toc-sei-a-regulatory-vocabulary-from-sequence" class="nav-link" data-scroll-target="#sei-a-regulatory-vocabulary-from-sequence"><span class="header-section-number">13.4</span> <em>Sei</em>: A Regulatory Vocabulary from Sequence</a>
   <ul class="collapse">
-  <li><a href="#approach" id="toc-approach" class="nav-link" data-scroll-target="#approach"><span class="header-section-number">13.4.1</span> Approach</a></li>
+  <li><a href="#discrete-regulatory-states" id="toc-discrete-regulatory-states" class="nav-link" data-scroll-target="#discrete-regulatory-states"><span class="header-section-number">13.4.1</span> Discrete Regulatory States</a></li>
   <li><a href="#complementary-to-track-prediction" id="toc-complementary-to-track-prediction" class="nav-link" data-scroll-target="#complementary-to-track-prediction"><span class="header-section-number">13.4.2</span> Complementary to Track Prediction</a></li>
   </ul></li>
   <li><a href="#alphagenome-unifying-modalities-at-megabase-scale" id="toc-alphagenome-unifying-modalities-at-megabase-scale" class="nav-link" data-scroll-target="#alphagenome-unifying-modalities-at-megabase-scale"><span class="header-section-number">13.5</span> <em>AlphaGenome</em>: Unifying Modalities at Megabase Scale</a>
@@ -682,8 +682,8 @@ div.csl-indent {
 <p>An enhancer 80 kilobases from a promoter can determine whether a gene is expressed in liver or brain. An insulator 50 kilobases downstream can block inappropriate activation from a neighboring regulatory domain. A disease-associated variant in an intergenic region may exert its effect by disrupting a distal element that contacts its target gene through chromatin looping. Mammalian gene regulation operates across distances that dwarf the context windows of most sequence models. The convolutional architectures examined in <a href="../part_2/p2-ch06-cnn.html" class="quarto-xref"><span>Chapter 6</span></a> excel at detecting local motifs but cannot span these distances. A model that processes sequences in kilobase windows treats regulatory elements tens of kilobases away as if they do not exist. For understanding human gene <em>regulation</em>, they effectively do not.</p>
 <p>The attention mechanisms introduced in <a href="../part_2/p2-ch07-attention.html" class="quarto-xref"><span>Chapter 7</span></a> could theoretically model arbitrary-range dependencies, but naive transformer application to hundred-kilobase windows is computationally prohibitive. Attention scales quadratically with sequence length: doubling context length quadruples memory and computation. Processing 200 kilobases at single-nucleotide resolution would require attending over 200,000 positions simultaneously, far beyond practical limits. The field needed architectures that could span regulatory distances without the quadratic penalty.</p>
 <p>Hybrid architectures resolve this tension by combining the strengths of both paradigms. A convolutional front-end efficiently extracts local sequence features and compresses the input to a manageable length, reducing 200 kilobases of sequence to a few thousand feature vectors. A transformer backbone then propagates information across this compressed representation through attention. The result is a new class of regulatory models that can capture enhancer-promoter interactions, predict the effects of distal variants on gene <em>expression</em>, and provide mechanistic hypotheses about long-range regulation. Enformer, the first widely adopted model in this class, processes 200-kilobase windows and predicts chromatin state, transcription initiation, and gene expression from sequence alone.</p>
-<section id="the-long-range-regulation-problem" class="level2" data-number="13.1">
-<h2 data-number="13.1" class="anchored" data-anchor-id="the-long-range-regulation-problem"><span class="header-section-number">13.1</span> The Long-Range Regulation Problem</h2>
+<section id="long-range-regulation-problem" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="long-range-regulation-problem"><span class="header-section-number">13.1</span> Long-Range Regulation Problem</h2>
 <p>Consider a canonical mammalian gene with complex tissue-specific expression. The promoter sits at the transcription start site, but the sequences that determine when and where the gene is expressed may be scattered across a 200 kilobase neighborhood. Multiple enhancers drive expression in different tissues; silencers suppress expression in inappropriate contexts; insulators demarcate regulatory domains. Chromatin looping brings these distal elements into physical proximity with the promoter, but the loops themselves are dynamic and cell-type-specific.</p>
 <p>Short-context models face an information-theoretic barrier in this setting. A model with a 2 kilobase <strong>receptive field</strong> cannot distinguish a variant in an enhancer 50 kilobases upstream from a variant in neutral sequence at the same distance. Both fall outside the model’s effective context. Stacking more convolutional layers or using dilated convolutions can expand the receptive field, but the computational path between distant positions grows long, and gradients attenuate over many layers. Models like Basenji2 <span class="citation" data-cites="kelley_basenji_2018">(<a href="../bib/references.html#ref-kelley_basenji_2018" role="doc-biblioref">Kelley et al. 2018</a>)</span> pushed convolutional receptive fields to tens of kilobases through aggressive pooling, but purely convolutional architectures struggle to propagate information across hundreds of kilobases without impractical depth.</p>
 <p>The scale of the problem becomes concrete when examining enhancer-promoter distances in the human genome. Median enhancer-promoter distances in many tissues span 20 to 50 kilobases, with substantial fractions exceeding 100 kilobases <span class="citation" data-cites="gasperini_genome-wide_2019">(<a href="../bib/references.html#ref-gasperini_genome-wide_2019" role="doc-biblioref">Gasperini et al. 2019</a>)</span>. Topologically associating domains (TADs), which define the neighborhoods within which regulatory elements typically interact, range from hundreds of kilobases to several megabases. A model that cannot span these distances cannot fully capture the regulatory grammar of the genome.</p>
@@ -791,8 +791,8 @@ Figure&nbsp;13.3: [High] Workflow diagram. Step 1: Variant position → extract 
 <section id="borzoi-from-chromatin-to-transcriptome" class="level2" data-number="13.3">
 <h2 data-number="13.3" class="anchored" data-anchor-id="borzoi-from-chromatin-to-transcriptome"><span class="header-section-number">13.3</span> <em>Borzoi</em>: From Chromatin to Transcriptome</h2>
 <p>While <em>Enformer</em> predicts transcription initiation through CAGE, RNA-seq captures a richer picture of gene <em>expression</em>: not just where transcription begins, but how the transcript is spliced, which isoforms dominate, where transcription terminates, and how stable the resulting mRNA is. Borzoi <span class="citation" data-cites="linder_borzoi_2025">(<a href="../bib/references.html#ref-linder_borzoi_2025" role="doc-biblioref">Linder et al. 2025</a>)</span> extends the hybrid architecture paradigm to predict full RNA-seq coverage profiles, enabling a unified view of how sequence variation affects the entire transcriptional program.</p>
-<section id="motivation" class="level3" data-number="13.3.1">
-<h3 data-number="13.3.1" class="anchored" data-anchor-id="motivation"><span class="header-section-number">13.3.1</span> Motivation</h3>
+<section id="beyond-transcription-initiation" class="level3" data-number="13.3.1">
+<h3 data-number="13.3.1" class="anchored" data-anchor-id="beyond-transcription-initiation"><span class="header-section-number">13.3.1</span> Beyond Transcription Initiation</h3>
 <p>A single gene can produce multiple transcript isoforms through alternative promoter usage, alternative splicing, and alternative polyadenylation. These isoforms may have different stabilities, different translation efficiencies, and different functions. A variant that shifts isoform ratios without changing total expression could have substantial phenotypic consequences: a switch from a cytoplasmic to a nuclear isoform, for instance, or inclusion of a premature stop codon in the predominant transcript.</p>
 <p>CAGE and chromatin assays cannot capture these complexities. They measure where transcription might begin and what the chromatin environment looks like, but they do not reveal how RNA polymerase traverses the gene <em>body</em>, where splicing occurs, or which 3’ end is selected. RNA-seq coverage profiles encode all of this information: exon boundaries appear as coverage drops at intron junctions, alternative splicing manifests as variable junction usage, and polyadenylation site choice appears in the coverage pattern near gene 3’ ends.</p>
 </section>
@@ -847,7 +847,7 @@ Figure&nbsp;13.3: [High] Workflow diagram. Step 1: Variant position → extract 
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-borzoi-rnaseq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;13.4: [High] Four-panel figure. Panel A (What RNA-seq Captures): Gene with alternative isoforms; CAGE sees only TSS; RNA-seq coverage shows exon structure, splice junctions, polyadenylation. Panel B (Borzoi Predictions): Example gene <em>with</em> complex splicing; predicted stranded coverage profile; exon boundaries visible. Panel C (Beyond Expression Level): Splicing effects (changed junction usage), alternative promoters (shifted TSS), polyadenylation (altered 3’ UTR length); each with clinical relevance. Panel D (Integration): Borzoi predictions + SpliceAI scores; complementary information.
+Figure&nbsp;13.4: [High] Four-panel figure. Panel A (What RNA-seq Captures): Gene with alternative isoforms; CAGE sees only TSS; RNA-seq coverage shows exon structure, splice junctions, polyadenylation. Panel B (Borzoi Predictions): Example gene with complex splicing; predicted stranded coverage profile; exon boundaries visible. Panel C (Beyond Expression Level): Splicing effects (changed junction usage), alternative promoters (shifted TSS), polyadenylation (altered 3’ UTR length); each with clinical relevance. Panel D (Integration): Borzoi predictions + SpliceAI scores; complementary information.
 </figcaption>
 </figure>
 </div>
@@ -856,8 +856,8 @@ Figure&nbsp;13.4: [High] Four-panel figure. Panel A (What RNA-seq Captures): Gen
 <section id="sei-a-regulatory-vocabulary-from-sequence" class="level2" data-number="13.4">
 <h2 data-number="13.4" class="anchored" data-anchor-id="sei-a-regulatory-vocabulary-from-sequence"><span class="header-section-number">13.4</span> <em>Sei</em>: A Regulatory Vocabulary from Sequence</h2>
 <p>While <em>Enformer</em> and Borzoi predict continuous coverage tracks, Sei <span class="citation" data-cites="chen_deepsea_2022">(<a href="../bib/references.html#ref-chen_deepsea_2022" role="doc-biblioref">Chen et al. 2022</a>)</span> takes a complementary approach: learning a discrete vocabulary of sequence classes that capture distinct regulatory activities. Rather than predicting thousands of individual assays, Sei maps sequences to a reduced set of regulatory states, each associated with characteristic chromatin and transcription patterns.</p>
-<section id="approach" class="level3" data-number="13.4.1">
-<h3 data-number="13.4.1" class="anchored" data-anchor-id="approach"><span class="header-section-number">13.4.1</span> Approach</h3>
+<section id="discrete-regulatory-states" class="level3" data-number="13.4.1">
+<h3 data-number="13.4.1" class="anchored" data-anchor-id="discrete-regulatory-states"><span class="header-section-number">13.4.1</span> Discrete Regulatory States</h3>
 <p><em>Sei</em> builds on observations that chromatin states cluster into interpretable categories: active promoters, strong enhancers, poised enhancers, heterochromatin, and so forth. Previous methods like ChromHMM defined such states from observed chromatin marks in specific cell types. Sei learns to predict sequence class membership directly from DNA, asking what regulatory identity a sequence carries based on its intrinsic properties.</p>
 <p>The model predicts 40 sequence classes derived from clustering patterns across chromatin accessibility, histone modifications, and <strong>transcription factor</strong> binding. Each class corresponds to a recognizable regulatory state: promoter-like sequences, enhancer-like sequences, CTCF binding sites, repressed regions, and various intermediate states. The output is not a single class assignment but a probability distribution over classes, reflecting the observation that many sequences have context-dependent regulatory potential.</p>
 </section>
@@ -873,7 +873,7 @@ Figure&nbsp;13.4: [High] Four-panel figure. Panel A (What RNA-seq Captures): Gen
 <section id="architectural-extensions" class="level3" data-number="13.5.1">
 <h3 data-number="13.5.1" class="anchored" data-anchor-id="architectural-extensions"><span class="header-section-number">13.5.1</span> Architectural Extensions</h3>
 <p>The megabase context window pushes against computational limits even with hybrid architectures. AlphaGenome addresses this through efficient attention mechanisms that reduce the quadratic cost, hierarchical processing that handles different output modalities at appropriate resolutions, and architectural refinements accumulated from <em>Enformer</em> and Borzoi development.</p>
-<p>The output repertoire spans chromatin accessibility and histone modifications (following <em>Enformer</em>), gene <em>expression</em> and RNA coverage (following Borzoi), splicing predictions including exon inclusion and junction usage, and contact predictions reflecting three-dimensional chromatin organization.</p>
+<p>The output repertoire spans chromatin accessibility and histone modifications (following <em>Enformer</em>), gene expression and RNA coverage (following Borzoi), splicing predictions including exon inclusion and junction usage, and contact predictions reflecting three-dimensional chromatin organization.</p>
 <p>Unifying these modalities in a single model offers several advantages. The backbone representation must capture information relevant to all outputs, encouraging learning of features that connect chromatin state to transcription to RNA processing. Variant effect predictions become coherent across modalities: a single forward pass reveals how a variant affects chromatin, expression, splicing, and contacts, rather than requiring separate runs through independent models.</p>
 </section>
 <section id="access-and-practical-considerations" class="level3" data-number="13.5.2">

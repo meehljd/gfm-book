@@ -52,7 +52,7 @@ The law of total variance provides a mathematical framework for decomposition. T
 These decompositions depend on modeling assumptions and provide approximations rather than exact separations. Ensemble disagreement may underestimate epistemic uncertainty if all members share similar biases from common training data. Heteroscedastic models may confound aleatoric and epistemic uncertainty if the training data is too sparse to reliably estimate noise levels. Despite these limitations, approximate decomposition provides actionable information: variants flagged for high epistemic uncertainty warrant additional data collection or expert review, while variants with high aleatoric uncertainty may require acceptance of irreducible limits on predictive confidence.
 
 
-## Calibration: Do Confidence Scores Mean What They Say? {#sec-calibration}
+## Calibration and Confidence Interpretation {#sec-calibration}
 
 ::: {#fig-calibration-diagrams layout-ncol=2}
 ![**FIGURE PLACEHOLDER A**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
@@ -66,7 +66,7 @@ These decompositions depend on modeling assumptions and provide approximations r
 [Essential] Four-panel figure. Panel A (Perfect calibration): Reliability diagram on diagonal; "Predictions match reality." Panel B (Overconfident): Points below diagonal; model predicts 0.9, true frequency 0.6; common for DNNs; "Dangerous for clinical use." Panel C (Underconfident): Points above diagonal; "May miss actionable variants." Panel D (Miscalibration by subgroup): Two curves (European, African); one calibrated, one poor; "Aggregate can mask disparities." Annotations: expected calibration error (ECE), prediction histograms, "Calibration ≠ discrimination."
 :::
 
-### The Calibration Problem
+###  Calibration Problem
 
 AlphaMissense outputs a continuous score between 0 and 1 for each possible missense variant in the human proteome. When it reports 0.85 for a particular variant, what does this number mean? If the model is calibrated, collecting all variants scored near 0.85 and checking their true clinical status should reveal that approximately 85% are pathogenic. Perfect calibration means that predicted probabilities match observed frequencies across the entire range of model outputs: among variants scored at 0.30, roughly 30% should be pathogenic; among variants scored at 0.95, roughly 95% should be pathogenic. This alignment between stated confidence and empirical accuracy is calibration, and most foundation models fail to achieve it.
 
@@ -217,7 +217,7 @@ Critics have noted that evidential deep learning can produce unreliable uncertai
 [High] Workflow with examples. Steps: (1) Calibration: Score variants on held-out set; (2) Threshold: Find threshold for 90% coverage; (3) Prediction sets: Include classes above threshold. Example outputs: High confidence {Pathogenic}, moderate {Pathogenic, VUS}, low {P, VUS, B}, abstention {}. Key properties: Coverage guarantee (≥90% marginal); set size conveys uncertainty; no probability interpretation needed. Visualization: Score distributions; threshold line; set sizes. Limitation: Marginal not conditional coverage.
 :::
 
-### The Conformal Prediction Framework
+###  Conformal Prediction Framework
 
 Most uncertainty quantification methods make assumptions about model behavior or data distributions that may not hold in practice. Temperature scaling assumes miscalibration follows a particular functional form. Ensembles assume that disagreement reflects epistemic uncertainty rather than artifacts of training. Bayesian methods assume specific priors over model parameters. When these assumptions fail, uncertainty estimates may be unreliable precisely when reliability matters most.
 
@@ -264,7 +264,7 @@ Prediction set size trades off against informativeness. Larger sets provide more
 [High] Embedding space visualization. Main panel: UMAP/t-SNE; dense training clusters (blue); isolated OOD points (red); examples (novel archaeal sequence, synthetic protein, variant in poorly characterized gene). Detection methods (side panels): Mahalanobis distance (histogram ID vs OOD, threshold), nearest neighbor distance, ensemble disagreement. Key insight: Flag for manual review rather than automate.
 :::
 
-### The Out-of-Distribution Problem
+###  Out-of-Distribution Problem
 
 A DNA language model trained on mammalian genomes encounters a novel archaeal sequence. The model's embedding places this sequence in an unfamiliar region of representation space, far from the clusters formed by training examples. Yet the model still produces a prediction, potentially with high confidence, because standard neural networks are not designed to recognize when inputs lie outside their training distribution. Detecting out-of-distribution (OOD) inputs is essential for safe deployment of foundation models in settings where novel sequences are inevitable.
 
@@ -367,7 +367,7 @@ Transparent reporting of population-stratified uncertainty metrics enables infor
 
 Statistical uncertainty estimates serve clinical decisions only when they reach end users in interpretable form. The translation from model outputs to actionable information involves choices about categorical versus continuous reporting, numerical versus visual presentation, and whether to frame results as probabilities or as expected outcomes under alternative decisions. Different stakeholders require different presentations: clinicians need actionable categories, researchers need distributional information, and patients need accessible risk communication.
 
-### The Communication Challenge
+###  Communication Challenge
 
 A pathogenicity score of $0.73 \pm 0.15$ may be statistically accurate but nearly useless to a clinician deciding whether to order confirmatory testing. The gap between statistical uncertainty and decision-relevant communication presents a persistent challenge for genomic AI deployment. Different users reason differently about probability and risk; effective communication requires understanding these differences.
 

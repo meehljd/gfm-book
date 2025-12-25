@@ -16,7 +16,7 @@ When a cardiologist requests variant interpretation for a patient with hypertrop
 [Essential] Schematic illustrating domain shift in genomic transfer learning. Left panel (Source Domain): Diverse genomic sequences during pretraining, with learned representations capturing statistical regularities (local motifs, composition, conservation). Right panel (Target Domain): Sparse labeled examples for clinical task (e.g., pathogenic variants, tissue-specific enhancers), highlighting distributional differences. Center: Representation space showing well-transferred features (local motifs, conservation patterns) connected by solid arrows vs. poorly-transferred features (long-range regulatory logic, tissue-specific patterns) with dashed arrows indicating transfer failure.
 :::
 
-### The Gap Between Pretraining and Deployment
+###  Gap Between Pretraining and Deployment
 
 The **source domain** encompasses the data and objectives used during pretraining. For DNA foundation models, source domains typically include reference genomes, pan-genomic collections spanning population diversity, or metagenomic assemblies sampling environmental sequence space [@ji_dnabert_2021; @dalla-torre_nucleotide_2023]. For protein models, databases like UniRef provide billions of sequences representing the diversity of evolutionary history [@suzek_uniref_2007]. Pretraining objectives (**masked language modeling**, next-token prediction, contrastive learning) encourage models to capture statistical regularities that help predict held-out **tokens**: local motifs, compositional patterns, and the signatures distinguishing functional from random sequence. These learned regularities become the representations that might transfer to downstream tasks.
 
@@ -87,7 +87,7 @@ Full fine-tuning updates all model parameters during adaptation but requires car
 
 The approach suits scenarios when labeled datasets are large (tens of thousands of examples or more), when the target task diverges substantially from pretraining such that constrained adaptation proves insufficient, or when performance requirements justify computational investment. *Enformer* fine-tuning for new chromatin assays requires updating most parameters to capture assay-specific signal characteristics distinct from original training conditions. Expression prediction across novel cell types benefits from full adaptation when sufficient tissue-specific data exists.
 
-### The Risks of Unconstrained Adaptation
+###  Risks of Unconstrained Adaptation
 
 **Catastrophic forgetting** occurs when fine-tuning overwrites general knowledge useful for related tasks or out-of-distribution inputs; a model fine-tuned aggressively on lymphocyte data may lose performance on epithelial cells it previously handled well [@mccloskey_catastrophic_1989]. Overfitting afflicts small target datasets, where the model memorizes training examples rather than learning generalizable patterns. Computational expense can be prohibitive for models with billions of parameters. When negative transfer occurs (pretraining initialization actually hurts optimization), full fine-tuning may underperform training from scratch despite the additional expense.
 

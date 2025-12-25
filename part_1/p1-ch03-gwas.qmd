@@ -7,7 +7,7 @@ This distinction between association and causation defines the central intellect
 Polygenic scores aggregate these associations into predictions, summing risk alleles across thousands of loci to estimate an individual's genetic predisposition. For some traits, these scores achieve clinically meaningful discrimination: individuals in the top percentile of coronary artery disease risk have odds ratios comparable to monogenic familial hypercholesterolemia. Yet polygenic scores inherit all the limitations of the associations they aggregate. They predict without explaining, correlate without identifying mechanism, and transfer poorly across populations with different allele frequencies and linkage patterns. Understanding both their power and their limitations is essential for mechanistic approaches where regulatory sequence models and variant effect predictors attempt to move from statistical association to biological explanation [@khera_genome-wide_2017].
 
 
-## The GWAS Framework
+##  GWAS Framework
 
 Consider a clinician counseling a patient about cardiovascular disease risk. Traditional risk factors (age, smoking, cholesterol, blood pressure) explain roughly 50% of the variation in who develops disease [@khera_genome-wide_2017]. Family history suggests that genetics contributes substantially to the remainder, but which genetic variants matter, and how much does each contribute? GWAS provide a systematic approach to answering these questions by testing each of millions of variants for association with the trait of interest.
 
@@ -121,7 +121,7 @@ When a GWAS identifies a significant association at variant $j$, three possibili
 [Essential] Three-panel figure. Panel A: Haplotype diagram showing how LD creates correlation between variants on the same chromosome segment; show example haplotypes with causal variant (star) and tag variants traveling together. Panel B: r² matrix (triangular heatmap) for a genomic region showing block structure of LD. Panel C: Same causal variant shown in two populations with different LD structure—in one population, tags are highly correlated with causal variant; in another, the correlation is weaker, illustrating why portability fails.
 :::
 
-### The Structure of Linkage Disequilibrium
+###  Structure of Linkage Disequilibrium
 
 Understanding why LD creates interpretive ambiguity requires understanding how LD arises and decays. Recombination during meiosis shuffles genetic material between parental chromosomes, with crossover events occurring at an average rate of roughly one per 100 megabases, meaning each chromosome arm typically experiences only one or two exchanges per generation. Over many generations, recombination breaks down long-range correlations between variants while preserving short-range structure. The timescale of this decay matters: LD between variants separated by a few kilobases persists for thousands of generations, while correlations spanning megabases decay within tens of generations. The result is a mosaic pattern: regions of high LD (haplotype blocks) where many variants are strongly correlated, interspersed with recombination hotspots where LD decays rapidly.
 
@@ -143,7 +143,7 @@ This limitation has concrete practical consequences. Drug development requires i
 
 A pharmaceutical company evaluating a GWAS hit for drug development faces a concrete problem: the associated locus spans 500 kilobases, contains 200 correlated variants, and overlaps three genes. Which gene should they target? Which variant drives the association? Investing hundreds of millions of dollars in a program targeting the wrong gene would be catastrophic, yet GWAS summary statistics alone cannot resolve the ambiguity. **Fine-mapping** attempts to address this gap, moving from "this region is associated" to "these specific variants are most likely causal" by exploiting the joint behavior of correlated variants under explicit statistical models.
 
-### The Statistical Framework
+###  Statistical Framework
 
 The core insight of fine-mapping is that while multiple variants may show similar marginal association statistics, their joint behavior under a model that accounts for LD can discriminate among them. A causal variant should show association beyond what can be explained by LD with its neighbors; a tag variant should not. This distinction, invisible when variants are tested one at a time, becomes apparent when their correlations are modeled jointly.
 
@@ -282,7 +282,7 @@ The vast majority of GWAS participants have been of European ancestry: as of 201
 [High] Bar chart showing relative prediction accuracy (R² or auROC ratio) of European-derived PGS when applied to different ancestry groups. European as reference (100%), then decreasing accuracy for East Asian, South Asian, Hispanic/Latino, and African-ancestry populations (often 25-60% of European performance). Include error bars. Overlay or annotate factors contributing to the gap: LD differences, allele frequency differences, potential effect heterogeneity, training sample size disparities.
 :::
 
-### The Portability Problem
+###  Portability Problem
 
 Polygenic scores derived from European-ancestry GWAS show markedly reduced performance in other populations. African-ancestry individuals typically experience 40% to 75% reductions in prediction accuracy compared to European-ancestry individuals, even for the same trait measured in the same study [@duncan_analysis_2019; @martin_clinical_2019]. The pattern holds across traits and across methods, though the magnitude varies with genetic architecture and the degree of shared causal variants.
 
@@ -304,7 +304,7 @@ GWAS answer a specific question: which variants associate with this phenotype? T
 
 This reversal of the GWAS paradigm has proven particularly valuable for understanding polygenic score biology. A polygenic score constructed for one trait often predicts other traits, sometimes to a surprising degree. The coronary artery disease PGS predicts not only heart attacks but also diabetes, hypertension, and mortality from other vascular causes. These cross-phenotype associations reflect the shared genetic architecture among related traits and the pleiotropic effects of common variants. They also reveal where phenotype definitions may be capturing overlapping constructs or where biological pathways connect seemingly distinct outcomes.
 
-### The PheWAS Framework
+###  PheWAS Framework
 
 PheWAS implementations parallel GWAS but with dimensions transposed. Rather than testing millions of variants against one phenotype, PheWAS tests one variant (or score) against hundreds of phenotypes. The phenotype vocabulary typically derives from EHR codes grouped into clinically meaningful categories. **Phecodes** collapse ICD-9 and ICD-10 billing codes into approximately 1,800 phenotype groups, aggregating related codes (such as the many ICD codes for diabetes mellitus) into unified disease concepts while distinguishing diseases that occupy nearby code ranges but represent different conditions.
 

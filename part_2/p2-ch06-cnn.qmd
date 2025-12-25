@@ -107,7 +107,7 @@ ExPecto, introduced by Zhou et al. in 2018, addressed these questions by extendi
 [Enhancing] Three-component pipeline diagram. Component 1: Beluga CNN scanning 40kb window around TSS with sliding 2kb windows, producing chromatin predictions at 200 spatial positions. Component 2: Spatial transformation with exponential decay functions (upstream and downstream), reducing to ~20,000 features. Component 3: 218 tissue-specific linear regression models, producing per-tissue expression predictions. Show example delta scores for variant effect.
 :::
 
-### The Modular Architecture
+###  Modular Architecture
 
 ExPecto comprises three sequential components, each addressing a distinct computational challenge. The separation proved essential: jointly optimizing all components end-to-end would be computationally prohibitive, and the modular design enables interpretability at each stage.
 
@@ -189,7 +189,7 @@ SpliceAI's most significant contribution may be quantifying cryptic splice mutat
 This clinical utility explains SpliceAI's rapid adoption. Illumina integrated SpliceAI into their annotation pipelines. Clinical genetics laboratories worldwide use delta scores to flag potential splice-affecting variants for RNA-seq follow-up. The model exemplifies how task-specific deep learning can achieve clinical-grade accuracy on well-defined problems. We return to SpliceAI's role in modern variant interpretation workflows in @sec-vep-fm.
 
 
-## The Receptive Field Ceiling {#sec-receptive-field}
+##  Receptive Field Ceiling {#sec-receptive-field}
 
 Consider a 45-year-old woman with early-onset breast cancer and a family history suggesting hereditary risk. Whole-genome sequencing identifies a novel variant 80 kilobases upstream of *BRCA1*, within an established enhancer region. The enhancer is known to regulate *BRCA1* expression in mammary epithelium. Does this variant reduce *BRCA1* expression enough to increase cancer risk? *DeepSEA* can predict whether the variant disrupts transcription factor binding at that position. SpliceAI confirms no splice effects. ExPecto's 40 kb window cannot reach from the variant to the *BRCA1* promoter. No convolutional model can connect the enhancer variant to its target gene because the distance exceeds their receptive fields. The clinical question remains unanswered.
 
@@ -213,7 +213,7 @@ If convolutional networks cannot reach far enough, why not simply carry informat
 
 The hidden state mechanism works as follows. At each position $t$, the network combines the current input $x_t$ with the previous hidden state $h_{t-1}$ to produce a new hidden state $h_t$. This recurrence allows information from early positions to influence computations at later positions through the chain of hidden states. A regulatory element at position 1,000 can, in theory, affect predictions at position 50,000 because its influence persists in the hidden state across all intervening positions. No receptive field limits this reach; the constraint becomes whether information survives the journey.
 
-### The Vanishing Gradient Problem
+###  Vanishing Gradient Problem
 
 Information rarely survives. Training RNNs requires backpropagating gradients through time, computing how errors at late positions depend on parameters applied at early positions. These gradients pass through the same recurrent weight matrix at each step. When gradients are multiplied through hundreds or thousands of steps, they either explode (growing exponentially) or vanish (shrinking toward zero). The vanishing gradient problem makes it nearly impossible for RNNs to learn dependencies spanning more than a few dozen positions. A regulatory element 10,000 base pairs upstream might as well not exist: by the time gradients propagate backward through 10,000 recurrent steps, they have decayed to numerical insignificance.
 
@@ -229,7 +229,7 @@ DanQ processed sequences in both directions simultaneously (bidirectional recurr
 
 The improvement was real but limited. Within a 1,000 base pair window, convolutional receptive fields already capture most relevant dependencies, leaving less room for recurrence to contribute. The fundamental problem remained: neither convolutions nor recurrence could reach the 50 to 100 kilobase distances where enhancers regulate their target genes. DanQ demonstrated that hybrid architectures could outperform pure convolutions, but the gains did not justify the added complexity for most applications. The model saw limited adoption compared to simpler convolutional alternatives.
 
-### The Sequential Bottleneck
+###  Sequential Bottleneck
 
 Even if recurrence could maintain gradients across genomic distances, a more fundamental constraint would remain. RNNs process sequences one position at a time. Each hidden state $h_t$ depends on the previous hidden state $h_{t-1}$, creating an inherently sequential computation that cannot be parallelized. Training on a 100,000 base pair sequence requires 100,000 sequential steps, each waiting for the previous step to complete. Modern GPUs achieve their speed through massive parallelism; sequential dependencies eliminate this advantage.
 

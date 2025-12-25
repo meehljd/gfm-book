@@ -343,7 +343,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_1/p1-ch02-data.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">The Data Landscape</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Landscape</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -560,7 +560,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_6/p6-ch29-future.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Ethical and Frontiers</span></span></a>
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Ethics and Frontiers</span></span></a>
   </div>
 </li>
       </ul>
@@ -691,7 +691,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#recalibration-methods" id="toc-recalibration-methods" class="nav-link" data-scroll-target="#recalibration-methods"><span class="header-section-number">21.10.2</span> Recalibration Methods</a></li>
   </ul></li>
   <li><a href="#putting-it-all-together" id="toc-putting-it-all-together" class="nav-link" data-scroll-target="#putting-it-all-together"><span class="header-section-number">21.11</span> Putting It All Together</a></li>
-  <li><a href="#the-question-behind-the-metric" id="toc-the-question-behind-the-metric" class="nav-link" data-scroll-target="#the-question-behind-the-metric"><span class="header-section-number">21.12</span> The Question Behind the Metric</a></li>
+  <li><a href="#question-behind-the-metric" id="toc-question-behind-the-metric" class="nav-link" data-scroll-target="#question-behind-the-metric"><span class="header-section-number">21.12</span> Question Behind the Metric</a></li>
   </ul>
 </nav>
     </div>
@@ -807,7 +807,7 @@ Figure&nbsp;21.2: [Essential] Step-by-step workflow. Steps: (1) All sequences; (
 <section id="clustering-tools-and-workflows" class="level3" data-number="21.2.1">
 <h3 data-number="21.2.1" class="anchored" data-anchor-id="clustering-tools-and-workflows"><span class="header-section-number">21.2.1</span> Clustering Tools and Workflows</h3>
 <p>Two tools dominate homology-aware splitting in practice. <strong>CD-HIT</strong> clusters sequences by greedy incremental clustering, assigning each sequence to an existing cluster if it exceeds a similarity threshold to the cluster representative, or creating a new cluster otherwise. The algorithm is fast and scales to millions of sequences. For proteins, a typical workflow clusters at 40% sequence identity for stringent splitting or 70% for moderate splitting. For nucleotide sequences, thresholds are typically higher (80-95%) due to different evolutionary rates.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cluster proteins at 40% identity</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">\#</span> Cluster proteins at 40% identity</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cd-hit</span> <span class="at">-i</span> proteins.fasta <span class="at">-o</span> proteins_clustered <span class="at">-c</span> 0.4 <span class="at">-n</span> 2</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cluster nucleotides at 90% identity  </span></span>
@@ -1119,8 +1119,8 @@ Figure&nbsp;21.6: [Enhancing] Three-column comparison. Column 1 (Zero-shot): Fro
 <p><strong>Robustness</strong>: How does performance vary across cohorts, platforms, and ancestries? How does the model behave under distribution shift, missing data, or label noise?</p>
 <p>This checklist is not exhaustive but covers the most common evaluation pitfalls. Working through it systematically at the design stage can prevent problems that are difficult to fix retrospectively. Reviewers and readers can use the same checklist to critically assess published work.</p>
 </section>
-<section id="the-question-behind-the-metric" class="level2" data-number="21.12">
-<h2 data-number="21.12" class="anchored" data-anchor-id="the-question-behind-the-metric"><span class="header-section-number">21.12</span> The Question Behind the Metric</h2>
+<section id="question-behind-the-metric" class="level2" data-number="21.12">
+<h2 data-number="21.12" class="anchored" data-anchor-id="question-behind-the-metric"><span class="header-section-number">21.12</span> Question Behind the Metric</h2>
 <p>The question is never simply “what is the AUROC?” but rather “what has been demonstrated, and how much should we trust it?” A reported metric summarizes one aspect of model behavior on one dataset under one evaluation protocol. Whether that metric predicts performance in deployment depends on details that standard reporting obscures: how data were split, whether leakage occurred, which subgroups were evaluated, what baselines were compared, and whether statistical conclusions account for multiple comparisons and estimation uncertainty.</p>
 <p>The shortcuts that accelerate research in other machine learning domains produce misleading conclusions when applied to genomic data. Random <strong>train-test splis</strong> ignore homology that creates pseudo-replication. Single-metric comparisons miss failure modes in clinically relevant subgroups. Significance tests without effect sizes conflate statistical and practical importance. Benchmark evaluation without temporal awareness allows indirect leakage through shared community resources. Homology, population structure, batch effects, and label circularity create countless opportunities for self-deception, and genomic data exhibit all of these in abundance.</p>
 <p>Rigorous evaluation requires sustained effort at every stage, from experimental design through statistical analysis. Confounding and leakage (<a href="p5-ch22-confounding.html" class="quarto-xref"><span>Chapter 22</span></a>) examines how <strong>population stratification</strong>, batch effects, and ascertainment bias produce results that evaporate under deployment. Uncertainty quantification (<a href="p5-ch23-uncertainty.html" class="quarto-xref"><span>Chapter 23</span></a>) extends calibration assessment to epistemic versus aleatoric uncertainty and selective prediction. Interpretability (<a href="p5-ch24-interpretability.html" class="quarto-xref"><span>Chapter 24</span></a>) addresses whether models have learned genuine biology or exploited confounded patterns. For clinical applications specifically, risk prediction frameworks (<a href="../part_6/p6-ch25-clinical-risk.html" class="quarto-xref"><span>Chapter 25</span></a>) develop evaluation approaches tailored to decision-making, where net benefit and decision curves supplement discrimination metrics. Together, these perspectives provide the critical apparatus for engaging with genomic foundation model claims.</p>

@@ -7,7 +7,7 @@ This insight transformed computational biology. Traditional approaches to unders
 The ESM family demonstrated that transformers can learn protein structure and function from sequence alone, achieving results that rival methods requiring explicit structural supervision. Evolutionary Scale Modeling, as the name suggests, exploits the scale of evolutionary data to learn representations that generalize across proteins regardless of homology or family membership. Understanding these successes and their limitations provides essential context for genomic language models, where analogous approaches face distinct challenges arising from the multi-scale organization of regulatory information in DNA.
 
 
-## The *ESM* Model Family
+##  *ESM* Model Family
 
 The ESM (Evolutionary Scale Modeling) family developed at Meta AI Research represents the most influential protein language model lineage, progressing from an initial proof-of-concept to models capable of predicting three-dimensional structure from sequence alone. The progression from ESM-1b through ESM-2 illustrates how scaling transformer architectures yields systematic improvements in biological knowledge extraction, while revealing what self-supervised learning on protein sequences can and cannot achieve.
 
@@ -103,7 +103,7 @@ Rao and colleagues demonstrated this connection directly by extracting attention
 
 Structure prediction has traditionally required multiple sequence alignments (MSAs) that search protein databases for evolutionary relatives, a process that can take hours per protein and fails entirely for sequences lacking detectable homologs. ESMFold demonstrated that the representations learned by ESM-2 contain sufficient evolutionary information to predict three-dimensional structure directly, eliminating the alignment requirement while maintaining competitive accuracy.
 
-### Eliminating the Alignment Bottleneck
+### Alignment-Free Prediction
 
 The most dramatic demonstration of protein language model capabilities came with ESMFold, which predicts protein 3D structure directly from *ESM*-2 embeddings without requiring multiple sequence alignments [@lin_esm-2_2022]. Traditional structure prediction, including AlphaFold2, relies heavily on MSAs constructed through computationally expensive searches against sequence databases. These searches can take hours per protein, and prediction quality depends critically on finding informative homologs.
 
@@ -231,28 +231,28 @@ While attention patterns correlate with biological features, understanding exact
 
 The success of protein language models established principles that guided subsequent development of genomic foundation models. These lessons transfer with appropriate modifications to DNA and RNA modeling.
 
-### Self-Supervision Captures Biological Knowledge
+### Self-Supervised Biological Knowledge
 
 PLMs demonstrated that massive amounts of biological knowledge can be learned from unlabeled sequences. The same evolutionary pressures that shape proteins also shape DNA. Purifying selection removes deleterious variants, leaving statistical signatures in sequence databases that self-supervised models can exploit. This principle underlies the entire foundation model paradigm: sufficiently large models trained on sufficiently large datasets with appropriate objectives will learn representations that capture biological function.
 
-### Scale Yields Consistent Improvements
+### Scaling Benefits
 
 Performance improves predictably with model size through the range currently explored. The progression from 8 million to 15 billion parameters in *ESM*-2 showed consistent gains across structure prediction, contact prediction, and variant effect tasks. While scaling cannot continue indefinitely, current models remain in a regime where additional capacity yields reliable improvements. This relationship justified the computational investment in large genomic foundation models.
 
-### Transfer Learning is Effective
+### Effective Transfer Learning
 
 Representations learned for one task (masked token prediction) transfer to other tasks (structure prediction, variant effects, function annotation). This suggests that self-supervised pretraining captures fundamental biological knowledge rather than task-specific shortcuts. A model trained to predict masked amino acids simultaneously learns about protein *structure*, function, evolutionary constraint, and disease relevance. The same principle motivates genomic language models: models trained to predict masked nucleotides may simultaneously learn about regulatory elements, evolutionary conservation, and variant effects.
 
-### Architecture Choices Must Match Sequence Properties
+### Architecture-Sequence Matching
 
 The BERT-style bidirectional encoder proved effective for proteins, where entire sequences are typically available and lengths rarely exceed a thousand residues. Genomic sequences present different challenges: much longer lengths spanning kilobases to megabases, different information density with coding regions being dense while intergenic regions are sparser, and structural features including reverse-complement relationships absent in proteins. These differences motivate architectural adaptations in genomic language models, as explored in @sec-dna-lm.
 
-### Integration Multiplies Capability
+### Integration Benefits
 
 *AlphaMissense* demonstrated that PLM embeddings combine effectively with structural and population genetics information, achieving accuracy beyond what any single information source provides. The most powerful methods integrate multiple signals, using PLMs as one component of larger systems. This principle extends to genomic foundation models, where sequence-based representations complement rather than replace functional annotations, chromatin data, and clinical information.
 
 
-## The Paradigm That Generalized
+##  Paradigm That Generalized
 
 Protein language models established that transformer architectures can learn deep biological knowledge from sequence alone. *ESM*'s ability to predict structure, function, and variant effects without explicit labels demonstrated the power of self-supervised learning on evolutionary data. The framework validated a paradigm: treat biological sequences as language, train large models to predict masked tokens, and extract functional knowledge from learned representations. Attention patterns in these models capture evolutionary constraint, contact prediction, and structural relationships without requiring multiple sequence alignments or explicit structural supervision.
 

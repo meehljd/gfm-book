@@ -299,11 +299,11 @@ Weave forward references throughout the chapter naturally:
 
 ## Chapter Opening Strategy
 
-### The First Two Paragraphs Matter Most
+###  First Two Paragraphs Matter Most
 
 Readers decide whether to engage deeply within the first 60 seconds. The opening must establish intellectual stakes and narrative tension immediately—not through meta-commentary about what the chapter will cover, but through the inherent tension in the subject matter itself.
 
-### The Distinctiveness Requirement
+###  Distinctiveness Requirement
 
 **CRITICAL: Each chapter must have a unique hook that no other chapter uses.**
 
@@ -406,7 +406,7 @@ Lead with what this approach uniquely enables:
 - Now you can introduce technical details, methods, definitions
 - The hook has done its job—readers are committed
 
-### The Memorable Sentence
+###  Memorable Sentence
 
 Every major opening (chapter, major section) should contain at least one sentence designed to be memorable and quotable. These sentences:
 
@@ -882,7 +882,7 @@ Key concepts (attention, embeddings, fine-tuning, transfer learning) reappear ac
 
 ## Clinical Integration Strategy
 
-### The Clinical Stakes Pattern
+###  Clinical Stakes Pattern
 
 When introducing technical concepts, establish clinical stakes BEFORE technical mechanisms. This pattern works at multiple scales:
 
@@ -931,7 +931,7 @@ When mentioning clinical examples, always include:
 - **Numbers**: "thousands of variants, fewer than a hundred actionable" not "many variants, few actionable"
 - **Ages/timescales**: "A 35-year-old presenting with cardiac arrest" not "a patient with cardiac arrest"
 
-### The Consequences Statement
+###  Consequences Statement
 
 After establishing a technical limitation, explicitly state consequences using one of these frames:
 - "The clinical implications are entirely different, yet..."
@@ -1219,7 +1219,7 @@ For major conceptual points, don't assume readers will infer—state directly us
 
 **Why it works**: Readers appreciate direct statements of what matters. Don't make them work to figure out the main point.
 
-### The "Yet" Construction
+###  "Yet" Construction
 
 Use "yet" to create memorable paradoxes:
 

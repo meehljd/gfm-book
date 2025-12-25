@@ -130,7 +130,7 @@ Will this paper matter in 5 years?
 - Superseded by subsequent work from same or other labs
 - "Foundation model for X" where X is narrow task
 
-### The "Textbook Test"
+###  "Textbook Test"
 Ask: **Would a thoughtful expert include this in a textbook written in 2030?**
 
 If uncertain, default to exclusion. Better to miss some valid papers than include ones that don't hold up.

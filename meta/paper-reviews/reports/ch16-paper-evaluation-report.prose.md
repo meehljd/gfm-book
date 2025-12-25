@@ -201,7 +201,7 @@ Missing reference for hao_large-scale_2024
 
 ---
 
-### theodoris_geneformer_2023
+### odoris_geneformer_2023
 
 [Geneformer] Transfer learning enables predictions in network biology — Theodoris, Christina V. and Xiao, Ling and Chopra, Anant and Chaffin, Mark D. and Al Sayed, Zeina R. and Hill, Matthew C. and Mantineo, Helene and Brydon, Elizabeth M. and Zeng, Zexian and Liu, X. Shirley and Ellinor, Patrick T. — Nature (2023) — DOI: 10.1038/s41586-023-06139-9 — URL: https://www.nature.com/articles/s41586-023-06139-9
 

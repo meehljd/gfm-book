@@ -4,7 +4,7 @@
 
 The conceptual foundations and practical methods that dominated variant interpretation before the foundation model era reveal both genuine insights and systematic blind spots. The trajectory from single-signal predictors through increasingly sophisticated ensemble methods traces a persistent gap: what we can measure differs from what clinicians need to know. The trajectory traces from single-signal predictors through increasingly sophisticated ensemble methods. Conservation scores like **PhyloP** and **Genomic Evolutionary Rate Profiling (GERP)** quantify purifying selection across evolutionary time, identifying positions where variation is depleted relative to neutral expectations. Protein-level tools like **Sorting Intolerant From Tolerant (SIFT)** and **Polymorphism Phenotyping (PolyPhen-2)** assess amino acid substitutions through sequence conservation and structural features. Splice predictors identify the sequence motifs that mark intron-exon boundaries. Each approach captures genuine biological signal, but each also fails in characteristic ways: conservation misses recently evolved human-specific functions, protein predictors cannot assess non-coding variants, splice algorithms miss cryptic sites and tissue-specific regulation.
 
-The field's response was to develop integrative methods that combine multiple signals into unified scores. **Combined Annotation-Dependent Depletion (CADD)** receives particular attention here because it introduced design patterns that recur throughout genomic machine learning: using evolutionary signals as proxy labels, training on large-scale genomic data, integrating dozens of diverse annotations, and precomputing scores genome-wide for downstream reuse. CADD and its successors, including REVEL, PrimateAI, and **Mendelian Clinically Applicable Pathogenicity (M-CAP)**, remain in active clinical use today. Understanding their construction and limitations illuminates both what classical methods achieved and why the field ultimately moved toward learned representations (@sec-attention).
+The field's response was to develop integrative methods that combine multiple signals into unified scores. *CADD* receives particular attention here because it introduced design patterns that recur throughout genomic machine learning: using evolutionary signals as proxy labels, training on large-scale genomic data, integrating dozens of diverse annotations, and precomputing scores genome-wide for downstream reuse. *CADD* and its successors, including *REVEL*, *PrimateAI*, and *M-CAP*, remain in active clinical use today. Understanding their construction and limitations illuminates both what classical methods achieved and why the field ultimately moved toward learned representations (@sec-attention).
 
 ::: {#fig-variant-funnel}
 ![FIGURE PLACEHOLDER](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
@@ -56,7 +56,7 @@ Conservation scores also face technical challenges from alignment quality. In re
 These boundaries do not diminish the value of conservation; they define where that value applies. Conservation provides information largely orthogonal to population frequency (which reflects recent human history rather than deep evolutionary constraint) and to functional genomics annotations (which capture biochemical activity rather than selective importance). Integrative methods such as CADD combine conservation with these other signals to achieve better performance than any single source. Protein language models, examined in @sec-protein-lm, learn conservation-like signals directly from sequence data without requiring explicit alignments, potentially addressing some technical limitations while introducing their own assumptions about what constitutes functional constraint.
 
 ::: {#box-acmg-amp .callout-note}
-### The ACMG-AMP Variant Classification Framework
+###  ACMG-AMP Variant Classification Framework
 
 The American College of Medical Genetics and Genomics and the Association for Molecular Pathology jointly established a standardized framework for clinical variant interpretation [@richards_standards_2015]. Variants are classified into five tiers: **Pathogenic**, **Likely Pathogenic**, **Variant of Uncertain Significance (VUS)**, **Likely Benign**, and **Benign**. Classification combines multiple evidence types, each assigned a strength level. Pathogenic evidence ranges from very strong (PVS) through strong (PS), moderate (PM), to supporting (PP). Benign evidence follows a parallel hierarchy: stand-alone (BA), strong (BS), and supporting (BP).
 
@@ -105,7 +105,7 @@ Protein-level predictors inherit the training data biases present in their under
 
 SIFT and PolyPhen-2 remain widely used in clinical practice and serve as features within more sophisticated ensemble methods. Their scores appear in diagnostic reports, contribute to ACMG-AMP classification criteria, and inform variant prioritization in research and clinical pipelines. Understanding their construction and limitations is essential for appropriate interpretation.
 
-## The *CADD* Framework
+##  *CADD* Framework
 
 The protein-level predictors and conservation scores examined above each capture one aspect of variant function, yet clinical interpretation requires weighing multiple lines of evidence simultaneously. A variant might fall in a conserved region, alter a moderately constrained amino acid, and overlap a predicted enhancer. How should these signals be combined? More fundamentally, how can we train a predictor when curated pathogenic variants number in the hundreds of thousands while the genome contains billions of possible mutations? These questions expose a fundamental tension: the variants we most need to interpret (rare, novel, never before seen) are precisely those for which training labels do not exist.
 
@@ -158,7 +158,7 @@ CADD's classifier operates on the high-dimensional feature vector assembled for 
 
 In clinical laboratories, CADD scaled scores commonly serve as filters to enrich for potentially pathogenic variants. Typical thresholds range from 15 (top 3%) to 20 (top 1%) or higher. Variants with scores at or above 20 are considered moderately high deleteriousness candidates, while scores at or above 30 are frequently interpreted as strongly enriched for functional impact. A diagnostic pipeline might use CADD greater than or equal to 20 as an initial filter, reducing 25,000 exome variants to several hundred candidates for expert review. These filters serve as prioritization tools that reduce the variant burden to a manageable number rather than as definitive pathogenicity calls.
 
-### The Evolutionary Proxy Problem
+###  Evolutionary Proxy Problem
 
 CADD's training signal derives entirely from evolutionary history: variants that survived natural selection versus those depleted by it. This creates a fundamental mismatch with clinical questions. Evolution optimizes for reproductive fitness across populations and timescales; clinical genetics asks whether a specific variant causes disease in a specific patient.
 
@@ -214,7 +214,7 @@ A diagnostic laboratory classifies a novel missense variant as pathogenic based 
 [High] Circular diagram illustrating the feedback loop between computational predictors and clinical databases. Show cycle: (1) Computational score (e.g., high CADD) influences clinical classification; (2) Classified variant enters ClinVar as "Pathogenic"; (3) Benchmarking study evaluates CADD on ClinVar variants; (4) High benchmark performance encourages clinical adoption; (5) Return to step 1. Indicate intervention points: temporal holdouts, functional assay ground truth, prospective evaluation. Use visual metaphor of self-reinforcing spiral.
 :::
 
-### The Circularity Problem
+###  Circularity Problem
 
 ClinVar and similar clinical databases increasingly incorporate computational predictions as evidence supporting variant classification. When a clinical laboratory classifies a variant as pathogenic, the CADD score, PolyPhen-2 prediction, or other computational evidence may have contributed to that determination. When CADD is subsequently evaluated on ClinVar pathogenic variants, its performance is artificially inflated: the benchmark contains variants that were labeled partly because CADD assigned them high scores. The predictor appears to perform well because it was already part of the labeling process.
 
@@ -244,7 +244,7 @@ The ACMG-AMP framework for variant classification appropriately treats computati
 
 Classical variant effect prediction achieved substantial success in prioritizing potentially pathogenic variants and established conceptual foundations that persist in modern methods. The integration of diverse annotations, use of evolutionary signals as proxy labels, and genome-wide precomputation all anticipate contemporary practices. Yet a fundamental tension remains: manually designed features encode only what biologists already know, and the complexity of genotype-phenotype relationships exceeds what explicit feature engineering can capture. The features are not wrong; they are incomplete in ways that cannot be remedied by adding more of the same.
 
-### The Feature Ceiling
+###  Feature Ceiling
 
 Feature-engineered methods encode human knowledge about which genomic properties matter for variant function. Conservation scores capture evolutionary constraint; protein-level predictors encode structural intuitions; regulatory annotations mark biochemically active regions. This encoded knowledge is valuable but necessarily incomplete. Biologists cannot specify all relevant patterns in advance, and the interactions between features may be too complex for simple combination rules to capture.
 
@@ -256,7 +256,7 @@ Classical features typically describe variants in isolation or with minimal cont
 
 A variant disrupting a critical transcription factor binding motif may escape detection if the motif is not annotated, even though the underlying sequence pattern is learnable from data. A missense variant at a protein-protein interface may be more damaging than one in a loop region, but capturing this distinction requires understanding protein structure and interactions that feature engineering incompletely represents. The local sequence context surrounding a variant often matters, but which contexts matter and how requires learning from data rather than specification by experts.
 
-### The Persistent Gap Between Measurement and Need
+###  Persistent Gap Between Measurement and Need
 
 Each classical method measures something related to but distinct from clinical pathogenicity. Conservation scores measure evolutionary constraint. Protein-level predictors measure functional disruption. CADD measures evolutionary tolerance. Each provides genuine biological signal, but none directly answers the clinical question: will this variant cause disease in this patient?. Conservation scores measure evolutionary constraint. Protein-level predictors measure functional disruption. CADD measures evolutionary tolerance. Each provides genuine biological signal, but none directly answers the clinical question: will this variant cause disease in this patient?
 

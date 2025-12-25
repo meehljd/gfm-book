@@ -205,7 +205,7 @@ Variant interpretation has specific requirements favoring certain representation
 
 Several heuristics have emerged from practical experience. Single-nucleotide tokens work best when variant-level reasoning or high-resolution interpretability is central to the application. K-mers or BPE provide advantages when context length is the primary bottleneck and tasks do not require base-level precision. Biologically-informed tokens merit consideration when integrating multi-modal or annotation-rich data. Position encoding should match task requirements: relative encodings for tasks where absolute position is arbitrary, coordinate-aware encodings for clinical applications requiring integration with external databases.
 
-## The Compression-Resolution Trade-off
+##  Compression-Resolution Trade-off
 
 Every tokenization scheme embodies a trade-off between sequence compression and nucleotide resolution. K-mer tokenization reduces sequence length by a factor of k, enabling longer genomic contexts within fixed attention windows, but a single-nucleotide variant may alter multiple overlapping tokens in ways that obscure the mutation's identity. Byte-pair encoding learns compression patterns from sequence statistics, achieving efficient representation of common motifs while preserving rare sequences at higher resolution. One-hot encoding maintains single-nucleotide precision but offers no compression, limiting context length in attention-based architectures. No choice is universally optimal; the right representation depends on whether the downstream task prioritizes context length, variant sensitivity, or computational efficiency.
 

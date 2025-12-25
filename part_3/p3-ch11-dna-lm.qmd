@@ -60,7 +60,7 @@ Evaluated on *A. thaliana* variants using allele frequencies from the 1001 Genom
 *GPN* established that cross-species pretraining captures evolutionary constraints transferable to variant effect prediction, that relatively small models trained on focused phylogenetic groups can outperform larger generic conservation measures within that group, and that the masked language modeling objective naturally produces representations suitable for variant scoring via likelihood comparisons.
 
 
-## The Long-Context Revolution
+##  Long-Context Revolution
 
 Quadratic attention complexity limits transformer context to tens of kilobases at best. Processing a 100 kb sequence with dense attention requires on the order of 10^10 computations per layer. Yet regulatory phenomena routinely span larger distances: enhancer-promoter interactions extend 50-200 kb, topologically associating domains organize chromatin at the megabase scale, and some gene regulation involves even longer-range dependencies. The mismatch between biological context and computational context represented a fundamental architectural limitation.
 
@@ -212,7 +212,7 @@ DNA language models support multiple usage patterns for different applications.
 
 The simplest approach extracts embeddings from a pretrained model and uses them as features for downstream classifiers. The workflow involves extracting embeddings for windows around loci of interest, pooling or selecting positions relevant to the task, and training lightweight downstream models (linear layers, shallow MLPs, gradient boosting) on the extracted features.
 
-This approach supports diverse applications. Regulatory element classification distinguishes promoters, enhancers, silencers, and insulators based on learned representations. Chromatin state prediction uses sequence embeddings to predict ATAC-seq or histone mark presence. Variant effect scoring replaces or augments hand-crafted features in frameworks like **Combined Annotation-Dependent Depletion (CADD)** with language model features (analogous to CADD v1.7's incorporation of protein language model features). Splicing analysis combines embeddings with specialized architectures.
+This approach supports diverse applications. Regulatory element classification distinguishes promoters, enhancers, silencers, and insulators based on learned representations. Chromatin state prediction uses sequence embeddings to predict ATAC-seq or histone mark presence. Variant effect scoring replaces or augments hand-crafted features in frameworks like *CADD* with language model features (analogous to CADD v1.7's incorporation of protein language model features). Splicing analysis combines embeddings with specialized architectures.
 
 Because the language model remains frozen, this approach is computationally efficient and avoids catastrophic forgetting when new tasks are added. The pretrained model serves as a general-purpose feature extractor supporting many downstream applications.
 
