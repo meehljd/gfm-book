@@ -32,17 +32,17 @@ The term "foundation model" appears frequently in genomics literature, sometimes
 
 ### Essential Properties
 
-A genomic foundation model satisfies several key properties that distinguish it from task-specific architectures.
+The defining characteristic of genomic foundation models is their capacity to serve purposes far beyond their original training objectives. This generality emerges from several interconnected properties.
 
-**Large-scale pretraining with minimal supervision.** Foundation models train on entire genomes, pan-genomic sequence collections, or large assay compendia. The pretraining objectives include masked language modeling, next-token prediction, denoising, or multi-task sequence-to-function prediction. Critically, these objectives do not require dense task-specific labels for every training example. A model that requires annotated enhancers or curated pathogenic variants for every training instance does not qualify as a foundation model under this criterion.
+Foundation models train on entire genomes, pan-genomic sequence collections, or large assay compendia with minimal supervision. Their pretraining objectives include masked language modeling, next-token prediction, denoising, or multi-task sequence-to-function prediction. Critically, these objectives do not require dense task-specific labels for every training example. A model that requires annotated enhancers or curated pathogenic variants for every training instance does not qualify as a foundation model under this criterion.
 
-**General-purpose representations.** Foundation models produce **embeddings** that prove useful across many downstream tasks. These representations can be extracted through forward passes and reused with simple linear probes or lightweight adapter modules rather than requiring full model retraining. The representations should encode biological information at multiple scales, from local sequence motifs to long-range regulatory grammar.
+The representations these models produce must prove useful across many downstream tasks. **Embeddings** can be extracted through forward passes and reused with simple linear probes or lightweight adapter modules rather than requiring full model retraining. The representations should encode biological information at multiple scales, from local sequence motifs to long-range regulatory grammar.
 
-**Broad transfer capability.** Foundation models support diverse downstream applications without architectural modifications or complete retraining. Transfer occurs across multiple dimensions: different assays (from chromatin accessibility to gene *expression*), different tissues and cell types, different species, and different variant types (from SNVs to structural variants). Evidence of broad transfer requires evaluation across multiple benchmarks rather than demonstration of performance on a single task.
+Transfer capability extends across multiple dimensions: different assays (from chromatin accessibility to gene *expression*), different tissues and cell types, different species, and different variant types (from SNVs to structural variants). Evidence of broad transfer requires evaluation across multiple benchmarks rather than demonstration of performance on a single task.
 
-**Scale along at least one dimension.** Foundation models operate at a scale that would be impractical for task-specific training. Some scale context length, as *HyenaDNA* scales to million-token windows at single-nucleotide resolution. Others scale parameter count, as the *ESM* and *Nucleotide Transformer* families reach billions of parameters. Still others scale data diversity through pan-genomic pretraining across hundreds of species or integration of many assays and cell types. The scaling dimension chosen reflects the model's intended applications and architectural constraints.
+Foundation models operate at a scale that would be impractical for task-specific training. Some scale context length, as *HyenaDNA* scales to million-token windows at single-nucleotide resolution. Others scale parameter count, as the *ESM* and *Nucleotide Transformer* families reach billions of parameters. Still others scale data diversity through pan-genomic pretraining across hundreds of species or integration of many assays and cell types. The scaling dimension chosen reflects the model's intended applications and architectural constraints.
 
-**Standardized interfaces.** Foundation models typically expose consistent APIs for common operations. These include **embedding** extraction for sequences or variants, sequence probability scoring, and mask-based in-silico mutagenesis for variant effect prediction. Models distributed through repositories such as Hugging Face often include documented recipes for downstream **fine-tuning** and example notebooks demonstrating common use cases.
+Finally, foundation models typically expose consistent APIs for common operations. These include **embedding** extraction for sequences or variants, sequence probability scoring, and mask-based in-silico mutagenesis for variant effect prediction. Models distributed through repositories such as Hugging Face often include documented recipes for downstream **fine-tuning** and example notebooks demonstrating common use cases.
 
 ### What Doesn't Count
 
@@ -90,15 +90,13 @@ The *Nucleotide Transformer* family provides perhaps the clearest genomic scalin
 
 ### Compute-Optimal Decisions for Genomics
 
-The scaling law framework has direct implications for model development decisions in genomics.
+The scaling law framework has direct implications for model development decisions in genomics, though the constraints differ fundamentally from natural language processing.
 
-**Data-constrained regimes.** Unlike natural language, where text data is effectively unlimited, genomic sequence data faces hard constraints. **Reference genomes** for well-studied species total perhaps 10^11 to 10^12 nucleotides. Population-level variant data can expand this somewhat, but the effective diversity may be lower than raw counts suggest. In data-constrained regimes, smaller models trained to convergence may outperform larger models that are undertrained.
+Unlike natural language, where text data is effectively unlimited, genomic sequence data faces hard constraints. **Reference genomes** for well-studied species total perhaps 10^11 to 10^12 nucleotides. Population-level variant data can expand this somewhat, but the effective diversity may be lower than raw counts suggest. In such data-constrained regimes, smaller models trained to convergence may outperform larger models that are undertrained.
 
-**Compute-constrained regimes.** Academic groups typically face stricter compute constraints than industry labs. Given fixed compute budgets, the Chinchilla framework suggests allocating resources toward longer training of smaller models rather than abbreviated training of larger models. A 500 million parameter model trained for 10 epochs on diverse genomic data may outperform a 5 billion parameter model trained for 1 epoch on the same data.
+Academic groups typically face stricter compute constraints than industry labs. Given fixed compute budgets, the Chinchilla framework suggests allocating resources toward longer training of smaller models rather than abbreviated training of larger models. A 500 million parameter model trained for 10 epochs on diverse genomic data may outperform a 5 billion parameter model trained for 1 epoch on the same data.
 
-**Task-specific considerations.** Not all downstream tasks benefit equally from foundation model scale. Tasks that depend primarily on local sequence patterns (transcription factor motif recognition, splice site identification) may show diminishing returns beyond modest model sizes. Tasks requiring integration of long-range context or rare variant interpretation may continue benefiting from larger models and longer contexts.
-
-**Data curation versus model scaling.** For many practical applications, investment in data curation and quality may yield better returns than model scaling. A foundation model trained on carefully curated, diverse, high-quality sequences may outperform a larger model trained on noisier data. The relative value of these investments is task-dependent and not well characterized by current scaling law frameworks.
+Beyond the tradeoff between model and data scaling lies a third consideration: data quality. For many practical applications, investment in data curation may yield better returns than model scaling. A foundation model trained on carefully curated, diverse, high-quality sequences may outperform a larger model trained on noisier data. The relative value of these investments is task-dependent and not well characterized by current scaling law frameworks.
 
 ### Emergent Capabilities
 
@@ -106,15 +104,11 @@ Perhaps the most intriguing aspect of foundation model scaling is the emergence 
 
 In large language models, emergent capabilities include multi-step reasoning, code generation, and in-context learning. These capabilities appear at model scales of roughly 10^10 parameters and above, with no clear precursor in smaller models.
 
-Genomic foundation models exhibit analogous emergence, though the capability thresholds are less well characterized.
+Genomic foundation models exhibit analogous emergence, though the capability thresholds are less well characterized. The most striking example involves structural understanding from sequence: *ESM-2* at sufficient scale produces contact maps and secondary structure predictions from single sequences with accuracy approaching multiple sequence alignment methods [@lin_esm-2_2022]. Smaller *ESM* models show no meaningful structural understanding. This capability emerges at approximately 650 million parameters and continues improving with scale.
 
-**Structural understanding from sequence.** *ESM-2* at sufficient scale produces contact maps and secondary structure predictions from single sequences with accuracy approaching multiple sequence alignment methods [@lin_esm-2_2022]. Smaller *ESM* models show no meaningful structural understanding. This capability emerges at approximately 650 million parameters and continues improving with scale.
+Larger *Nucleotide Transformer* models transfer more effectively to novel species not seen during training [@dalla-torre_nucleotide_2023]. The ability to generalize beyond training species appears to require sufficient model capacity to learn abstract regulatory principles rather than memorizing species-specific patterns. Similarly, foundation models at sufficient scale can predict variant effects without task-specific fine-tuning, using only the difference in likelihood between reference and alternative sequences. This zero-shot capability requires models large enough to capture subtle sequence dependencies.
 
-**Cross-species transfer.** Larger *Nucleotide Transformer* models transfer more effectively to novel species not seen during training [@dalla-torre_nucleotide_2023]. The ability to generalize beyond training species appears to require sufficient model capacity to learn abstract regulatory principles rather than memorizing species-specific patterns.
-
-**Zero-shot variant effect prediction.** Foundation models at sufficient scale can predict variant effects without task-specific fine-tuning, using only the difference in likelihood between reference and alternative sequences. This zero-shot capability requires models large enough to capture subtle sequence dependencies.
-
-**In-context learning.** The most recent genomic foundation models show preliminary evidence of in-context learning: the ability to adapt to new tasks based on examples provided in the input context without parameter updates. This capability, central to the utility of large language models, remains nascent in genomic models but may emerge with further scaling.
+The most recent genomic foundation models show preliminary evidence of in-context learning: the ability to adapt to new tasks based on examples provided in the input context without parameter updates. This capability, central to the utility of large language models, remains nascent in genomic models but may emerge with further scaling.
 
 The practical implication is that capability thresholds exist: models below certain scales may be fundamentally incapable of certain tasks regardless of fine-tuning. Identifying these thresholds helps guide model selection and prevents wasted effort fine-tuning models that lack necessary capacity.
 
@@ -131,45 +125,45 @@ The landscape of genomic foundation models can be organized into four broad fami
 
 ### DNA Language Models
 
-DNA language models learn sequence representations from raw nucleotide strings through self-supervised objectives. These models treat DNA as a language to be modeled without explicit functional labels, discovering patterns through statistical regularities in genomic sequence.
+DNA language models treat genomic sequence as a language to be modeled, learning representations from raw nucleotide strings through self-supervised objectives. Without explicit functional labels, these models discover patterns through statistical regularities in genomic sequence.
 
-**Core characteristics.** DNA language models typically use masked language modeling or **autoregressive** next-token prediction as their pretraining objective. They train on reference genomes or pan-genomic sequence collections spanning multiple species. The resulting models produce per-position or pooled sequence embeddings that can be extracted and used for downstream tasks. Critically, these embeddings are not tied to specific assays or cell types, making them applicable to any task that benefits from general sequence context.
+The pretraining objectives typically involve masked language modeling or **autoregressive** next-token prediction. Training draws from reference genomes or pan-genomic sequence collections spanning multiple species. The resulting models produce per-position or pooled sequence embeddings that can be extracted and used for downstream tasks. Critically, these embeddings are not tied to specific assays or cell types, making them applicable to any task that benefits from general sequence context.
 
-**Representative models.** *DNABERT* and *DNABERT-2* apply BERT-style masked language modeling to DNA sequences, using overlapping *k*-mers as tokens [@ji_dnabert_2021; @zhou_dnabert-2_2024]. The *Nucleotide Transformer* family scales this approach to larger parameter counts and cross-species training [@dalla-torre_nucleotide_2023]. *HyenaDNA* achieves subquadratic complexity through implicit convolutions, enabling context lengths up to one million nucleotides [@nguyen_hyenadna_2023]. Caduceus incorporates bidirectional processing and reverse-complement equivariance as architectural inductive biases. Evo-2 combines long-range attention with biological **tokenization** strategies. GROVER integrates learned BPE-style tokenization with training on regulatory tracks in addition to raw sequence [@sanabria_grover_2024].
+*DNABERT* and *DNABERT-2* apply BERT-style masked language modeling to DNA sequences, using overlapping *k*-mers as tokens [@ji_dnabert_2021; @zhou_dnabert-2_2024]. The *Nucleotide Transformer* family scales this approach to larger parameter counts and cross-species training [@dalla-torre_nucleotide_2023]. *HyenaDNA* achieves subquadratic complexity through implicit convolutions, enabling context lengths up to one million nucleotides [@nguyen_hyenadna_2023]. Caduceus incorporates bidirectional processing and reverse-complement equivariance as architectural inductive biases. Evo-2 combines long-range attention with biological **tokenization** strategies. GROVER integrates learned BPE-style tokenization with training on regulatory tracks in addition to raw sequence [@sanabria_grover_2024].
 
-**Strengths and limitations.** DNA language models provide truly general representations not bound to specific assays, cell types, or experimental conditions. They can process novel sequences not present in reference genomes. Their self-supervised training requires only genome sequences, making them scalable. Without explicit functional grounding, however, they may not capture subtle regulatory patterns that manifest only under specific cellular conditions. Performance on tasks requiring fine-grained functional discrimination may lag models trained with functional supervision.
+The primary strength of DNA language models lies in their generality: representations not bound to specific assays, cell types, or experimental conditions, capable of processing novel sequences absent from reference genomes. Their self-supervised training requires only genome sequences, making them scalable to massive corpora. The corresponding limitation is that without explicit functional grounding, they may not capture subtle regulatory patterns that manifest only under specific cellular conditions. Performance on tasks requiring fine-grained functional discrimination may lag models trained with functional supervision.
 
-**Typical applications.** Sequence classification (promoters, enhancers, transposons), motif discovery, variant effect prediction through embedding perturbation, sequence generation for synthetic biology, and transfer learning to new species with limited labeled data.
+Applications span sequence classification (promoters, enhancers, transposons), motif discovery, variant effect prediction through embedding perturbation, sequence generation for synthetic biology, and transfer learning to new species with limited labeled data.
 
 ### Sequence-to-Function Foundation Models
 
 Sequence-to-function models predict molecular readouts directly from sequence through supervised or semi-supervised training on assay compendia. These models blur into foundation model territory when their output space is sufficiently broad and their internal representations prove useful for tasks beyond the original assay set.
 
-**Core characteristics.** These models map DNA sequences to high-dimensional vectors of molecular measurements, including chromatin accessibility, **histone modifications**, transcription factor binding, and gene expression levels. Training uses large collections of functional genomics assays spanning many cell types. The models learn regulatory grammar through supervised prediction of molecular phenotypes.
+These models map DNA sequences to high-dimensional vectors of molecular measurements, including chromatin accessibility, **histone modifications**, transcription factor binding, and gene expression levels. Training uses large collections of functional genomics assays spanning many cell types, enabling the models to learn regulatory grammar through supervised prediction of molecular phenotypes.
 
-**Representative models.** *Enformer* predicts thousands of chromatin and expression tracks from 200 kb sequence windows through transformer attention [@avsec_enformer_2021]. Borzoi extends this with refined architectures and expanded coverage. Sei organizes predictions into interpretable sequence classes through unsupervised clustering [@chen_deepsea_2022]. Earlier models including DeepSEA and Basset established the paradigm at smaller scales.
+*Enformer* predicts thousands of chromatin and expression tracks from 200 kb sequence windows through transformer attention [@avsec_enformer_2021]. Borzoi extends this with refined architectures and expanded coverage. Sei organizes predictions into interpretable sequence classes through unsupervised clustering [@chen_deepsea_2022]. Earlier models including DeepSEA and Basset established the paradigm at smaller scales.
 
-**Strengths and limitations.** Explicit functional supervision provides mechanistic grounding. Predictions can be interpreted through comparison to experiments. The models naturally support variant effect prediction by computing reference-alternative differences. Models remain tied to training assays and cell types. Extension to new contexts typically requires retraining or new data collection.
+The explicit functional supervision in these models provides mechanistic grounding that pure language models lack. Predictions can be interpreted through comparison to experiments. The models naturally support variant effect prediction by computing reference-alternative differences. The tradeoff is that models remain tied to training assays and cell types; extension to new contexts typically requires retraining or new data collection.
 
-**Typical applications.** Regulatory variant interpretation in well-studied cell types, eQTL fine-mapping, enhancer identification, transcription factor binding prediction, and regulatory mechanism discovery.
+Applications center on regulatory variant interpretation in well-studied cell types, eQTL fine-mapping, enhancer identification, transcription factor binding prediction, and regulatory mechanism discovery.
 
 ### Variant Effect Prediction Models
 
-Models optimized specifically for predicting functional or clinical consequences of genetic variants. These take a variant and predict its effect on molecular phenotypes, organismal fitness, or disease risk.
+The clinical need to interpret genetic variants has driven development of models optimized specifically for predicting functional or clinical consequences. These take a variant and predict its effect on molecular phenotypes, organismal fitness, or disease risk.
 
-**Core characteristics.** Variant effect prediction models integrate sequence context with evolutionary information, population genetics signals, and sometimes structural or functional annotations. They output pathogenicity scores, effect size estimates, or functional consequence predictions. Training combines multiple data sources: clinical labels from ClinVar, population frequency from gnomAD, functional assays such as deep mutational scanning, and evolutionary **constraint metrics**.
+Variant effect prediction models integrate sequence context with evolutionary information, population genetics signals, and sometimes structural or functional annotations. They output pathogenicity scores, effect size estimates, or functional consequence predictions. Training combines multiple data sources: clinical labels from ClinVar, population frequency from gnomAD, functional assays such as deep mutational scanning, and evolutionary **constraint metrics**.
 
-**Representative examples.** AlphaMissense applies protein language models to predict pathogenicity of missense variants [@cheng_alphamissense_2023]. *ESM*-1v uses evolutionary context for protein variant effect prediction. EVE combines evolutionary and structural information. Genomic foundation models like *DNABERT* and *Enformer* provide variant effect predictions through *in silico* mutagenesis. The architecture, training, evaluation, and clinical deployment of variant effect predictors are covered comprehensively in @sec-vep-fm.
+AlphaMissense applies protein language models to predict pathogenicity of missense variants [@cheng_alphamissense_2023]. *ESM*-1v uses evolutionary context for protein variant effect prediction. EVE combines evolutionary and structural information. Genomic foundation models like *DNABERT* and *Enformer* provide variant effect predictions through *in silico* mutagenesis. The architecture, training, evaluation, and clinical deployment of variant effect predictors are covered comprehensively in @sec-vep-fm.
 
 ### Multi-Omic Foundation Models
 
-Models that natively integrate multiple molecular modalities, jointly processing DNA sequence, chromatin state, gene *expression*, protein *abundance*, 3D genome structure, or phenotypic descriptions.
+The most ambitious foundation models natively integrate multiple molecular modalities, jointly processing DNA sequence, chromatin state, gene *expression*, protein *abundance*, 3D genome structure, or phenotypic descriptions.
 
-**Core characteristics.** Multi-omic models employ architectures handling heterogeneous input types: transformer variants with **cross-attention**, graph neural networks, or modality-specific encoders with fusion layers. Training objectives encourage cross-modal alignment through contrastive learning, joint prediction, or generative modeling of multiple data types.
+Multi-omic models employ architectures designed for heterogeneous input types: transformer variants with **cross-attention**, graph neural networks, or modality-specific encoders with fusion layers. Training objectives encourage cross-modal alignment through contrastive learning, joint prediction, or generative modeling of multiple data types.
 
-**Representative models.** Omni-DNA uses transformer-based autoregressive models with vocabulary expansion and multi-task finetuning, unifying diverse genomic tasks under an instruction-response paradigm [@li_omnidna_2025]. Models integrating Hi-C data capture 3D genome organization. Cross-modal architectures align DNA embeddings with chromatin or expression predictions.
+Omni-DNA uses transformer-based autoregressive models with vocabulary expansion and multi-task finetuning, unifying diverse genomic tasks under an instruction-response paradigm [@li_omnidna_2025]. Models integrating Hi-C data capture 3D genome organization. Cross-modal architectures align DNA embeddings with chromatin or expression predictions.
 
-**Strengths and limitations.** Unified representations enable cross-modal queries. Joint training can improve performance through multi-task effects. Data engineering becomes substantially more complex, with different modalities requiring different measurement technologies and quality control. The field is early, with few models reaching production maturity.
+The unified representations these models produce enable cross-modal queries, and joint training can improve performance through multi-task effects. Data engineering becomes substantially more complex, however, with different modalities requiring different measurement technologies and quality control. The field is early, with few models reaching production maturity.
 
 ## Design Dimensions
 
@@ -177,27 +171,23 @@ Within and across families, individual models differ along orthogonal design dim
 
 ### Data Composition
 
-**Species coverage.** Human-only training focuses on clinically relevant patterns. Cross-species training encourages learning of conserved elements and evolutionary constraints, potentially improving generalization but risking dilution of human-specific signals.
+The choice of training data shapes what patterns a model can learn. Training on human sequences alone focuses on clinically relevant patterns but limits exposure to evolutionary diversity. Cross-species training encourages learning of conserved elements and evolutionary constraints, potentially improving generalization but risking dilution of human-specific signals.
 
-**Sequence diversity.** Training on reference genomes alone provides clean sequences but limited exposure to population variation. Incorporating variant data improves robustness but requires careful design to avoid learning spurious associations.
-
-**Annotation integration.** Models may train on raw sequence alone or incorporate functional annotations. The degree of integration trades generality against functional grounding.
+Sequence diversity presents a similar tradeoff. Training on reference genomes alone provides clean sequences but limited exposure to population variation. Incorporating variant data improves robustness but requires careful design to avoid learning spurious associations. Models may also train on raw sequence alone or incorporate functional annotations, trading generality against functional grounding.
 
 ### Architecture Choices
 
-**Transformer variants.** Encoder-only models (*DNABERT*, *Nucleotide Transformer*) excel at classification and embedding tasks. Decoder-only models (*GROVER*) support generative applications. Full and sparse attention patterns, linear approximations, and Flash attention implementations affect computational efficiency.
+Architectural decisions determine both computational characteristics and inductive biases. Among transformer variants, encoder-only models (*DNABERT*, *Nucleotide Transformer*) excel at classification and embedding tasks, while decoder-only models (*GROVER*) support generative applications. Full and sparse attention patterns, linear approximations, and Flash attention implementations affect computational efficiency.
 
-**Sub-quadratic architectures.** Hyena-based models and state space models achieve subquadratic scaling, enabling longer contexts than standard transformers with comparable parameters.
-
-**Hybrid architectures.** **convolutional neural network (CNN)**-transformer combinations use local convolutions followed by global attention, as in *Enformer*. Multi-scale approaches process sequences at multiple resolutions.
+Hyena-based models and state space models achieve subquadratic scaling, enabling longer contexts than standard transformers with comparable parameters. Hybrid approaches combine local convolutions with global attention, as in *Enformer*, processing sequences at multiple resolutions.
 
 ### Context Length
 
-**Short context (under 1 kb)** captures local patterns: motifs, splice sites, promoter elements. **Medium context (1-10 kb)** spans complete genes with proximal regulatory regions. **Long context (10-200 kb)** represents enhancer-promoter interactions and TAD-scale organization. **Ultra-long context (over 200 kb)** enables chromosomal domain modeling and complex structural variant interpretation. The effective use of long context requires appropriate tokenization and positional encoding.
+The context window determines what genomic relationships a model can capture. Short context (under 1 kb) captures local patterns: motifs, splice sites, promoter elements. Medium context (1-10 kb) spans complete genes with proximal regulatory regions. Long context (10-200 kb) represents enhancer-promoter interactions and TAD-scale organization. Ultra-long context (over 200 kb) enables chromosomal domain modeling and complex structural variant interpretation. The effective use of long context requires appropriate tokenization and positional encoding.
 
 ### Tokenization
 
-**Character-level** maintains single-base resolution but imposes longest sequence lengths. **K-mer tokenization** reduces length by a factor approaching k, with vocabulary reaching 4,096 for 6-mers. **Learned tokenization** (BPE-style) discovers schemes from data, potentially allocating vocabulary more efficiently [@medvedev_biotoken_2025]. The choice should align with both computational constraints and biological resolution requirements.
+The representation of nucleotides as model inputs affects both computational efficiency and biological resolution. Character-level tokenization maintains single-base resolution but imposes longest sequence lengths. *K*-mer tokenization reduces length by a factor approaching k, with vocabulary reaching 4,096 for 6-mers. Learned tokenization (BPE-style) discovers schemes from data, potentially allocating vocabulary more efficiently [@medvedev_biotoken_2025]. The choice should align with both computational constraints and biological resolution requirements.
 
 ::: {#fig-design-dimensions}
 ![**FIGURE PLACEHOLDER**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
@@ -214,41 +204,37 @@ The availability of pretrained foundation models creates strategic choices about
 
 Existing foundation models provide immediate utility when the target application aligns with model capabilities, labeled data is limited, and computational resources are constrained.
 
-**Embedding extraction.** For tasks where general sequence representations suffice, frozen foundation model embeddings with simple downstream classifiers often perform competitively with fine-tuned alternatives. This approach requires minimal compute (single forward passes), no gradient computation through large models, and modest labeled data (hundreds to thousands of examples). Applications include sequence classification, clustering, and similarity search.
+For tasks where general sequence representations suffice, frozen foundation model embeddings with simple downstream classifiers often perform competitively with fine-tuned alternatives. This approach requires minimal compute (single forward passes), no gradient computation through large models, and modest labeled data (hundreds to thousands of examples). Applications include sequence classification, clustering, and similarity search.
 
-**Zero-shot inference.** Some foundation models support zero-shot variant effect prediction through likelihood ratio scoring. This requires no task-specific training and produces calibrated scores for novel variants immediately. Zero-shot approaches work well when the pretraining objective aligns with the target task and when fine-tuning data is unavailable or unreliable.
+Some foundation models support zero-shot variant effect prediction through likelihood ratio scoring. This requires no task-specific training and produces calibrated scores for novel variants immediately. Zero-shot approaches work well when the pretraining objective aligns with the target task and when fine-tuning data is unavailable or unreliable.
 
-**Rapid prototyping.** Foundation model APIs enable quick assessment of whether a modeling approach is viable before committing resources to custom development. Testing variant effect prediction with *ESM*-1v takes hours rather than the weeks required to train a custom model.
+Foundation model APIs also enable rapid prototyping, allowing quick assessment of whether a modeling approach is viable before committing resources to custom development. Testing variant effect prediction with *ESM*-1v takes hours rather than the weeks required to train a custom model.
 
 ### When to Adapt Existing Models
 
 Adaptation through fine-tuning or lightweight methods (LoRA, adapters, prefix tuning) makes sense when downstream tasks require specialized behavior beyond what frozen embeddings provide, sufficient labeled data exists (typically thousands to tens of thousands of examples), and the **target domain** falls within the pretraining distribution.
 
-**Parameter-efficient fine-tuning.** Methods like LoRA update a small fraction of model parameters (often under 1%) while keeping the foundation model frozen [@hu_lora_2021]. This preserves general knowledge while allowing task-specific adaptation. Compute requirements are modest: a few GPU-hours for most genomic tasks. The approach works well when the foundation model's representations are largely appropriate but need refinement for specific applications.
+Parameter-efficient methods like LoRA update a small fraction of model parameters (often under 1%) while keeping the foundation model frozen [@hu_lora_2021]. This preserves general knowledge while allowing task-specific adaptation. Compute requirements are modest: a few GPU-hours for most genomic tasks. The approach works well when the foundation model's representations are largely appropriate but need refinement for specific applications.
 
-**Full fine-tuning.** Updating all parameters typically achieves the best single-task performance but requires more data (tens of thousands of examples), more compute (GPU-days to weeks), and careful regularization to prevent **overfitting**. **Full fine-tuning** makes sense for high-stakes applications where maximum accuracy justifies the investment.
+Updating all parameters typically achieves the best single-task performance but requires more data (tens of thousands of examples), more compute (GPU-days to weeks), and careful regularization to prevent **overfitting**. **Full fine-tuning** makes sense for high-stakes applications where maximum accuracy justifies the investment.
 
 ### When to Train from Scratch
 
 Building custom foundation models requires substantial justification given the resources involved.
 
-**Novel domains.** When target sequences differ fundamentally from existing model pretraining data (novel species, synthetic sequences, non-standard nucleotides), existing models may provide poor transfer. Custom pretraining on domain-specific data may be necessary.
+Novel domains present the clearest case for custom pretraining. When target sequences differ fundamentally from existing model pretraining data (novel species, synthetic sequences, non-standard nucleotides), existing models may provide poor transfer. Applications requiring architectural features absent from existing models (specific attention patterns, custom tokenization, multi-modal inputs) similarly demand building from scratch.
 
-**Specialized architectures.** If the application requires architectural features absent from existing models (specific attention patterns, custom tokenization, multi-modal inputs), building from scratch may be unavoidable.
-
-**Scale requirements.** For applications requiring larger models or longer contexts than available options, custom training is necessary. This applies primarily to well-resourced groups with specific performance requirements.
-
-**Proprietary data advantages.** Organizations with unique large-scale datasets (clinical biobanks, pharmaceutical screening data) may achieve better performance through custom pretraining than public models allow. The data advantage must be substantial to justify training costs.
+Organizations with unique large-scale datasets (clinical biobanks, pharmaceutical screening data) may achieve better performance through custom pretraining than public models allow, though the data advantage must be substantial to justify training costs. Applications requiring larger models or longer contexts than available options face similar calculus.
 
 ### Cost-Benefit Analysis
 
 The decision framework involves comparing expected performance against resource requirements.
 
-**Compute costs.** Training a foundation model from scratch requires 10^20 to 10^22 FLOPs, translating to thousands of GPU-hours and tens of thousands of dollars at current cloud prices. Fine-tuning requires 10^16 to 10^18 FLOPs, often achievable in hours on single GPUs. Inference with frozen embeddings requires only forward passes. Detailed compute estimates for specific model scales and hardware configurations appear in @sec-apx-compute.
+Training a foundation model from scratch requires 10^20 to 10^22 FLOPs, translating to thousands of GPU-hours and tens of thousands of dollars at current cloud prices. Fine-tuning requires 10^16 to 10^18 FLOPs, often achievable in hours on single GPUs. Inference with frozen embeddings requires only forward passes. Detailed compute estimates for specific model scales and hardware configurations appear in @sec-apx-compute.
 
-**Data costs.** Foundation model pretraining requires billions of tokens. Fine-tuning requires thousands to tens of thousands of labeled examples. Zero-shot and embedding approaches require only evaluation data.
+Foundation model pretraining requires billions of tokens. Fine-tuning requires thousands to tens of thousands of labeled examples. Zero-shot and embedding approaches require only evaluation data.
 
-**Performance expectations.** For well-studied tasks with abundant labeled data, fine-tuned models typically outperform frozen embeddings by 5-15% on standard metrics. Zero-shot approaches often achieve 70-90% of fine-tuned performance. Custom foundation models rarely outperform existing options by large margins unless the application involves genuinely novel domains.
+For well-studied tasks with abundant labeled data, fine-tuned models typically outperform frozen embeddings by 5-15% on standard metrics. Zero-shot approaches often achieve 70-90% of fine-tuned performance. Custom foundation models rarely outperform existing options by large margins unless the application involves genuinely novel domains.
 
 ::: {#fig-build-vs-use}
 ![**FIGURE PLACEHOLDER**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
@@ -256,7 +242,7 @@ The decision framework involves comparing expected performance against resource 
 [High] Decision flowchart with cost-benefit annotations. Entry Point: "New genomic prediction task." Decision nodes leading to terminal recommendations: USE (Frozen embeddings + simple classifier, Hours/$10, 70-90% of fine-tuned); ADAPT (LoRA/adapter fine-tuning, Days/$100-1000, 95% of full fine-tuning); BUILD (Custom pretraining, Months/$100K+, potentially best for domain). Annotations: "Most applications land here" pointing to USE/ADAPT paths; "Rare but sometimes necessary" pointing to BUILD.
 :::
 
-**Time costs.** Using existing models takes hours to days. Fine-tuning takes days to weeks. Training from scratch takes weeks to months. For time-sensitive applications, using existing models often dominates even if custom training would eventually yield better results.
+Time costs often dominate: using existing models takes hours to days, fine-tuning takes days to weeks, training from scratch takes weeks to months. For time-sensitive applications, using existing models often dominates even if custom training would eventually yield better results.
 
 The practical recommendation for most applications: start with frozen embeddings from the most appropriate existing foundation model. If performance is insufficient, try parameter-efficient fine-tuning. Train from scratch only if adaptation fails and the application justifies the investment.
 
@@ -294,15 +280,15 @@ Both academic and industry groups develop genomic foundation models. Academic mo
 
 ## Open Questions
 
-Despite rapid progress, fundamental challenges remain.
+Despite rapid progress, fundamental challenges remain unsolved, and the field's trajectory remains uncertain.
 
-**Convergence or divergence.** Whether the field converges toward unified architectures or maintains specialized families remains unclear. The diversity of genomic scales, resolution requirements, and functional contexts may preclude the convergence seen in NLP.
+Whether genomic foundation models converge toward unified architectures or maintain specialized families is unclear. The diversity of genomic scales, resolution requirements, and functional contexts may preclude the convergence seen in NLP, where transformers now dominate across most tasks.
 
-**Causal reasoning.** Existing models learn correlations without distinguishing causal from spurious relationships. Integrating causal structure could improve robustness and enable counterfactual reasoning.
+Existing models learn correlations without distinguishing causal from spurious relationships. Integrating causal structure could improve robustness and enable counterfactual reasoning, but current architectures provide no principled mechanism for causal inference.
 
-**Rare variant interpretation.** Models trained on reference genomes and common variants may not calibrate well for ultra-rare or *de novo* variants. Improved integration of structural and evolutionary constraints could strengthen rare variant interpretation.
+Models trained on reference genomes and common variants may not calibrate well for ultra-rare or *de novo* variants, precisely the variants most likely to be clinically actionable. Improved integration of structural and evolutionary constraints could strengthen rare variant interpretation.
 
-**Clinical deployment.** Translation to clinical use requires robust cross-population performance, calibrated uncertainty, interpretability for clinicians, prospective validation, and regulatory approval. These requirements extend well beyond benchmark performance.
+Translation to clinical use requires robust cross-population performance, calibrated uncertainty, interpretability for clinicians, prospective validation, and regulatory approval. These requirements extend well beyond benchmark performance, and the path from research model to clinical deployment remains poorly charted.
 
 ## Convergence Without Consolidation
 

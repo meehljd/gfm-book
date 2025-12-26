@@ -146,7 +146,7 @@ This applies at THREE scales:
 4. *Now* introduce the new mechanism
 
 **Example (DeepVariant opening from v7):**
-> "Classical variant calling pipelines encode accumulated expert intuition through hand-crafted features and heuristics. Which quality metrics matter? How should allelic balance be weighed against strand bias? When should a borderline call be trusted? The answers to these questions were painstakingly developed through years of experience with sequencing data. *DeepVariant*, introduced by Google in 2018, asked a different question: what if we let the model learn these patterns directly from data? **The key insight was not better probabilistic modeling of sequencing errors, but rather a reformulation of the problem itself.** Variant calling becomes image classification, and convolutional neural networks learn to distinguish true variants from artifacts in the same way they learn to distinguish cats from dogs."
+> "Classical variant calling pipelines encode accumulated expert intuition through hand-crafted features and heuristics. Which quality metrics matter? How should allelic balance be weighed against strand bias? When should a borderline call be trusted? The answers to these questions were painstakingly developed through years of experience with sequencing data. *DeepVariant*, introduced by Google in 2018, asked a different question: what if we let the model learn these patterns directly from data? The key insight was not better probabilistic modeling of sequencing errors, but rather a reformulation of the problem itself. Variant calling becomes image classification, and convolutional neural networks learn to distinguish true variants from artifacts in the same way they learn to distinguish cats from dogs."
 
 Note: 
 - Opens with limitation of classical approaches
@@ -174,6 +174,28 @@ Can be brief but must be present:
 ✅ Concrete example of failure
 ✅ Stakes explicitly named
 ✅ Mechanism introduced as solution
+
+**Bolded term lead-ins (disguised bullets)**:
+
+Paragraphs that open with bolded terminology create visual chunking indistinguishable from bullet points. Readers scan the bold terms and skip explanatory text.
+
+❌ **Problem pattern:**
+> **Population structure and relatedness** encompasses continental ancestry, family relationships, and founder effects. Ancestry affects both features and phenotypes...
+> 
+> **Technical batch effects** arise throughout the sequencing pipeline. Different instruments produce distinct error profiles...
+
+This structure signals "here is a list of definitions" rather than "here is an argument developing across paragraphs."
+
+✅ **Two acceptable alternatives:**
+
+*Option 1: Promote to subsections.* If each category warrants 80+ words of explanation, use ### headings. This honestly signals the taxonomic structure.
+
+*Option 2: Lead with the problem, not the label.* Let terminology emerge within narrative:
+> "Ancestry creates perhaps the most pervasive confounder. Continental and sub-continental population structure affects both genomic features and many phenotypes of interest..."
+
+The term appears, but the paragraph leads with *why it matters*, not *what it's called*.
+
+**Test:** If you can mentally replace paragraph breaks with bullet points and the structure feels unchanged, revise until paragraph order creates logical dependence.
 
 ### Sentence Construction
 
@@ -1269,6 +1291,7 @@ Before finalizing any chapter section:
 - [ ] Search document for "—" (em-dash character) - count must be ZERO
 - [ ] Search for bullet points (•, -, *) in prose sections - count must be ZERO
 - [ ] Search for "Let's", "Here's", "It's worth noting" - remove all instances
+- [ ] Search for paragraphs opening with **bolded terms** followed by definitions - restructure as subsections or integrated prose
 
 **Prose quality**:
 - [ ] No transition clichés ("However," "Moreover," "Importantly")
