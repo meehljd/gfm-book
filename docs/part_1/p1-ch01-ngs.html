@@ -357,7 +357,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_1/p1-ch02-data.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">The Data Landscape</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Landscape</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -574,7 +574,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_6/p6-ch29-future.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Ethical and Frontiers</span></span></a>
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Ethics and Frontiers</span></span></a>
   </div>
 </li>
       </ul>
@@ -696,7 +696,7 @@ window.Quarto = {
   <li><a href="#inherited-biases-and-blind-spots" id="toc-inherited-biases-and-blind-spots" class="nav-link" data-scroll-target="#inherited-biases-and-blind-spots"><span class="header-section-number">1.9.2</span> Inherited Biases and Blind Spots</a></li>
   <li><a href="#effect-sizes-across-the-frequency-spectrum" id="toc-effect-sizes-across-the-frequency-spectrum" class="nav-link" data-scroll-target="#effect-sizes-across-the-frequency-spectrum"><span class="header-section-number">1.9.3</span> Effect Sizes Across the Frequency Spectrum</a></li>
   </ul></li>
-  <li><a href="#the-reliability-landscape" id="toc-the-reliability-landscape" class="nav-link" data-scroll-target="#the-reliability-landscape"><span class="header-section-number">1.10</span> The Reliability Landscape</a></li>
+  <li><a href="#reliability-landscape" id="toc-reliability-landscape" class="nav-link" data-scroll-target="#reliability-landscape"><span class="header-section-number">1.10</span> Reliability Landscape</a></li>
   </ul>
 </nav>
     </div>
@@ -793,13 +793,13 @@ P(G \mid D) \propto P(G) \prod_{r \in \text{reads}} P(r \mid G)
 \]</span></p>
 <p>The prior <span class="math inline">\(P(G)\)</span> often assumes Hardy-Weinberg equilibrium with a specified allele frequency, while the likelihood <span class="math inline">\(P(r \mid G)\)</span> captures the probability of observing read <span class="math inline">\(r\)</span> given that the true genotype is <span class="math inline">\(G\)</span>. This formulation assumes conditional independence of reads given the genotype, an assumption violated in practice by systematic sequencing errors, read pair correlations, and library-level artifacts that create dependencies among observations. Classical pipelines attempt to correct for these violations through BQSR and ad hoc filters. Deep learning-based callers can learn these dependencies implicitly by processing entire pileups simultaneously, one of their key advantages.</p>
 <p>The per-read likelihoods aggregate into genotype likelihoods, which combine with priors to yield posterior probabilities. These posteriors become the <strong>genotype quality (<code>GQ</code>)</strong> scores that downstream analyses often treat as ground truth. Per-sample results are output as <code>gVCF</code> files encoding both variant calls and “reference blocks” with estimated confidence at non-variant positions, enabling later joint analysis across samples.</p>
-<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout callout-style-default callout-note callout-titled" title="The `VCF` Format">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Note
+<span class="screen-reader-only">Note</span>The <code>VCF</code> Format
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1036,10 +1036,10 @@ Figure&nbsp;1.5: [Essential] Annotated example of a DeepVariant-style pileup ten
 <p>Clinically critical loci often present the most challenging technical contexts, creating a systematic mismatch between importance and data quality. Pharmacogenomic variants in CYP gene families, immune-related variants in HLA, and many other medically actionable sites reside in regions where standard pipelines perform poorly. Global accuracy metrics may change only slightly when these regions improve, but the clinical impact can be substantial.</p>
 </section>
 </section>
-<section id="the-reliability-landscape" class="level2" data-number="1.10">
-<h2 data-number="1.10" class="anchored" data-anchor-id="the-reliability-landscape"><span class="header-section-number">1.10</span> The Reliability Landscape</h2>
+<section id="reliability-landscape" class="level2" data-number="1.10">
+<h2 data-number="1.10" class="anchored" data-anchor-id="reliability-landscape"><span class="header-section-number">1.10</span> Reliability Landscape</h2>
 <p>Variant calling produces the substrate on which every subsequent model operates. The quality of that substrate varies systematically: high-confidence calls in unique sequence with adequate coverage, uncertain calls in repetitive regions and structural variant breakpoints, systematic gaps where short reads cannot reach. These patterns are not random. They concentrate in genomic regions of particular biological importance: segmental duplications that drive gene family evolution, tandem repeats that modulate gene expression, HLA haplotypes that determine immune response.</p>
-<p>DeepVariant and related approaches demonstrate that learned representations can outperform hand-crafted heuristics, at least on established benchmarks. This paradigm recurs across genomic deep learning: sequence-to-function models that learn regulatory grammar directly from data (<a href="../part_3/p3-ch13-regulatory.html" class="quarto-xref"><span>Chapter 13</span></a>), splice predictors that discover motifs without explicit encoding (<a href="../part_2/p2-ch06-cnn.html" class="quarto-xref"><span>Chapter 6</span></a>), language models that learn evolutionary constraint from sequence alone (<a href="../part_3/p3-ch11-dna-lm.html" class="quarto-xref"><span>Chapter 11</span></a>). In each case, the central question is whether the additional model capacity captures genuine biological signal or overfits to artifacts in training data.</p>
+<p><em>DeepVariant</em> and related approaches demonstrate that learned representations can outperform hand-crafted heuristics, at least on established benchmarks. This paradigm recurs across genomic deep learning: sequence-to-function models that learn regulatory grammar directly from data (<a href="../part_3/p3-ch13-regulatory.html" class="quarto-xref"><span>Chapter 13</span></a>), splice predictors that discover motifs without explicit encoding (<a href="../part_2/p2-ch06-cnn.html" class="quarto-xref"><span>Chapter 6</span></a>), language models that learn evolutionary constraint from sequence alone (<a href="../part_3/p3-ch11-dna-lm.html" class="quarto-xref"><span>Chapter 11</span></a>). In each case, the central question is whether the additional model capacity captures genuine biological signal or overfits to artifacts in training data.</p>
 <p>The models that follow inherit whatever systematic biases exist in variant calls. A pathogenicity predictor trained on ClinVar labels inherits the sequencing technologies and population composition that generated those labels. A fine-mapping method that trusts variant calls uniformly will miscalibrate its posterior probabilities in difficult regions. Understanding where variant calling succeeds and fails is prerequisite to understanding where downstream models can be trusted.</p>
 
 
@@ -1561,8 +1561,8 @@ Zook, Justin M., Jennifer McDaniel, Nathan D. Olson, Justin Wagner, Hemang Parik
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../part_1/p1-ch02-data.html" class="pagination-link" aria-label="The Data Landscape">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">The Data Landscape</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../part_1/p1-ch02-data.html" class="pagination-link" aria-label="Data Landscape">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Landscape</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

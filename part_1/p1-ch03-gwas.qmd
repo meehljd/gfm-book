@@ -209,9 +209,10 @@ The weight $w_j$ reflects the estimated effect of variant $j$, and $g_{ij}$ is t
 [High] Side-by-side comparison of C+T vs LD-aware Bayesian methods. Left panel (C+T): Start with GWAS summary statistics → apply p-value threshold → clump by LD → retain independent lead SNPs → weight by effect size. Show visually how most variants are discarded. Right panel (LDpred/PRS-CS): Same summary statistics → model LD structure jointly → shrink effects toward zero based on prior → retain all variants with modulated weights. Highlight that C+T discards information while Bayesian methods model it.
 :::
 
-::: {.callout-note}
-### Terminology: PGS versus PRS
+::: {.callout-note title="Terminology: PGS versus PRS"}
+
 The literature uses overlapping terminology. **Polygenic risk score (PRS)** is common in clinical contexts, emphasizing disease risk prediction. **Polygenic score (PGS)** is more general, encompassing both disease and quantitative trait prediction. **Genomic risk score** and related terms also appear, often interchangeably. This book uses PGS as the default, adding "risk" when specifically discussing disease outcomes. Methodological overviews provide detailed guidance on construction and evaluation [@choi_prs_2020].
+
 :::
 
 ### Clumping and Thresholding
@@ -296,7 +297,23 @@ The performance gap across ancestries is not merely a technical nuisance; it rai
 
 Consider a scenario where PGS are used for risk-stratified screening. If the score identifies high-risk individuals more accurately in Europeans than in other groups, Europeans receive more targeted and efficient screening while others receive either under-screening (if falsely classified as low risk) or over-screening (if falsely classified as high risk). The benefits of precision medicine accrue disproportionately to those already overrepresented in research, while the costs of miscalibration fall on those historically excluded.
 
-These challenges extend beyond PGS to every genomic model. Foundation models can learn to exploit ancestry signals as shortcuts, achieving high benchmark performance while performing poorly on underrepresented groups. Aggregate performance metrics mask inequities across populations. Deployment in diverse clinical settings requires explicit evaluation of performance stratified by ancestry, along with transparent reporting of limitations and appropriate caution in populations where validation is limited. These issues receive comprehensive treatment in @sec-confounding.
+These challenges extend beyond PGS to every genomic model. Foundation models can learn to exploit ancestry signals as shortcuts, achieving high benchmark performance while performing poorly on underrepresented groups. Aggregate performance metrics mask inequities across populations. Deployment in diverse clinical settings requires explicit evaluation of performance stratified by ancestry, along with transparent reporting of limitations and appropriate caution in populations where validation is limited. These issues receive comprehensive treatment in @sec-confounding, with governance and policy responses addressed in @sec-future.
+
+::: {.callout-note title="The 78 Percent Problem"}
+
+As of 2019, approximately 78% of GWAS participants were of European ancestry despite Europeans comprising roughly 16% of the global population [@martin_clinical_2019]. This disparity has concrete consequences throughout genomic medicine:
+
+**Polygenic scores** derived from European-ancestry GWAS show 40-75% reductions in prediction accuracy for African-ancestry individuals, even for the same trait measured in the same study.
+
+**Variant databases** like ClinVar contain far more pathogenic classifications for European-ancestry variants. Variants from underrepresented populations are more likely to remain classified as VUS due to insufficient evidence.
+
+**Foundation models** inherit these biases. A model trained on biased data cannot be "fixed" post-hoc to achieve the same performance it would have achieved with representative training data.
+
+The disparity is not merely statistical. If genomic risk scores are used for screening decisions, Europeans receive more accurate risk stratification while other populations receive either under-screening (if falsely classified as low risk) or over-screening (if falsely classified as high risk). The benefits of precision medicine accrue disproportionately to those already overrepresented in research.
+
+This problem recurs throughout the book: in variant effect prediction (@sec-vep-fm), model confounding (@sec-confounding), clinical risk prediction (@sec-clinical-risk), and the governance frameworks needed to address it (@sec-future).
+
+:::
 
 ## Phenome-Wide Association Studies
 

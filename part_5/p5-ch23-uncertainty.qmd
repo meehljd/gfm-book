@@ -54,6 +54,8 @@ These decompositions depend on modeling assumptions and provide approximations r
 
 ## Calibration and Confidence Interpretation {#sec-calibration}
 
+Calibration determines whether model outputs can be interpreted as probabilities. A score of 0.85 from a pathogenicity predictor should mean that 85% of variants receiving similar scores are truly pathogenic; only then can clinicians rationally weight computational evidence against other diagnostic criteria. This chapter provides the comprehensive treatment of calibration theory and methods. Readers encountering calibration in applied contexts, whether variant effect prediction (@sec-vep-fm) or evaluation methodology (@sec-evaluation), are referred here for the formal foundations and complete methodological catalog.
+
 ::: {#fig-calibration-diagrams layout-ncol=2}
 ![**FIGURE PLACEHOLDER A**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
 
@@ -63,10 +65,10 @@ These decompositions depend on modeling assumptions and provide approximations r
 
 ![**FIGURE PLACEHOLDER D**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D)
 
-[Essential] Four-panel figure. Panel A (Perfect calibration): Reliability diagram on diagonal; "Predictions match reality." Panel B (Overconfident): Points below diagonal; model predicts 0.9, true frequency 0.6; common for DNNs; "Dangerous for clinical use." Panel C (Underconfident): Points above diagonal; "May miss actionable variants." Panel D (Miscalibration by subgroup): Two curves (European, African); one calibrated, one poor; "Aggregate can mask disparities." Annotations: expected calibration error (ECE), prediction histograms, "Calibration ≠ discrimination."
+[Essential] Four-panel figure. Panel A (Perfect calibration): Reliability diagram with points on diagonal; annotation "Predictions match reality." Panel B (Overconfident): Points below diagonal; model predicts 0.9, true frequency 0.6; annotation "Common for deep neural networks" and "Dangerous for clinical use." Panel C (Underconfident): Points above diagonal; annotation "May miss actionable variants." Panel D (Miscalibration by subgroup): Two reliability curves (European ancestry, African ancestry); one well-calibrated, one poorly calibrated; annotation "Aggregate metrics can mask disparities." Include expected calibration error (ECE) values, prediction histograms showing score distributions, and note "Calibration ≠ discrimination."
 :::
 
-###  Calibration Problem
+### The Calibration Problem
 
 AlphaMissense outputs a continuous score between 0 and 1 for each possible missense variant in the human proteome. When it reports 0.85 for a particular variant, what does this number mean? If the model is calibrated, collecting all variants scored near 0.85 and checking their true clinical status should reveal that approximately 85% are pathogenic. Perfect calibration means that predicted probabilities match observed frequencies across the entire range of model outputs: among variants scored at 0.30, roughly 30% should be pathogenic; among variants scored at 0.95, roughly 95% should be pathogenic. This alignment between stated confidence and empirical accuracy is calibration, and most foundation models fail to achieve it.
 
@@ -74,19 +76,19 @@ Formally, a model $f$ mapping inputs $X$ to probability estimates $p = f(X)$ is 
 
 Modern deep neural networks are systematically miscalibrated despite achieving high accuracy. Guo and colleagues demonstrated that contemporary architectures exhibit worse calibration than older, less accurate models [@guo_calibration_2017]. The phenomenon arises because standard training objectives like cross-entropy loss optimize for discrimination (separating positive from negative examples) rather than calibration (matching predicted probabilities to frequencies). Over-parameterized models with capacity exceeding what the data requires can achieve near-perfect training loss while producing overconfident predictions on held-out data. The softmax temperature in transformer architectures affects the sharpness of probability distributions, and default settings often produce excessively peaked outputs.
 
-Calibration and discrimination are distinct properties. A model can achieve perfect area under the receiver operating characteristic curve (**AUROC**), correctly ranking all positive examples above all negative examples, while being arbitrarily miscalibrated. If a classifier assigns probability 0.99 to all positive examples and 0.98 to all negative examples, it ranks perfectly but provides useless probability estimates. Conversely, a calibrated model that assigns 0.51 to positives and 0.49 to negatives would be calibrated but nearly useless for discrimination. Clinical applications typically require both: accurate ranking to identify high-risk variants and accurate probabilities to inform decision-making.
+Calibration and discrimination are distinct properties. A model can achieve perfect area under the receiver operating characteristic curve (auROC), correctly ranking all positive examples above all negative examples, while being arbitrarily miscalibrated. If a classifier assigns probability 0.99 to all positive examples and 0.98 to all negative examples, it ranks perfectly but provides useless probability estimates. Conversely, a calibrated model that assigns 0.51 to positives and 0.49 to negatives would be calibrated but nearly useless for discrimination. Clinical applications typically require both: accurate ranking to identify high-risk variants and accurate probabilities to inform decision-making.
 
 ### Measuring Calibration
 
-The evaluation metrics introduced in @sec-evaluation assess discrimination; here we focus on metrics that assess calibration. **Reliability diagrams** provide visual assessment of calibration by plotting predicted probabilities against observed frequencies. Construction involves binning predictions into intervals (commonly ten bins spanning 0 to 0.1, 0.1 to 0.2, and so forth), computing the mean predicted probability within each bin, computing the fraction of positive examples within each bin, and plotting these two quantities against each other. A perfectly calibrated model produces points along the diagonal where predicted probability equals observed frequency. Systematic deviations reveal calibration patterns: points below the diagonal indicate overconfidence (predictions exceed reality), points above indicate underconfidence, and S-shaped curves suggest nonlinear miscalibration requiring more flexible correction.
+**Reliability diagrams** provide visual assessment of calibration by plotting predicted probabilities against observed frequencies. Construction involves binning predictions into intervals (commonly ten bins spanning 0 to 0.1, 0.1 to 0.2, and so forth), computing the mean predicted probability within each bin, computing the fraction of positive examples within each bin, and plotting these two quantities against each other. A perfectly calibrated model produces points along the diagonal where predicted probability equals observed frequency. Systematic deviations reveal calibration patterns: points below the diagonal indicate overconfidence (predictions exceed reality), points above indicate underconfidence, and S-shaped curves suggest nonlinear miscalibration requiring more flexible correction.
 
-**Expected Calibration Error (ECE)** provides a scalar summary of calibration quality. ECE computes the weighted average absolute difference between predicted probabilities and observed frequencies across bins:
+**Expected calibration error (ECE)** provides a scalar summary of calibration quality. ECE computes the weighted average absolute difference between predicted probabilities and observed frequencies across bins:
 
 $$\text{ECE} = \sum_{m=1}^{M} \frac{|B_m|}{n} \left| \text{acc}(B_m) - \text{conf}(B_m) \right|$$
 
 where $B_m$ denotes the set of examples in bin $m$, $|B_m|$ is the number of examples in that bin, $n$ is the total number of examples, $\text{acc}(B_m)$ is the accuracy (fraction of positives) in bin $m$, and $\text{conf}(B_m)$ is the mean predicted probability in bin $m$. Lower ECE indicates better calibration, with zero representing perfect calibration. ECE depends on binning strategy; equal-width bins may place most examples in a few bins for models with concentrated predictions, while equal-mass bins ensure each bin contains the same number of examples but may span wide probability ranges.
 
-**Maximum Calibration Error (MCE)** captures worst-case miscalibration by reporting the largest absolute gap between predicted and observed frequencies across all bins. MCE is appropriate when any severe miscalibration is unacceptable, as in high-stakes clinical applications where even rare catastrophic errors carry significant consequences.
+**Maximum calibration error (MCE)** captures worst-case miscalibration by reporting the largest absolute gap between predicted and observed frequencies across all bins. MCE is appropriate when any severe miscalibration is unacceptable, as in high-stakes clinical applications where even rare catastrophic errors carry significant consequences.
 
 **Brier score** decomposes into components measuring calibration and discrimination (refinement), providing a single proper scoring rule that rewards both properties. The Brier score equals the mean squared difference between predicted probabilities and binary outcomes, and its decomposition reveals whether poor scores stem from miscalibration, poor discrimination, or both.
 
@@ -104,10 +106,72 @@ Zero-shot approaches present particular calibration challenges. ESM-1v log-likel
 
 Aggregate calibration metrics can mask severe miscalibration in clinically important subgroups. A model might achieve low ECE overall while being dramatically overconfident for variants in African-ancestry individuals and underconfident for European-ancestry individuals, with opposite errors canceling in aggregate statistics. Subgroup-stratified calibration assessment is essential for any model intended for diverse populations.
 
-Ancestry-stratified calibration reveals systematic patterns in current foundation models. Training data for protein language models and variant effect predictors derive predominantly from European-ancestry cohorts, creating differential epistemic uncertainty across populations. Calibration curves stratified by ancestry often show that models are better calibrated for populations well-represented in training data and overconfident or underconfident for under-represented populations. This differential calibration has direct fairness implications: clinical decisions based on miscalibrated predictions will be systematically worse for patients from under-represented backgrounds.
+Ancestry-stratified calibration reveals systematic patterns in current foundation models. Training data for protein language models and variant effect predictors derive predominantly from European-ancestry cohorts, creating differential epistemic uncertainty across populations. Calibration curves stratified by ancestry often show that models are better calibrated for populations well-represented in training data and overconfident or underconfident for underrepresented populations. This differential calibration has direct fairness implications: clinical decisions based on miscalibrated predictions will be systematically worse for patients from underrepresented backgrounds.
 
 Calibration may also vary by variant class, gene constraint level, protein family, or disease category. Missense variants in highly constrained genes may show different calibration patterns than those in tolerant genes. Variants in well-studied protein families with abundant training examples may be better calibrated than variants in orphan proteins. Stratified reliability diagrams across these categories reveal whether a single calibration correction suffices or whether subgroup-specific approaches are necessary.
 
+
+## Post-Hoc Calibration Methods {#sec-post-hoc-calibration}
+
+::: {#fig-calibration-methods layout-ncol=3}
+![**FIGURE PLACEHOLDER A**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
+
+![**FIGURE PLACEHOLDER B**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B)
+
+![**FIGURE PLACEHOLDER C**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C)
+
+[High] Three-column comparison with before/after reliability diagrams. Column 1 (Temperature scaling): Formula $p = \text{softmax}(z/T)$; single parameter $T$; before/after reliability showing improvement; annotation "Preserves ranking; cannot fix complex patterns." Column 2 (Platt scaling): Formula $p = \sigma(az + b)$; two parameters $a$ and $b$; handles bias and confidence adjustment; annotation "Assumes logistic relationship." Column 3 (Isotonic regression): Non-parametric monotonic fit shown as step function; flexible with no distributional assumptions; annotation "Overfits with limited data." Bottom panel: Decision guide flowchart for method selection based on calibration set size and miscalibration complexity.
+:::
+
+### Temperature Scaling
+
+The simplest calibration fix is often the most effective. Temperature scaling applies a single learned parameter to adjust model confidence, dramatically improving calibration with minimal computational overhead and no change to predictions' ranking.
+
+The method modifies the softmax function by dividing logits by a temperature parameter $T$ before applying softmax:
+
+$$\hat{p}_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}$$
+
+where $z_i$ are the logits (pre-softmax outputs) and $\hat{p}_i$ are the calibrated probabilities. When $T > 1$, the distribution becomes softer (more uniform), reducing overconfidence. When $T < 1$, the distribution becomes sharper, increasing confidence. The optimal temperature is learned by minimizing negative log-likelihood on a held-out calibration set, typically yielding $T$ between 1.5 and 3 for overconfident deep networks.
+
+Temperature scaling preserves the model's ranking because dividing all logits by the same constant does not change their relative ordering. A variant ranked as more likely pathogenic than another remains more likely after temperature scaling; only the magnitudes of probability estimates change. This preservation of discrimination while improving calibration makes temperature scaling particularly attractive: calibration improves without sacrificing the model's hard-won ability to distinguish pathogenic from benign variants.
+
+The method's simplicity (one parameter) is both strength and limitation. A single global temperature cannot fix heterogeneous miscalibration where the model is overconfident in some regions of input space and underconfident in others. When reliability diagrams show complex nonlinear patterns, more flexible calibration methods are necessary.
+
+### Platt Scaling
+
+Platt scaling fits a logistic regression model on the original model's outputs, learning both a slope and intercept to transform scores into calibrated probabilities. For binary classification:
+
+$$\hat{p} = \sigma(a \cdot f(x) + b)$$
+
+where $f(x)$ is the original model's output, $\sigma$ is the sigmoid function, and parameters $a$ and $b$ are learned on calibration data. The two parameters provide more flexibility than temperature scaling's single parameter, allowing correction of both the sharpness and the location of the probability distribution.
+
+Platt scaling is appropriate when miscalibration involves systematic bias (predictions consistently too high or too low) in addition to over- or underconfidence. The method assumes that a monotonic logistic transformation suffices to correct miscalibration, which may not hold for models with complex, non-monotonic calibration curves.
+
+### Isotonic Regression
+
+Isotonic regression provides a non-parametric approach that fits a monotonically increasing function mapping raw scores to calibrated probabilities. Unlike temperature or Platt scaling, isotonic regression makes no assumptions about the functional form of miscalibration, allowing it to correct arbitrary monotonic patterns.
+
+The method works by pooling adjacent bins whose empirical frequencies violate monotonicity, then assigning each bin its pooled frequency. The resulting calibration function is a step function that increases with the original score. This flexibility comes at a cost: with limited calibration data, isotonic regression may overfit to noise in the calibration set, and the step-function output can appear discontinuous. Additionally, isotonic regression provides no uncertainty estimate on the calibration itself; we learn a point estimate of the calibration function without knowing how reliable that estimate is.
+
+### Method Selection Guidelines
+
+The choice among calibration methods depends on calibration set size and the complexity of miscalibration patterns.
+
+For large calibration sets (thousands of examples) with complex miscalibration patterns visible in reliability diagrams, isotonic regression provides the flexibility to correct arbitrary monotonic distortions. The risk of overfitting diminishes with sufficient data, and the non-parametric nature handles patterns that parametric methods cannot capture.
+
+For moderate calibration sets (hundreds of examples) or when miscalibration appears roughly linear in log-odds space, Platt scaling offers a good balance between flexibility and sample efficiency. The two parameters can correct both location and scale miscalibration without the variance that isotonic regression exhibits with limited data.
+
+For small calibration sets (fewer than a hundred examples) or when the primary issue is simple overconfidence without complex distortion, temperature scaling provides the most robust correction. The single parameter is unlikely to overfit even with very limited calibration data.
+
+### Calibrating Foundation Model Outputs
+
+Genomic foundation models present specific calibration considerations beyond standard classification settings. The choice of calibration approach depends on whether the model produces logits, log-likelihood ratios, or continuous regression outputs, and on whether calibration targets are available for the deployment distribution.
+
+For zero-shot variant effect scores like ESM-1v log-likelihood ratios, raw outputs have no inherent probabilistic interpretation. Calibration requires mapping these continuous scores to pathogenicity probabilities using external labels, typically from ClinVar or population frequency data. This mapping should occur on held-out genes or variants not used for any model development, and the resulting calibration reflects the specific label set used; calibration against ClinVar pathogenic/benign labels may not transfer to other clinical contexts.
+
+Multi-output models that predict across many tasks (multiple cell types, tissues, or assays) may require separate calibration for each output. A regulatory model predicting expression across 200 cell types is unlikely to be uniformly calibrated across all outputs; cell types with more training data may show better calibration than rare cell types.
+
+Temporal stability of calibration deserves consideration. As ClinVar annotations evolve with new evidence, the ground truth against which models were calibrated changes. A model calibrated against 2020 ClinVar labels may become miscalibrated relative to 2025 labels as variant classifications are updated. Periodic recalibration against current labels helps maintain clinical relevance.
 
 ## Post-Hoc Calibration Methods {#sec-post-hoc-calibration}
 
@@ -164,10 +228,12 @@ Temporal stability of calibration deserves consideration. As ClinVar annotations
 
 ## Uncertainty Quantification Methods for Foundation Models {#sec-uq-methods}
 
+Calibration ensures that stated probabilities match observed frequencies, but even well-calibrated models provide only point estimates. When a model reports 0.70 pathogenicity probability, is that uncertainty reducible with more data, or does it reflect genuine ambiguity in the biological signal? Distinguishing these sources of uncertainty enables more appropriate clinical responses: epistemic uncertainty (arising from limited data) suggests the prediction might change with additional evidence, while aleatoric uncertainty (inherent to the problem) indicates that even perfect models would remain uncertain.
+
 ::: {#fig-uq-methods}
 ![**FIGURE PLACEHOLDER**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
 
-[High] Method comparison. Deep ensembles: 5 models independently trained; variance/entropy across predictions; 5× training/inference; gold standard for epistemic. MC Dropout: Single model, multiple stochastic passes; variance across dropout samples; 1× training, N× inference; approximates ensemble. Last-layer ensembles: Frozen backbone, ensemble of heads; head disagreement; 1× pretraining, 5× heads (cheap); fine-tuning uncertainty only. Heteroscedastic networks: Single model outputs mean + variance; learned per input; 1× training/inference; aleatoric not epistemic. Comparison table: Epistemic, Aleatoric, Cost, FM-friendly.
+[High] Method comparison across four approaches. Deep ensembles: 5 models independently trained; variance/entropy computed across predictions; 5× training and inference cost; gold standard for epistemic uncertainty. MC Dropout: Single model with multiple stochastic forward passes; variance across dropout samples; 1× training cost, N× inference cost; approximates ensemble behavior. Last-layer ensembles: Frozen pretrained backbone with ensemble of prediction heads; head disagreement captures fine-tuning uncertainty; 1× pretraining cost plus 5× cheap head training; practical for foundation models. Heteroscedastic networks: Single model outputs mean plus variance; learned input-dependent uncertainty; 1× training and inference cost; captures aleatoric but not epistemic uncertainty. Comparison table showing which methods capture epistemic vs. aleatoric uncertainty, computational cost, and foundation model compatibility.
 :::
 
 ### Deep Ensembles
@@ -178,7 +244,7 @@ Deep ensembles train $M$ models (typically 5 to 10) with different random initia
 
 The theoretical basis for ensemble uncertainty estimation rests on the observation that disagreement between models reflects regions of input space where the training data provides insufficient constraint. Where training examples are dense, gradient descent from different initializations converges to similar solutions, producing agreement. Where training examples are sparse or conflicting, different initializations find different local optima, producing disagreement. This interpretation connects ensembles to Bayesian model averaging, where predictions are averaged over the posterior distribution of model parameters.
 
-For foundation models with billions of parameters, training full ensembles becomes prohibitively expensive. Training five copies of *ESM*-2 requires approximately five times the compute of a single model, potentially millions of dollars in cloud computing costs. Several practical alternatives reduce this burden. Last-layer ensembles freeze the pretrained backbone and train only an ensemble of prediction heads, reducing cost by orders of magnitude while still capturing uncertainty from the fine-tuning process. Snapshot ensembles save model checkpoints at various points during optimization and use these snapshots as ensemble members, requiring only single-model training time. Multi-seed fine-tuning trains the same architecture from multiple random seeds on the fine-tuning task, which is far cheaper than multi-seed pretraining.
+For foundation models with billions of parameters, training full ensembles becomes prohibitively expensive. Training five copies of ESM-2 requires approximately five times the compute of a single model, potentially millions of dollars in cloud computing costs. Several practical alternatives reduce this burden. Last-layer ensembles freeze the pretrained backbone and train only an ensemble of prediction heads, reducing cost by orders of magnitude while still capturing uncertainty from the fine-tuning process. Snapshot ensembles save model checkpoints at various points during optimization and use these snapshots as ensemble members, requiring only single-model training time. Multi-seed fine-tuning trains the same architecture from multiple random seeds on the fine-tuning task, which is far cheaper than multi-seed pretraining.
 
 ### Monte Carlo Dropout
 
@@ -200,6 +266,8 @@ $$\mathcal{L} = \frac{1}{2\sigma^2(x)}(y - \mu(x))^2 + \frac{1}{2}\log \sigma^2(
 
 The first term penalizes prediction errors, weighted by inverse variance so that high-variance predictions are penalized less for the same absolute error. The second term prevents the model from simply predicting infinite variance to avoid all penalties. The result is a model that learns to predict larger variance for inputs where training labels are noisy or inconsistent, capturing aleatoric uncertainty in an input-dependent manner.
 
+Heteroscedastic models capture aleatoric uncertainty but not epistemic uncertainty. The predicted variance reflects noise inherent in the labels, not uncertainty about model parameters. Combining heteroscedastic outputs with ensemble methods provides estimates of both uncertainty types: ensemble disagreement captures epistemic uncertainty while the predicted variance captures aleatoric uncertainty.
+
 ### Evidential Deep Learning
 
 Evidential deep learning places a prior distribution over the class probabilities themselves rather than directly predicting probabilities. For classification, the model outputs parameters of a Dirichlet distribution, which serves as a prior over the simplex of class probabilities. The concentration parameters of this Dirichlet encode both the predicted class probabilities (via their relative magnitudes) and the model's uncertainty (via their absolute magnitudes).
@@ -208,22 +276,28 @@ Low total concentration indicates high uncertainty: the model is unsure which cl
 
 Critics have noted that evidential deep learning can produce unreliable uncertainty estimates when the distributional assumptions are violated or when training data is limited. Practical experience suggests that ensembles and MC dropout often provide more robust uncertainty estimates, though evidential methods continue to be refined.
 
+### Selecting Uncertainty Quantification Methods
+
+The choice among uncertainty quantification methods depends on computational constraints, the types of uncertainty relevant to the application, and the foundation model architecture.
+
+For applications where distinguishing epistemic from aleatoric uncertainty matters, combining ensemble methods with heteroscedastic predictions provides both. Ensemble disagreement identifies variants where more training data might reduce uncertainty, while high predicted variance identifies variants where uncertainty is inherent to the prediction task.
+
+For foundation model applications where full ensembles are impractical, last-layer ensembles offer the best trade-off between computational cost and uncertainty quality. The pretrained representations capture most of the model's knowledge, and ensembling only the prediction heads captures uncertainty arising from the fine-tuning task.
+
+For real-time applications requiring single forward passes, evidential deep learning or heteroscedastic models provide uncertainty estimates without inference-time overhead. These methods capture aleatoric uncertainty effectively but may underestimate epistemic uncertainty for out-of-distribution inputs.
+
 
 ## Conformal Prediction: Distribution-Free Guarantees {#sec-conformal}
-
-::: {#fig-conformal-prediction}
-![**FIGURE PLACEHOLDER**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
-
-[High] Workflow with examples. Steps: (1) Calibration: Score variants on held-out set; (2) Threshold: Find threshold for 90% coverage; (3) Prediction sets: Include classes above threshold. Example outputs: High confidence {Pathogenic}, moderate {Pathogenic, VUS}, low {P, VUS, B}, abstention {}. Key properties: Coverage guarantee (≥90% marginal); set size conveys uncertainty; no probability interpretation needed. Visualization: Score distributions; threshold line; set sizes. Limitation: Marginal not conditional coverage.
-:::
-
-###  Conformal Prediction Framework
 
 Most uncertainty quantification methods make assumptions about model behavior or data distributions that may not hold in practice. Temperature scaling assumes miscalibration follows a particular functional form. Ensembles assume that disagreement reflects epistemic uncertainty rather than artifacts of training. Bayesian methods assume specific priors over model parameters. When these assumptions fail, uncertainty estimates may be unreliable precisely when reliability matters most.
 
 Conformal prediction offers something stronger: finite-sample coverage guarantees that hold under minimal assumptions. Instead of outputting a point prediction, conformal methods produce a prediction set guaranteed to contain the true label with probability at least $1 - \alpha$, where $\alpha$ is a user-specified error rate. If we request 90% coverage ($\alpha = 0.10$), the prediction set will contain the true label at least 90% of the time, regardless of the model's accuracy or calibration. This guarantee requires only that calibration and test examples are exchangeable (a condition weaker than independent and identically distributed), making conformal prediction robust to model misspecification.
 
-The coverage guarantee is finite-sample: it holds exactly for any sample size, not just asymptotically. For clinical genomics applications where individual predictions carry significant consequences, this finite-sample property provides assurance that cannot be obtained from asymptotic calibration arguments.
+::: {#fig-conformal-prediction}
+![**FIGURE PLACEHOLDER**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
+
+[High] Workflow diagram with variant classification examples. Step 1 (Calibration): Score variants on held-out calibration set; histogram of non-conformity scores. Step 2 (Threshold): Find threshold $q$ for desired coverage (e.g., 90%); vertical line on histogram. Step 3 (Prediction sets): Include classes with scores below threshold. Example outputs showing set sizes conveying confidence: High confidence → {Pathogenic}, moderate confidence → {Pathogenic, VUS}, low confidence → {Pathogenic, VUS, Benign}, abstention → {}. Key properties annotated: "Coverage guarantee (≥90% marginal)"; "Set size conveys uncertainty"; "No probability interpretation needed." Limitation note: "Marginal, not conditional coverage."
+:::
 
 ### Split Conformal Prediction
 
@@ -233,7 +307,9 @@ Non-conformity scores measure how "strange" a candidate label is given the model
 
 The construction ensures coverage because calibration scores are exchangeable with test scores under the exchangeability assumption. The quantile threshold is set so that a random calibration score exceeds the threshold with probability at most $\alpha$; by exchangeability, the same holds for test scores. This elegant argument yields exact coverage guarantees without requiring the model to be accurate or well-calibrated.
 
-### Conformal Prediction for Variant Effect Prediction
+The coverage guarantee is finite-sample: it holds exactly for any sample size, not just asymptotically. For clinical genomics applications where individual predictions carry significant consequences, this finite-sample property provides assurance that cannot be obtained from asymptotic calibration arguments.
+
+### Conformal Prediction for Variant Classification
 
 Variant effect prediction, examined in detail in @sec-vep-fm, concentrates the challenges of uncertainty quantification. Instead of reporting a single pathogenicity score, a conformalized variant classifier outputs a prediction set from the possibilities: {pathogenic}, {benign}, {pathogenic, benign}, or the empty set. The set is guaranteed to contain the true label at the specified coverage rate.
 
@@ -241,7 +317,13 @@ Adaptive set sizes convey uncertainty naturally. Confident predictions yield sma
 
 Calibration set construction requires careful thought. Holding out variants at random may not prevent information leakage if related variants (same gene, same protein domain) appear in both calibration and test sets. Holding out entire genes or protein families provides more stringent evaluation but may reduce calibration set size for rare gene families. For applications intended to work across populations, calibration sets should include diverse ancestries to ensure coverage guarantees hold across patient populations.
 
-Conformal **prediction intervals** for regression tasks (expression prediction, quantitative trait prediction) provide bounds rather than sets. Conformalized quantile regression produces intervals guaranteed to contain the true value with specified probability, directly applicable to predicting gene expression changes or polygenic score uncertainty.
+### Conformal Prediction Intervals
+
+For regression tasks such as expression prediction or quantitative trait prediction, conformalized quantile regression produces intervals guaranteed to contain the true value with specified probability. The method fits separate models for the lower and upper quantiles of the conditional distribution, then applies conformal calibration to ensure finite-sample coverage.
+
+The resulting prediction intervals are directly interpretable: a 90% prediction interval for gene expression change contains the true change at least 90% of the time. Unlike Bayesian credible intervals, which depend on prior assumptions, conformal intervals provide frequentist coverage guarantees that hold regardless of the model's correctness.
+
+Interval width varies with prediction difficulty. Variants where the model is confident produce narrow intervals; variants where the model is uncertain produce wide intervals. This adaptive behavior makes conformal intervals useful for identifying predictions that warrant additional scrutiny or experimental validation.
 
 ### Limitations and Practical Considerations
 
@@ -251,7 +333,13 @@ The exchangeability assumption can fail in practice. If the calibration set deri
 
 Prediction set size trades off against informativeness. Larger sets provide more reliable coverage but less useful predictions. A model that produces {pathogenic, benign} for every variant achieves perfect coverage but provides no discrimination. Careful model development to improve underlying accuracy reduces average set size while maintaining coverage guarantees.
 
+### Integration with Clinical Workflows
 
+Conformal prediction sets integrate naturally with existing variant classification frameworks. The ACMG-AMP guidelines already accommodate uncertainty through categories like "variant of uncertain significance." Conformal sets provide a principled basis for this categorization: variants receiving singleton sets ({pathogenic} or {benign}) have strong computational evidence, while variants receiving larger sets have uncertain computational evidence.
+
+The coverage guarantee provides a quantitative basis for laboratory policies. A laboratory might decide that computational evidence should achieve 95% coverage before contributing to variant classification, using conformal methods to verify this threshold is met. The guarantee holds regardless of which specific variants are encountered, providing assurance that the policy will perform as intended across the laboratory's case mix.
+
+Conformal methods also enable selective prediction, where the model abstains rather than producing uncertain predictions. By setting coverage requirements appropriately, laboratories can identify variants where computational methods provide reliable evidence and variants where human review is essential. This selective approach focuses expert attention where it is most needed while allowing automated processing of straightforward cases.
 ## Out-of-Distribution Detection {#sec-ood-detection}
 
 ::: {#fig-ood-detection layout-ncol=2}
@@ -344,7 +432,7 @@ Variant effect prediction concentrates the challenges of uncertainty quantificat
 
 Calibration challenges for VEP include the evolving nature of ground truth labels. ClinVar annotations change as new evidence emerges; variants classified as VUS may be reclassified as pathogenic or benign, and even confident classifications occasionally reverse. A model calibrated against a historical version of ClinVar may appear miscalibrated against current annotations, not because the model changed but because the labels did. Periodic recalibration against current databases maintains alignment between model outputs and contemporary clinical understanding.
 
-Population-specific calibration addresses the reality that training data predominantly derive from European-ancestry cohorts. For patients from other ancestral backgrounds, both epistemic uncertainty (fewer training examples) and calibration (different baseline pathogenicity rates, different patterns of variation) may differ from the aggregate. Stratified reliability diagrams by ancestry reveal these differences; ancestry-conditional calibration may be necessary for equitable performance across populations.
+Population-specific calibration addresses the reality that training data predominantly derive from European-ancestry cohorts. For patients from other ancestral backgrounds, both epistemic uncertainty (fewer training examples) and calibration (different baseline pathogenicity rates, different patterns of variation) may differ from the aggregate. Stratified reliability diagrams by ancestry reveal these differences; ancestry-conditional calibration may be necessary for equitable performance across populations. The governance and policy dimensions of ensuring equitable uncertainty communication are addressed in @sec-future.
 
 ### Regulatory Variant Uncertainty
 

@@ -82,9 +82,11 @@ The prior $P(G)$ often assumes Hardy-Weinberg equilibrium with a specified allel
 
 The per-read likelihoods aggregate into genotype likelihoods, which combine with priors to yield posterior probabilities. These posteriors become the **genotype quality (`GQ`)** scores that downstream analyses often treat as ground truth. Per-sample results are output as `gVCF` files encoding both variant calls and "reference blocks" with estimated confidence at non-variant positions, enabling later joint analysis across samples.
 
-::: {.callout-note}
+::: {.callout-note title="The `VCF` Format"}
+
 The `VCF` Format
 The Variant Call Format (`VCF`) is the standard file format for storing variant calls. Each variant occupies one row with mandatory columns: `CHROM` and `POS` specify genomic location; `REF` and `ALT` give the reference and alternate alleles; `QUAL` provides a Phred-scaled quality score; `FILTER` indicates whether the variant passed quality filters; and `INFO` contains semicolon-delimited annotations such as allele frequency or functional predictions. For multi-sample files, a `FORMAT` column defines per-sample fields (typically `GT` for genotype, `GQ` for genotype quality, `DP` for depth), followed by one column per sample containing those values. Genotypes are encoded as allele indices separated by / (unphased) or | (phased), where 0 represents the reference allele and 1 the first alternate. A heterozygous call appears as `0/1`; a phased heterozygote as `0|1` or `1|0` depending on which allele was inherited maternally versus paternally.
+
 :::
 
 ### Cohort Calling and Filtering

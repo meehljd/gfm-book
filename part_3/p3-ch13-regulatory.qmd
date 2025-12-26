@@ -87,7 +87,7 @@ A single gene can produce multiple transcript isoforms through alternative promo
 
 CAGE and chromatin assays cannot capture these complexities. They measure where transcription might begin and what the chromatin environment looks like, but they do not reveal how RNA polymerase traverses the gene *body*, where splicing occurs, or which 3' end is selected. RNA-seq coverage profiles encode all of this information: exon boundaries appear as coverage drops at intron junctions, alternative splicing manifests as variable junction usage, and polyadenylation site choice appears in the coverage pattern near gene 3' ends.
 
-### Architecture and Training
+### Predicting Coverage at Nucleotide Resolution
 
 Borzoi builds on an *Enformer*-style backbone with modifications tailored to RNA-seq prediction. The convolutional stem and transformer trunk follow similar principles, compressing long input windows and propagating information through attention. Output heads predict stranded RNA-seq coverage across the window, with additional heads for complementary signals like PRO-seq (nascent transcription), CAGE, and other assays when available.
 
@@ -135,7 +135,7 @@ The regulatory vocabulary approach also facilitates systematic analysis across m
 
 AlphaGenome [@avsec_alphagenome_2025] extends the hybrid modeling paradigm in two directions: longer context windows (approximately one megabase) and broader output modalities spanning chromatin, expression, splicing, and three-dimensional contacts. The goal is a single model that provides a comprehensive view of how sequence determines regulatory state.
 
-### Architectural Extensions
+### From 200kb to One Megabase
 
 The megabase context window pushes against computational limits even with hybrid architectures. AlphaGenome addresses this through efficient attention mechanisms that reduce the quadratic cost, hierarchical processing that handles different output modalities at appropriate resolutions, and architectural refinements accumulated from *Enformer* and Borzoi development.
 
@@ -143,7 +143,7 @@ The output repertoire spans chromatin accessibility and histone modifications (f
 
 Unifying these modalities in a single model offers several advantages. The backbone representation must capture information relevant to all outputs, encouraging learning of features that connect chromatin state to transcription to RNA processing. Variant effect predictions become coherent across modalities: a single forward pass reveals how a variant affects chromatin, expression, splicing, and contacts, rather than requiring separate runs through independent models.
 
-### Access and Practical Considerations
+### Closed Weights, Open Questions
 
 AlphaGenome is primarily available through an API interface rather than as a downloadable model. This arrangement simplifies use for many applications: researchers can score variants without managing large model weights or specialized hardware. It also introduces constraints around data privacy, customization, and integration with local pipelines. Clinical applications that cannot send patient sequence data to external services may be unable to use API-only models directly, motivating interest in openly available alternatives.
 

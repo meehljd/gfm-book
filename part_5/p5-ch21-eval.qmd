@@ -146,27 +146,35 @@ Implementing temporal splits requires metadata that many datasets lack. ClinVar 
 
 The key limitation of temporal splits is non-stationarity. The distribution of variants classified in 2022 may differ systematically from those classified in 2018, not because biology changed but because research priorities, sequencing technologies, and ascertainment patterns evolved. Performance degradation on temporally held-out data may reflect distribution shift rather than genuine failure to generalize. Combining temporal splits with stratified analysis (performance by variant type, gene category, or evidence strength) helps disentangle these factors.
 
-## Leakage Taxonomy and Detection
+## Leakage Taxonomy and Detection {#sec-leakage-detection}
 
-Even with careful splitting, leakage can enter evaluations through multiple pathways. Understanding common leakage patterns helps practitioners design cleaner evaluations and critically assess published results.
+Even with careful splitting, leakage can enter evaluations through multiple pathways. A variant effect predictor that achieves 0.95 auROC on held-out test data may be exploiting information that would never exist for truly novel variants, rendering the performance estimate meaningless for clinical deployment. Understanding common leakage patterns helps practitioners design cleaner evaluations and critically assess published results.
 
-::: {#fig-leakage-taxonomy}
-![**FIGURE PLACEHOLDER**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
-
-[High] Taxonomy tree. Top: **Data Leakage**. Branches: Feature Leakage (features encode target; conservation→pathogenicity; detection via ablation), Label Leakage (labels derived from model-accessible info; ClinVar circularity; temporal validation), Benchmark Leakage (pretraining overlaps evaluation; ENCODE everywhere; document and check overlap). For each: red warning, genomic example, detection strategy, mitigation.
-:::
-
-### Feature Leakage
-
-Feature leakage occurs when input features encode information about the target that would not be available at prediction time. In genomics, conservation scores are a common source. If a model uses PhyloP scores as features and the target is pathogenicity, the model may learn that "conserved positions are more likely pathogenic" without learning anything about variant biology. This would be fine if conservation scores are intended to be part of the prediction pipeline, but problematic if the goal is to develop a model that can predict pathogenicity from sequence alone.
-
-Similarly, population allele frequency encodes selection pressure. A model that learns "rare variants are more likely pathogenic" has discovered a useful heuristic but not necessarily a mechanistic understanding. Whether this counts as leakage depends on the intended use case. For clinical variant interpretation where allele frequency is always available, exploiting this feature is appropriate. For understanding variant biology, it may mask whether the model has learned anything beyond allele frequency.
+Genomic machine learning faces four distinct leakage types, each creating different pathways for inflated performance: label leakage, feature leakage, temporal leakage, and benchmark leakage. These categories are not mutually exclusive; a single evaluation may suffer from multiple forms simultaneously, with compounding effects on apparent performance.
 
 ### Label Leakage
 
-Label leakage occurs when target labels are derived from information that the model can access through its features. The classic example is training pathogenicity predictors on ClinVar annotations while using sequence features that were used to construct ClinVar annotations. If ClinVar curators used SIFT and PolyPhen scores when classifying variants, and the model uses similar sequence features, high performance may reflect recapitulation of curation criteria rather than independent predictive power.
+Label leakage occurs when target labels are derived from information that the model can access through its features. The classic example is training pathogenicity predictors on ClinVar annotations while using sequence features that contributed to those annotations. If ClinVar curators used SIFT and PolyPhen scores when classifying variants, and the new model uses similar sequence features, high performance may reflect recapitulation of curation criteria rather than independent predictive power.
 
-Temporal label leakage is subtler. A model trained on ClinVar annotations from 2020 and tested on annotations from 2023 may perform well because new annotations were informed by model-like predictions. The apparent validation is circular: the model predicts labels that were partially derived from model-like reasoning.
+The ClinVar circularity problem represents a particularly insidious form of label leakage. When computational predictions contributed to the pathogenicity classifications that later become training labels, new models learn to replicate their predecessors rather than discover independent signal. This circularity propagates through generations of models, each inheriting and reinforcing the biases of earlier predictors.
+
+Expression models face analogous challenges when trained on features derived from the same samples used to define expression labels. The information flow becomes circular: labels inform features, which predict labels, creating apparent performance that would not generalize to independent samples.
+
+### Feature Leakage
+
+Feature leakage occurs when input features encode information about the target that would not be available at prediction time. In genomics, conservation scores are a common source. If a model uses PhyloP scores as features and the target is pathogenicity, the model may learn that conserved positions are more likely pathogenic without learning anything about variant-specific biology. This would be appropriate if conservation scores are intended to be part of the prediction pipeline, but problematic if the goal is to develop a model that predicts pathogenicity from sequence alone.
+
+Similarly, population allele frequency encodes selection pressure. A model that learns "rare variants are more likely pathogenic" has discovered a useful heuristic but not necessarily mechanistic understanding. Whether this counts as leakage depends on the intended use case. For clinical variant interpretation where allele frequency is always available, exploiting this feature is appropriate. For understanding variant biology, it may mask whether the model has learned anything beyond frequency-based priors.
+
+Feature leakage also arises when features encode information about data partitions or batch structure rather than biology. Coverage patterns that differ systematically between cases and controls, quality metrics that correlate with sequencing center, or variant density profiles that reflect caller-specific behavior all constitute feature leakage of this form.
+
+### Temporal Leakage
+
+Temporal leakage violates the causal structure of prediction by using future information to predict past events. A model trained on ClinVar annotations from 2023 and tested on annotations that were uncertain in 2020 may perform well because new annotations were informed by model-like predictions. The apparent validation is circular: the model predicts labels that were partially derived from model-like reasoning applied after the prediction timepoint.
+
+Clinical outcome prediction faces similar risks when laboratory values, imaging results, or clinical notes recorded after the prediction timepoint enter the feature set. A model predicting 30-day mortality that includes vital signs from day 15 has trivial access to outcome-correlated information. Proper temporal splits must respect not only when samples were collected but when each feature became available.
+
+Training on variants classified in 2023 to predict classifications that were uncertain in 2020 allows models to learn from reclassification patterns rather than intrinsic variant properties. The model exploits the trajectory of scientific knowledge rather than the underlying biology.
 
 ### Benchmark Leakage
 
@@ -174,15 +182,23 @@ Benchmark leakage occurs when test set construction was influenced by methods si
 
 Foundation models face particular challenges with benchmark leakage. If a DNA language model is pretrained on all publicly available genomic sequence including ENCODE data, and then evaluated on ENCODE-derived benchmarks, the pretraining has exposed the model to information about the test distribution even if specific test examples were held out. The model may have learned statistical patterns in ENCODE data that transfer to ENCODE benchmarks without reflecting genuine biological understanding.
 
+This form of leakage is especially difficult to detect because it operates at the level of distributional overlap rather than specific example memorization. A model that has never seen a particular test sequence may still have learned the statistical regularities that make that sequence predictable within the benchmark distribution.
+
 ### Detection Strategies
 
-Several strategies help detect leakage. **Baseline analysis** asks whether simple models that could not plausibly have learned biology achieve suspiciously high performance. If a linear model using only allele frequency achieves 0.80 AUROC on a pathogenicity benchmark, and a sophisticated deep model achieves 0.82, the marginal improvement may not justify claims of biological insight.
+Several strategies help detect leakage, though none provides definitive proof of its absence.
 
-**Feature ablation** systematically removes potentially leaky features and measures performance degradation. If removing conservation scores causes a 20-point drop in AUROC, the model was heavily dependent on conservation rather than learning independent predictors.
+**Baseline analysis** asks whether simple models that could not plausibly have learned biology achieve suspiciously high performance. If a linear model using only allele frequency achieves 0.80 auROC on a pathogenicity benchmark, and a sophisticated deep model achieves 0.82, the marginal improvement may not justify claims of biological insight. The deep model's performance is bounded by what simple confounders already explain.
 
-**Confounder analysis** explicitly models potential confounders and tests whether model predictions remain informative after conditioning. If a variant effect predictor's scores become non-predictive after controlling for gene length and expression level, the model may have learned gene-level confounders rather than variant-level effects.
+**Feature ablation** systematically removes potentially leaky features and measures performance degradation. If removing conservation scores causes a 20-point drop in auROC, the model was heavily dependent on conservation rather than learning independent predictors. This approach identifies which features drive performance but cannot distinguish legitimate signal from leakage without domain knowledge about what information should be available at prediction time.
 
-**Temporal validation** evaluates models on data collected after the training data was frozen. If performance degrades substantially on newer data, the model may have been fitted to temporal artifacts in the original dataset.
+**Confounder analysis** explicitly models potential confounders and tests whether model predictions remain informative after conditioning. If a variant effect predictor's scores become non-predictive after controlling for gene length and expression level, the model may have learned gene-level confounders rather than variant-level effects. Chapter @sec-confounding examines how leakage relates to these broader confounding structures.
+
+**Temporal validation** evaluates models on data collected after the training data was frozen. If performance degrades substantially on newer data, the model may have been fitted to temporal artifacts in the original dataset. This approach is particularly valuable for detecting temporal leakage but requires access to prospectively collected data.
+
+**Overlap auditing** explicitly checks for sequence or sample overlap between pretraining corpora and evaluation benchmarks. For foundation models, this requires documenting pretraining data composition and comparing against benchmark construction procedures. The audit may reveal that apparent generalization is actually interpolation within seen distributions.
+
+These detection strategies complement each other. A rigorous evaluation employs multiple approaches, recognizing that each catches different leakage pathways while remaining blind to others.
 
 ## Metrics for Genomic Tasks
 
@@ -219,12 +235,6 @@ For predictions at genomic scale (e.g., predicted versus observed expression acr
 Many genomic workflows care about ranking rather than absolute prediction. Variant prioritization pipelines rank candidates for follow-up; gene prioritization ranks targets for experimental validation. **Top-k recall** measures the fraction of true positives captured in the top k predictions. **Enrichment at k** compares the true positive rate in the top k to the background rate. **Normalized discounted cumulative gain (NDCG)** weights ranking quality by position, penalizing relevant items placed lower in the list more than those placed near the top.
 
 These metrics align with how predictions are actually used. If experimental capacity permits validating only 20 variants per locus, top-20 recall matters more than global AUROC. Reporting both global metrics and rank-aware metrics at relevant cutoffs provides a complete picture.
-
-### Calibration Metrics
-
-Calibration assesses whether predicted probabilities match observed frequencies. A well-calibrated model that predicts 0.8 probability of pathogenicity should be correct about 80% of the time across all variants receiving that score. **Reliability diagrams** plot predicted probabilities against observed frequencies within binned intervals, with deviations from the diagonal indicating miscalibration. **Expected calibration error (ECE)** summarizes miscalibration as the weighted average absolute deviation across bins.
-
-Calibration matters whenever predictions inform decisions. A miscalibrated model that reports 0.95 probability when the true probability is 0.60 will lead to inappropriate confidence in uncertain predictions. Even models with excellent discrimination can be poorly calibrated, requiring post-hoc calibration methods such as Platt scaling or isotonic regression. @sec-uncertainty addresses calibration and **uncertainty quantification** in greater depth.
 
 ### Clinical Utility Metrics
 
@@ -344,23 +354,27 @@ Transfer across species, tissues, and experimental modalities provides additiona
 
 ## Calibration Essentials
 
-Even models with strong discrimination may produce probability estimates that mislead decisions. Calibration assesses whether predicted probabilities match observed frequencies, a property essential for rational decision-making.
+Strong discrimination does not guarantee useful probability estimates. A model achieving 0.95 auROC might assign probability 0.99 to all positive examples and 0.98 to all negatives, ranking perfectly while providing meaningless confidence values. Clinical decision-making requires both: accurate ranking to identify high-risk variants and accurate probabilities to inform the weight of computational evidence. Calibration assesses whether predicted probabilities match observed frequencies, a property essential for rational integration of model outputs into diagnostic workflows.
 
 ### Assessing Calibration
 
-**Reliability diagrams** bin predictions by predicted probability and plot the mean predicted probability against the observed frequency within each bin. Perfect calibration produces points along the diagonal; deviations reveal systematic over-confidence (points below the diagonal) or under-confidence (points above).
+**Reliability diagrams** provide visual assessment by plotting predicted probabilities against observed frequencies. The construction bins predictions into intervals (commonly ten bins spanning 0 to 0.1, 0.1 to 0.2, and so forth), computes the mean predicted probability within each bin, computes the fraction of positive examples within each bin, and plots these quantities against each other. Perfect calibration produces points along the diagonal; systematic deviations reveal overconfidence (points below the diagonal) or underconfidence (points above).
 
-**Expected calibration error** summarizes miscalibration as a single number: the weighted average absolute difference between predicted and observed probabilities across bins. Lower ECE indicates better calibration. However, ECE is sensitive to binning choices and should be reported alongside reliability diagrams for interpretability.
+**Expected calibration error (ECE)** summarizes miscalibration as a single number: the weighted average absolute difference between predicted and observed probabilities across bins. Lower ECE indicates better calibration. The metric depends on binning choices; equal-width bins may place most examples in a few bins for models with concentrated predictions, while equal-mass bins ensure each bin contains the same number of examples but may span wide probability ranges. ECE should be reported alongside reliability diagrams for interpretability.
 
-**Calibration by subgroup** reveals whether miscalibration varies across populations or conditions. A model might be well-calibrated overall but systematically overconfident for rare variant classes or underrepresented ancestries. Stratified calibration analysis identifies these disparities.
+**Calibration by subgroup** reveals whether miscalibration varies across populations or conditions. A model might achieve low aggregate ECE while being systematically overconfident for rare variant classes and underconfident for common ones, with opposite errors canceling in the aggregate statistic. Stratified calibration analysis across ancestry groups, variant classes, and gene categories identifies these disparities. For genomic models intended for diverse populations, subgroup-stratified calibration is not optional; aggregate metrics can mask clinically significant differential performance.
 
 ### Recalibration Methods
 
-Post-hoc recalibration adjusts predicted probabilities to improve calibration without retraining the model. **Temperature scaling** divides logits by a learned temperature parameter before applying softmax, compressing or expanding the probability distribution. **Platt scaling** fits a logistic regression from model outputs to true labels. **Isotonic regression** fits a monotonic function that maps model outputs to calibrated probabilities.
+Post-hoc recalibration adjusts predicted probabilities without retraining the underlying model. Methods range from single-parameter approaches like **temperature scaling**, which divides logits by a learned constant to compress overconfident distributions, to non-parametric transformations like **isotonic regression**, which fits a monotonic function mapping raw scores to calibrated probabilities. **Platt scaling** fits a logistic regression from model outputs to true labels, providing intermediate flexibility. Each method makes different assumptions about the structure of miscalibration and requires different amounts of calibration data. The mathematical details, theoretical foundations, and guidance for method selection are developed in @sec-post-hoc-calibration.
 
-These methods require held-out calibration data distinct from training and test sets. Calibrating on test data and then evaluating calibration on the same test data produces overoptimistic estimates.
+All recalibration methods require held-out calibration data distinct from both training and test sets. Calibrating on test data and then evaluating calibration on the same test data produces overoptimistic estimates. For foundation models, the calibration set should be drawn from the deployment distribution; calibrating on ClinVar expert-reviewed variants may not transfer to variants in less-studied genes or underrepresented populations.
 
-For detailed treatment of calibration and uncertainty quantification, including epistemic versus **aleatoric uncertainty** and selective prediction, see @sec-uncertainty.
+### Calibration in Model Comparison
+
+When comparing models, calibration metrics complement discrimination metrics. Two models with identical auROC may have dramatically different calibration, and the better-calibrated model will produce more reliable clinical evidence even though its ranking performance is equivalent. Reporting both discrimination (auROC, auPRC) and calibration (ECE, reliability diagrams) provides a complete picture of model performance.
+
+Calibration can often be improved post-hoc without sacrificing discrimination. Temperature scaling preserves ranking while adjusting probability magnitudes, meaning a model can be recalibrated to improve ECE without changing auROC. This observation suggests that raw discrimination metrics may be more fundamental indicators of model quality, with calibration treated as an adjustable property. The comprehensive treatment of calibration theory, including its relationship to uncertainty quantification and methods for quantifying different sources of prediction uncertainty, is developed in @sec-calibration.
 
 ## Putting It All Together
 
