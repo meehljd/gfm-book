@@ -1,11 +1,3 @@
-::: {.callout-warning .content-visible when-profile="draft"}
-* Integrated Gradients [@sundararajan_axiomatic_2017]
-* DeepLIFT [@shrikumar_learning_2017]
-* TF-MoDISco [@shrikumar_technical_2018]
-* SpliceAI [@jaganathan_predicting_2019]
-* ACMG-AMP criteria [@richards_standards_2015]
-:::
-
 # Interpretability {#sec-interpretability}
 
 An attribution method highlights a GATA motif when explaining why a model predicts enhancer activity. The explanation is biologically plausible: GATA transcription factors bind this motif and drive tissue-specific expression. But plausibility is not faithfulness. The model may have learned a completely different pattern (perhaps GC content correlating with enhancer labels in the training data) and the attribution method may be highlighting the GATA motif because human-interpretable explanations tend to find human-interpretable patterns. The explanation matches biological intuition without accurately reflecting model computation. This distinction between plausible and faithful interpretation structures the entire field of model interpretability, and failing to respect it produces explanations that provide false comfort rather than genuine insight.
@@ -48,11 +40,11 @@ The limitation is computational cost. Scoring all single-nucleotide substitution
 
 Gradient-based methods approximate the counterfactual information from ISM using backpropagation. The gradient of the output with respect to each input position measures how much an infinitesimal change at that position would affect the prediction. With one-hot encoded sequence, the gradient at each base indicates the sensitivity to substituting that nucleotide.
 
-The simplest approach, often called **saliency map**ping, computes raw gradients and visualizes their magnitudes across the sequence. A common variant multiplies gradients by inputs (gradient × input), focusing on positions where the current nucleotide is both important and present. These methods require only a single backward pass, making them orders of magnitude faster than ISM.
+The simplest approach, often called **saliency mapping**, computes raw gradients and visualizes their magnitudes across the sequence. A common variant multiplies gradients by inputs (gradient × input), focusing on positions where the current nucleotide is both important and present. These methods require only a single backward pass, making them orders of magnitude faster than ISM.
 
-Gradient-based methods suffer from saturation in regions where the model is already confident. If a strong motif drives the prediction into a saturated region of the output nonlinearity, small perturbations produce near-zero gradients even though the motif is functionally critical. DeepLIFT addresses this limitation by comparing activations between an input sequence and a reference, propagating differences through the network using custom rules that avoid gradient saturation. The resulting attributions satisfy a completeness property: contributions sum to the difference between input and reference predictions.
+Gradient-based methods suffer from saturation in regions where the model is already confident. If a strong motif drives the prediction into a saturated region of the output nonlinearity, small perturbations produce near-zero gradients even though the motif is functionally critical. DeepLIFT addresses this limitation by comparing activations between an input sequence and a reference, propagating differences through the network using custom rules that avoid gradient saturation [@shrikumar_learning_2017]. The resulting attributions satisfy a completeness property: contributions sum to the difference between input and reference predictions.
 
-Integrated gradients provide theoretical grounding through the path integral of gradients along a linear interpolation from reference to input:
+Integrated gradients provide theoretical grounding through the path integral of gradients along a linear interpolation from reference to input [@sundararajan_axiomatic_2017]:
 
 $$\text{IG}_i(x) = (x_i - x'_i) \int_{\alpha=0}^{1} \frac{\partial f(x' + \alpha(x - x'))}{\partial x_i} \, d\alpha$$
 
@@ -87,7 +79,7 @@ Direct interpretation of deeper filters becomes increasingly difficult as recept
 
 ## Motif Discovery from Attributions
 
-Attribution maps highlight important positions but do not directly reveal motifs. A DeepLIFT track might show scattered high-importance bases throughout a sequence without indicating that those bases collectively form instances of the same transcription factor binding site. TF-MoDISco (Transcription Factor Motif Discovery from Importance Scores) bridges this gap by discovering motifs from attribution scores rather than raw sequences.
+Attribution maps highlight important positions but do not directly reveal motifs. A DeepLIFT track might show scattered high-importance bases throughout a sequence without indicating that those bases collectively form instances of the same transcription factor binding site. TF-MoDISco (Transcription Factor Motif Discovery from Importance Scores) bridges this gap by discovering motifs from attribution scores rather than raw sequences [@shrikumar_technical_2018].
 
 The insight underlying TF-MoDISco is that importance-weighted sequences focus motif discovery on positions the model actually uses. Traditional motif finders must contend with the fact that most positions in regulatory sequences do not participate in functional motifs. By extracting seqlets (short windows where total importance exceeds a threshold) and clustering them based on both sequence content and importance profiles, TF-MoDISco identifies patterns that drive model predictions.
 
@@ -228,7 +220,7 @@ High-throughput functional assays enable systematic validation at scale. Massive
 
 Variant interpretation guidelines require that computational predictions be weighed alongside experimental and clinical evidence, as discussed further in @sec-rare-disease. Interpretability determines whether model predictions can contribute meaningful evidence beyond raw pathogenicity scores.
 
-Current ACMG-AMP criteria allow computational evidence as supporting (*PP3*) or opposing (*BP4*) pathogenicity, but the evidence strength depends on understanding what the prediction reflects. A splice site disruption score from SpliceAI provides interpretable mechanistic evidence: the variant is predicted to alter splicing because it changes the consensus splice site sequence. This prediction can be evaluated against splice site models, tested with minigene assays, and combined with observations of aberrant transcripts in patient samples. The interpretation enables evidence integration.
+Current ACMG-AMP criteria allow computational evidence as supporting (*PP3*) or opposing (*BP4*) pathogenicity, but the evidence strength depends on understanding what the prediction reflects [@richards_standards_2015]. A splice site disruption score from SpliceAI provides interpretable mechanistic evidence: the variant is predicted to alter splicing because it changes the consensus splice site sequence [[@jaganathan_spliceai_2019]]. This prediction can be evaluated against splice site models, tested with minigene assays, and combined with observations of aberrant transcripts in patient samples. The interpretation enables evidence integration.
 
 Foundation model predictions are less immediately interpretable but potentially more informative. A pathogenicity score from *ESM*-1v reflects evolutionary constraint inferred from protein language modeling, but the specific sequence features driving the prediction require attribution analysis to identify. An expression effect predicted by *Enformer* might result from disrupted transcription factor binding, altered chromatin accessibility, or changed 3D regulatory contacts; interpretability analysis distinguishes these mechanisms and guides experimental validation.
 

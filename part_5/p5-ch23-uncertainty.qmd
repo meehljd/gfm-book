@@ -110,69 +110,6 @@ Ancestry-stratified calibration reveals systematic patterns in current foundatio
 
 Calibration may also vary by variant class, gene constraint level, protein family, or disease category. Missense variants in highly constrained genes may show different calibration patterns than those in tolerant genes. Variants in well-studied protein families with abundant training examples may be better calibrated than variants in orphan proteins. Stratified reliability diagrams across these categories reveal whether a single calibration correction suffices or whether subgroup-specific approaches are necessary.
 
-
-## Post-Hoc Calibration Methods {#sec-post-hoc-calibration}
-
-::: {#fig-calibration-methods layout-ncol=3}
-![**FIGURE PLACEHOLDER A**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
-
-![**FIGURE PLACEHOLDER B**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B)
-
-![**FIGURE PLACEHOLDER C**](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C)
-
-[High] Three-column comparison with before/after reliability diagrams. Column 1 (Temperature scaling): Formula $p = \text{softmax}(z/T)$; single parameter $T$; before/after reliability showing improvement; annotation "Preserves ranking; cannot fix complex patterns." Column 2 (Platt scaling): Formula $p = \sigma(az + b)$; two parameters $a$ and $b$; handles bias and confidence adjustment; annotation "Assumes logistic relationship." Column 3 (Isotonic regression): Non-parametric monotonic fit shown as step function; flexible with no distributional assumptions; annotation "Overfits with limited data." Bottom panel: Decision guide flowchart for method selection based on calibration set size and miscalibration complexity.
-:::
-
-### Temperature Scaling
-
-The simplest calibration fix is often the most effective. Temperature scaling applies a single learned parameter to adjust model confidence, dramatically improving calibration with minimal computational overhead and no change to predictions' ranking.
-
-The method modifies the softmax function by dividing logits by a temperature parameter $T$ before applying softmax:
-
-$$\hat{p}_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}$$
-
-where $z_i$ are the logits (pre-softmax outputs) and $\hat{p}_i$ are the calibrated probabilities. When $T > 1$, the distribution becomes softer (more uniform), reducing overconfidence. When $T < 1$, the distribution becomes sharper, increasing confidence. The optimal temperature is learned by minimizing negative log-likelihood on a held-out calibration set, typically yielding $T$ between 1.5 and 3 for overconfident deep networks.
-
-Temperature scaling preserves the model's ranking because dividing all logits by the same constant does not change their relative ordering. A variant ranked as more likely pathogenic than another remains more likely after temperature scaling; only the magnitudes of probability estimates change. This preservation of discrimination while improving calibration makes temperature scaling particularly attractive: calibration improves without sacrificing the model's hard-won ability to distinguish pathogenic from benign variants.
-
-The method's simplicity (one parameter) is both strength and limitation. A single global temperature cannot fix heterogeneous miscalibration where the model is overconfident in some regions of input space and underconfident in others. When reliability diagrams show complex nonlinear patterns, more flexible calibration methods are necessary.
-
-### Platt Scaling
-
-Platt scaling fits a logistic regression model on the original model's outputs, learning both a slope and intercept to transform scores into calibrated probabilities. For binary classification:
-
-$$\hat{p} = \sigma(a \cdot f(x) + b)$$
-
-where $f(x)$ is the original model's output, $\sigma$ is the sigmoid function, and parameters $a$ and $b$ are learned on calibration data. The two parameters provide more flexibility than temperature scaling's single parameter, allowing correction of both the sharpness and the location of the probability distribution.
-
-Platt scaling is appropriate when miscalibration involves systematic bias (predictions consistently too high or too low) in addition to over- or underconfidence. The method assumes that a monotonic logistic transformation suffices to correct miscalibration, which may not hold for models with complex, non-monotonic calibration curves.
-
-### Isotonic Regression
-
-Isotonic regression provides a non-parametric approach that fits a monotonically increasing function mapping raw scores to calibrated probabilities. Unlike temperature or Platt scaling, isotonic regression makes no assumptions about the functional form of miscalibration, allowing it to correct arbitrary monotonic patterns.
-
-The method works by pooling adjacent bins whose empirical frequencies violate monotonicity, then assigning each bin its pooled frequency. The resulting calibration function is a step function that increases with the original score. This flexibility comes at a cost: with limited calibration data, isotonic regression may overfit to noise in the calibration set, and the step-function output can appear discontinuous. Additionally, isotonic regression provides no uncertainty estimate on the calibration itself; we learn a point estimate of the calibration function without knowing how reliable that estimate is.
-
-### Method Selection Guidelines
-
-The choice among calibration methods depends on calibration set size and the complexity of miscalibration patterns.
-
-For large calibration sets (thousands of examples) with complex miscalibration patterns visible in reliability diagrams, isotonic regression provides the flexibility to correct arbitrary monotonic distortions. The risk of overfitting diminishes with sufficient data, and the non-parametric nature handles patterns that parametric methods cannot capture.
-
-For moderate calibration sets (hundreds of examples) or when miscalibration appears roughly linear in log-odds space, Platt scaling offers a good balance between flexibility and sample efficiency. The two parameters can correct both location and scale miscalibration without the variance that isotonic regression exhibits with limited data.
-
-For small calibration sets (fewer than a hundred examples) or when the primary issue is simple overconfidence without complex distortion, temperature scaling provides the most robust correction. The single parameter is unlikely to overfit even with very limited calibration data.
-
-### Calibrating Foundation Model Outputs
-
-Genomic foundation models present specific calibration considerations beyond standard classification settings. The choice of calibration approach depends on whether the model produces logits, log-likelihood ratios, or continuous regression outputs, and on whether calibration targets are available for the deployment distribution.
-
-For zero-shot variant effect scores like ESM-1v log-likelihood ratios, raw outputs have no inherent probabilistic interpretation. Calibration requires mapping these continuous scores to pathogenicity probabilities using external labels, typically from ClinVar or population frequency data. This mapping should occur on held-out genes or variants not used for any model development, and the resulting calibration reflects the specific label set used; calibration against ClinVar pathogenic/benign labels may not transfer to other clinical contexts.
-
-Multi-output models that predict across many tasks (multiple cell types, tissues, or assays) may require separate calibration for each output. A regulatory model predicting expression across 200 cell types is unlikely to be uniformly calibrated across all outputs; cell types with more training data may show better calibration than rare cell types.
-
-Temporal stability of calibration deserves consideration. As ClinVar annotations evolve with new evidence, the ground truth against which models were calibrated changes. A model calibrated against 2020 ClinVar labels may become miscalibrated relative to 2025 labels as variant classifications are updated. Periodic recalibration against current labels helps maintain clinical relevance.
-
 ## Post-Hoc Calibration Methods {#sec-post-hoc-calibration}
 
 ::: {#fig-calibration-methods layout-ncol=3}
