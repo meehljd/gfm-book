@@ -687,6 +687,51 @@ div.csl-indent {
 <p>Traditional transcriptomic studies measure gene expression in bulk tissue, producing a single measurement per gene that represents the average across thousands to millions of cells. This averaging is both a strength and a limitation. It provides robust, reproducible measurements that have powered decades of biological discovery. It also fundamentally limits what questions can be asked. If a gene appears moderately expressed in bulk, is it uniformly expressed across all cells, or highly expressed in a rare subpopulation while silent elsewhere? Bulk data cannot distinguish these scenarios.</p>
 <p><strong>Single-cell RNA sequencing</strong> (scRNA-seq) resolves this ambiguity by measuring gene expression in individual cells. The technology has evolved rapidly since its introduction in 2009 <em>[Citation Needed]</em>. Early methods captured hundreds of cells per experiment; current platforms routinely profile hundreds of thousands of cells, with some studies exceeding a million <em>[Citation Needed]</em>. Public repositories now contain tens of millions of single-cell transcriptomes spanning diverse tissues, developmental stages, disease states, and species. This scale approaches the data volumes that enabled large language models in natural language processing.</p>
 <p>The analogy between cells and documents runs deeper than dataset size. In language, words combine according to grammatical rules to form sentences that convey meaning. In cells, genes combine according to regulatory programs to form expression profiles that define cellular identity. A hepatocyte expresses genes for drug metabolism, albumin synthesis, and bile production; a neuron expresses genes for synaptic transmission, ion channels, and neurotransmitter receptors. These expression programs are not random: transcription factors activate coherent sets of target genes, signaling pathways coordinate cellular responses, and developmental programs establish cell type identities through cascades of regulatory events. Just as language models learn syntax and semantics by predicting masked words (see <a href="../part_2/p2-ch08-pretraining.html" class="quarto-xref"><span>Chapter 8</span></a>), single-cell foundation models might learn regulatory logic by predicting masked genes.</p>
+<div id="fig-cellular-lm-analogy" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cellular-lm-analogy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER A</strong></figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER B</strong></figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER C</strong></figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER D</strong></figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cellular-lm-analogy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;16.1: [Essential] Visual analogy. Panel A (Language Model): Sentence “The cat sat on the mat”; words as <strong>tokens</strong>; grammar rules; BERT predicts masked words. Panel B (Cellular Language Model): Cell expression profile as “sentence”; genes as tokens (~20,000 vocabulary); regulatory programs as “grammar”; Geneformer/scGPT predict masked genes. Panel C (Parallel Structure Table): NLP ↔︎ Single-Cell mapping. Panel D (What Models Learn): Language (syntax, semantics) ↔︎ Cellular (co-expression modules, cell type programs, perturbation effects).
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="sec-ch16-technical" class="level3" data-number="16.1.2">
 <h3 data-number="16.1.2" class="anchored" data-anchor-id="sec-ch16-technical"><span class="header-section-number">16.1.2</span> Technical Challenges and Data Characteristics</h3>
@@ -694,6 +739,51 @@ div.csl-indent {
 <p>Sparsity compounds the interpretation challenge. A typical single-cell transcriptome measures 20,000 genes, but any individual cell might have detectable expression for only 1,000 to 5,000 of them. The resulting data matrices are more than 90% zeros, requiring specialized computational approaches.</p>
 <p>Batch effects arise because technical variation between experiments often exceeds biological variation within them. Cells processed on different days, by different operators, or with different reagent lots may cluster by batch rather than by biological type. A model that learns batch-specific patterns rather than biological ones will fail to generalize. This challenge parallels the confounding issues examined in <a href="../part_5/p5-ch22-confounding.html" class="quarto-xref"><span>Chapter 22</span></a>, where technical artifacts can masquerade as biological signal.</p>
 <p>Dynamic range spans orders of magnitude, from highly expressed housekeeping genes to rare transcription factors present at a few copies per cell. Normalizing across this range while preserving biologically meaningful variation requires careful preprocessing choices that can affect downstream results.</p>
+<div id="fig-single-cell-challenges" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-single-cell-challenges-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER A</strong></figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER B</strong></figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER C</strong></figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER D</strong></figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-single-cell-challenges-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;16.2: [Essential] Data challenges. Panel A (Dropout/Sparsity): Gene × Cell matrix mostly zero (90%+); “Zero can mean silent OR undetected.” Panel B (Batch Effects): Uniform Manifold Approximation and Projection (UMAP) colored by cell type (mixed) vs batch (clustered); “Technical variation can exceed biological.” Panel C (Dynamic Range): Histogram spanning orders of magnitude; few copies for some genes. Panel D (How Foundation Models Address): Rank-based encoding handles range; large corpus learns robust patterns; contrastive objectives for batch-invariance.
+</figcaption>
+</figure>
+</div>
 <p>Despite these challenges, the scale of available data creates opportunities. Tens of millions of cells, spanning hundreds of cell types across dozens of tissues and multiple species, provide training corpora large enough to learn general representations. The question is whether foundation model architectures can extract biological signal from noisy, sparse, high-dimensional measurements.</p>
 </section>
 </section>
@@ -706,6 +796,51 @@ div.csl-indent {
 <p>Rather than using raw expression counts, <em>Geneformer</em> employs rank-based encoding that emphasizes relative expression. For each cell, genes are ranked by their expression level compared to their typical expression across the training corpus. This transformation highlights which genes are unusually active or silent in each cellular context. A gene ranked highly in a given cell is one whose expression deviates from its baseline, potentially indicating context-specific regulatory activation. The representation discards absolute counts, which vary with sequencing depth and capture efficiency, while preserving the relative ordering that reflects cellular state. This tokenization strategy differs fundamentally from the nucleotide-level approaches used in DNA language models (see <a href="../part_2/p2-ch05-representations.html" class="quarto-xref"><span>Chapter 5</span></a>).</p>
 <p>Pretraining uses a masked gene prediction objective analogous to BERT-style language modeling (see <a href="../part_2/p2-ch08-pretraining.html" class="quarto-xref"><span>Chapter 8</span></a>). A fraction of genes are masked in each cell, and the model learns to predict which genes were masked based on the remaining expression context. This forces the model to learn co-expression patterns: which genes tend to appear together at high ranks in the same cells, and which genes predict each other’s presence. The objective implicitly captures regulatory modules, signaling pathways, and cell-type-specific programs.</p>
 <p>After pretraining, <em>Geneformer</em> supports diverse downstream applications through <strong>fine-tuning</strong> or feature extraction. Cell type annotation achieves high accuracy even with limited labeled examples, leveraging general biological knowledge acquired during pretraining. The model identified candidate therapeutic targets for cardiomyopathy by analyzing how disease-associated genes fit within learned network structure, demonstrating potential for accelerating discovery in rare diseases where large disease-specific datasets are unavailable <span class="citation" data-cites="theodoris_geneformer_2023">(<a href="../bib/references.html#ref-theodoris_geneformer_2023" role="doc-biblioref">Theodoris et al. 2023</a>)</span>.</p>
+<div id="fig-geneformer-architecture" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-geneformer-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER A</strong></figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER B</strong></figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER C</strong></figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER D</strong></figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-geneformer-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;16.3: [High] Geneformer innovations. Panel A (Rank-Based Encoding): Raw expression → ranks relative to corpus baseline → tokens; “Highlights unusually active/silent genes.” Panel B (Architecture): Ranked gene sequence → transformer encoder (BERT-style) → masked gene prediction → gene/cell <strong>embeddings</strong>. Panel C (What Attention Learns): Network diagram showing gene-gene attention; correspondence to regulatory relationships; “Network hierarchy emerges without supervision.” Panel D (Transfer Applications): Cell type annotation, therapeutic target ID, disease gene prioritization.
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="sec-ch16-scgpt" class="level3" data-number="16.2.2">
 <h3 data-number="16.2.2" class="anchored" data-anchor-id="sec-ch16-scgpt"><span class="header-section-number">16.2.2</span> <em>scGPT</em>: Generative Pretraining for Single-Cell Analysis</h3>
@@ -729,7 +864,7 @@ div.csl-indent {
 </section>
 <section id="sec-ch16-perturbation" class="level2" data-number="16.3">
 <h2 data-number="16.3" class="anchored" data-anchor-id="sec-ch16-perturbation"><span class="header-section-number">16.3</span> Perturbation Response Prediction</h2>
-<p>The ultimate test of whether cellular foundation models understand regulatory biology is prediction: can they anticipate how cells will respond to interventions they have never seen? Perturbation prediction moves beyond pattern recognition toward mechanistic understanding. If a model has learned the causal structure of gene regulatory networks, it should predict the downstream consequences of knocking out a transcription factor or activating a signaling pathway. This capability would transform drug discovery and target identification (see <a href="../part_6/p6-ch27-drug-discovery.html" class="quarto-xref"><span>Chapter 27</span></a>), but achieving it requires models to distinguish causation from correlation in observational data.</p>
+<p>The ultimate test of whether cellular foundation models understand regulatory biology is prediction: can they anticipate how cells will respond to interventions they have never seen? Perturbation prediction moves beyond pattern recognition toward mechanistic understanding. If a model has learned the causal structure of gene regulatory networks, it should predict the downstream consequences of knocking out a transcription factor or activating a signaling pathway. This capability would transform drug discovery and target identification (<a href="../part_6/p6-ch27-drug-discovery.html" class="quarto-xref"><span>Chapter 27</span></a>), enabling <em>in silico</em> screening of perturbations before expensive wet-lab validation. The design-build-test-learn cycles that could exploit such predictions are examined in <a href="../part_6/p6-ch28-design.html#sec-ch28-dbtl" class="quarto-xref"><span>Section 28.6</span></a>. Achieving this capability requires models to distinguish causation from correlation in observational data.</p>
 <section id="sec-ch16-in-silico" class="level3" data-number="16.3.1">
 <h3 data-number="16.3.1" class="anchored" data-anchor-id="sec-ch16-in-silico"><span class="header-section-number">16.3.1</span> <em>In Silico</em> Experiment Promise</h3>
 <p>One of the most compelling applications of cellular foundation models is predicting how cells will respond to perturbations. If a model has learned regulatory logic from expression data, it should be able to anticipate the transcriptional consequences of knocking out a gene, activating a pathway, or treating with a drug. Such predictions could accelerate drug discovery by prioritizing candidates before expensive wet-lab validation, identify synthetic lethal interactions for cancer therapy, and suggest targets for diseases without known interventions.</p>
@@ -737,9 +872,54 @@ div.csl-indent {
 </section>
 <section id="sec-ch16-perturb-seq" class="level3" data-number="16.3.2">
 <h3 data-number="16.3.2" class="anchored" data-anchor-id="sec-ch16-perturb-seq"><span class="header-section-number">16.3.2</span> Perturb-seq and Foundation Model Training</h3>
-<p>Perturb-seq combines CRISPR-based genetic perturbations with single-cell RNA sequencing, measuring the transcriptional consequences of gene knockouts across thousands of cells <span class="citation" data-cites="dixit_perturb-seq_2016">(<a href="../bib/references.html#ref-dixit_perturb-seq_2016" role="doc-biblioref">Dixit et al. 2016</a>)</span>. These datasets provide supervised signal for perturbation prediction: given the pre-perturbation state and the identity of the perturbed gene, predict the post-perturbation expression profile.</p>
+<p>Perturb-seq combines CRISPR-based genetic perturbations with single-cell RNA sequencing, measuring the transcriptional consequences of gene knockouts across thousands of cells <span class="citation" data-cites="dixit_perturb-seq_2016">(<a href="../bib/references.html#ref-dixit_perturb-seq_2016" role="doc-biblioref">Dixit et al. 2016</a>)</span>. These functional screens complement the deep mutational scanning approaches covered in <a href="../part_1/p1-ch02-data.html#sec-ch02-dms" class="quarto-xref"><span>Section 2.4.4</span></a>, providing cellular rather than molecular readouts of perturbation effects. These datasets provide supervised signal for perturbation prediction: given the pre-perturbation state and the identity of the perturbed gene, predict the post-perturbation expression profile.</p>
 <p>Foundation models approach this task through transfer learning (see <a href="../part_2/p2-ch09-transfer.html" class="quarto-xref"><span>Chapter 9</span></a>). A model pretrained on tens of millions of unperturbed cells learns general representations of cellular state and gene-gene relationships. Fine-tuning on Perturb-seq data teaches the model to map these representations to perturbation outcomes. The hope is that general biological knowledge from pretraining will enable accurate predictions for perturbations not seen during fine-tuning, including knockouts of genes never directly perturbed in training data.</p>
 <p><em>scGPT</em> and <em>Geneformer</em> both demonstrate perturbation prediction capabilities, though performance varies across perturbation types and cellular contexts. Predictions are most accurate for well-characterized genes with many training examples and clear regulatory relationships. Performance degrades for poorly characterized genes, complex combinatorial perturbations, and cell types underrepresented in training data.</p>
+<div id="fig-perturbation-prediction" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-perturbation-prediction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER A</strong></figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER B</strong></figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER C</strong></figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER D</strong></figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-perturbation-prediction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;16.4: [High] Perturbation response. Panel A (The Task): Unperturbed cell + perturbation identity → predicted post-perturbation profile → comparison to Perturb-seq. Panel B (Training Data): CRISPR knockout library + single-cell readout; thousands of genes × cells; “Supervised signal.” Panel C (What Models Must Learn): Directional relationships (A activates B → KO A reduces B); network cascades; context dependence. Panel D (Current Performance): Strong for well-characterized genes; weak for poorly characterized; “Predictions most accurate where we need them least.”
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="sec-ch16-perturbation-limits" class="level3" data-number="16.3.3">
 <h3 data-number="16.3.3" class="anchored" data-anchor-id="sec-ch16-perturbation-limits"><span class="header-section-number">16.3.3</span> Limitations of Current Approaches</h3>
@@ -767,7 +947,7 @@ div.csl-indent {
 </section>
 <section id="sec-ch16-integration" class="level2" data-number="16.5">
 <h2 data-number="16.5" class="anchored" data-anchor-id="sec-ch16-integration"><span class="header-section-number">16.5</span> Cross-Modality Integration</h2>
-<p>Single-cell technologies have expanded beyond transcriptomics to profile chromatin accessibility, DNA methylation, protein levels, and spatial position. Each modality captures a different aspect of cellular state: expression reflects current activity, accessibility reflects regulatory potential, methylation reflects developmental history. Integrating these perspectives into unified representations requires solving a fundamental challenge: aligning cells profiled with different assays when the feature spaces share no direct correspondence. Foundation model approaches to this integration problem combine learned embeddings with biological prior knowledge, producing unified atlases that leverage all available modalities. These integration challenges anticipate the broader multi-omics approaches examined in <a href="p4-ch19-multi-omics.html" class="quarto-xref"><span>Chapter 19</span></a>.</p>
+<p>Single-cell technologies have expanded beyond transcriptomics to profile chromatin accessibility, DNA methylation, protein levels, and spatial position. Each modality captures a different aspect of cellular state: expression reflects current activity, accessibility reflects regulatory potential, methylation reflects developmental history. Integrating these perspectives into unified representations requires solving a fundamental challenge: aligning cells profiled with different assays when the feature spaces share no direct correspondence. Foundation model approaches to this integration problem combine learned embeddings with biological prior knowledge, producing unified atlases that leverage all available modalities. These integration challenges anticipate the broader multi-omics approaches examined in <a href="p4-ch19-multi-omics.html" class="quarto-xref"><span>Chapter 19</span></a>, where the principles of intermediate fusion and shared latent spaces extend beyond single-cell to patient-level integration of genomics, transcriptomics, proteomics, and clinical data.</p>
 <section id="sec-ch16-unpaired" class="level3" data-number="16.5.1">
 <h3 data-number="16.5.1" class="anchored" data-anchor-id="sec-ch16-unpaired"><span class="header-section-number">16.5.1</span> Unpaired Integration Challenge</h3>
 <p>Single-cell experiments often profile different modalities in different cells. A study might include scRNA-seq data from one set of cells, scATAC-seq data from another set, and perhaps a small subset with both modalities measured simultaneously through multiome protocols. Integrating these data into a unified atlas requires aligning cells across modalities when the feature spaces are entirely different.</p>
@@ -779,6 +959,51 @@ div.csl-indent {
 <p>The architecture has three key components. Modality-specific <strong>variational autoencoders</strong> provide encoders that map cells to a shared low-dimensional latent space and decoders that reconstruct modality-specific features. Generative distributions are tailored to each modality: negative binomial for count data, appropriate alternatives for accessibility.</p>
 <p>The feature graph encodes biological prior knowledge about relationships between features across modalities. Nodes represent genes, peaks, and other genomic features. Edges connect ATAC peaks to genes they might regulate based on genomic proximity or chromatin conformation data. Edges connect genes to transcription factors that bind their promoters. This graph is provided as input rather than learned, allowing incorporation of external knowledge from databases and literature.</p>
 <p>A graph variational autoencoder learns feature embeddings from the guidance graph. These embeddings are used in the decoders, tying different modalities to a common regulatory backbone. Biologically related features (a gene and its putative enhancer) have similar representations, helping align the latent spaces.</p>
+<div id="fig-glue-architecture" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-glue-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER A</strong></figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER B</strong></figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER C</strong></figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20D.png" class="img-fluid figure-img"></p>
+<figcaption><strong>FIGURE PLACEHOLDER D</strong></figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-glue-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;16.5: [High] <strong>Multi-omics</strong> integration. Panel A (Unpaired Integration Problem): RNA-seq in cells A,B,C; ATAC-seq in D,E,F; no direct correspondence; goal: unified embedding. Panel B (GLUE Architecture): Modality-specific VAE encoders; feature graph linking genes ↔︎ peaks; shared latent space; adversarial alignment. Panel C (Feature Graph as Prior): Nodes (genes, peaks, <strong>transcription factor</strong> (TF) sites); edges (proximity, regulatory); graph VAE learns embeddings; “Biological knowledge constrains alignment.” Panel D (Applications): Cross-modal prediction, regulatory inference, triple-omics integration.
+</figcaption>
+</figure>
+</div>
 <p>Adversarial alignment ensures that cell embeddings from different modalities are truly integrated. A discriminator tries to distinguish which modality produced each embedding, and encoders are trained to fool the discriminator. This forces the encoders to produce modality-invariant embeddings where cells from different assays occupy a shared manifold reflecting biological rather than technical variation.</p>
 </section>
 <section id="sec-ch16-cross-modal-apps" class="level3" data-number="16.5.3">
@@ -795,7 +1020,7 @@ div.csl-indent {
 <section id="sec-ch16-batch-effects" class="level3" data-number="16.6.1">
 <h3 data-number="16.6.1" class="anchored" data-anchor-id="sec-ch16-batch-effects"><span class="header-section-number">16.6.1</span> Batch Effects and Technical Artifacts</h3>
 <p>Batch effects remain the dominant challenge in single-cell analysis. Technical variation between experiments, protocols, and platforms can exceed biological variation, causing cells to cluster by batch rather than by type. Foundation models pretrained on diverse data may be more robust to batch effects than models trained on narrow datasets, but robustness is not guaranteed.</p>
-<p>The problem is particularly acute when applying pretrained models to new data from platforms or protocols not represented in pretraining. A model trained predominantly on 10x Genomics data may perform poorly on Smart-seq2 data, not because of biological differences but because of systematic technical differences in capture efficiency, amplification bias, and gene detection. Evaluation must carefully distinguish genuine biological generalization from memorization of technical signatures. These evaluation challenges parallel the broader methodological concerns discussed in <a href="../part_5/p5-ch21-eval.html" class="quarto-xref"><span>Chapter 21</span></a>.</p>
+<p>The problem is particularly acute when applying pretrained models to new data from platforms or protocols not represented in pretraining. A model trained predominantly on 10x Genomics data may perform poorly on Smart-seq2 data, not because of biological differences but because of systematic technical differences in capture efficiency, amplification bias, and gene detection. Evaluation must carefully distinguish genuine biological generalization from memorization of technical signatures. These evaluation challenges parallel the broader methodological concerns discussed in <a href="../part_5/p5-ch21-eval.html" class="quarto-xref"><span>Chapter 21</span></a>, while specific strategies for detecting and mitigating batch-driven confounding appear in <a href="../part_5/p5-ch22-confounding.html#sec-ch22-batch-effects" class="quarto-xref"><span>Section 22.2.2</span></a>.</p>
 </section>
 <section id="sec-ch16-imbalance" class="level3" data-number="16.6.2">
 <h3 data-number="16.6.2" class="anchored" data-anchor-id="sec-ch16-imbalance"><span class="header-section-number">16.6.2</span> Cell Type Imbalance</h3>
@@ -805,7 +1030,7 @@ div.csl-indent {
 <section id="sec-ch16-evaluation" class="level3" data-number="16.6.3">
 <h3 data-number="16.6.3" class="anchored" data-anchor-id="sec-ch16-evaluation"><span class="header-section-number">16.6.3</span> Evaluation Complexity</h3>
 <p>Evaluating single-cell foundation models is complicated by uncertain ground truth. Cell type labels in training data reflect current annotations that may be incomplete or inconsistent. Different studies use different annotation schemes, different levels of granularity, and different evidence standards. Performance metrics conflate model quality with annotation quality.</p>
-<p>Perturbation predictions face similar challenges. The “correct” transcriptional response to a perturbation depends on cell type, context, and measurement technology. Even well-characterized perturbations produce variable responses across replicates. Evaluation protocols must acknowledge these uncertainties rather than treating benchmarks as definitive ground truth. The broader principles of rigorous evaluation methodology from <a href="../part_5/p5-ch21-eval.html" class="quarto-xref"><span>Chapter 21</span></a> apply here, though single-cell data introduce domain-specific complications.</p>
+<p>Perturbation predictions face similar challenges. The “correct” transcriptional response to a perturbation depends on cell type, context, and measurement technology. Even well-characterized perturbations produce variable responses across replicates. Evaluation protocols must acknowledge these uncertainties rather than treating benchmarks as definitive ground truth. The broader principles of rigorous evaluation methodology from <a href="../part_5/p5-ch21-eval.html" class="quarto-xref"><span>Chapter 21</span></a> apply here, while benchmark construction considerations specific to cellular models are addressed in <a href="../part_5/p5-ch20-benchmarks.html#sec-ch20-benchmark-construction" class="quarto-xref"><span>Section 20.5</span></a>. Single-cell data introduce domain-specific complications that require careful attention to leakage and distribution shift.</p>
 </section>
 <section id="sec-ch16-causality" class="level3" data-number="16.6.4">
 <h3 data-number="16.6.4" class="anchored" data-anchor-id="sec-ch16-causality"><span class="header-section-number">16.6.4</span> Causality and Mechanism</h3>

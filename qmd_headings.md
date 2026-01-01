@@ -875,33 +875,33 @@
 
 ### part_6/p6-ch25-clinical-risk.qmd
 # Clinical Risk Prediction {#sec-ch25-clinical-risk}
-## From Polygenic Scores to Foundation Model Features
-## Defining Clinical Risk Prediction
-## Feature Integration Architectures
-## EHR Integration and Phenotype Embeddings
-###  EEPRS Framework
-### Understanding When Embeddings Help
-### PRS-PheWAS for Clinical Interpretation
-### Implementation Considerations
-### Integration with Foundation Model Features
-## Temporal Modeling Architectures
-## Evaluation for Clinical Deployment
-### Discrimination
-### Calibration
-### Clinical Utility
-###  Validation Hierarchy
-## Uncertainty Quantification
-## Fairness and Health Equity
-## Clinical Integration
-### Workflow Integration Patterns
-### System Architecture
-### Post-Deployment Monitoring
-## Regulatory and Quality Frameworks
-## Case Studies
-### Cardiometabolic Risk Stratification
-### Oncology Prognosis
-### Pharmacogenomic Adverse Event Prediction
-## Translation as the Test
+## From Polygenic Scores to Foundation Model Features {#sec-ch25-pgs-to-fm}
+## Defining Clinical Risk Prediction {#sec-ch25-defining-risk}
+## Feature Integration Architectures {#sec-ch25-feature-integration}
+## EHR Integration and Phenotype Embeddings {#sec-ch25-ehr-integration}
+### EEPRS Framework {#sec-ch25-eeprs}
+### Understanding When Embeddings Help {#sec-ch25-embeddings-help}
+### PRS-PheWAS for Clinical Interpretation {#sec-ch25-prs-phewas}
+### Implementation Considerations {#sec-ch25-eeprs-implementation}
+### Integration with Foundation Model Features {#sec-ch25-eeprs-fm}
+## Temporal Modeling Architectures {#sec-ch25-temporal-modeling}
+## Evaluation for Clinical Deployment {#sec-ch25-evaluation}
+### Discrimination {#sec-ch25-discrimination}
+### Calibration {#sec-ch25-calibration}
+### Clinical Utility {#sec-ch25-clinical-utility}
+### Validation Hierarchy {#sec-ch25-validation-hierarchy}
+## Uncertainty Quantification {#sec-ch25-uncertainty}
+## Fairness and Health Equity {#sec-ch25-fairness}
+## Clinical Integration {#sec-ch25-clinical-integration}
+### Workflow Integration Patterns {#sec-ch25-workflow-patterns}
+### System Architecture {#sec-ch25-system-architecture}
+### Post-Deployment Monitoring {#sec-ch25-monitoring}
+## Regulatory and Quality Frameworks {#sec-ch25-regulatory}
+## Case Studies {#sec-ch25-case-studies}
+### Cardiometabolic Risk Stratification {#sec-ch25-case-cardio}
+### Oncology Prognosis {#sec-ch25-case-oncology}
+### Pharmacogenomic Adverse Event Prediction {#sec-ch25-case-pharmacogenomics}
+## Translation as the Test {#sec-ch25-translation-test}
 
 ### part_6/p6-ch26-rare-disease.qmd
 # Rare Disease Diagnosis {#sec-ch26-rare-disease}
