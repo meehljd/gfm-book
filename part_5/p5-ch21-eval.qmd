@@ -69,22 +69,7 @@ The solution to homology-driven leakage is to explicitly account for sequence si
 
 Two tools dominate homology-aware splitting in practice. CD-HIT clusters sequences by greedy incremental clustering, assigning each sequence to an existing cluster if it exceeds a similarity threshold to the cluster representative, or creating a new cluster otherwise [@li_cd-hit_2006]. The algorithm is fast and scales to millions of sequences. For proteins, a typical workflow clusters at 40% sequence identity for stringent splitting or 70% for moderate splitting. For nucleotide sequences, thresholds are typically higher (80-95%) due to different evolutionary rates.
 
-```bash
-# Cluster proteins at 40% identity
-cd-hit -i proteins.fasta -o proteins_clustered -c 0.4 -n 2
-
-# Cluster nucleotides at 90% identity  
-cd-hit-est -i sequences.fasta -o sequences_clustered -c 0.9 -n 8
-```
-
 MMseqs2 offers faster clustering with similar sensitivity, becoming essential for large-scale analyses [@steinegger_mmseqs2_2017]. The tool supports multiple clustering modes and can handle databases with hundreds of millions of sequences. For foundation model pretraining where deduplication affects billions of sequences, MMseqs2 is often the only practical option.
-
-```bash
-# Create database and cluster at 30% identity
-mmseqs createdb proteins.fasta DB
-mmseqs cluster DB DB_clu tmp --min-seq-id 0.3
-mmseqs createtsv DB DB DB_clu clusters.tsv
-```
 
 The choice of identity threshold involves trade-offs. Stricter thresholds (lower identity for proteins, higher for nucleotides) create harder generalization tests but may leave insufficient data for training if clusters are small. Permissive thresholds retain more training data but allow more leakage through homologous sequences. For protein function prediction, 30-40% identity thresholds are common; for **variant effect prediction** within genes (@sec-ch14-vep-fm), even stricter gene-family-level splits may be necessary.
 

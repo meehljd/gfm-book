@@ -158,7 +158,7 @@ At the individual and population level, benchmarks assess whether models improve
 
 **Polygenic score** (PGS) benchmarks evaluate how well genotype-derived scores predict disease risk or quantitative traits (@sec-ch03-pgs-construction). Common evaluation settings include within-biobank evaluation, where a single large cohort is partitioned into training and test sets, and cross-biobank evaluation, where models trained in one population are tested in another. The integration of foundation model features with PGS approaches represents an emerging research direction (@sec-ch25-pgs-to-fm).
 
-Metrics depend on the phenotype. For quantitative traits, benchmarks report the coefficient of determination ($R^2$) or incremental $R^2$ over non-genetic covariates. For binary disease outcomes, auROC and area under the precision-**recall** curve (auPRC) quantify discrimination. Calibration metrics assess whether predicted risks match observed event rates (@sec-ch23-calibration). The clinical utility of PGS, discussed in @sec-ch25-clinical-risk, depends on all these properties: a score may discriminate well (high auROC) while being poorly calibrated (predicted risks don't match actual event rates).
+Metrics depend on the phenotype. For quantitative traits, benchmarks report the coefficient of determination ($R^2$) or incremental $R^2$ over non-genetic covariates. For binary disease outcomes, auROC and area under the precision-**recall** curve (auPRC) quantify discrimination. Calibration metrics assess whether predicted risks match observed event rates (@sec-ch23-calibration). The clinical utility of PGS, discussed in @sec-ch25-clinical-risk, depends on all these properties: a score may discriminate well (high auROC) while being poorly calibrated (predicted risks do not match actual event rates).
 
 Cross-population evaluation is particularly important because PGS portability is a major limitation of current methods (@sec-ch03-portability). Benchmarks stratified by ancestry typically reveal substantial performance degradation from European ancestry (where most GWAS have been conducted) to other populations. This degradation stems from multiple sources: different **linkage disequilibrium** patterns mean that tag SNPs identify different causal variants, population-specific variants are absent from training data, and effect sizes may differ across populations due to gene-environment interactions.
 
@@ -280,7 +280,7 @@ Benchmark test sets sample from the same distribution as training sets. Deployme
 
 ### Calibration Requirements {#sec-ch20-calibration-requirements}
 
-Clinical deployment requires not just accurate rankings but accurate probability estimates (@sec-ch23-calibration). A variant classifier that achieves 0.95 auROC by assigning probability 0.9 to all pathogenic variants and 0.3 to all benign variants discriminates well but provides miscalibrated uncertainty. Clinical decisions that depend on thresholded predictions (reporting variants above a certain probability) will perform poorly if those probabilities don't reflect actual pathogenicity rates.
+Clinical deployment requires not just accurate rankings but accurate probability estimates (@sec-ch23-calibration). A variant classifier that achieves 0.95 auROC by assigning probability 0.9 to all pathogenic variants and 0.3 to all benign variants discriminates well but provides miscalibrated uncertainty. Clinical decisions that depend on thresholded predictions (reporting variants above a certain probability) will perform poorly if those probabilities do not reflect actual pathogenicity rates.
 
 Most benchmark metrics emphasize discrimination over calibration. auROC is invariant to monotonic transformations of predicted probabilities. Correlation measures rank preservation. As a result, models may be optimized for benchmark success through strategies that damage calibration. The benchmark-deployment gap for calibration can be large even when discrimination metrics are excellent.
 
@@ -314,7 +314,7 @@ Modality coverage remains uneven: long-read sequencing data is scarce in benchma
 
 Clinical endpoints are underrepresented: most benchmarks use molecular surrogates rather than hard clinical endpoints. Disease incidence, progression, treatment response, and patient-reported outcomes are rarely the direct prediction target. The gap between molecular proxy accuracy and clinical utility remains poorly characterized.
 
-These gaps mean that strong benchmark performance may not predict utility for underserved populations, understudied variant classes, or clinical applications that depend on endpoints the benchmarks don't measure.
+These gaps mean that strong benchmark performance may not predict utility for underserved populations, understudied variant classes, or clinical applications that depend on endpoints the benchmarks do not measure.
 
 ## The Proxy Problem {#sec-ch20-proxy-problem}
 
