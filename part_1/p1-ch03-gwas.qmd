@@ -55,7 +55,7 @@ The Manhattan plot reveals both the successes and limitations of GWAS at a glanc
 Quantile-quantile (Q-Q) plots complement Manhattan plots by assessing whether the observed p-value distribution matches theoretical expectations under the null hypothesis. Systematic deviation from the diagonal (genomic inflation) suggests either true polygenic signal or residual confounding from population structure. The genomic inflation factor *λ* quantifies this deviation, with values substantially above 1.0 warranting investigation of potential confounders.
 
 ::: {#fig-manhattan-anatomy}
-![FIGURE PLACEHOLDER](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
+![FIGURE PLACEHOLDER](../figs/part_1/ch03/01-fig-manhattan-anatomy.png)
 
 [Essential] Annotated Manhattan plot from a real or realistic GWAS (e.g., height or CAD). Key annotations: (1) Genome-wide significance threshold at $-\log_{10}(5 \times 10^{-8}) \approx 7.3$; (2) Example peak with lead SNP labeled; (3) Width of peak showing LD extent (many correlated variants, not just one); (4) Chromosomes color-alternated along x-axis; (5) Inset zoom on one peak showing how multiple variants exceed threshold, illustrating that GWAS identifies loci, not causal variants. Include Q-Q plot inset showing expected vs observed p-value distribution with genomic inflation factor $\lambda$ annotated.
 :::
@@ -73,7 +73,7 @@ This correction is imperfect. Subtle structure not captured by the included PCs,
 Before GWAS can identify specific variants, a more fundamental question must be answered: how much of the variation in a trait is attributable to genetics at all? A trait entirely determined by environment would yield no GWAS hits regardless of sample size. A trait entirely determined by genetics would, in principle, be fully predictable from genotype. **Heritability** quantifies where traits fall along this spectrum, but the concept is more subtle than it first appears, and different estimation methods yield systematically different answers.
 
 ::: {#fig-heritability-decomposition}
-![FIGURE PLACEHOLDER](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
+![FIGURE PLACEHOLDER](../figs/part_1/ch03/02-fig-heritability-decomposition.png)
 
 [High] Conceptual diagram showing nested components of phenotypic variance. Outer ring: Total phenotypic variance ($100\%$). First partition: Genetic vs Environmental components (e.g., $80/20$ for height). Within genetic: Additive (narrow-sense $h^2$) vs non-additive (dominance, epistasis). Within additive: SNP-heritability (what GWAS can capture) vs "missing heritability" (rare variants, structural variants, imperfect tagging). Annotate with approximate values for a well-studied trait like height.
 :::
@@ -115,11 +115,11 @@ When a GWAS identifies a significant association at variant *j*, three possibili
 Fine-mapping methods attempt to resolve this ambiguity by modeling LD structure explicitly. Reference panels from the 1000 Genomes Project (@sec-ch02-1000genomes) and gnomAD (@sec-ch02-gnomad) enable LD calculation across diverse populations, providing the correlation matrices these methods require. Statistical fine-mapping narrows the set of plausible causal variants but often cannot identify a single culprit. Incorporating functional priors from regulatory models and variant effect predictors can further prioritize candidates; this integration of foundation model representations into fine-mapping is examined in @sec-ch14-fm-paradigm.
 
 ::: {#fig-ld-tag-causal layout-ncol=3}
-![FIGURE PLACEHOLDER A](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
+![FIGURE PLACEHOLDER A](../figs/part_1/ch03/03-A-fig-ld-tag-causal.png)
 
-![FIGURE PLACEHOLDER B](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B)
+![FIGURE PLACEHOLDER B](../figs/part_1/ch03/03-B-fig-ld-tag-causal.png)
 
-![FIGURE PLACEHOLDER C](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20C)
+![FIGURE PLACEHOLDER C](../figs/part_1/ch03/03-C-fig-ld-tag-causal.png)
 
 [Essential] Three-panel figure. Panel A: Haplotype diagram showing how LD creates correlation between variants on the same chromosome segment; show example haplotypes with causal variant (star) and tag variants traveling together. Panel B: $r^2$ matrix (triangular heatmap) for a genomic region showing block structure of LD. Panel C: Same causal variant shown in two populations with different LD structure: in one population, tags are highly correlated with causal variant; in another, the correlation is weaker, illustrating why portability fails.
 :::
@@ -207,9 +207,9 @@ The weight $w_j$ reflects the estimated effect of variant $j$, and $g_{ij}$ is t
 
 
 ::: {#fig-pgs-construction layout-ncol=2}
-![FIGURE PLACEHOLDER A](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20A)
+![FIGURE PLACEHOLDER A](../figs/part_1/ch03/04-A-fig-pgs-construction.png)
 
-![FIGURE PLACEHOLDER B](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER%20B)
+![FIGURE PLACEHOLDER B](../figs/part_1/ch03/04-B-fig-pgs-construction.png)
 
 [High] Side-by-side comparison of C+T vs LD-aware Bayesian methods. Left panel (C+T): Start with GWAS summary statistics → apply p-value threshold → clump by LD → retain independent lead SNPs → weight by effect size. Show visually how most variants are discarded. Right panel (LDpred/PRS-CS): Same summary statistics → model LD structure jointly → shrink effects toward zero based on prior → retain all variants with modulated weights. Highlight that C+T discards information while Bayesian methods model it.
 :::
@@ -290,7 +290,7 @@ The vast majority of GWAS participants have been of European ancestry: as of 201
 Population structure creates systematic portability challenges that extend beyond GWAS to all genomic models. The sources of this population stratification are detailed in @sec-ch02-population, while systematic analysis of ancestry confounding appears in @sec-ch22-ancestry-confounding. Training data diversity requirements for foundation models that generalize across populations are discussed in @sec-ch02-constraints.
 
 ::: {#fig-pgs-portability}
-![FIGURE PLACEHOLDER](https://placehold.co/300x200?text=FIGURE%20PLACEHOLDER)
+![FIGURE PLACEHOLDER](../figs/part_1/ch03/05-fig-pgs-portability.png)
 
 [High] Bar chart showing relative prediction accuracy ($R^2$ or auROC ratio) of European-derived PGS when applied to different ancestry groups. European as reference ($100\%$), then decreasing accuracy for East Asian, South Asian, Hispanic/Latino, and African-ancestry populations (often $25\%$--$60\%$ of European performance). Include error bars. Overlay or annotate factors contributing to the gap: LD differences, allele frequency differences, potential effect heterogeneity, training sample size disparities.
 
