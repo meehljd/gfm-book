@@ -80,7 +80,7 @@ For genomic foundation models, scaling relationships are less well characterized
 
 Several genomic foundation model families have reported scaling experiments, though systematic scaling laws comparable to NLP remain elusive.
 
-The *Nucleotide Transformer* family provides perhaps the clearest genomic scaling data [@dalla-torre_nucleotide_2023]. Performance on downstream benchmarks improves consistently with parameter count across models from 50 million to 2.5 billion parameters. The largest models (trained on multi-species data) outperform smaller models trained on human sequences alone, suggesting that cross-species data provides effective scaling even when human-specific performance is the target. Training compute scaled from approximately 10^19 to 10^21 FLOPs across the model family.
+The *Nucleotide Transformer* family provides perhaps the clearest genomic scaling data [@dalla-torre_nucleotide_2023]. Performance on downstream benchmarks improves consistently with parameter count across models from 50 million to 2.5 billion parameters. The largest models (trained on multi-species data) outperform smaller models trained on human sequences alone, suggesting that cross-species data provides effective scaling even when human-specific performance is the target. Training compute scaled from approximately $10^19$ to $10^21$ FLOPs across the model family.
 
 ::: {#fig-scaling-laws layout-ncol=3}
 ![**FIGURE PLACEHOLDER A**](../figs/part_3/ch10/02-A-fig-scaling-laws.png)
@@ -89,7 +89,7 @@ The *Nucleotide Transformer* family provides perhaps the clearest genomic scalin
 
 ![**FIGURE PLACEHOLDER C**](../figs/part_3/ch10/02-C-fig-scaling-laws.png)
 
-[Essential] Three-panel figure illustrating scaling relationships. Panel A (Loss vs. Parameters): Log-log plot showing validation loss decreasing with parameter count; data points from *Nucleotide Transformer* family (50M to 2.5B); *ESM-2* scaling curve overlaid for comparison; power law fit line with exponent annotation. Panel B (Compute-Optimal Frontier): Iso-performance contours on parameter × data plane; Chinchilla optimal line showing balanced allocation; undertrained region shaded; genomic data ceiling annotated (approximately 10^12 nucleotides). Panel C (Emergent Capabilities): Capability (*y*-axis) vs. scale (*x*-axis, log); multiple curves showing different capabilities emerging at different scales; threshold markers where capabilities "switch on."
+[Essential] Three-panel figure illustrating scaling relationships. Panel A (Loss vs. Parameters): Log-log plot showing validation loss decreasing with parameter count; data points from *Nucleotide Transformer* family (50M to 2.5B); *ESM-2* scaling curve overlaid for comparison; power law fit line with exponent annotation. Panel B (Compute-Optimal Frontier): Iso-performance contours on parameter × data plane; Chinchilla optimal line showing balanced allocation; undertrained region shaded; genomic data ceiling annotated (approximately $10^12$ nucleotides). Panel C (Emergent Capabilities): Capability (*y*-axis) vs. scale (*x*-axis, log); multiple curves showing different capabilities emerging at different scales; threshold markers where capabilities "switch on."
 :::
 
 *ESM-2* demonstrated similar scaling for protein language models, with performance on structure prediction and variant effect tasks improving smoothly from 8 million to 15 billion parameters [@lin_esm-2_2022] (@sec-ch12-protein-lm). The largest *ESM-2* models approach the structure prediction accuracy of *AlphaFold2* using only single-sequence input, a capability entirely absent in smaller models. This represents a qualitative capability threshold crossed through scale.
@@ -101,7 +101,7 @@ The *Nucleotide Transformer* family provides perhaps the clearest genomic scalin
 
 The scaling law framework has direct implications for model development decisions in genomics, though the constraints differ fundamentally from natural language processing.
 
-Unlike natural language, where text data is effectively unlimited, genomic sequence data faces hard constraints. Reference genomes for well-studied species total perhaps 10^11 to 10^12 nucleotides. Population-level variant data can expand this somewhat, but the effective diversity may be lower than raw counts suggest. In such data-constrained regimes, smaller models trained to convergence may outperform larger models that are undertrained.
+Unlike natural language, where text data is effectively unlimited, genomic sequence data faces hard constraints. Reference genomes for well-studied species total perhaps $10^11$ to $10^12$ nucleotides. Population-level variant data can expand this somewhat, but the effective diversity may be lower than raw counts suggest. In such data-constrained regimes, smaller models trained to convergence may outperform larger models that are undertrained.
 
 Academic groups typically face stricter compute constraints than industry labs. Given fixed compute budgets, the Chinchilla framework suggests allocating resources toward longer training of smaller models rather than abbreviated training of larger models. A 500 million parameter model trained for 10 epochs on diverse genomic data may outperform a 5 billion parameter model trained for 1 epoch on the same data.
 
@@ -112,7 +112,7 @@ Cross-species data offers a potential path around genomic data limitations. Trai
 
 Perhaps the most intriguing aspect of foundation model scaling is the emergence of qualitatively new capabilities at sufficient scale. Emergence refers to abilities that are absent or negligible in smaller models but appear discontinuously as models grow.
 
-In large language models, emergent capabilities include multi-step reasoning, code generation, and in-context learning. These capabilities appear at model scales of roughly 10^10 parameters and above, with no clear precursor in smaller models.
+In large language models, emergent capabilities include multi-step reasoning, code generation, and in-context learning. These capabilities appear at model scales of roughly $10^10$ parameters and above, with no clear precursor in smaller models.
 
 Genomic foundation models exhibit analogous emergence, though the capability thresholds are less well characterized. The most striking example involves structural understanding from sequence: *ESM-2* at sufficient scale produces contact maps and secondary structure predictions from single sequences with accuracy approaching multiple sequence alignment methods [@lin_esm-2_2022]. Smaller *ESM* models show no meaningful structural understanding. This capability emerges at approximately 650 million parameters and continues improving with scale.
 
@@ -253,7 +253,7 @@ Organizations with unique large-scale datasets (clinical biobanks, pharmaceutica
 
 The decision framework involves comparing expected performance against resource requirements.
 
-Training a foundation model from scratch requires 10^20 to 10^22 FLOPs, translating to thousands of GPU-hours and tens of thousands of dollars at current cloud prices. Fine-tuning requires 10^16 to 10^18 FLOPs, often achievable in hours on single GPUs. Inference with frozen embeddings requires only forward passes.
+Training a foundation model from scratch requires $10^20$ to $10^22$ FLOPs, translating to thousands of GPU-hours and tens of thousands of dollars at current cloud prices. Fine-tuning requires $10^16$ to $10^18$ FLOPs, often achievable in hours on single GPUs. Inference with frozen embeddings requires only forward passes.
 
 Foundation model pretraining requires billions of tokens. Fine-tuning requires thousands to tens of thousands of labeled examples. Zero-shot and embedding approaches require only evaluation data.
 
