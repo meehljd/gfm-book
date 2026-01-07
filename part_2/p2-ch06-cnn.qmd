@@ -3,6 +3,8 @@
 > The network discovered what biologists had spent decades cataloging---without ever being told what to look for.
 
 ::: {.callout-note title="Chapter Overview"}
+**Estimated reading time:** 35-45 minutes
+
 **Prerequisites:** Understanding of one-hot encoding and tokenization (see @sec-ch05-representations), basic familiarity with neural network concepts (layers, activation functions, gradient descent). No prior deep learning architecture knowledge required.
 
 **You will learn:**
@@ -198,6 +200,17 @@ With a trained sequence-to-chromatin model, variant scoring becomes straightforw
 Validation used allelic imbalance data from digital genomic footprinting. For variants showing allele-specific DNase I sensitivity, *DeepSEA* predictions correlated with experimentally observed biases: variants predicted to increase accessibility tended to show higher accessibility on the corresponding allele. This correlation would not exist if the model merely learned coarse sequence features insensitive to point mutations.
 
 Systematic characterization of regulatory elements requires more than single-variant scoring. **In silico saturation mutagenesis** predicts effects of all possible substitutions across a regulatory element, identifying positions where mutations most strongly perturb function. These critical positions typically correspond to transcription factor binding motifs, providing motif discovery that emerges from learned representations rather than explicit sequence alignment. The approach enables characterization of any regulatory element, including those in cell types or conditions never experimentally profiled. Foundation models extend these principles to longer contexts and richer representations (@sec-ch17-vep-fm), while clinical integration requires calibration approaches that map model outputs to actionable categories (@sec-ch28-rare-disease).
+
+::: {.callout-important title="Checkpoint: What You Should Understand So Far"}
+Before continuing, make sure you can explain:
+
+1. **How convolutional filters work**: Learned weight patterns that slide across sequences, producing high activation when input matches the learned motif
+2. **Why multi-task learning helps**: Shared representations across 919 chromatin features prevent overfitting and discover general regulatory patterns
+3. **In silico mutagenesis**: Predict effects by comparing reference vs. alternative sequence predictions---no variant training data required
+4. **The receptive field limitation**: CNNs can only integrate information within their architectural context window (typically 1-10 kb)
+
+If any of these are unclear, re-read the relevant sections before proceeding. The remaining sections build on these foundations.
+:::
 
 
 ## Cell-Type Specificity and Regulatory Grammar {#sec-ch06-basset}

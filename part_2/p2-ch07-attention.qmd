@@ -3,6 +3,8 @@
 > Convolutions ask: what local pattern exists here? Attention asks: what distant information matters here?
 
 ::: {.callout-note title="Chapter Overview"}
+**Estimated reading time:** 40-50 minutes
+
 **Prerequisites:** This chapter builds on the convolutional architectures from @sec-ch06-cnn (particularly the receptive field concept) and the tokenization/embedding strategies from @sec-ch05-representations. Familiarity with matrix multiplication and basic neural network concepts (from @sec-apx-a-dl) will help with the mathematical sections.
 
 **Learning Objectives:** After completing this chapter, you should be able to:
@@ -166,6 +168,17 @@ This specialization emerges without supervision. The model discovers that genomi
 :::
 
 The multi-head structure also provides redundancy that aids training. If one head fails to learn useful patterns, others can compensate. Gradient flow through multiple parallel paths stabilizes optimization. For genomic applications where training data may be limited compared to natural language corpora, this redundancy helps prevent individual heads from overfitting to spurious correlations. The number of heads represents a design choice: too few heads limit the diversity of learnable patterns, while too many heads reduce the dimensionality available to each head, potentially limiting their individual expressiveness. Most genomic transformers use 8 to 16 heads, balancing diversity against per-head capacity.
+
+::: {.callout-important title="Checkpoint: Core Attention Concepts"}
+Before continuing to positional encodings, verify you understand:
+
+1. **Query-Key-Value mechanism**: Queries ask "what do I need?", keys advertise "what do I have?", values carry "what I'll send"
+2. **Scaled dot-product**: Scores = $(Q \cdot K) / \sqrt{d_k}$ prevents softmax saturation
+3. **Softmax normalization**: Converts scores to attention weights (probabilities summing to 1)
+4. **Multi-head attention**: Parallel attention operations that specialize for different relationship types
+
+**Quick self-test**: If a CTCF binding site needs to "know" about a promoter 10kb away, which attention component enables this direct communication? (Answer: The weighted aggregation of value vectors based on query-key similarity allows any position to receive information from any other position.)
+:::
 
 
 ## Positional Encoding {#sec-ch07-positional-encoding}
