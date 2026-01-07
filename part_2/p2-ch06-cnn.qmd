@@ -39,7 +39,9 @@ Convolutional filters are learned position weight matrices. The difference from 
 :::
 
 ::: {.callout-note title="Worked Example: Convolution Computation"}
-Consider a filter of width 4 learning to detect the TATA box motif. After training, the filter weights might be:
+Consider a filter of width 4 learning to detect the TATA box motif. Why width 4? The TATA box consensus is approximately 4-6 bp, so a 4-bp filter can capture its core pattern. Filters narrower than the motif miss context; filters much wider waste capacity on flanking sequence that varies between binding sites. The first CNN layer typically uses multiple filter widths (4, 8, 12, 16 bp) to capture motifs of different lengths simultaneously—transcription factor binding sites range from 6-12 bp, so no single width suffices.
+
+After training, the filter weights might be:
 
 | Position | A | C | G | T |
 |----------|-----|-----|-----|-----|
