@@ -1,5 +1,7 @@
 # Transformers and Attention {#sec-ch07-attention}
 
+> Convolutions ask: what local pattern exists here? Attention asks: what distant information matters here?
+
 ::: {.callout-note title="Chapter Overview"}
 **Prerequisites:** This chapter builds on the convolutional architectures from @sec-ch06-cnn (particularly the receptive field concept) and the tokenization/embedding strategies from @sec-ch05-representations. Familiarity with matrix multiplication and basic neural network concepts (from @sec-apx-a-dl) will help with the mathematical sections.
 
@@ -14,7 +16,7 @@
 **Key Insight:** Attention asks "what distant information matters here?" rather than "what local pattern exists here?" This shift from local to global context is what enables modeling of enhancer-promoter interactions, long-range splicing effects, and other regulatory relationships that span tens of kilobases.
 :::
 
-Where convolutional networks ask "what local pattern exists here," attention asks a different question: "what distant information matters here?" This reformulation changed what genomic models could learn. The convolutional architectures examined in @sec-ch06-cnn detect motifs, chromatin marks, and regulatory grammar with high fidelity, but they remain blind to dependencies beyond their **receptive field**. Attention computes direct interactions between all positions simultaneously, allowing a nucleotide near a gene promoter to attend to an enhancer 100 kilobases away without information passing through intermediate layers. The shift is not merely architectural; it reflects a different assumption about how sequence encodes function. Local patterns matter, but so do long-range relationships that convolutions cannot capture.
+This reformulation changed what genomic models could learn. The convolutional architectures examined in @sec-ch06-cnn detect motifs, chromatin marks, and regulatory grammar with high fidelity, but they remain blind to dependencies beyond their **receptive field**. Attention computes direct interactions between all positions simultaneously, allowing a nucleotide near a gene promoter to attend to an enhancer 100 kilobases away without information passing through intermediate layers. The shift is not merely architectural; it reflects a different assumption about how sequence encodes function. Local patterns matter, but so do long-range relationships that convolutions cannot capture.
 
 The **attention mechanism**, introduced for machine translation by Vaswani et al., resolved a tension that had constrained sequence modeling for years [@vaswani_attention_2017]. Recurrent networks could maintain context across arbitrary distances but processed sequences one position at a time, creating training bottlenecks that limited practical sequence length. Convolutional networks processed sequences in parallel but could only integrate information within fixed receptive fields. Attention achieves both: parallel computation across all positions with direct modeling of arbitrary-range dependencies. For genomic sequences, where enhancer-promoter interactions span tens of kilobases and topologically associating domains organize contacts across megabases, this capacity for long-range modeling proved transformative.
 
@@ -53,11 +55,13 @@ At each position in the input sequence, self-attention computes three vectors: a
 Think of attention like a search engine for sequence positions. Each position issues a **query** describing what it's looking for. Every position also publishes a **key** describing what it has to offer. The dot product between query and key measures relevance, just as a search engine ranks documents by query match. High-scoring positions then send their **value** (the actual content) to the querying position. The separation of key (what I advertise) from value (what I actually send) allows the same position to advertise relevance for one type of information while sending different information when attended to.
 :::
 
-The attention mechanism computes similarity scores between each query and all keys. For position $i$, we compute the dot product between its query $q_i$ and every key $k_j$ across all positions $j = 1, \ldots, L$, where $L$ is sequence length. These scores are scaled by $\sqrt{d_k}$ (the square root of the key dimension) to prevent the dot products from growing large in high dimensions, which would push softmax outputs toward extreme values and create vanishing gradients:
+The attention mechanism computes similarity scores between each query and all keys. For position $i$, we compute the dot product between its query $q_i$ and every key $k_j$ across all positions $j = 1, \ldots, L$, where $L$ is sequence length. These scores are scaled by $\sqrt{d_k}$ (the square root of the key dimension) to prevent the dot products from growing large in high dimensions:
 
 $$
 \text{score}(q_i, k_j) = \frac{q_i \cdot k_j}{\sqrt{d_k}}
 $$
+
+Why is this scaling necessary? The dot product between two random vectors with unit-variance components has variance proportional to the number of dimensions. In a 512-dimensional space, the dot product between typical query and key vectors will be roughly $\sqrt{512} \approx 22$ times larger than in a single dimension. Without scaling, these large values push softmax outputs toward extreme distributions where nearly all weight concentrates on a single position, effectively collapsing attention into hard selection rather than soft weighting. The gradients through such saturated softmax outputs vanish, making learning impossible. Dividing by $\sqrt{d_k}$ normalizes the variance regardless of dimension, keeping softmax in its useful operating regime where it can distribute attention across multiple relevant positions.
 
 A softmax function converts these scores into attention weights $\alpha_{ij}$ that form a probability distribution over positions:
 

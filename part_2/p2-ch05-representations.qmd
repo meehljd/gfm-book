@@ -1,5 +1,7 @@
 # Tokens and Embeddings {#sec-ch05-representations}
 
+> How you see determines what you can learn.
+
 ::: {.callout-note title="Chapter Overview"}
 **Prerequisites:** Basic understanding of DNA structure and the four nucleotides (A, C, G, T). Familiarity with the concept of neural networks and the distinction between categorical and numerical data. No prior experience with natural language processing is required, though familiarity with word embeddings will aid understanding.
 
@@ -12,6 +14,8 @@
 
 **Key insight:** The choice of how to segment and represent genomic sequence is not merely technical preprocessing---it fundamentally determines what patterns a model can detect, what resolution it can achieve, and which biological questions it can answer.
 :::
+
+In 2018, a variant effect predictor showed near-perfect performance on its benchmark dataset. Clinical teams deployed it to interpret variants near exon-intron boundaries. The model failed to flag a pathogenic variant at a cryptic splice site---not because the architecture was flawed, not because training data was insufficient, but because the tokenization scheme grouped nucleotides into six-base chunks. The critical AG dinucleotide that created an aberrant splice acceptor was split across two tokens, invisible to the attention mechanism as a meaningful unit. A preprocessing decision made before training began determined whether a patient received an accurate diagnosis.
 
 Before a genomic model learns any parameters, before it sees any training data, before architecture choices are made, a prior decision has already constrained what it can discover: how will sequence be represented? This decision is not merely technical. A **tokenization** scheme that merges nucleotides into coarse multi-base units may obscure the single-nucleotide resolution needed to detect pathogenic splice variants. An **embedding** strategy that encodes local context may lose the long-range dependencies that connect distal enhancers to their target genes. A position encoding that assumes fixed sequence length may fail on the variable-length inputs that clinical applications require. These choices propagate through every subsequent design decision, shaping what patterns the model can detect, what resolution it can achieve, and ultimately which biological questions it can answer.
 
@@ -73,6 +77,8 @@ The overlapping design creates additional complications beyond computational cos
 ## Byte Pair Encoding: Learning the Vocabulary {#sec-ch05-bpe}
 
 The limitations of $k$-mer tokenization raise a question: what if the vocabulary itself could be learned from data? **Byte Pair Encoding (BPE)** addresses this by constructing vocabulary through iterative discovery of frequent subsequences rather than defining tokens through a fixed rule. The algorithm, originally developed for data compression, builds vocabulary through a simple procedure. BPE initializes the vocabulary with single nucleotides: {A, C, G, T}. It then scans the training corpus to count all adjacent token pairs, identifies the most frequent pair, merges this pair into a new token added to the vocabulary, and replaces all instances in the corpus with the merged token. The process repeats through many iterations (typically thousands), building a vocabulary of variable-length tokens capturing frequently occurring sequence patterns. *[Citation Needed]*
+
+Why does frequency-based merging produce biologically meaningful tokens? Frequency in genomic sequence is not random: sequences that appear repeatedly throughout the genome often represent functional units or structural patterns. Alu elements, the most abundant transposable elements in the human genome, appear over one million times; their characteristic subsequences will be merged into dedicated tokens early in BPE training. Regulatory motifs like the TATA box or common transcription factor binding sites recur across thousands of promoters. Microsatellites and other repetitive elements have characteristic patterns that appear genome-wide. By iteratively merging what co-occurs most often, BPE's vocabulary converges on tokens that reflect genuine patterns in genome organization rather than imposing arbitrary boundaries. A token that appears frequently across the training corpus likely represents something biologically coherent---whether a functional motif, a repetitive element, or a conserved structural pattern---while unique random sequences remain decomposed into shorter subunits.
 
 ::: {.callout-tip title="Stop and Think"}
 Before reading on, consider: if BPE merges the most frequent adjacent pairs, what kinds of genomic sequences do you predict would be compressed most aggressively (represented by long tokens)? What kinds would remain as short tokens or single nucleotides?

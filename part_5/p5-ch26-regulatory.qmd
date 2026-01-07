@@ -1,5 +1,7 @@
 # Regulatory and Governance {#sec-ch26-regulatory}
 
+> Whose genome trained the model that now classifies your variant?
+
 ::: {.callout-note}
 ## Chapter Overview
 
@@ -28,6 +30,8 @@ Genomic foundation models exist in regulatory limbo. They are clearly software, 
 ### Software as Medical Device Paradigm {#sec-ch26-samd}
 
 Regulatory agencies worldwide classify AI-based clinical tools as **software as a medical device (SaMD)**, a category that applies when software itself constitutes the medical device rather than merely controlling hardware. The International Medical Device Regulators Forum defines SaMD risk tiers based on the seriousness of the health condition and the role software plays in clinical decision-making: software that provides information to drive clinical management of a serious condition receives higher scrutiny than software that merely informs decisions about non-serious conditions [@imdrf_samd_2014].
+
+Why this two-dimensional risk framework (condition severity times decision role)? The logic is that harm potential increases along both axes: misclassifying a benign skin lesion causes less harm than misclassifying a malignant tumor, and software that merely displays information for physician interpretation poses less risk than software that autonomously makes treatment decisions. By considering both dimensions, regulators can calibrate evidentiary requirements proportionally---demanding rigorous clinical trials for high-risk applications while enabling faster pathways for lower-risk tools.
 
 ::: {.callout-tip}
 ## Stop and Think
@@ -114,7 +118,9 @@ Large biobanks have developed varied governance approaches that shape how their 
 
 Other biobanks operate under more restrictive frameworks. Some disease-specific registries limit use to research on particular conditions. Some indigenous and community biobanks require tribal or community approval for research access, reflecting concerns about historical exploitation and the importance of data sovereignty. The tension between open science norms that favor broad data sharing and community governance norms that prioritize local control creates friction for foundation model developers seeking diverse training data.
 
-**Federated learning** and other privacy-preserving techniques offer partial solutions by enabling model training without centralizing raw data [@rieke_future_2020]. Under federated approaches, each data custodian trains local models that share only gradients or model updates with a central coordinator. The approach protects against centralization risks but introduces technical complexity, may reduce model quality compared to centralized training, and does not eliminate all privacy risks. Zhu et al. demonstrated that gradient updates can sometimes reveal individual-level information through reconstruction attacks [@zhu_deep_2019]. Practical federated training for genomic foundation models remains an active research area with limited deployment experience.
+**Federated learning** and other privacy-preserving techniques offer partial solutions by enabling model training without centralizing raw data [@rieke_future_2020]. Under federated approaches, each data custodian trains local models that share only gradients or model updates with a central coordinator.
+
+Why does federated learning protect privacy, and why is that protection incomplete? The core insight is that sharing model updates rather than raw data limits exposure: an adversary who intercepts gradient updates cannot directly read patient sequences. However, gradients encode information about the data that produced them---a sufficiently sophisticated attack can reconstruct input data from gradients, particularly when batch sizes are small or models are overparameterized. The approach protects against centralization risks but introduces technical complexity, may reduce model quality compared to centralized training, and does not eliminate all privacy risks. Zhu et al. demonstrated that gradient updates can sometimes reveal individual-level information through reconstruction attacks [@zhu_deep_2019]. Practical federated training for genomic foundation models remains an active research area with limited deployment experience.
 
 ::: {.callout-tip}
 ## Stop and Think
@@ -158,7 +164,11 @@ Genomic data pose fundamental privacy challenges because genomes are simultaneou
 
 Conventional anonymization techniques that remove names and obvious identifiers provide limited protection. Re-identification of individuals from genomic data combined with surname inference through Y-chromosome analysis has been demonstrated [@gymrek_identifying_2013] Subsequent work has shown re-identification from aggregate genomic statistics under certain conditions and through **membership inference attacks** on genomic databases [@homer_resolving_2008; @erlich_routes_2014]. Foundation models compound these concerns by potentially extracting and recombining information in ways that defeat simple deidentification. A model trained on sequences from many individuals might, under adversarial prompting, generate outputs that reveal information about specific training examples.
 
-Technical safeguards include differential privacy (which adds calibrated noise to training procedures to bound individual-level information leakage), **secure multi-party computation** (which enables joint computation over distributed data without revealing inputs), and **synthetic data generation** (which produces training data that preserves statistical properties without corresponding to real individuals). Each approach involves tradeoffs between privacy protection and model utility. Differential privacy with strong guarantees may degrade model performance substantially. Secure computation adds computational overhead and complexity. Synthetic data may fail to capture rare variants or unusual correlations essential for clinical applications.
+Technical safeguards include differential privacy (which adds calibrated noise to training procedures to bound individual-level information leakage), **secure multi-party computation** (which enables joint computation over distributed data without revealing inputs), and **synthetic data generation** (which produces training data that preserves statistical properties without corresponding to real individuals).
+
+Why do these privacy techniques work, and why do they all impose costs? Differential privacy works by adding noise calibrated so that any individual's presence or absence in the training data cannot substantially change model outputs---an adversary cannot determine whether a specific person's data was used. The cost is that noise degrades model accuracy, and genomic applications often require detecting rare variants where noise is particularly harmful. Secure computation works by distributing computation across parties such that no single party can reconstruct inputs---but cryptographic operations are computationally expensive. Synthetic data works by learning and sampling from a statistical model rather than memorizing individuals---but the statistical model may fail to capture the rare events that matter most clinically.
+
+Each approach involves tradeoffs between privacy protection and model utility. Differential privacy with strong guarantees may degrade model performance substantially. Secure computation adds computational overhead and complexity. Synthetic data may fail to capture rare variants or unusual correlations essential for clinical applications.
 
 : Privacy-preserving techniques for genomic AI {#tbl-privacy-techniques}
 

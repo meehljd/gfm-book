@@ -1,5 +1,7 @@
 # Multi-Omics Integration {#sec-ch22-multi-omics}
 
+>More data can mean worse predictions. Understanding why is prerequisite to making multi-omics work.
+
 ::: {.callout-note}
 ## Chapter Overview
 
@@ -90,7 +92,7 @@ Late fusion trains separate models for each modality and combines their predicti
 
 This approach handles missing modalities gracefully. If a patient lacks proteomic data, the proteomics model simply does not contribute to the ensemble. Sample sizes for each modality-specific model can differ, since training requires only samples with that modality rather than complete multi-omics profiles. Each modality can use whatever architecture works best for its data type: deep networks for imaging, gradient boosting for tabular omics, convolutional architectures for sequence.
 
-Late fusion cannot capture cross-modal interactions at the feature level. If a variant's effect on disease depends on expression level of a regulatory gene, neither the genomics model nor the transcriptomics model alone can detect this interaction. The ensemble sees only the modality-specific predictions, not the underlying features. This limitation is fundamental: late fusion assumes that each modality provides independent signal that can be additively combined.
+Late fusion cannot capture cross-modal interactions at the feature level. If a variant's effect on disease depends on expression level of a regulatory gene, neither the genomics model nor the transcriptomics model alone can detect this interaction. The ensemble sees only the modality-specific predictions, not the underlying features. This limitation is fundamental: late fusion assumes that each modality provides independent signal that can be additively combined. Mathematically, if the true risk depends on an interaction term like $\text{variant} \times \text{expression}$, late fusion can only approximate this with $f_1(\text{variant}) + f_2(\text{expression})$, which cannot capture the non-additive structure regardless of how sophisticated the individual models become.
 
 The assumption of independence often fails in biological systems. Gene expression depends on genetic variants through eQTLs. Protein levels depend on both transcription and post-transcriptional regulation. Methylation states influence and are influenced by transcription. The molecular layers are not independent information sources but coupled components of a dynamic system. Late fusion ignores this coupling.
 
@@ -166,7 +168,7 @@ While *MOFA+* is not a deep learning method in the strict sense, its factor-base
 
 ### Deep Generative Multi-Omics Models {#sec-ch22-deep-generative}
 
-*totalVI* (Total Variational Inference) integrates protein abundance from CITE-seq with gene expression in single-cell data through a hierarchical Bayesian model *[Citation Needed]*. The approach learns a joint latent space that captures cell state while properly modeling the distinct noise characteristics of RNA and protein measurements. Protein abundance follows a negative binomial distribution with technical factors including background binding; RNA counts follow a zero-inflated negative binomial accounting for dropout.
+*totalVI* (Total Variational Inference) integrates protein abundance from CITE-seq with gene expression in single-cell data through a hierarchical Bayesian model *[Citation Needed]*. The approach learns a joint latent space that captures cell state while properly modeling the distinct noise characteristics of RNA and protein measurements. Protein abundance follows a negative binomial distribution with technical factors including background binding; RNA counts follow a zero-inflated negative binomial accounting for dropout. The choice of these specific likelihood functions reflects the data-generating process: RNA-seq suffers from technical dropout where some transcripts fail to be captured despite being present (hence zero-inflation), while protein measurements from antibody-based methods have background binding noise but less zero-inflation. Using the wrong likelihood would force the model to distort its latent space to accommodate systematic errors, degrading biological interpretability.
 
 The generative model structure enables imputation of missing modalities. Given RNA expression alone, *totalVI* can predict expected protein abundance by sampling from the learned joint distribution. This imputation is not mere correlation-based prediction but reflects the full posterior distribution over protein levels given expression.
 
@@ -340,9 +342,9 @@ Intermediate fusion architectures handle missing modalities naturally during inf
 
 One approach trains on the subset of samples with complete data, then applies the trained encoders to samples with partial data during inference. This wastes information from the samples with incomplete profiles and may learn representations that fail to generalize to the missing-modality setting.
 
-A better approach incorporates missingness into training. Modality dropout randomly masks modalities during training, forcing the model to learn representations robust to missing inputs. The reconstruction and alignment losses are computed only for available modalities, so samples with partial data can still contribute to training.
+A better approach incorporates missingness into training. Modality dropout randomly masks modalities during training, forcing the model to learn representations robust to missing inputs. The mechanism works analogously to standard dropout: by training the model to succeed even when some information is unavailable, modality dropout encourages the shared latent space to encode biological state redundantly across modalities rather than relying on any single data type. The reconstruction and alignment losses are computed only for available modalities, so samples with partial data can still contribute to training.
 
-Curriculum learning strategies may first train with complete data to establish alignment, then gradually increase modality dropout to improve robustness. The balance between alignment quality (which benefits from complete data) and robustness (which requires training on partial data) requires empirical tuning.
+Curriculum learning strategies may first train with complete data to establish alignment, then gradually increase modality dropout to improve robustness. The curriculum matters because alignment and robustness have opposing requirements: strong alignment needs paired data to learn which expression patterns correspond to which accessibility patterns, but robustness needs the model to practice predicting with missing inputs. Starting with complete data establishes the cross-modal correspondences, then increasing dropout teaches the model to function without them. The balance between alignment quality (which benefits from complete data) and robustness (which requires training on partial data) requires empirical tuning.
 
 
 ### Cross-Modal Imputation {#sec-ch22-imputation}

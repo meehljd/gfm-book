@@ -1,5 +1,7 @@
 # Graph and Network Models {#sec-ch21-networks}
 
+> Sequence models learn what molecules can do. Network models learn what they actually do together.
+
 :::{.callout-note}
 ## Chapter Overview
 
@@ -152,7 +154,7 @@ Before reading further, test your understanding of message passing:
 
 Several GNN architectures have become standard tools for biological applications, each with distinct design choices that reflect different tradeoffs between computational efficiency, expressive power, and scalability.
 
-The simplest approach performs normalized neighborhood averaging followed by linear transformation and nonlinearity. **Graph convolutional networks (GCN)** are computationally efficient and conceptually straightforward but suffer from **over-smoothing** when stacked deeply: repeated averaging causes node representations to converge, losing the discriminative signal that distinguishes different network positions [@li2018deeper; @oono2019graph].
+The simplest approach performs normalized neighborhood averaging followed by linear transformation and nonlinearity. **Graph convolutional networks (GCN)** are computationally efficient and conceptually straightforward but suffer from **over-smoothing** when stacked deeply: repeated averaging causes node representations to converge, losing the discriminative signal that distinguishes different network positions [@li2018deeper; @oono2019graph]. The mathematical reason is intuitive: averaging is a low-pass filter that removes high-frequency variation. After many rounds of averaging, all nodes in a connected component converge toward the same mean representation, much like repeatedly blurring an image eventually produces uniform gray.
 
 :::{.callout-warning}
 ## Difficulty Warning: Over-Smoothing
@@ -160,7 +162,7 @@ The simplest approach performs normalized neighborhood averaging followed by lin
 The over-smoothing problem is subtle but critical. Intuitively, if you repeatedly average a node's representation with its neighbors, eventually all nodes in a connected component converge to similar representations. This means deeper GNNs are not always better. In practice, most GNNs use only 2-4 layers. Understanding when and why to limit depth is essential for effective GNN design.
 :::
 
-Scalability to large graphs requires a different strategy. *GraphSAGE* learns aggregation functions that operate on sampled neighborhoods rather than the full neighbor set [@hamilton2017inductive]. This enables mini-batch training on large graphs and provides inductive capability: the model can generate embeddings for nodes not seen during training by applying learned aggregators to their neighborhoods. For biological networks that grow as new genes are characterized, this generalization is valuable.
+Scalability to large graphs requires a different strategy. *GraphSAGE* learns aggregation functions that operate on sampled neighborhoods rather than the full neighbor set [@hamilton2017inductive]. The key insight is that full-batch GCN requires storing all node representations simultaneously, which becomes prohibitive for graphs with millions of nodes. By sampling a fixed number of neighbors (say, 10) at each layer rather than using all neighbors, *GraphSAGE* bounds memory requirements and enables mini-batch training. The sampling introduces variance but enables scaling to graphs that would be impossible otherwise. Crucially, *GraphSAGE* also provides inductive capability: the model can generate embeddings for nodes not seen during training by applying learned aggregators to their neighborhoods. For biological networks that grow as new genes are characterized, this generalization is valuable.
 
 When some neighbors matter more than others, attention-weighted aggregation provides a learnable solution. **Graph attention networks (GAT)** compute attention scores between each node and its neighbors, allowing the model to focus on the most informative interactions [@velickovic2018graph]. This is analogous to attention in transformers but operates over graph neighborhoods rather than sequence positions (@sec-ch07-attention).
 
@@ -385,7 +387,7 @@ For foundation model integration, computational cost compounds: generating embed
 
 All biological networks contain errors. Experimental methods for detecting interactions have false positive and false negative rates; computational predictions rely on imperfect proxies; even curated databases contain mistakes. GNNs must tolerate this noise to be practically useful.
 
-Randomly masking edges during training forces the model to avoid relying on any single interaction. This **edge dropout** improves robustness to missing or incorrect edges and serves as a form of regularization. Similarly, masking node features or entire nodes through **node dropout** prevents overfitting to well-connected hubs.
+Randomly masking edges during training forces the model to avoid relying on any single interaction. This **edge dropout** improves robustness to missing or incorrect edges and serves as a form of regularization. The mechanism works because dropout during training creates an implicit ensemble: the model must learn to make correct predictions across many different subgraphs, which encourages it to rely on redundant signals rather than any single edge. Similarly, masking node features or entire nodes through **node dropout** prevents overfitting to well-connected hubs by forcing the model to make predictions even when the most informative hub nodes are unavailable.
 
 Ensemble methods train multiple GNNs on different network subsamples or with different random initializations, aggregating predictions to reduce variance from network noise. Bayesian GNNs provide uncertainty estimates that flag low-confidence predictions for manual review (@sec-ch23-uncertainty).
 

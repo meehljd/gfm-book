@@ -1,5 +1,7 @@
 # Causal Inference with Foundation Models {#sec-ch25-causal}
 
+> If you change the input, will the biology change the way the model predicts?
+
 ::: {.callout-note}
 ## Chapter Overview
 
@@ -16,7 +18,9 @@
 **Key Insight**: Foundation models excel at learning associations from observational data, but clinical intervention requires causal reasoning. The gap between prediction (what do we observe?) and causation (what happens if we intervene?) is not a matter of model scale or data quantity---it reflects fundamentally different types of knowledge.
 :::
 
-The preceding chapters addressed how to trust model predictions: calibrated uncertainty quantification tells us when models are confident (@sec-ch23-uncertainty), and interpretability methods reveal what patterns drive predictions (@sec-ch24-interpretability). But clinical action requires more than accurate, well-calibrated, interpretable predictions. It requires knowing that intervening on a predicted target will produce the intended effect. This chapter bridges model trust and clinical action by examining causal inference in genomic foundation models: the distinction between prediction and causation, established causal methods in genomics, how foundation models engage with causal reasoning, and the implications for intervention and clinical translation.
+This question separates prediction from causation. A model can accurately predict that patients with a particular variant have worse outcomes without telling you whether correcting that variant would help them. The variant might cause disease, or it might merely correlate with ancestry, environment, or another genetic factor that actually causes disease. Predictive accuracy---even exceptional predictive accuracy---cannot distinguish between these possibilities.
+
+The preceding chapters addressed how to trust model predictions: calibrated uncertainty tells us when models are confident (@sec-ch23-uncertainty), and interpretability reveals what patterns drive predictions (@sec-ch24-interpretability). But clinical action requires more. It requires knowing that intervening on a predicted target will produce the intended effect.
 
 ## Prediction vs. Causation {#sec-ch25-prediction-vs-causation}
 
@@ -109,6 +113,8 @@ MR relies on three core assumptions:
 2. **Independence**: The variant must not be associated with confounders of the exposure-outcome relationship
 3. **Exclusion restriction**: The variant must affect the outcome only through the exposure, not through other pathways (no horizontal pleiotropy)
 
+Why are these three assumptions necessary? Relevance ensures the genetic variant actually affects the exposure of interest; without it, the variant provides no information about the exposure's causal effect. Independence is why genetics provides a causal inference advantage: because alleles are randomly assigned at conception before environmental confounders arise, genetic instruments satisfy independence naturally for most confounders (though population structure can violate it). The exclusion restriction ensures we measure the exposure's effect rather than some other effect of the variant---if a variant affects the outcome through multiple pathways, we cannot isolate which pathway matters.
+
 Violations of these assumptions, particularly pleiotropy, limit MR's applicability. Modern MR methods address this through multiple instruments, median-based estimators, mode-based estimators, and outlier detection that are robust to some violations [@bowden_mendelian_2015; @hartwig_robust_2017]. Integration with foundation models, discussed below, offers new possibilities for instrument selection and pleiotropy detection.
 
 ::: {.callout-note}
@@ -132,6 +138,8 @@ Violations of these assumptions, particularly pleiotropy, limit MR's applicabili
 Genome-wide association studies identify genomic loci associated with traits but typically cannot pinpoint causal variants. Most GWAS signals arise from common variants in linkage disequilibrium (LD) with the true causal variant(s), creating "association signals" that span many correlated SNPs (@sec-ch03-ld). **Fine-mapping** aims to identify which variant(s) within an associated locus are causal.
 
 Statistical fine-mapping methods compute posterior probabilities that each variant is causal given the observed association statistics and LD structure [@maller_bayesian_2012; @benner_finemap_2016]. These methods output **credible sets**: minimal sets of variants that contain the causal variant(s) with high probability (typically 95%). Smaller credible sets indicate more confident localization.
+
+Why does fine-mapping work, and why does it sometimes fail? Fine-mapping exploits the fact that causal variants generate stronger association signals than non-causal variants that merely correlate through LD. By modeling the LD structure explicitly, fine-mapping can disentangle which variant is most likely causal. The method fails when LD is too tight (multiple variants are nearly perfectly correlated, making them statistically indistinguishable) or when multiple causal variants exist in the same region (violating the typical single-causal-variant assumption).
 
 Functional annotations dramatically improve fine-mapping. Variants in regulatory elements, coding regions, or conserved sequences are more likely to be causal than variants in unconstrained regions. Foundation models can provide these annotations at unprecedented resolution, predicting variant effects on chromatin accessibility, transcription factor binding, splicing, and protein function (@sec-ch17-vep-fm). Integrating foundation model predictions with statistical fine-mapping creates more powerful methods for causal variant identification.
 
@@ -310,7 +318,7 @@ Network inference from foundation models remains an active research area. Valida
 
 Time provides a strong constraint on causal direction: causes precede effects. Time-series data in genomics---developmental trajectories, drug response time courses, circadian cycles---enable causal inference approaches that exploit temporal structure.
 
-**Granger causality** tests whether past values of X improve prediction of future Y beyond what past Y alone provides [@granger_investigating_1969]. In genomics, this approach identifies genes whose expression changes precede changes in other genes, suggesting regulatory relationships.
+**Granger causality** tests whether past values of X improve prediction of future Y beyond what past Y alone provides [@granger_investigating_1969]. The underlying logic is that causes must precede their effects: if X genuinely causes Y, then knowing past X values should help predict future Y beyond what past Y values alone can predict. If past X provides no additional predictive value, then X is either not causing Y or the causal effect is fully mediated through some intermediate that Y already captures. In genomics, this approach identifies genes whose expression changes precede changes in other genes, suggesting regulatory relationships.
 
 **Dynamical foundation models** trained on time-series single-cell data (e.g., RNA velocity measurements) learn temporal dynamics and can be queried for causal relationships [@la_manno_rna_2018]. By modeling how expression states evolve, these models implicitly learn which genes drive transitions.
 

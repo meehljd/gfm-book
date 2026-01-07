@@ -1,5 +1,7 @@
 # RNA Structure and Function {#sec-ch18-rna}
 
+> A "silent" mutation that changes nothing can change everything.
+
 ::: {.callout-note title="Chapter Overview"}
 **Prerequisites:** Understanding of DNA and protein foundation models from Part III (@sec-ch14-dna-lm, @sec-ch15-protein-lm), familiarity with self-supervised pretraining objectives (@sec-ch08-pretraining), and basic knowledge of transformer architectures (@sec-ch07-attention).
 
@@ -73,7 +75,7 @@ This long-range dependency structure differs fundamentally from protein contact 
 
 ### Pseudoknots and Tertiary Complexity {#sec-ch18-pseudoknots}
 
-Pseudoknots occur when bases in a loop pair with bases outside that loop, creating interleaved base-pairing patterns that violate the nested structure assumed by standard secondary structure algorithms. A typical pseudoknot involves two stem regions whose base pairs cross each other when drawn in standard notation. These structures are functionally important (the telomerase RNA catalytic core contains a pseudoknot essential for activity) but algorithmically challenging. Standard dynamic programming approaches for secondary structure prediction exclude pseudoknots because their inclusion increases computational complexity from $O(n^3)$ to $O(n^6)$ or worse. *[Citation Needed]*
+Pseudoknots occur when bases in a loop pair with bases outside that loop, creating interleaved base-pairing patterns that violate the nested structure assumed by standard secondary structure algorithms. A typical pseudoknot involves two stem regions whose base pairs cross each other when drawn in standard notation. These structures are functionally important (the telomerase RNA catalytic core contains a pseudoknot essential for activity) but algorithmically challenging. Standard dynamic programming approaches for secondary structure prediction exclude pseudoknots because their inclusion increases computational complexity from $O(n^3)$ to $O(n^6)$ or worse. *[Citation Needed]* The complexity increase arises because nested base pairs can be solved by recursive decomposition---if positions $i$ and $j$ pair, the structure between them is independent of the structure outside---but pseudoknots violate this independence by creating dependencies between the "inside" and "outside" regions. The algorithm must therefore consider all possible ways the crossing pairs might interleave, leading to exponentially more states.
 
 ::: {#fig-rna-structure-elements layout-ncol=2}
 ![Basic structural elements: stems, loops, bulges](../figs/part_4/ch18/02-A-fig-rna-structure-elements.svg)
@@ -98,7 +100,9 @@ Before deep learning entered the field, two complementary paradigms dominated RN
 
 The dominant classical paradigm for RNA secondary structure prediction relies on nearest-neighbor thermodynamic models. These approaches assign free energy contributions to each base pair and structural element (loops, bulges, internal loops, multiloops) based on experimentally calibrated parameters. Given these parameters, dynamic programming algorithms identify the minimum free energy structure or compute the partition function over all possible structures.
 
-*Mfold* and the *ViennaRNA* package represent the most widely used implementations. *[Citation Needed]* They achieve reasonable accuracy for short, well-behaved RNAs where the thermodynamic parameters are most reliable. Limitations emerge for longer RNAs where the flat energy landscape means many structures have similar energies, for RNAs in complex cellular environments where proteins and other factors alter folding, and for RNAs with modifications or non-canonical interactions not captured by standard parameter sets. These methods also assume equilibrium conditions that may not hold for co-transcriptional folding or kinetically trapped states.
+*Mfold* and the *ViennaRNA* package represent the most widely used implementations. *[Citation Needed]* These programs use dynamic programming to fill a table of optimal substructure scores: for each possible base pair $(i,j)$, they compute the minimum free energy achievable for the subsequence between $i$ and $j$, building up from small subsequences to the full molecule. The algorithm works because RNA secondary structure is "nested"---if $(i,j)$ pairs, then any other pair $(k,l)$ either lies entirely within $(i,j)$ or entirely outside it, never crossing. This nesting property enables the $O(n^3)$ dynamic programming solution.
+
+These methods achieve reasonable accuracy for short, well-behaved RNAs where the thermodynamic parameters are most reliable. Limitations emerge for longer RNAs where the flat energy landscape means many structures have similar energies, for RNAs in complex cellular environments where proteins and other factors alter folding, and for RNAs with modifications or non-canonical interactions not captured by standard parameter sets. These methods also assume equilibrium conditions that may not hold for co-transcriptional folding or kinetically trapped states.
 
 ::: {.callout-tip title="Knowledge Check"}
 Thermodynamic folding methods find the minimum free energy structure. Given what you've learned about RNA's flat energy landscape, what is the main limitation of this approach? (Hint: think about alternative conformations.)
@@ -281,7 +285,7 @@ The following section discusses the vast combinatorial space of possible mRNA se
 
 mRNA sequence design selects nucleotide sequences that encode a desired protein while optimizing expression, stability, safety, and manufacturability. For a 300-amino-acid protein, there are approximately $3^{300}$ possible synonymous mRNA sequences (roughly the number of synonymous codons raised to the protein length). This astronomical space cannot be exhaustively searched, motivating both classical heuristics and modern machine learning approaches.
 
-Key objectives include high protein expression in target tissues, mRNA stability during manufacturing and *in vivo*, controlled translation kinetics that influence co-translational folding, and low immunogenicity for therapeutic applications. These objectives often conflict: increasing GC content may improve stability but introduce unwanted secondary structure, while avoiding rare codons may reduce expression if tRNA pools are limiting.
+Key objectives include high protein expression in target tissues, mRNA stability during manufacturing and *in vivo*, controlled translation kinetics that influence co-translational folding, and low immunogenicity for therapeutic applications. These objectives often conflict: increasing GC content may improve stability but introduce unwanted secondary structure, while avoiding rare codons may reduce expression if tRNA pools are limiting. The conflict between stability and expression illustrates a broader principle: GC-rich sequences form more stable base pairs (G-C has three hydrogen bonds versus two for A-U), which extends mRNA half-life but can also create secondary structures that impede ribosome scanning and translation initiation. The design challenge is finding the Pareto frontier where no objective can be improved without sacrificing another.
 
 **Worked Example:** Consider designing an mRNA to express a therapeutic enzyme in liver cells. You might:
 

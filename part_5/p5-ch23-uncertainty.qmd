@@ -1,5 +1,7 @@
 # Uncertainty Quantification {#sec-ch23-uncertainty}
 
+> A pathogenicity score of 0.73 means nothing unless we know what 0.73 means.
+
 :::{.callout-note}
 ## Chapter Overview
 
@@ -18,7 +20,7 @@
 **Estimated Reading Time:** 45-60 minutes
 :::
 
-A pathogenicity score of 0.73 means nothing unless we know what 0.73 means. If the model is well-calibrated, approximately 73% of variants receiving this score are truly pathogenic, and a clinician can weigh this probability against the costs of further testing. If the model is miscalibrated, the true pathogenicity rate among variants scored at 0.73 could be 40% or 95%, and the nominal probability provides no reliable basis for decision-making. The distinction is not between accurate and inaccurate models but between models that know what they know and models that do not. A miscalibrated model with high average accuracy can be more dangerous than a calibrated model with lower accuracy, because the miscalibrated model provides false confidence that leads to systematically wrong decisions.
+This is not a philosophical riddle. If the model is well-calibrated, approximately 73% of variants receiving this score are truly pathogenic, and a clinician can weigh this probability against the costs of further testing. If the model is miscalibrated, the true pathogenicity rate among variants scored at 0.73 could be 40% or 95%, and the nominal probability provides no reliable basis for decision-making. The distinction is not between accurate and inaccurate models but between models that know what they know and models that do not. A miscalibrated model with high average accuracy can be more dangerous than a calibrated model with lower accuracy, because the miscalibrated model provides false confidence that leads to systematically wrong decisions.
 
 Foundation models produce continuous scores, but clinical decisions require categorical actions: test or do not test, treat or do not treat, report to the family or continue monitoring. This translation from probability to action only works when probabilities are trustworthy. A model that systematically overstates confidence will trigger unnecessary interventions. A model that understates confidence will miss actionable findings. A model that reports high confidence on inputs it has never seen before fails at a fundamental level regardless of its average performance on familiar data. Uncertainty quantification provides the tools to assess when model predictions deserve trust.
 
@@ -235,7 +237,7 @@ Before learning about calibration methods, consider: If a model consistently ass
 
 The simplest calibration fix is often the most effective. **Temperature scaling** applies a single learned parameter to adjust model confidence, dramatically improving calibration with minimal computational overhead and no change to model predictions' ranking.
 
-The method modifies the softmax function by dividing logits by a temperature parameter *T* before applying softmax:
+The method modifies the softmax function by dividing logits by a temperature parameter *T* before applying softmax. The intuition is straightforward: overconfident models produce logits that are too large in magnitude, causing softmax probabilities to concentrate near 0 or 1 rather than reflecting true uncertainty. Dividing by *T* > 1 shrinks these logits toward zero, which "softens" the probability distribution and reduces spurious confidence:
 
 $$\hat{p}_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}$$
 
@@ -312,7 +314,7 @@ If one model expresses uncertainty about a prediction, querying multiple models 
 
 **Deep ensembles** train *M* models (typically 5 to 10) with different random initializations, data orderings, or minor architectural variations. At inference time, all members produce predictions, and uncertainty is estimated from the variance or entropy of the ensemble distribution. For classification, epistemic uncertainty appears as disagreement in predicted class probabilities across members. For regression, epistemic uncertainty appears as variance in predicted values.
 
-The theoretical basis for ensemble uncertainty estimation rests on the observation that disagreement between models reflects regions of input space where the training data provides insufficient constraint. Where training examples are dense, gradient descent from different initializations converges to similar solutions, producing agreement. Where training examples are sparse or conflicting, different initializations find different local optima, producing disagreement. This interpretation connects ensembles to Bayesian model averaging, where predictions are averaged over the posterior distribution of model parameters.
+Why do ensembles work for uncertainty estimation? The key insight is that ensemble disagreement reveals where the data underdetermines the model. The theoretical basis for ensemble uncertainty estimation rests on the observation that disagreement between models reflects regions of input space where the training data provides insufficient constraint. Where training examples are dense, gradient descent from different initializations converges to similar solutions, producing agreement. Where training examples are sparse or conflicting, different initializations find different local optima, producing disagreement. This interpretation connects ensembles to Bayesian model averaging, where predictions are averaged over the posterior distribution of model parameters.
 
 For foundation models with billions of parameters, training full ensembles becomes prohibitively expensive. Training five copies of *ESM-2* requires approximately five times the compute of a single model, potentially millions of dollars in cloud computing costs. Several practical alternatives reduce this burden. Last-layer ensembles freeze the pretrained backbone and train only an ensemble of prediction heads, reducing cost by orders of magnitude while still capturing uncertainty from the fine-tuning process. Snapshot ensembles save model checkpoints at various points during optimization and use these snapshots as ensemble members, requiring only single-model training time. Multi-seed fine-tuning trains the same architecture from multiple random seeds on the fine-tuning task, which is far cheaper than multi-seed pretraining. The broader considerations of fine-tuning and adaptation strategies are discussed in @sec-ch09-transfer.
 
@@ -340,7 +342,7 @@ Architecture modifications are minimal. Instead of outputting a single value, th
 
 $$\mathcal{L} = \frac{1}{2\sigma^2(x)}(y - \mu(x))^2 + \frac{1}{2}\log \sigma^2(x)$$
 
-The first term penalizes prediction errors, weighted by inverse variance so that high-variance predictions are penalized less for the same absolute error. The second term prevents the model from simply predicting infinite variance to avoid all penalties. The result is a model that learns to predict larger variance for inputs where training labels are noisy or inconsistent, capturing aleatoric uncertainty in an input-dependent manner.
+Why does this loss function take this particular form? It derives from the negative log-likelihood of a Gaussian distribution: if the model predicts that the output follows a Gaussian with mean $\mu(x)$ and variance $\sigma^2(x)$, then the probability of observing the true value $y$ is higher when $y$ is close to $\mu$ and when variance is well-matched to actual prediction error. The first term penalizes prediction errors, weighted by inverse variance so that high-variance predictions are penalized less for the same absolute error---this is mathematically necessary because a Gaussian with larger variance assigns non-negligible probability to a wider range of values. The second term prevents the model from simply predicting infinite variance to avoid all penalties; without it, the optimal strategy would be to always predict $\sigma^2 \to \infty$, making any prediction equally likely. The balance between these terms forces the model to predict variance that actually matches the empirical noise level. The result is a model that learns to predict larger variance for inputs where training labels are noisy or inconsistent, capturing aleatoric uncertainty in an input-dependent manner.
 
 Heteroscedastic models capture aleatoric uncertainty but not epistemic uncertainty. The predicted variance reflects noise inherent in the labels, not uncertainty about model parameters. Combining heteroscedastic outputs with ensemble methods provides estimates of both uncertainty types: ensemble disagreement captures epistemic uncertainty while the predicted variance captures aleatoric uncertainty.
 
@@ -473,6 +475,8 @@ Empirically, language models assign high likelihood to repetitive sequences, seq
 Learned representations provide more reliable OOD detection than raw likelihood. The key insight is that embeddings encode semantic structure: similar sequences cluster together in embedding space, and OOD sequences land in sparse regions distant from training clusters.
 
 **Mahalanobis distance** measures how far a test embedding lies from training data, accounting for the covariance structure of the embedding space. For each class, compute the mean embedding and covariance matrix from training examples. For a test input, compute its distance to each class centroid in units of standard deviations, accounting for correlations between embedding dimensions. Large Mahalanobis distance indicates OOD inputs.
+
+Why Mahalanobis rather than simple Euclidean distance? Euclidean distance treats all embedding dimensions equally, but learned representations often have highly correlated dimensions and vary substantially in scale. A test point that appears close in Euclidean terms might actually be unusual because it deviates along a low-variance direction where training examples are tightly clustered. Mahalanobis distance normalizes by the covariance structure, detecting such deviations by asking "how many standard deviations away is this point along each principal axis of variation?"
 
 Nearest-neighbor methods provide a non-parametric alternative. For a test embedding, find the $k$ nearest neighbors among training embeddings and compute the average distance. Large average distance to neighbors indicates the test input lies in a sparse region of embedding space, suggesting it is OOD. This approach makes no distributional assumptions and scales well with modern approximate nearest-neighbor algorithms.
 

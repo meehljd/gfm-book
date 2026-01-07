@@ -1,5 +1,7 @@
 # Interpretability {#sec-ch24-interpretability}
 
+> The model found something. But did it find what we think it found?
+
 ::: {.callout-note}
 ## Chapter Overview
 
@@ -295,7 +297,7 @@ The central hypothesis of mechanistic interpretability is that neural networks i
 
 Features are the atomic units of this analysis: directions in activation space that correspond to interpretable concepts. In language models, features have been found that activate for specific topics, syntactic structures, or semantic properties. Analogous features in genomic models might activate for transcription factor binding sites, coding versus non-coding sequence, or regulatory element types. **Sparse autoencoders** trained on model activations can extract interpretable features by encouraging representations where most features are inactive for any given input.
 
-**Superposition** complicates feature identification. Neural networks can represent more features than they have dimensions by using overlapping, nearly orthogonal directions. Features active for different inputs can share parameters, enabling high-capacity representations but complicating interpretation. Techniques from compressed sensing and dictionary learning help decompose superposed representations into constituent features.
+**Superposition** complicates feature identification. Neural networks can represent more features than they have dimensions by using overlapping, nearly orthogonal directions. Why would networks do this? The answer lies in the statistics of natural data: most features are sparse (active for only a small fraction of inputs), so they rarely need to be represented simultaneously. By packing many sparse features into a lower-dimensional space using nearly orthogonal directions, networks can represent far more concepts than their dimensionality would naively suggest. Features active for different inputs can share parameters, enabling high-capacity representations but complicating interpretation---when we observe an activation pattern, multiple overlapping features may contribute. Techniques from compressed sensing and dictionary learning help decompose superposed representations into constituent features.
 
 
 ### Applications to Genomic Models {#sec-ch24-mechanistic-genomics}

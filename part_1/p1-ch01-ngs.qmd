@@ -1,5 +1,7 @@
 # From Reads to Variants {#sec-ch01-ngs}
 
+> Variant calls are inferences, not observations.
+
 ::: {.callout-note title="Chapter Overview"}
 **Prerequisites:** Basic understanding of DNA structure and the concept of genetic variants (mutations, SNPs). No prior knowledge of sequencing technology required.
 
@@ -13,9 +15,7 @@
 **Key insight:** Variant calls are inferences, not observations. Every downstream model inherits the systematic errors and blind spots of the variant calling pipeline.
 :::
 
-Every polygenic risk score, every variant pathogenicity prediction, every clinical interpretation of a patient's genome begins with a prior assumption: that the variants being analyzed are real. Researchers download `VCF` files from biobanks, filter by allele frequency, and feed variants into predictive models without questioning whether those variants truly exist in the original biological sample.
-
-Yet variant calling is not observation; it is inference. The sequencer produces millions of short reads with characteristic error profiles, alignment algorithms place those reads against a reference genome with varying confidence, and variant callers integrate the evidence into genotype calls that may or may not reflect reality. When this inference fails, every downstream analysis inherits errors that propagate silently through the entire computational pipeline.
+Every polygenic risk score, every variant pathogenicity prediction, every clinical interpretation of a patient's genome begins with a prior assumption: that the variants being analyzed are real. Researchers download `VCF` files from biobanks, filter by allele frequency, and feed variants into predictive models without questioning whether those variants truly exist in the original biological sample. Yet the sequencer did not observe these variants. It produced millions of short reads with characteristic error profiles; alignment algorithms placed those reads against a reference genome with varying confidence; variant callers integrated the evidence into genotype calls that may or may not reflect biological reality. When this inference fails, every downstream analysis inherits errors that propagate silently through the entire computational pipeline.
 
 ::: {.callout-important title="Key Insight"}
 Variant calling is inference, not observation. Errors introduced at this stage propagate silently through every downstream analysis.

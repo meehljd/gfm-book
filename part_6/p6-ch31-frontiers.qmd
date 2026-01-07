@@ -1,5 +1,7 @@
 # Frontiers and Synthesis {#sec-ch31-frontiers}
 
+> The future arrives unevenly, and faster than we expect.
+
 ::: {.callout-note}
 ## Chapter Overview
 
@@ -16,7 +18,9 @@
 **Key Insight:** The gap between a model that predicts well on benchmarks and a patient who benefits from better care encompasses not just technical challenges but the full complexity of clinical translation---validation, workflow integration, equitable access, and ongoing governance.
 :::
 
-The preceding chapters surveyed responsible deployment: model trust through uncertainty quantification and interpretability (@sec-ch23-uncertainty, @sec-ch24-interpretability), causal reasoning that bridges prediction and intervention (@sec-ch25-causal), and the regulatory and governance frameworks that constrain deployment (@sec-ch26-regulatory). This final chapter looks forward: the technical challenges that remain unsolved, the emerging directions that may address them, and the work ahead for the field.
+In 2019, predicting protein structure from sequence alone seemed decades away. By 2024, AlphaFold had rendered it essentially solved. In 2020, generating coherent paragraphs of text required specialized tuning; by 2025, language models could write, code, and reason across domains with minimal prompting. These discontinuous advances suggest that the genomic foundation models surveyed in this book may be on the cusp of capabilities we cannot fully anticipate---capabilities that could reshape clinical genetics, drug discovery, and our understanding of human biology within the careers of current trainees.
+
+Yet predicting *when* matters less than preparing for *what*. The gap between a model that performs well on benchmarks and a patient who benefits from better care encompasses not just technical challenges but the full complexity of clinical translation: validation, workflow integration, equitable access, and ongoing governance. This final chapter examines the technical problems that remain unsolved, the emerging directions that may address them, and the path from research capabilities to clinical impact.
 
 ## Open Technical Problems {#sec-ch31-technical}
 
@@ -43,7 +47,7 @@ Scaling genomic foundation models faces several bottlenecks. Training data avail
 
 : Scaling bottlenecks for genomic foundation models and emerging approaches to address them. Each bottleneck involves fundamental trade-offs that must be navigated empirically. {#tbl-scaling-bottlenecks}
 
-Efficiency improvements that reduce compute requirements without sacrificing capability are thus particularly valuable for genomic applications. Approaches include **sparse attention** patterns that avoid full quadratic costs, **state space models** that process sequences in linear time [@gu_mamba_2024], **knowledge distillation** that transfers capability from large models to smaller ones, and **quantization** that reduces precision requirements for inference (see @sec-apx-b-compute). Each approach involves trade-offs between efficiency gains and capability preservation that must be evaluated empirically on genomic tasks.
+Efficiency improvements that reduce compute requirements without sacrificing capability are thus particularly valuable for genomic applications. Approaches include **sparse attention** patterns that avoid full quadratic costs, **state space models** that process sequences in linear time [@gu_mamba_2024], **knowledge distillation** that transfers capability from large models to smaller ones, and **quantization** that reduces precision requirements for inference (see @sec-apx-b-compute). Sparse attention achieves efficiency by computing attention only between nearby tokens or predetermined patterns rather than all pairs, reducing complexity from O(n^2) to O(n) or O(n log n) at the cost of limiting which long-range dependencies can be captured. State space models replace attention entirely with recurrent computations that maintain a fixed-size hidden state, enabling linear-time processing but requiring the model to compress all relevant context into that finite state. Knowledge distillation trains a smaller "student" model to match the outputs of a larger "teacher," preserving much of the teacher's capability in a more deployable form. Each approach involves trade-offs between efficiency gains and capability preservation that must be evaluated empirically on genomic tasks.
 
 ::: {.callout-important}
 ## Key Insight: Scaling Laws Are Not Universal
@@ -85,7 +89,7 @@ Foundation models learn statistical associations from data. When a DNA language 
 
 Progress toward causal and mechanistic reasoning in genomic AI likely requires integrating diverse evidence types. Perturbation experiments (CRISPR knockouts, drug treatments, environmental exposures) provide interventional data that can distinguish causal effects from correlations. **Mendelian randomization** approaches leverage genetic instruments to estimate causal effects from observational data [@davey_smith_mendelian_2003]. Structural causal models provide formal frameworks for encoding and reasoning about causal relationships.
 
-Incorporating causal structure into foundation models is technically challenging. Causal relationships are often unknown, contested, or context-dependent. Training objectives that encourage causal reasoning must balance causal accuracy against predictive performance on tasks where correlation suffices. Evaluation of causal reasoning requires benchmarks with known causal ground truth, which are scarce for complex biological systems.
+Incorporating causal structure into foundation models is technically challenging. Causal relationships are often unknown, contested, or context-dependent. Training objectives that encourage causal reasoning must balance causal accuracy against predictive performance on tasks where correlation suffices. The tension arises because exploiting correlations often improves prediction accuracy in the short term: a model that learns "variant X associates with disease Y" can predict well on held-out data from the same distribution, even if X is merely linked to the true causal variant. However, such correlational models fail when the linkage structure changes across populations or when the goal is to predict intervention effects rather than associations. Evaluation of causal reasoning requires benchmarks with known causal ground truth, which are scarce for complex biological systems because establishing true causation requires controlled experiments that are often infeasible in humans.
 
 | Approach | Mechanism | Limitations | Chapter Reference |
 |----------|-----------|-------------|-------------------|
@@ -162,7 +166,7 @@ The promise of agentic and closed-loop approaches is accelerated discovery: iden
 
 The ultimate test of genomic foundation models is whether they improve health outcomes. Moving from research demonstrations to clinical impact requires integration into care workflows, evidence of benefit from prospective studies, regulatory clearance, and sustainable business models that support ongoing development and maintenance.
 
-**Learning health systems** provide a framework for continuous improvement: clinical use generates data that feeds back into model refinement, creating virtuous cycles where models improve as they serve more patients. Such systems raise governance questions about who controls the learning process, how improvements are validated before deployment, and how benefits and risks are distributed across patients, providers, and technology developers.
+**Learning health systems** provide a framework for continuous improvement: clinical use generates data that feeds back into model refinement, creating virtuous cycles where models improve as they serve more patients. The virtuous cycle works because clinical deployment reveals failure modes invisible in research datasets: patients with rare phenotypes, populations underrepresented in training data, and edge cases that benchmarks miss all surface during real-world use. Each model prediction becomes a natural experiment whose outcome can inform future predictions. However, such systems raise governance questions about who controls the learning process, how improvements are validated before deployment, and how benefits and risks are distributed across patients, providers, and technology developers.
 
 The foundation model paradigm offers particular advantages for learning health systems. Pretrained models can be adapted to local populations and practices through fine-tuning on institutional data (@sec-ch09-full-finetuning; @sec-ch22-domain-adaptation). Improvements demonstrated at one institution can potentially transfer to others through shared model updates. Common architectures enable comparison across sites and accumulation of evidence across diverse populations.
 
