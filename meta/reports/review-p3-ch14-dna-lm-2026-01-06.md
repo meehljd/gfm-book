@@ -1,13 +1,13 @@
 # Chapter Review: DNA Language Models
 
 Generated: 2026-01-06
-File: `part_3/p3-ch11-dna-lm.qmd`
+File: `part_3/p3-ch14-dna-lm.qmd`
 Word count: ~4,500
 Review mode: Standalone
 
 ## Executive Summary
 
-Chapter 11 is a well-structured, pedagogically strong chapter that comprehensively covers the DNA language model landscape from early proof-of-concept (*DNABERT*) through megabase-scale models (*Evo 2*). The chapter demonstrates excellent adherence to the book's style guide with no em-dashes, no contractions, and properly formatted model/gene names. Minor issues include two instances of forbidden transition words ("Crucially", "Perhaps most notably") and three sentences exceeding 40 words. One citation (`gresova_genomic-benchmarks_2023`) is missing from the bib file.
+Chapter 14 is a well-structured, pedagogically strong chapter that comprehensively covers the DNA language model landscape from early proof-of-concept (*DNABERT*) through megabase-scale models (*Evo 2*). The chapter demonstrates excellent adherence to the book's style guide with no em-dashes, no contractions, and properly formatted model/gene names. Minor issues include two instances of forbidden transition words ("Crucially", "Perhaps most notably") and three sentences exceeding 40 words. One citation (`gresova_genomic-benchmarks_2023`) is missing from the bib file.
 
 ## Overall Grade
 
@@ -198,7 +198,7 @@ Total unique citations: 14 bibliography entries + ~25 cross-references
 
 | Citation Key | Status | Action Required |
 |--------------|--------|-----------------|
-| `gresova_genomic-benchmarks_2023` | **Missing** | Add to `bib/p3/p3-ch11.bib` |
+| `gresova_genomic-benchmarks_2023` | **Missing** | Add to `bib/p3/p3-ch14.bib` |
 | `hu_lora_2021` | In other bib files | Verify Quarto resolves cross-bib citations |
 | `nguyen_sequence_2024` | In other bib files | Verify Quarto resolves cross-bib citations |
 
@@ -216,7 +216,7 @@ Total unique citations: 14 bibliography entries + ~25 cross-references
    - Current: "Crucially, *Evo* demonstrated that training..."
    - Suggested: "*Evo* demonstrated that training..."
 
-2. **Add missing citation**: Add `gresova_genomic-benchmarks_2023` to `bib/p3/p3-ch11.bib`
+2. **Add missing citation**: Add `gresova_genomic-benchmarks_2023` to `bib/p3/p3-ch14.bib`
 
 ### Medium Priority
 
@@ -248,7 +248,7 @@ Total unique citations: 14 bibliography entries + ~25 cross-references
 
 ## Paper Review Log Update
 
-Added to `meta/paper-reviews/logs/ch11-paper-review-log.tsv`:
+Added to `meta/paper-reviews/logs/ch14-paper-review-log.tsv`:
 ```
 13	2026-01-06	Genomic benchmarks: a collection of datasets for genomic sequence classification	Gresova	2023	BMC Genomic Data	gresova_genomic-benchmarks_2023	INCLUDE	2	2	OK	M	+	Ch11 (genomic sequence modeling)	Cited for GenomicBenchmarks evaluation suite.
 ```
@@ -257,4 +257,4 @@ Added to `meta/paper-reviews/logs/ch11-paper-review-log.tsv`:
 
 ## Summary
 
-Chapter 11 is publication-ready with minor revisions. The two forbidden transition words should be removed, and the missing citation should be added to the bib file. The chapter serves its structural role well: establishing what DNA language models can do (representations, evolutionary constraints) before the next chapter shows what they cannot (quantitative phenotype prediction), setting up the synthesis in Ch14.
+Chapter 14 is publication-ready with minor revisions. The two forbidden transition words should be removed, and the missing citation should be added to the bib file. The chapter serves its structural role well: establishing what DNA language models can do (representations, evolutionary constraints) before the next chapter shows what they cannot (quantitative phenotype prediction), setting up the synthesis in Ch14.

@@ -1,13 +1,13 @@
 # Chapter Review: Protein Language Models
 
 Generated: 2026-01-06
-File: part_3/p3-ch12-protein-lm.qmd
+File: part_3/p3-ch15-protein-lm.qmd
 Word count: ~4,200
 Review mode: Standalone
 
 ## Executive Summary
 
-Chapter 12 provides a comprehensive treatment of protein language models, from foundational ESM work through structure prediction and variant effects. The chapter has a strong, unique opening hook and excellent pedagogical progression. Key issues: a duplicated sentence, four missing citations, and a callout note flagging ProGen2 needs to be addressed.
+Chapter 15 provides a comprehensive treatment of protein language models, from foundational ESM work through structure prediction and variant effects. The chapter has a strong, unique opening hook and excellent pedagogical progression. Key issues: a duplicated sentence, four missing citations, and a callout note flagging ProGen2 needs to be addressed.
 
 ## Overall Grade
 

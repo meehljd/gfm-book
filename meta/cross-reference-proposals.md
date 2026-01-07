@@ -1,3 +1,5 @@
+> **Note (Jan 2026):** This document was updated to reflect the chapter restructuring from 29 to 31 chapters. Some references may need manual verification.
+
 # Cross-Reference Proposals for Genomic Foundation Models
 
 This document proposes specific cross-references to strengthen navigation and identify related concepts across the book. Organized by chapter with both backward and forward reference opportunities.
@@ -16,7 +18,7 @@ This document proposes specific cross-references to strengthen navigation and id
 ### Chapter 1: From Reads to Variants
 
 **Current forward references need section specificity:**
-- References to evaluation → Should specify `@sec-ch21-homology-aware-splitting` when discussing benchmark construction
+- References to evaluation → Should specify `@sec-ch11-homology-aware-splitting` when discussing benchmark construction
 - References to DeepVariant comparison → Should point to specific CNN sections in `@sec-ch06-cnn`
 
 **Proposed back-references (for later writing):**
@@ -27,20 +29,20 @@ None - this is foundational
 In `@sec-ch01-deepvariant`:
 - "The representational approach here anticipates the embedding strategies in `@sec-ch05-embeddings`"
 - "DeepVariant's CNN architecture shares design principles with `@sec-ch06-deepsea`, though applied to different input modalities"
-- Connection to transfer learning: "The domain-specific training here contrasts with foundation model approaches discussed in `@sec-ch10-defining`"
+- Connection to transfer learning: "The domain-specific training here contrasts with foundation model approaches discussed in `@sec-ch12-defining`"
 
 In `@sec-ch01-phasing-importance`:
-- Forward to `@sec-ch26-compound-het` for clinical stakes of compound heterozygosity
-- Connection to graph methods: "Network-based phasing approaches connect to `@sec-ch18-biological-networks`"
+- Forward to `@sec-ch30-compound-het` for clinical stakes of compound heterozygosity
+- Connection to graph methods: "Network-based phasing approaches connect to `@sec-ch11-biological-networks`"
 
 In `@sec-ch01-benchmarks`:
-- Strong connection to `@sec-ch20-benchmarks` (should be section-specific to GIAB discussion)
-- Reference `@sec-ch21-metrics-genomic-tasks` for deeper metrics discussion
-- "Benchmark limitations discussed here recur in `@sec-ch20-benchmark-construction`"
+- Strong connection to `@sec-ch11-benchmarks` (should be section-specific to GIAB discussion)
+- Reference `@sec-ch11-metrics-genomic-tasks` for deeper metrics discussion
+- "Benchmark limitations discussed here recur in `@sec-ch11-benchmark-construction`"
 
 In `@sec-ch01-difficult`:
-- "These regions create systematic challenges for foundation model evaluation, discussed in `@sec-ch21-homology-aware-splitting`"
-- HLA complexity → `@sec-ch18-biological-networks` for network approaches
+- "These regions create systematic challenges for foundation model evaluation, discussed in `@sec-ch11-homology-aware-splitting`"
+- HLA complexity → `@sec-ch11-biological-networks` for network approaches
 - "Segmental duplication challenges motivate long-read approaches in `@sec-ch01-longread` and long-context models in `@sec-ch11-long-context`"
 
 **Redundancy watch:**
@@ -52,27 +54,27 @@ In `@sec-ch01-difficult`:
 ### Chapter 2: Data Landscape
 
 **Current forward references need section specificity:**
-- References to models using these resources → Make section-specific (ENCODE to `@sec-ch13-enformer-training`, gnomAD to `@sec-ch14-dna-vep`)
+- References to models using these resources → Make section-specific (ENCODE to `@sec-ch12-enformer-training`, gnomAD to `@sec-ch11-dna-vep`)
 
 **Proposed back-references:**
 In `@sec-ch02-gnomad`:
 - "Population frequency filtering discussed in `@sec-ch01-classical` relies on gnomAD"
-- "Allele frequencies from gnomAD provide critical filters in `@sec-ch26-frequency-filters`"
+- "Allele frequencies from gnomAD provide critical filters in `@sec-ch30-frequency-filters`"
 
 In `@sec-ch02-clinvar`:
-- "Clinical assertions here become training labels in `@sec-ch04-cadd` and evaluation benchmarks in `@sec-ch20-clinical-databases`"
-- "ClinVar's role in ACMG criteria detailed in `@sec-ch26-acmg-amp`"
-- "Calibration to ClinVar discussed in `@sec-ch14-acmg-mapping`"
+- "Clinical assertions here become training labels in `@sec-ch04-cadd` and evaluation benchmarks in `@sec-ch11-clinical-databases`"
+- "ClinVar's role in ACMG criteria detailed in `@sec-ch30-acmg-amp`"
+- "Calibration to ClinVar discussed in `@sec-ch11-acmg-mapping`"
 
 In `@sec-ch02-phenotypes`:
-- "The phenotype quality issues raised here create confounding discussed in `@sec-ch22-label-bias`"
-- "Deep phenotyping approaches connect to `@sec-ch03-deep-phenotyping` and EHR integration in `@sec-ch25-ehr-integration`"
+- "The phenotype quality issues raised here create confounding discussed in `@sec-ch12-label-bias`"
+- "Deep phenotyping approaches connect to `@sec-ch03-deep-phenotyping` and EHR integration in `@sec-ch31-ehr-integration`"
 
 **Proposed forward references to add:**
 
 In `@sec-ch02-encode`:
-- "These functional assays provide training data for `@sec-ch06-deepsea`, `@sec-ch13-enformer`, and other regulatory models"
-- "Chromatin accessibility predictions discussed in `@sec-ch13-enformer-architecture`"
+- "These functional assays provide training data for `@sec-ch06-deepsea`, `@sec-ch12-enformer`, and other regulatory models"
+- "Chromatin accessibility predictions discussed in `@sec-ch12-enformer-architecture`"
 
 In `@sec-ch02-gwas-summary`:
 - Specific connection to `@sec-ch03-gwas-framework` for how these arise
@@ -80,7 +82,7 @@ In `@sec-ch02-gwas-summary`:
 
 In `@sec-ch02-label-noise`:
 - "Label noise creates training challenges discussed in `@sec-ch08-diagnostics`"
-- "Mitigation strategies in `@sec-ch22-mitigation`"
+- "Mitigation strategies in `@sec-ch12-mitigation`"
 - "Impact on calibration discussed in `@sec-ch23-fm-miscalibration`"
 
 **Redundancy watch:**
@@ -100,29 +102,29 @@ In `@sec-ch03-gwas-framework`:
 
 In `@sec-ch03-ld`:
 - "Reference panels from `@sec-ch02-1000genomes` and `@sec-ch02-gnomad` enable LD calculation"
-- "Fine-mapping connects to `@sec-ch14-fm-paradigm` for functional priors"
+- "Fine-mapping connects to `@sec-ch11-fm-paradigm` for functional priors"
 
 In `@sec-ch03-portability`:
 - "Population structure issues introduced in `@sec-ch02-population` manifest as portability challenges"
-- "Systematic analysis in `@sec-ch22-ancestry-confounding`"
+- "Systematic analysis in `@sec-ch12-ancestry-confounding`"
 - "Training data diversity discussed in `@sec-ch02-constraints`"
 
 In `@sec-ch03-deep-phenotyping`:
 - "Deep phenotyping approaches from `@sec-ch02-deep-phenotyping`"
-- "EHR embeddings detailed in `@sec-ch25-ehr-integration`"
+- "EHR embeddings detailed in `@sec-ch31-ehr-integration`"
 
 **Proposed forward references to add:**
 
 In `@sec-ch03-pgs-construction`:
-- "Integration with foundation model features discussed in `@sec-ch25-pgs-to-fm`"
+- "Integration with foundation model features discussed in `@sec-ch31-pgs-to-fm`"
 - "Feature extraction from genomic models in `@sec-ch09-feature-extraction`"
 
 In `@sec-ch03-relative-risk`:
-- "Clinical risk prediction frameworks in `@sec-ch25-defining-risk`"
-- "Calibration requirements for deployment in `@sec-ch23-calibration` and `@sec-ch25-calibration`"
+- "Clinical risk prediction frameworks in `@sec-ch31-defining-risk`"
+- "Calibration requirements for deployment in `@sec-ch23-calibration` and `@sec-ch31-calibration`"
 
 In `@sec-ch03-prs-phewas`:
-- "PRS-PheWAS for clinical interpretation detailed in `@sec-ch25-prs-phewas`"
+- "PRS-PheWAS for clinical interpretation detailed in `@sec-ch31-prs-phewas`"
 
 **Redundancy watch:**
 - PheWAS appears here and in Ch 25 - ensure consistent framework
@@ -141,29 +143,29 @@ In `@sec-ch04-conservation`:
 
 In `@sec-ch04-cadd`:
 - "Training on ClinVar from `@sec-ch02-clinvar`"
-- "Evolutionary proxy problem contrasts with supervised approaches in `@sec-ch14-fm-paradigm`"
+- "Evolutionary proxy problem contrasts with supervised approaches in `@sec-ch11-fm-paradigm`"
 
 In `@sec-ch04-circularity`:
 - "Ascertainment bias in sequencing discussed in `@sec-ch01-difficult`"
-- "Systematic treatment in `@sec-ch22-label-circularity`"
+- "Systematic treatment in `@sec-ch12-label-circularity`"
 
 **Proposed forward references to add:**
 
 In `@sec-ch04-protein-predictors`:
-- "Protein language models in `@sec-ch12-esm-family` provide alternative approaches"
-- "ESM-based variant scoring in `@sec-ch14-protein-vep`"
+- "Protein language models in `@sec-ch11-esm-family` provide alternative approaches"
+- "ESM-based variant scoring in `@sec-ch11-protein-vep`"
 
 In `@sec-ch04-cadd-features`:
 - "Contrast with learned representations in `@sec-ch05-embeddings` and `@sec-ch09-feature-extraction`"
-- "Feature ceiling problem motivates foundation model approaches in `@sec-ch10-task-specific`"
+- "Feature ceiling problem motivates foundation model approaches in `@sec-ch12-task-specific`"
 
 In `@sec-ch04-ensemble-methods`:
 - "Ensemble principles connect to deep ensembles for uncertainty in `@sec-ch23-deep-ensembles`"
-- "Integration strategies in `@sec-ch14-combining-evidence`"
+- "Integration strategies in `@sec-ch11-combining-evidence`"
 
 In `@sec-ch04-features-to-representations`:
 - "Embedding-based approaches in `@sec-ch05-embeddings`"
-- "Zero-shot scoring paradigm in `@sec-ch14-zeroshot-supervised`"
+- "Zero-shot scoring paradigm in `@sec-ch11-zeroshot-supervised`"
 
 **Redundancy watch:**
 - ACMG criteria mentioned here and detailed in Ch 26 - consider forward reference rather than full explanation
@@ -193,11 +195,11 @@ In `@sec-ch05-onehot`:
 
 In `@sec-ch05-kmer`:
 - "DNABERT implementation in `@sec-ch11-dnabert`"
-- "K-mer embeddings in protein models like `@sec-ch12-esm1b`"
+- "K-mer embeddings in protein models like `@sec-ch11-esm1b`"
 
 In `@sec-ch05-bpe`:
 - "Nucleotide Transformer's vocabulary in `@sec-ch11-nucleotide-transformer`"
-- "Protein tokenization in `@sec-ch12-esm-family`"
+- "Protein tokenization in `@sec-ch11-esm-family`"
 
 In `@sec-ch05-position`:
 - "Positional encodings in transformers detailed in `@sec-ch07-positional-encoding`"
@@ -220,25 +222,25 @@ In `@sec-ch06-deepsea`:
 
 In `@sec-ch06-spliceai`:
 - "Splicing mutations discussed in `@sec-ch01-complex`"
-- "Clinical deployment anticipates frameworks in `@sec-ch26-workflow`"
+- "Clinical deployment anticipates frameworks in `@sec-ch30-workflow`"
 
 **Proposed forward references to add:**
 
 In `@sec-ch06-receptive-field`:
 - "Attention mechanisms in `@sec-ch07-self-attention` resolve this limitation"
 - "Long-context models in `@sec-ch11-long-context` achieve megabase receptive fields"
-- "Enformer's hybrid approach in `@sec-ch13-enformer-architecture`"
+- "Enformer's hybrid approach in `@sec-ch12-enformer-architecture`"
 
 In `@sec-ch06-deepsea-vep`:
-- "Foundation model approaches to regulatory variant scoring in `@sec-ch14-enformer-vep`"
-- "Integration with clinical workflows in `@sec-ch26-fm-scoring`"
+- "Foundation model approaches to regulatory variant scoring in `@sec-ch11-enformer-vep`"
+- "Integration with clinical workflows in `@sec-ch30-fm-scoring`"
 
 In `@sec-ch06-spliceai-clinical`:
-- "Clinical integration discussed in `@sec-ch26-workflow`"
-- "Calibration for ACMG criteria in `@sec-ch14-acmg-mapping`"
+- "Clinical integration discussed in `@sec-ch30-workflow`"
+- "Calibration for ACMG criteria in `@sec-ch11-acmg-mapping`"
 
 In `@sec-ch06-specialization`:
-- "Foundation model paradigm in `@sec-ch10-task-specific` addresses this limitation"
+- "Foundation model paradigm in `@sec-ch12-task-specific` addresses this limitation"
 - "Multi-task pretraining in `@sec-ch08-multitask` as alternative approach"
 
 **Redundancy watch:**
@@ -262,20 +264,20 @@ In `@sec-ch07-positional-encoding`:
 **Proposed forward references to add:**
 
 In `@sec-ch07-multihead`:
-- "Multi-head attention in DNABERT (`@sec-ch11-dnabert`) and ESM (`@sec-ch12-esm-family`)"
+- "Multi-head attention in DNABERT (`@sec-ch11-dnabert`) and ESM (`@sec-ch11-esm-family`)"
 - "Attention pattern analysis in `@sec-ch24-attention`"
 
 In `@sec-ch07-genomic-position`:
-- "Genomic coordinate encoding in `@sec-ch13-enformer-architecture`"
+- "Genomic coordinate encoding in `@sec-ch12-enformer-architecture`"
 - "Position-aware models in `@sec-ch11-nucleotide-transformer`"
 
 In `@sec-ch07-quadratic-barrier`:
 - "Long-context solutions in `@sec-ch11-hyenadna` and `@sec-ch11-caduceus`"
-- "Efficient attention in regulatory models `@sec-ch13-enformer-architecture`"
+- "Efficient attention in regulatory models `@sec-ch12-enformer-architecture`"
 
 In `@sec-ch07-encoder-only`:
 - "DNABERT and BERT-style pretraining in `@sec-ch11-dnabert`"
-- "ESM protein models in `@sec-ch12-esm-family`"
+- "ESM protein models in `@sec-ch11-esm-family`"
 
 In `@sec-ch07-ssm`:
 - "HyenaDNA implementation in `@sec-ch11-hyenadna`"
@@ -303,15 +305,15 @@ In `@sec-ch08-data`:
 
 In `@sec-ch08-mlm`:
 - "DNABERT's masked token approach in `@sec-ch11-dnabert`"
-- "ESM-2's masked language modeling in `@sec-ch12-esm2`"
+- "ESM-2's masked language modeling in `@sec-ch11-esm2`"
 
 In `@sec-ch08-autoregressive`:
 - "Caduceus bidirectional processing in `@sec-ch11-caduceus`"
 - "Evo 2's autoregressive generation in `@sec-ch11-evo2`"
 
 In `@sec-ch08-multitask`:
-- "Enformer's multi-task learning in `@sec-ch13-enformer-training`"
-- "Borzoi's coverage prediction tasks in `@sec-ch13-borzoi`"
+- "Enformer's multi-task learning in `@sec-ch12-enformer-training`"
+- "Borzoi's coverage prediction tasks in `@sec-ch12-borzoi`"
 
 In `@sec-ch08-probing`:
 - "Systematic probing analysis in `@sec-ch09-probing-representations`"
@@ -321,10 +323,10 @@ In `@sec-ch08-dnabert`:
 - "Full model details in `@sec-ch11-dnabert`"
 
 In `@sec-ch08-enformer`:
-- "Full model details in `@sec-ch13-enformer`"
+- "Full model details in `@sec-ch12-enformer`"
 
 In `@sec-ch08-esm2`:
-- "Full model details in `@sec-ch12-esm2`"
+- "Full model details in `@sec-ch11-esm2`"
 
 **Redundancy watch:**
 - Case studies here overlap with detailed model chapters - keep brief here, detailed there
@@ -338,7 +340,7 @@ In `@sec-ch08-esm2`:
 
 In `@sec-ch09-source-target`:
 - "Pretraining objectives from `@sec-ch08-pretraining`"
-- "Foundation model definition from `@sec-ch10-defining`"
+- "Foundation model definition from `@sec-ch12-defining`"
 
 In `@sec-ch09-probing-representations`:
 - "Probing during pretraining from `@sec-ch08-probing`"
@@ -346,31 +348,31 @@ In `@sec-ch09-probing-representations`:
 
 In `@sec-ch09-domain-shift-types`:
 - "Population structure from `@sec-ch02-population`"
-- "Systematic shift analysis in `@sec-ch22-domain-shift`"
+- "Systematic shift analysis in `@sec-ch12-domain-shift`"
 
 **Proposed forward references to add:**
 
 In `@sec-ch09-linear-probing`:
-- "Linear probing for evaluation in `@sec-ch21-linear-probing`"
-- "Protein model probing in `@sec-ch12-emergent-knowledge`"
+- "Linear probing for evaluation in `@sec-ch11-linear-probing`"
+- "Protein model probing in `@sec-ch11-emergent-knowledge`"
 
 In `@sec-ch09-lora`:
-- "Parameter-efficient fine-tuning in clinical applications `@sec-ch25-feature-integration`"
-- "Adapter usage in domain adaptation `@sec-ch22-domain-adaptation`"
+- "Parameter-efficient fine-tuning in clinical applications `@sec-ch31-feature-integration`"
+- "Adapter usage in domain adaptation `@sec-ch12-domain-adaptation`"
 
 In `@sec-ch09-validation-pitfalls`:
-- "Comprehensive evaluation framework in `@sec-ch21-eval`"
-- "Leakage detection in `@sec-ch21-leakage-detection`"
-- "Confounding analysis in `@sec-ch22-detection`"
+- "Comprehensive evaluation framework in `@sec-ch11-eval`"
+- "Leakage detection in `@sec-ch11-leakage-detection`"
+- "Confounding analysis in `@sec-ch12-detection`"
 
 In `@sec-ch09-case-dnabert`:
 - "DNABERT architecture in `@sec-ch11-dnabert`"
 
 In `@sec-ch09-case-esm`:
-- "ESM variant scoring in `@sec-ch14-protein-vep`"
+- "ESM variant scoring in `@sec-ch11-protein-vep`"
 
 In `@sec-ch09-case-enformer`:
-- "Enformer details in `@sec-ch13-enformer`"
+- "Enformer details in `@sec-ch12-enformer`"
 
 **Redundancy watch:**
 - Domain shift appears here and Ch 22 - ensure clear division (transfer context vs confounding analysis)
@@ -380,37 +382,37 @@ In `@sec-ch09-case-enformer`:
 
 ## Part III: Foundation Model Families
 
-### Chapter 10: Foundation Model Paradigm
+### Chapter 12: Foundation Model Paradigm
 
 **Proposed back-references:**
 
-In `@sec-ch10-task-specific`:
+In `@sec-ch12-task-specific`:
 - "CNN limitations from `@sec-ch06-specialization`"
 - "Feature engineering ceiling from `@sec-ch04-feature-ceiling`"
 
-In `@sec-ch10-scaling`:
+In `@sec-ch12-scaling`:
 - "Training objectives from `@sec-ch08-optimization`"
 - "Computational considerations from `@sec-ch07-memory`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch10-dna-lm`:
+In `@sec-ch12-dna-lm`:
 - "Detailed in Chapter 11 (`@sec-ch11-dna-lm`)"
 - "DNABERT as exemplar in `@sec-ch11-dnabert`"
 
-In `@sec-ch10-seq-to-func`:
-- "Regulatory models in Chapter 13 (`@sec-ch13-regulatory`)"
-- "Enformer details in `@sec-ch13-enformer`"
+In `@sec-ch12-seq-to-func`:
+- "Regulatory models in Chapter 13 (`@sec-ch12-regulatory`)"
+- "Enformer details in `@sec-ch12-enformer`"
 
-In `@sec-ch10-vep-models`:
-- "Variant effect prediction in Chapter 14 (`@sec-ch14-vep-fm`)"
-- "Integration strategies in `@sec-ch14-combining-evidence`"
+In `@sec-ch12-vep-models`:
+- "Variant effect prediction in Chapter 14 (`@sec-ch11-vep-fm`)"
+- "Integration strategies in `@sec-ch11-combining-evidence`"
 
-In `@sec-ch10-evaluation`:
-- "Benchmark landscape in `@sec-ch20-benchmarks`"
-- "Evaluation principles in `@sec-ch21-eval`"
+In `@sec-ch12-evaluation`:
+- "Benchmark landscape in `@sec-ch11-benchmarks`"
+- "Evaluation principles in `@sec-ch11-eval`"
 
-In `@sec-ch10-use-existing`:
+In `@sec-ch12-use-existing`:
 - "Transfer strategies in `@sec-ch09-transfer`"
 - "Fine-tuning guidance in `@sec-ch09-choosing-strategy`"
 
@@ -426,7 +428,7 @@ In `@sec-ch10-use-existing`:
 
 In `@sec-ch11-task-specific-to-general`:
 - "CNN approaches from `@sec-ch06-cnn`"
-- "Task-specific limitations from `@sec-ch10-task-specific`"
+- "Task-specific limitations from `@sec-ch12-task-specific`"
 
 In `@sec-ch11-dnabert`:
 - "K-mer tokenization from `@sec-ch05-kmer`"
@@ -435,26 +437,26 @@ In `@sec-ch11-dnabert`:
 
 In `@sec-ch11-long-context`:
 - "Quadratic attention barrier from `@sec-ch07-quadratic-barrier`"
-- "Context length challenges from `@sec-ch10-context-length`"
+- "Context length challenges from `@sec-ch12-context-length`"
 
 **Proposed forward references to add:**
 
 In `@sec-ch11-embeddings`:
-- "Feature extraction for clinical models in `@sec-ch25-feature-integration`"
-- "GNN node features in `@sec-ch18-fm-embeddings`"
+- "Feature extraction for clinical models in `@sec-ch31-feature-integration`"
+- "GNN node features in `@sec-ch11-fm-embeddings`"
 - "Representation analysis in `@sec-ch24-probing`"
 
 In `@sec-ch11-zero-shot`:
-- "Zero-shot variant scoring in `@sec-ch14-zeroshot-plm`"
-- "Clinical integration in `@sec-ch26-fm-scoring`"
+- "Zero-shot variant scoring in `@sec-ch11-zeroshot-plm`"
+- "Clinical integration in `@sec-ch30-fm-scoring`"
 
 In `@sec-ch11-probing`:
 - "Systematic probing methods from `@sec-ch09-probing-representations`"
 - "Interpretability analysis in `@sec-ch24-probing`"
 
 In `@sec-ch11-benchmark-suites`:
-- "Benchmark discussion in `@sec-ch20-dna-benchmarks`"
-- "Evaluation principles from `@sec-ch21-eval`"
+- "Benchmark discussion in `@sec-ch11-dna-benchmarks`"
+- "Evaluation principles from `@sec-ch11-eval`"
 
 **Redundancy watch:**
 - Pretraining details overlap with Ch 8 - keep model-specific here
@@ -462,79 +464,79 @@ In `@sec-ch11-benchmark-suites`:
 
 ---
 
-### Chapter 12: Protein Language Models
+### Chapter 11: Protein Language Models
 
 **Proposed back-references:**
 
-In `@sec-ch12-esm1b`:
+In `@sec-ch11-esm1b`:
 - "Masked language modeling from `@sec-ch08-mlm`"
 - "Transformer architecture from `@sec-ch07-transformer-block`"
 
-In `@sec-ch12-variant-effects`:
+In `@sec-ch11-variant-effects`:
 - "Classical predictors from `@sec-ch04-protein-predictors`"
 - "Zero-shot paradigm from `@sec-ch09-zero-shot`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch12-emergent-knowledge`:
+In `@sec-ch11-emergent-knowledge`:
 - "Probing analysis methods from `@sec-ch24-probing`"
 - "Attention pattern interpretation in `@sec-ch24-attention`"
 
-In `@sec-ch12-esm2`:
-- "Scaling laws from `@sec-ch10-scaling`"
+In `@sec-ch11-esm2`:
+- "Scaling laws from `@sec-ch12-scaling`"
 
-In `@sec-ch12-variant-effects`:
-- "Integration with DNA models in `@sec-ch14-combining-evidence`"
-- "Clinical workflow in `@sec-ch26-fm-scoring`"
-- "AlphaMissense comparison in `@sec-ch14-alphamissense`"
+In `@sec-ch11-variant-effects`:
+- "Integration with DNA models in `@sec-ch11-combining-evidence`"
+- "Clinical workflow in `@sec-ch30-fm-scoring`"
+- "AlphaMissense comparison in `@sec-ch11-alphamissense`"
 
-In `@sec-ch12-function-prediction`:
-- "Network integration in `@sec-ch18-drug-target`"
-- "Drug discovery applications in `@sec-ch27-dti-prediction`"
+In `@sec-ch11-function-prediction`:
+- "Network integration in `@sec-ch11-drug-target`"
+- "Drug discovery applications in `@sec-ch31-dti-prediction`"
 
-In `@sec-ch12-lessons`:
+In `@sec-ch11-lessons`:
 - "Application to DNA models in Chapters 11 and 13"
-- "Design principles inform `@sec-ch28-protein-design`"
+- "Design principles inform `@sec-ch30-protein-design`"
 
 **Redundancy watch:**
 - Variant effect prediction overlaps with Ch 14 - focus on PLM-specific approaches here
-- Lessons section may duplicate content from Ch 10
+- Lessons section may duplicate content from Ch 13
 
 ---
 
-### Chapter 13: Regulatory Models
+### Chapter 12: Regulatory Models
 
 **Proposed back-references:**
 
-In `@sec-ch13-long-range`:
+In `@sec-ch12-long-range`:
 - "CNN receptive field limits from `@sec-ch06-receptive-field`"
 - "Attention solutions from `@sec-ch07-self-attention`"
 
-In `@sec-ch13-enformer`:
+In `@sec-ch12-enformer`:
 - "Hybrid CNN-transformer from `@sec-ch07-hybrid`"
 - "Multi-task training from `@sec-ch08-multitask`"
 - "ENCODE data from `@sec-ch02-encode`"
 
-In `@sec-ch13-enformer-vep`:
+In `@sec-ch12-enformer-vep`:
 - "Variant calling from `@sec-ch01-classical`"
 - "Classical regulatory predictors from `@sec-ch06-deepsea-vep`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch13-enformer-vep`:
-- "Integration with other VEP approaches in `@sec-ch14-enformer-vep`"
-- "Clinical deployment in `@sec-ch26-fm-scoring`"
+In `@sec-ch12-enformer-vep`:
+- "Integration with other VEP approaches in `@sec-ch11-enformer-vep`"
+- "Clinical deployment in `@sec-ch30-fm-scoring`"
 
-In `@sec-ch13-multitask`:
-- "Multi-task evaluation in `@sec-ch21-evaluating-fm`"
-- "Multi-omic integration principles from `@sec-ch19-multi-omics`"
+In `@sec-ch12-multitask`:
+- "Multi-task evaluation in `@sec-ch11-evaluating-fm`"
+- "Multi-omic integration principles from `@sec-ch12-multi-omics`"
 
-In `@sec-ch13-interpretability`:
+In `@sec-ch12-interpretability`:
 - "Systematic interpretation in `@sec-ch24-attention`"
 - "Attribution methods in `@sec-ch24-attribution`"
 
-In `@sec-ch13-foundation-models`:
-- "Foundation model criteria from `@sec-ch10-defining`"
+In `@sec-ch12-foundation-models`:
+- "Foundation model criteria from `@sec-ch12-defining`"
 - "Comparison to general DNA LMs in `@sec-ch11-dna-lm`"
 
 **Redundancy watch:**
@@ -543,49 +545,49 @@ In `@sec-ch13-foundation-models`:
 
 ---
 
-### Chapter 14: Variant Effect Prediction
+### Chapter 11: Variant Effect Prediction
 
 **Proposed back-references:**
 
-In `@sec-ch14-fm-paradigm`:
+In `@sec-ch11-fm-paradigm`:
 - "Classical approaches from Chapter 4 (`@sec-ch04-vep-classical`)"
-- "Foundation model definition from `@sec-ch10-defining`"
+- "Foundation model definition from `@sec-ch12-defining`"
 
-In `@sec-ch14-zeroshot-plm`:
-- "ESM models from `@sec-ch12-esm-family`"
+In `@sec-ch11-zeroshot-plm`:
+- "ESM models from `@sec-ch11-esm-family`"
 - "Zero-shot transfer from `@sec-ch09-zero-shot`"
 
-In `@sec-ch14-spliceai`:
+In `@sec-ch11-spliceai`:
 - "SpliceAI architecture from `@sec-ch06-spliceai`"
 
-In `@sec-ch14-enformer-vep`:
-- "Enformer model from `@sec-ch13-enformer`"
+In `@sec-ch11-enformer-vep`:
+- "Enformer model from `@sec-ch12-enformer`"
 
-In `@sec-ch14-dna-lm-vep`:
+In `@sec-ch11-dna-lm-vep`:
 - "GPN from `@sec-ch11-gpn`"
 - "Evo 2 from `@sec-ch11-evo2`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch14-combining-evidence`:
-- "Multi-omic integration principles from `@sec-ch19-multi-omics`"
-- "Clinical integration workflow in `@sec-ch26-workflow`"
+In `@sec-ch11-combining-evidence`:
+- "Multi-omic integration principles from `@sec-ch12-multi-omics`"
+- "Clinical integration workflow in `@sec-ch30-workflow`"
 
-In `@sec-ch14-calibration`:
+In `@sec-ch11-calibration`:
 - "Calibration methods detailed in `@sec-ch23-calibration`"
-- "Clinical calibration requirements in `@sec-ch25-calibration`"
+- "Clinical calibration requirements in `@sec-ch31-calibration`"
 
-In `@sec-ch14-acmg-mapping`:
+In `@sec-ch11-acmg-mapping`:
 - "ACMG framework from `@sec-ch04-conservation-clinical-gap`"
-- "Clinical workflow in `@sec-ch26-acmg-amp`"
+- "Clinical workflow in `@sec-ch30-acmg-amp`"
 
-In `@sec-ch14-uncertainty`:
+In `@sec-ch11-uncertainty`:
 - "Comprehensive UQ methods in `@sec-ch23-uq-methods`"
 - "Clinical uncertainty communication in `@sec-ch23-communication`"
 
-In `@sec-ch14-clinical-integration`:
-- "Detailed clinical workflows in `@sec-ch26-workflow`"
-- "Regulatory frameworks in `@sec-ch29-validation`"
+In `@sec-ch11-clinical-integration`:
+- "Detailed clinical workflows in `@sec-ch30-workflow`"
+- "Regulatory frameworks in `@sec-ch31-validation`"
 
 **Redundancy watch:**
 - Calibration appears here, Ch 21, Ch 23, Ch 25 - ensure hierarchy is clear
@@ -596,29 +598,29 @@ In `@sec-ch14-clinical-integration`:
 
 ## Part IV: Systems and Scale
 
-### Chapter 15: RNA Structure and Function
+### Chapter 11: RNA Structure and Function
 
 **Proposed back-references:**
 
-In `@sec-ch15-structure-challenge`:
+In `@sec-ch11-structure-challenge`:
 - "Contrast with DNA sequence modeling from `@sec-ch11-dna-lm`"
 - "Position encoding challenges from `@sec-ch07-positional-encoding`"
 
-In `@sec-ch15-foundation`:
-- "Scaling laws from `@sec-ch10-scaling`"
+In `@sec-ch11-foundation`:
+- "Scaling laws from `@sec-ch12-scaling`"
 - "Pretraining strategies from `@sec-ch08-pretraining`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch15-codon`:
-- "mRNA design applications in `@sec-ch28-mrna-design`"
+In `@sec-ch11-codon`:
+- "mRNA design applications in `@sec-ch30-mrna-design`"
 
-In `@sec-ch15-utr-design`:
-- "Therapeutic mRNA design in `@sec-ch28-utr-design`"
-- "COVID vaccine lessons in `@sec-ch28-covid-vaccines`"
+In `@sec-ch11-utr-design`:
+- "Therapeutic mRNA design in `@sec-ch30-utr-design`"
+- "COVID vaccine lessons in `@sec-ch30-covid-vaccines`"
 
-In `@sec-ch15-splicing`:
-- "Splice variant interpretation in clinical workflow `@sec-ch26-workflow`"
+In `@sec-ch11-splicing`:
+- "Splice variant interpretation in clinical workflow `@sec-ch30-workflow`"
 
 **Redundancy watch:**
 - Splicing overlaps with Ch 6 (SpliceAI) - ensure clear division
@@ -626,56 +628,56 @@ In `@sec-ch15-splicing`:
 
 ---
 
-### Chapter 16: Single-Cell Models
+### Chapter 12: Single-Cell Models
 
 **Proposed back-references:**
 
-In `@sec-ch16-geneformer`:
+In `@sec-ch12-geneformer`:
 - "Transformer architecture from `@sec-ch07-transformer-block`"
 - "Gene expression data from `@sec-ch02-gtex`"
 
-In `@sec-ch16-perturbation`:
+In `@sec-ch12-perturbation`:
 - "Functional screens from `@sec-ch02-dms`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch16-perturb-seq`:
-- "Drug discovery screens in `@sec-ch27-functional-screens`"
-- "Design-build-test loops in `@sec-ch28-dbtl`"
+In `@sec-ch12-perturb-seq`:
+- "Drug discovery screens in `@sec-ch31-functional-screens`"
+- "Design-build-test loops in `@sec-ch30-dbtl`"
 
-In `@sec-ch16-batch-effects`:
-- "Technical confounding in `@sec-ch22-batch-effects`"
-- "Mitigation strategies in `@sec-ch22-mitigation`"
+In `@sec-ch12-batch-effects`:
+- "Technical confounding in `@sec-ch12-batch-effects`"
+- "Mitigation strategies in `@sec-ch12-mitigation`"
 
-In `@sec-ch16-evaluation`:
-- "Evaluation principles from `@sec-ch21-eval`"
-- "Benchmark construction in `@sec-ch20-benchmark-construction`"
+In `@sec-ch12-evaluation`:
+- "Evaluation principles from `@sec-ch11-eval`"
+- "Benchmark construction in `@sec-ch11-benchmark-construction`"
 
 **Redundancy watch:**
 - Batch effects appear here and Ch 22 - cross-reference to avoid duplication
 
 ---
 
-### Chapter 17: 3D Genome Organization
+### Chapter 11: 3D Genome Organization
 
 **Proposed back-references:**
 
-In `@sec-ch17-hic-matrices`:
+In `@sec-ch11-hic-matrices`:
 - "Data resources from `@sec-ch02-functional`"
 
-In `@sec-ch17-3d-prediction`:
+In `@sec-ch11-3d-prediction`:
 - "CNN architectures from `@sec-ch06-cnn`"
 - "Multi-task training from `@sec-ch08-multitask`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch17-sv-interpretation`:
-- "Structural variant clinical interpretation in `@sec-ch26-workflow`"
+In `@sec-ch11-sv-interpretation`:
+- "Structural variant clinical interpretation in `@sec-ch30-workflow`"
 
-In `@sec-ch17-spatial-models`:
-- "Multi-modal integration from `@sec-ch19-clinical-integration`"
+In `@sec-ch11-spatial-models`:
+- "Multi-modal integration from `@sec-ch12-clinical-integration`"
 
-In `@sec-ch17-3d-interpretability`:
+In `@sec-ch11-3d-interpretability`:
 - "Attribution methods from `@sec-ch24-attribution`"
 
 **Redundancy watch:**
@@ -683,58 +685,58 @@ In `@sec-ch17-3d-interpretability`:
 
 ---
 
-### Chapter 18: Graph and Network Models
+### Chapter 11: Graph and Network Models
 
 **Proposed back-references:**
 
-In `@sec-ch18-fm-embeddings`:
+In `@sec-ch11-fm-embeddings`:
 - "Foundation model embeddings from `@sec-ch09-feature-extraction`"
 - "DNA model embeddings from `@sec-ch11-embeddings`"
-- "Protein model embeddings from `@sec-ch12-esm2`"
+- "Protein model embeddings from `@sec-ch11-esm2`"
 
-In `@sec-ch18-study-bias`:
+In `@sec-ch11-study-bias`:
 - "Network bias from `@sec-ch02-functional`"
-- "Confounding analysis from `@sec-ch22-detection`"
+- "Confounding analysis from `@sec-ch12-detection`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch18-disease-gene`:
-- "Clinical prioritization in `@sec-ch26-prioritization-funnel`"
+In `@sec-ch11-disease-gene`:
+- "Clinical prioritization in `@sec-ch30-prioritization-funnel`"
 
-In `@sec-ch18-drug-target`:
-- "Drug discovery workflows in `@sec-ch27-dti-prediction`"
+In `@sec-ch11-drug-target`:
+- "Drug discovery workflows in `@sec-ch31-dti-prediction`"
 
-In `@sec-ch18-kg-reasoning`:
-- "Drug repurposing in `@sec-ch27-repurposing`"
+In `@sec-ch11-kg-reasoning`:
+- "Drug repurposing in `@sec-ch31-repurposing`"
 
 **Redundancy watch:**
 - Study bias overlaps with Ch 22 confounding
 
 ---
 
-### Chapter 19: Multi-Omics Integration
+### Chapter 12: Multi-Omics Integration
 
 **Proposed back-references:**
 
-In `@sec-ch19-clinical-integration`:
+In `@sec-ch12-clinical-integration`:
 - "EHR data from `@sec-ch02-ehr`"
 - "Phenotype quality from `@sec-ch02-phenotypes`"
 
-In `@sec-ch19-batch-effects`:
-- "Technical confounding from `@sec-ch22-batch-effects`"
+In `@sec-ch12-batch-effects`:
+- "Technical confounding from `@sec-ch12-batch-effects`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch19-clinical-integration`:
-- "Risk prediction workflows in `@sec-ch25-feature-integration`"
-- "Clinical deployment in `@sec-ch25-clinical-integration`"
+In `@sec-ch12-clinical-integration`:
+- "Risk prediction workflows in `@sec-ch31-feature-integration`"
+- "Clinical deployment in `@sec-ch31-clinical-integration`"
 
-In `@sec-ch19-missing-modalities`:
+In `@sec-ch12-missing-modalities`:
 - "Uncertainty quantification in `@sec-ch23-uq-methods`"
 
-In `@sec-ch19-evaluation`:
-- "Multi-task evaluation from `@sec-ch21-evaluating-fm`"
-- "Benchmark construction in `@sec-ch20-benchmark-construction`"
+In `@sec-ch12-evaluation`:
+- "Multi-task evaluation from `@sec-ch11-evaluating-fm`"
+- "Benchmark construction in `@sec-ch11-benchmark-construction`"
 
 **Redundancy watch:**
 - Batch effects appear in Ch 16, 22, and here
@@ -744,34 +746,34 @@ In `@sec-ch19-evaluation`:
 
 ## Part V: Evaluation and Trust
 
-### Chapter 20: Benchmarks
+### Chapter 11: Benchmarks
 
 **Proposed back-references:**
 
-In `@sec-ch20-clinical-databases`:
+In `@sec-ch11-clinical-databases`:
 - "ClinVar from `@sec-ch02-clinvar`"
 - "Variant calling benchmarks from `@sec-ch01-benchmarks`"
 
-In `@sec-ch20-dna-benchmarks`:
+In `@sec-ch11-dna-benchmarks`:
 - "Regulatory assays from `@sec-ch02-encode`"
 - "Model evaluation from Chapters 11 and 13"
 
-In `@sec-ch20-vep-benchmarks`:
+In `@sec-ch11-vep-benchmarks`:
 - "Classical VEP from Chapter 4"
 - "Foundation model VEP from Chapter 14"
 
 **Proposed forward references to add:**
 
-In `@sec-ch20-benchmark-construction`:
-- "Evaluation principles in `@sec-ch21-eval`"
-- "Leakage detection in `@sec-ch21-leakage-detection`"
+In `@sec-ch11-benchmark-construction`:
+- "Evaluation principles in `@sec-ch11-eval`"
+- "Leakage detection in `@sec-ch11-leakage-detection`"
 
-In `@sec-ch20-saturation`:
-- "Metric ceiling in `@sec-ch21-metrics-genomic-tasks`"
+In `@sec-ch11-saturation`:
+- "Metric ceiling in `@sec-ch11-metrics-genomic-tasks`"
 
-In `@sec-ch20-deployment-gap`:
-- "Clinical deployment in `@sec-ch25-evaluation`"
-- "Domain shift in `@sec-ch22-domain-shift`"
+In `@sec-ch11-deployment-gap`:
+- "Clinical deployment in `@sec-ch31-evaluation`"
+- "Domain shift in `@sec-ch12-domain-shift`"
 
 **Redundancy watch:**
 - Benchmark construction principles overlap with Ch 21
@@ -779,37 +781,37 @@ In `@sec-ch20-deployment-gap`:
 
 ---
 
-### Chapter 21: Evaluation Principles
+### Chapter 11: Evaluation Principles
 
 **Proposed back-references:**
 
-In `@sec-ch21-random-splits-fail`:
+In `@sec-ch11-random-splits-fail`:
 - "Homology issues from `@sec-ch01-mapping-bias`"
 - "Population structure from `@sec-ch02-population`"
 
-In `@sec-ch21-leakage-detection`:
+In `@sec-ch11-leakage-detection`:
 - "Data sharing across resources from `@sec-ch02-constraints`"
-- "Benchmark overlap from `@sec-ch20-leakage-scale`"
+- "Benchmark overlap from `@sec-ch11-leakage-scale`"
 
-In `@sec-ch21-calibration`:
-- "Clinical calibration needs from `@sec-ch14-calibration`"
+In `@sec-ch11-calibration`:
+- "Clinical calibration needs from `@sec-ch11-calibration`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch21-homology-aware-splitting`:
-- "Applied to confounding analysis in `@sec-ch22-data-splitting`"
+In `@sec-ch11-homology-aware-splitting`:
+- "Applied to confounding analysis in `@sec-ch12-data-splitting`"
 
-In `@sec-ch21-metrics-genomic-tasks`:
-- "Clinical utility metrics in `@sec-ch25-clinical-utility`"
+In `@sec-ch11-metrics-genomic-tasks`:
+- "Clinical utility metrics in `@sec-ch31-clinical-utility`"
 - "Uncertainty metrics in `@sec-ch23-measuring-calibration`"
 
-In `@sec-ch21-evaluating-fm`:
+In `@sec-ch11-evaluating-fm`:
 - "Uncertainty quantification in `@sec-ch23-uq-methods`"
 - "Calibration methods in `@sec-ch23-post-hoc-calibration`"
 
-In `@sec-ch21-calibration`:
+In `@sec-ch11-calibration`:
 - "Comprehensive calibration in `@sec-ch23-calibration`"
-- "Clinical calibration in `@sec-ch25-calibration`"
+- "Clinical calibration in `@sec-ch31-calibration`"
 
 **Redundancy watch:**
 - Splitting strategies appear here and Ch 22
@@ -818,35 +820,35 @@ In `@sec-ch21-calibration`:
 
 ---
 
-### Chapter 22: Confounders and Leakage
+### Chapter 12: Confounders and Leakage
 
 **Proposed back-references:**
 
-In `@sec-ch22-ancestry-confounding`:
+In `@sec-ch12-ancestry-confounding`:
 - "Population structure from `@sec-ch02-population` and `@sec-ch03-population-structure`"
 - "Portability challenges from `@sec-ch03-portability`"
 
-In `@sec-ch22-batch-effects`:
+In `@sec-ch12-batch-effects`:
 - "Technical artifacts from `@sec-ch01-artifacts`"
-- "Single-cell batch effects from `@sec-ch16-batch-effects`"
-- "Multi-omic batch effects from `@sec-ch19-batch-effects`"
+- "Single-cell batch effects from `@sec-ch12-batch-effects`"
+- "Multi-omic batch effects from `@sec-ch12-batch-effects`"
 
-In `@sec-ch22-label-bias`:
+In `@sec-ch12-label-bias`:
 - "ClinVar assertions from `@sec-ch02-clinvar`"
 - "Phenotype quality from `@sec-ch02-phenotypes`"
 - "Circularity in CADD from `@sec-ch04-circularity`"
 
-In `@sec-ch22-data-splitting`:
-- "Splitting methodology from `@sec-ch21-homology-aware-splitting`"
+In `@sec-ch12-data-splitting`:
+- "Splitting methodology from `@sec-ch11-homology-aware-splitting`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch22-detection`:
-- "Statistical methods from `@sec-ch21-statistical-rigor`"
+In `@sec-ch12-detection`:
+- "Statistical methods from `@sec-ch11-statistical-rigor`"
 
-In `@sec-ch22-fairness`:
-- "Clinical fairness in `@sec-ch25-fairness`"
-- "Equity considerations in `@sec-ch29-fairness`"
+In `@sec-ch12-fairness`:
+- "Clinical fairness in `@sec-ch31-fairness`"
+- "Equity considerations in `@sec-ch31-fairness`"
 
 **Redundancy watch:**
 - Splitting strategies overlap with Ch 21 - cross-reference
@@ -860,8 +862,8 @@ In `@sec-ch22-fairness`:
 **Proposed back-references:**
 
 In `@sec-ch23-calibration-problem`:
-- "Calibration in variant prediction from `@sec-ch14-calibration`"
-- "Evaluation calibration from `@sec-ch21-calibration`"
+- "Calibration in variant prediction from `@sec-ch11-calibration`"
+- "Evaluation calibration from `@sec-ch11-calibration`"
 
 In `@sec-ch23-fm-miscalibration`:
 - "Foundation model training from Chapter 8 and 10"
@@ -873,15 +875,15 @@ In `@sec-ch23-vep-uncertainty`:
 **Proposed forward references to add:**
 
 In `@sec-ch23-conformal-clinical`:
-- "Clinical integration in `@sec-ch25-uncertainty`"
-- "Rare disease workflow in `@sec-ch26-workflow`"
+- "Clinical integration in `@sec-ch31-uncertainty`"
+- "Rare disease workflow in `@sec-ch30-workflow`"
 
 In `@sec-ch23-ood-detection`:
-- "Population distribution in clinical deployment `@sec-ch25-fairness`"
+- "Population distribution in clinical deployment `@sec-ch31-fairness`"
 
 In `@sec-ch23-communication`:
-- "Clinical communication in `@sec-ch26-workflow`"
-- "Regulatory requirements in `@sec-ch29-validation`"
+- "Clinical communication in `@sec-ch30-workflow`"
+- "Regulatory requirements in `@sec-ch31-validation`"
 
 **Redundancy watch:**
 - Calibration appears in Ch 14, 21, 25, and here
@@ -904,16 +906,16 @@ In `@sec-ch24-attention`:
 In `@sec-ch24-probing`:
 - "Probing methodology from `@sec-ch09-probing-representations`"
 - "DNA LM probing from `@sec-ch11-probing`"
-- "ESM probing from `@sec-ch12-emergent-knowledge`"
+- "ESM probing from `@sec-ch11-emergent-knowledge`"
 
 **Proposed forward references to add:**
 
 In `@sec-ch24-experimental`:
-- "Functional validation in `@sec-ch26-validation`"
-- "Design-test loops in `@sec-ch28-dbtl`"
+- "Functional validation in `@sec-ch30-validation`"
+- "Design-test loops in `@sec-ch30-dbtl`"
 
 In `@sec-ch24-clinical`:
-- "Clinical interpretation in `@sec-ch26-acmg-amp`"
+- "Clinical interpretation in `@sec-ch30-acmg-amp`"
 
 **Redundancy watch:**
 - Probing methodology overlaps with Ch 9 and model chapters
@@ -923,37 +925,37 @@ In `@sec-ch24-clinical`:
 
 ## Part VI: Clinical Translation
 
-### Chapter 25: Clinical Risk Prediction
+### Chapter 31: Clinical Risk Prediction
 
 **Proposed back-references:**
 
-In `@sec-ch25-pgs-to-fm`:
+In `@sec-ch31-pgs-to-fm`:
 - "Polygenic scores from `@sec-ch03-pgs-construction`"
 - "Foundation model features from `@sec-ch09-feature-extraction`"
 
-In `@sec-ch25-ehr-integration`:
+In `@sec-ch31-ehr-integration`:
 - "EHR data quality from `@sec-ch02-ehr`"
 - "Phenotype embeddings from `@sec-ch03-deep-phenotyping`"
 
-In `@sec-ch25-discrimination`:
-- "Metrics from `@sec-ch21-metrics-genomic-tasks`"
+In `@sec-ch31-discrimination`:
+- "Metrics from `@sec-ch11-metrics-genomic-tasks`"
 
-In `@sec-ch25-calibration`:
+In `@sec-ch31-calibration`:
 - "Calibration methods from `@sec-ch23-post-hoc-calibration`"
-- "Evaluation calibration from `@sec-ch21-calibration`"
+- "Evaluation calibration from `@sec-ch11-calibration`"
 
-In `@sec-ch25-uncertainty`:
+In `@sec-ch31-uncertainty`:
 - "UQ methods from `@sec-ch23-uq-methods`"
 - "Conformal prediction from `@sec-ch23-conformal`"
 
-In `@sec-ch25-fairness`:
+In `@sec-ch31-fairness`:
 - "Portability from `@sec-ch03-portability`"
-- "Confounding analysis from `@sec-ch22-ancestry-confounding`"
+- "Confounding analysis from `@sec-ch12-ancestry-confounding`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch25-regulatory`:
-- "Regulatory frameworks in `@sec-ch29-regulatory`"
+In `@sec-ch31-regulatory`:
+- "Regulatory frameworks in `@sec-ch31-regulatory`"
 
 **Redundancy watch:**
 - Calibration appears in Ch 14, 21, 23, and here - each should have clear scope
@@ -962,39 +964,39 @@ In `@sec-ch25-regulatory`:
 
 ---
 
-### Chapter 26: Rare Disease Diagnosis
+### Chapter 30: Rare Disease Diagnosis
 
 **Proposed back-references:**
 
-In `@sec-ch26-quality-filters`:
+In `@sec-ch30-quality-filters`:
 - "Variant calling from `@sec-ch01-classical`"
 - "Quality metrics from `@sec-ch01-metrics`"
 
-In `@sec-ch26-frequency-filters`:
+In `@sec-ch30-frequency-filters`:
 - "gnomAD from `@sec-ch02-gnomad`"
 - "Allele frequency considerations from `@sec-ch03-ld`"
 
-In `@sec-ch26-fm-scoring`:
+In `@sec-ch30-fm-scoring`:
 - "Variant effect prediction from Chapter 14"
-- "Protein VEP from `@sec-ch14-protein-vep`"
-- "DNA VEP from `@sec-ch14-dna-vep`"
-- "Combining evidence from `@sec-ch14-combining-evidence`"
+- "Protein VEP from `@sec-ch11-protein-vep`"
+- "DNA VEP from `@sec-ch11-dna-vep`"
+- "Combining evidence from `@sec-ch11-combining-evidence`"
 
-In `@sec-ch26-acmg-amp`:
+In `@sec-ch30-acmg-amp`:
 - "ACMG framework from `@sec-ch04-conservation-clinical-gap`"
-- "Computational evidence from `@sec-ch14-acmg-mapping`"
+- "Computational evidence from `@sec-ch11-acmg-mapping`"
 
-In `@sec-ch26-calibration`:
+In `@sec-ch30-calibration`:
 - "Calibration methods from `@sec-ch23-post-hoc-calibration`"
-- "ACMG calibration from `@sec-ch14-acmg-mapping`"
+- "ACMG calibration from `@sec-ch11-acmg-mapping`"
 
-In `@sec-ch26-compound-het`:
+In `@sec-ch30-compound-het`:
 - "Phasing from `@sec-ch01-phasing`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch26-regulatory`:
-- "Regulatory frameworks in `@sec-ch29-regulatory`"
+In `@sec-ch30-regulatory`:
+- "Regulatory frameworks in `@sec-ch31-regulatory`"
 
 **Redundancy watch:**
 - ACMG criteria appear here and Ch 14
@@ -1003,36 +1005,36 @@ In `@sec-ch26-regulatory`:
 
 ---
 
-### Chapter 27: Drug Discovery
+### Chapter 31: Drug Discovery
 
 **Proposed back-references:**
 
-In `@sec-ch27-variant-to-gene`:
+In `@sec-ch31-variant-to-gene`:
 - "Variant effect prediction from Chapter 14"
-- "Gene prioritization from `@sec-ch18-disease-gene`"
+- "Gene prioritization from `@sec-ch11-disease-gene`"
 
-In `@sec-ch27-network-propagation`:
-- "Graph methods from `@sec-ch18-biological-networks`"
-- "FM embeddings as features from `@sec-ch18-fm-embeddings`"
+In `@sec-ch31-network-propagation`:
+- "Graph methods from `@sec-ch11-biological-networks`"
+- "FM embeddings as features from `@sec-ch11-fm-embeddings`"
 
-In `@sec-ch27-binding-prediction`:
+In `@sec-ch31-binding-prediction`:
 - "Protein models from Chapter 12"
-- "Structure prediction from `@sec-ch12-esmfold`"
+- "Structure prediction from `@sec-ch11-esmfold`"
 
-In `@sec-ch27-perturb-seq`:
-- "Single-cell perturbation models from `@sec-ch16-perturbation`"
-- "Perturbation prediction from `@sec-ch16-in-silico`"
+In `@sec-ch31-perturb-seq`:
+- "Single-cell perturbation models from `@sec-ch12-perturbation`"
+- "Perturbation prediction from `@sec-ch12-in-silico`"
 
-In `@sec-ch27-multi-omic-biomarkers`:
-- "Multi-omic integration from `@sec-ch19-multi-omics`"
+In `@sec-ch31-multi-omic-biomarkers`:
+- "Multi-omic integration from `@sec-ch12-multi-omics`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch27-lab-in-loop`:
-- "Design-test cycles in `@sec-ch28-dbtl`"
+In `@sec-ch31-lab-in-loop`:
+- "Design-test cycles in `@sec-ch30-dbtl`"
 
-In `@sec-ch27-trial-design`:
-- "Clinical prediction models from `@sec-ch25-clinical-risk`"
+In `@sec-ch31-trial-design`:
+- "Clinical prediction models from `@sec-ch31-clinical-risk`"
 
 **Redundancy watch:**
 - Perturbation modeling overlaps with Ch 16
@@ -1040,35 +1042,35 @@ In `@sec-ch27-trial-design`:
 
 ---
 
-### Chapter 28: Sequence Design
+### Chapter 30: Sequence Design
 
 **Proposed back-references:**
 
-In `@sec-ch28-plm-generation`:
+In `@sec-ch30-plm-generation`:
 - "Protein language models from Chapter 12"
-- "ESM representations from `@sec-ch12-esm2`"
+- "ESM representations from `@sec-ch11-esm2`"
 
-In `@sec-ch28-promoter-enhancer`:
+In `@sec-ch30-promoter-enhancer`:
 - "Regulatory models from Chapter 13"
-- "Enformer predictions from `@sec-ch13-enformer`"
+- "Enformer predictions from `@sec-ch12-enformer`"
 
-In `@sec-ch28-codon-optimization`:
-- "Codon models from `@sec-ch15-codon`"
+In `@sec-ch30-codon-optimization`:
+- "Codon models from `@sec-ch11-codon`"
 
-In `@sec-ch28-utr-design`:
-- "UTR models from `@sec-ch15-utr`"
+In `@sec-ch30-utr-design`:
+- "UTR models from `@sec-ch11-utr`"
 
-In `@sec-ch28-mrna-immunogenicity`:
-- "mRNA design principles from `@sec-ch15-mrna-design`"
+In `@sec-ch30-mrna-immunogenicity`:
+- "mRNA design principles from `@sec-ch11-mrna-design`"
 
-In `@sec-ch28-active-learning`:
+In `@sec-ch30-active-learning`:
 - "Uncertainty quantification from `@sec-ch23-uq-methods`"
 - "Selective prediction from `@sec-ch23-selective-prediction`"
 
 **Proposed forward references to add:**
 
-In `@sec-ch28-biosecurity`:
-- "Ethical frameworks in `@sec-ch29-biosecurity`"
+In `@sec-ch30-biosecurity`:
+- "Ethical frameworks in `@sec-ch31-biosecurity`"
 
 **Redundancy watch:**
 - mRNA design overlaps with Ch 15
@@ -1076,28 +1078,28 @@ In `@sec-ch28-biosecurity`:
 
 ---
 
-### Chapter 29: Ethics and Frontiers
+### Chapter 31: Ethics and Frontiers
 
 **Proposed back-references:**
 
-In `@sec-ch29-validation`:
+In `@sec-ch31-validation`:
 - "Evaluation frameworks from Chapter 21"
-- "Clinical validation from `@sec-ch26-validation`"
+- "Clinical validation from `@sec-ch30-validation`"
 
-In `@sec-ch29-reidentification`:
+In `@sec-ch31-reidentification`:
 - "Privacy in genomic data from `@sec-ch02-data`"
 
-In `@sec-ch29-fairness`:
+In `@sec-ch31-fairness`:
 - "Portability from `@sec-ch03-portability`"
-- "Confounding from `@sec-ch22-ancestry-confounding`"
-- "Clinical fairness from `@sec-ch25-fairness`"
+- "Confounding from `@sec-ch12-ancestry-confounding`"
+- "Clinical fairness from `@sec-ch31-fairness`"
 
-In `@sec-ch29-multiscale`:
-- "Multi-omic integration from `@sec-ch19-multi-omics`"
+In `@sec-ch31-multiscale`:
+- "Multi-omic integration from `@sec-ch12-multi-omics`"
 - "3D genome from Chapter 17"
 
-In `@sec-ch29-learning-health`:
-- "Clinical integration from `@sec-ch25-clinical-integration`"
+In `@sec-ch31-learning-health`:
+- "Clinical integration from `@sec-ch31-clinical-integration`"
 
 **No forward references** - this is the final chapter
 
@@ -1110,21 +1112,21 @@ In `@sec-ch29-learning-health`:
 ## Summary: Cross-Chapter Concept Threads
 
 ### Calibration Thread
-- **Ch 14** (`@sec-ch14-calibration`): VEP-specific calibration to ACMG
-- **Ch 21** (`@sec-ch21-calibration`): Evaluation methodology
+- **Ch 14** (`@sec-ch11-calibration`): VEP-specific calibration to ACMG
+- **Ch 21** (`@sec-ch11-calibration`): Evaluation methodology
 - **Ch 23** (`@sec-ch23-calibration`): Comprehensive UQ and calibration methods
-- **Ch 25** (`@sec-ch25-calibration`): Clinical deployment calibration
-- **Ch 26** (`@sec-ch26-calibration`): Rare disease workflow calibration
+- **Ch 25** (`@sec-ch31-calibration`): Clinical deployment calibration
+- **Ch 26** (`@sec-ch30-calibration`): Rare disease workflow calibration
 
 **Recommendation**: Ch 23 is authoritative; others cross-reference for domain context
 
 ### Confounding/Fairness Thread
 - **Ch 2** (`@sec-ch02-constraints`): Data biases
 - **Ch 3** (`@sec-ch03-portability`): GWAS portability
-- **Ch 21** (`@sec-ch21-homology-aware-splitting`): Evaluation strategy
-- **Ch 22** (`@sec-ch22-confounding`): Comprehensive confounding analysis
-- **Ch 25** (`@sec-ch25-fairness`): Clinical fairness
-- **Ch 29** (`@sec-ch29-fairness`): Ethical frameworks
+- **Ch 21** (`@sec-ch11-homology-aware-splitting`): Evaluation strategy
+- **Ch 22** (`@sec-ch12-confounding`): Comprehensive confounding analysis
+- **Ch 25** (`@sec-ch31-fairness`): Clinical fairness
+- **Ch 29** (`@sec-ch31-fairness`): Ethical frameworks
 
 **Recommendation**: Ch 22 is authoritative for methods; others provide domain context
 
@@ -1139,7 +1141,7 @@ In `@sec-ch29-learning-health`:
 ### Transfer Learning Thread
 - **Ch 8**: Pretraining strategies
 - **Ch 9**: Transfer and adaptation methodology
-- **Ch 10**: Foundation model paradigm
+- **Ch 13**: Foundation model paradigm
 - **Ch 11-14**: Model-specific transfer
 - **Ch 25**: Clinical feature extraction
 

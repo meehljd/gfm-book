@@ -1,13 +1,13 @@
-# Chapter Review: Foundation Model Paradigm (Chapter 10)
+# Chapter Review: Foundation Model Paradigm (Chapter 13)
 
 Generated: 2026-01-06
-File: part_3/p3-ch10-fm-principles.qmd
+File: part_3/p3-ch13-fm-principles.qmd
 Word count: 5,585
 Review mode: Standalone
 
 ## Executive Summary
 
-Chapter 10 provides a strong conceptual foundation for the genomic foundation model paradigm, successfully bridging Part 2's deep learning principles with Part 3's specific model families. The chapter excels in pedagogical organization and maintains consistent style compliance. Primary issues include two citation key mismatches requiring correction and one missing citation needing addition to the bibliography.
+Chapter 13 provides a strong conceptual foundation for the genomic foundation model paradigm, successfully bridging Part 2's deep learning principles with Part 3's specific model families. The chapter excels in pedagogical organization and maintains consistent style compliance. Primary issues include two citation key mismatches requiring correction and one missing citation needing addition to the bibliography.
 
 ## Overall Grade
 
@@ -108,5 +108,5 @@ Chapter 10 provides a strong conceptual foundation for the genomic foundation mo
 |----------|------|----------|
 | High | Fix `@hoffmann_training_2022` → `@hoffmann_chinchilla_2022` | Line 72 |
 | High | Fix `@rives_esm_2021` → `@rives_biological_2021` | Line 26 |
-| High | Add `@wei_emergent_2022` to bib | bib/p3/p3-ch10.bib |
+| High | Add `@wei_emergent_2022` to bib | bib/p3/p3-ch13.bib |
 | Medium | Add missing period | Line 122 |
