@@ -8,12 +8,7 @@ Tracking chapter-by-chapter pedagogy reviews by focus principle.
 |-----------|------|--------|
 | hooks | (previous) | Done |
 | elaboration | (previous) | Done |
-
-## Current Review
-
-| Principle | Date | Status |
-|-----------|------|--------|
-| cognitive-load | 2026-01-07 | In Progress |
+| cognitive-load | 2026-01-07 | Done - Phase 1 (9 worked examples added) |
 
 ## Queued Reviews
 
