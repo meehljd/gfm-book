@@ -1,3 +1,464 @@
 # Deployment and Compute {#sec-apx-b-compute}
 
-...
+This appendix covers practical considerations for deploying genomic foundation models, from hardware requirements and cloud platforms to inference optimization and production deployment. The goal is to help practitioners translate model capabilities into working systems that can process real genomic data at scale.
+
+## Hardware Landscape {#sec-apx-b-hardware}
+
+Genomic foundation models span a wide range of computational requirements. Understanding hardware options helps practitioners match resources to their specific needs.
+
+### GPU Computing
+
+**Graphics Processing Units (GPUs)** are the workhorses of deep learning, providing thousands of parallel cores optimized for matrix operations. Key specifications:
+
+| Metric | Description | Relevance |
+|--------|-------------|-----------|
+| **VRAM** | GPU memory | Determines maximum model/batch size |
+| **Compute (TFLOPS)** | Floating-point operations per second | Determines training/inference speed |
+| **Memory bandwidth** | Data transfer rate | Critical for transformer attention |
+| **Tensor cores** | Specialized matrix units | Accelerate mixed-precision operations |
+
+### Consumer vs. Data Center GPUs
+
+| GPU Class | Examples | VRAM | Use Case |
+|-----------|----------|------|----------|
+| Consumer | RTX 4090 | 24 GB | Small model inference, development |
+| Workstation | RTX A6000 | 48 GB | Medium model training/inference |
+| Data center | A100 | 40/80 GB | Large model training |
+| Latest generation | H100 | 80 GB | Foundation model training |
+
+**Memory is typically the bottleneck.** A 3-billion parameter model in FP16 requires approximately 6 GB just for weights, plus additional memory for activations, gradients (if training), and KV cache (for transformers). The A100 80GB enables training models that would require multi-GPU setups on smaller cards.
+
+### TPUs
+
+**Tensor Processing Units (TPUs)** are Google's custom accelerators, available through Google Cloud. They offer:
+
+- High memory bandwidth optimized for matrix operations
+- Efficient multi-device scaling through dedicated interconnects
+- Cost-effective for large-scale training
+
+Many DeepMind models (*AlphaFold*, *Enformer*) were trained on TPUs. The JAX framework provides the best TPU support.
+
+### Multi-GPU and Distributed Training
+
+Large models require multiple GPUs:
+
+**Data parallelism** replicates the model across GPUs, each processing different batches. Gradients are synchronized after each step. Scales batch size but not model size.
+
+**Model parallelism** splits the model across GPUs:
+- **Tensor parallelism**: Splits individual layers across GPUs
+- **Pipeline parallelism**: Assigns different layers to different GPUs
+
+**Fully Sharded Data Parallel (FSDP)** and **DeepSpeed ZeRO** combine approaches, sharding model states across GPUs to train models larger than any single GPU's memory.
+
+### CPU Inference
+
+For smaller models or low-throughput applications, CPU inference may suffice:
+
+- Avoids GPU procurement and maintenance
+- Enables deployment on standard servers
+- Suitable for models with <1B parameters
+- Can be accelerated with ONNX Runtime, Intel MKL
+
+## Cloud Platforms {#sec-apx-b-cloud}
+
+Cloud computing provides on-demand access to GPU resources without capital expenditure.
+
+### Major Providers
+
+| Provider | GPU Options | Strengths |
+|----------|-------------|-----------|
+| **AWS** | A100, H100, Trainium | Broadest ecosystem, SageMaker |
+| **Google Cloud** | A100, TPU v4/v5 | TPU access, Vertex AI |
+| **Azure** | A100, H100 | Enterprise integration, Azure ML |
+| **Lambda Labs** | A100, H100 | ML-focused, simpler pricing |
+| **CoreWeave** | A100, H100 | GPU-specialized, Kubernetes-native |
+
+### Cost Considerations
+
+GPU costs vary significantly:
+
+| Resource | Approximate Cost (2024) |
+|----------|------------------------|
+| A100 40GB (on-demand) | $3–4/hour |
+| A100 80GB (on-demand) | $4–5/hour |
+| H100 (on-demand) | $5–8/hour |
+| A100 (spot/preemptible) | $1–2/hour |
+
+**Spot instances** offer 60–80% discounts but can be interrupted. Suitable for:
+- Checkpointed training runs
+- Batch inference jobs
+- Non-time-critical workloads
+
+**Reserved instances** provide discounts for committed usage but require upfront planning.
+
+### Managed ML Platforms
+
+| Platform | Features |
+|----------|----------|
+| **AWS SageMaker** | Training, hosting, MLOps pipelines |
+| **Google Vertex AI** | Training, prediction, feature store |
+| **Azure ML** | Training, deployment, monitoring |
+| **HuggingFace Inference Endpoints** | One-click model deployment |
+
+These platforms handle infrastructure but add cost overhead. They're valuable for production deployments requiring reliability, monitoring, and scaling.
+
+## Model Deployment {#sec-apx-b-deployment}
+
+Deploying a model for real-world use requires careful consideration of latency, throughput, reliability, and cost.
+
+### Inference Servers
+
+**Specialized inference servers** optimize model serving:
+
+| Server | Features |
+|--------|----------|
+| **NVIDIA Triton** | Multi-framework, dynamic batching, model ensemble |
+| **vLLM** | Optimized for LLM inference, PagedAttention |
+| **TGI (Text Generation Inference)** | HuggingFace's optimized inference server |
+| **TorchServe** | PyTorch-native, simple deployment |
+
+These servers provide:
+- **Dynamic batching**: Combine requests for efficient GPU utilization
+- **Model warmup**: Pre-load models to reduce cold start
+- **Health checks**: Monitor model availability
+- **Metrics**: Track latency, throughput, errors
+
+### API Design
+
+A typical genomic model API accepts sequences and returns predictions:
+
+```python
+# Request
+{
+    "sequences": ["ATCGATCG...", "GCTAGCTA..."],
+    "return_embeddings": false
+}
+
+# Response
+{
+    "predictions": [
+        {"pathogenicity": 0.87, "confidence": 0.92},
+        {"pathogenicity": 0.12, "confidence": 0.95}
+    ],
+    "model_version": "v2.1.0",
+    "processing_time_ms": 145
+}
+```
+
+Design considerations:
+- **Batch endpoints** for throughput-critical applications
+- **Streaming** for large outputs (embeddings, long sequences)
+- **Versioning** to manage model updates
+- **Input validation** to catch malformed sequences early
+
+### Containerization
+
+**Docker containers** package models with dependencies:
+
+```dockerfile
+FROM pytorch/pytorch:2.0.0-cuda11.7
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY model/ /app/model/
+COPY serve.py /app/
+
+EXPOSE 8080
+CMD ["python", "/app/serve.py"]
+```
+
+Containers provide:
+- Reproducible environments
+- Easy deployment across platforms
+- Isolation from host system
+- Simplified scaling with Kubernetes
+
+### Kubernetes Deployment
+
+**Kubernetes** orchestrates containerized model deployments:
+
+- **Horizontal scaling**: Add/remove replicas based on load
+- **GPU scheduling**: Allocate GPUs to pods
+- **Rolling updates**: Deploy new versions without downtime
+- **Resource limits**: Prevent runaway memory/compute usage
+
+Example deployment:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: variant-predictor
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+      - name: model
+        image: variant-predictor:v2.1
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+            memory: "32Gi"
+```
+
+## Inference Optimization {#sec-apx-b-optimization}
+
+Optimizing inference reduces latency and cost.
+
+### Quantization
+
+**Quantization** reduces numerical precision to decrease memory and computation:
+
+| Precision | Bits | Memory | Speed | Quality |
+|-----------|------|--------|-------|---------|
+| FP32 | 32 | 1× | 1× | Baseline |
+| FP16/BF16 | 16 | 0.5× | ~2× | Minimal loss |
+| INT8 | 8 | 0.25× | ~4× | Small loss |
+| INT4 | 4 | 0.125× | ~8× | Moderate loss |
+
+**Post-training quantization** converts trained models without retraining. Works well for INT8; INT4 may require calibration data or quality monitoring.
+
+**Quantization-aware training** incorporates quantization during training for better INT4/INT8 quality.
+
+For genomic models:
+- FP16/BF16 is standard and nearly lossless
+- INT8 often acceptable for classification tasks
+- INT4 requires careful validation, especially for regression outputs
+
+### Model Pruning
+
+**Pruning** removes unimportant weights:
+
+- **Magnitude pruning**: Remove weights below threshold
+- **Structured pruning**: Remove entire neurons/attention heads
+- **Movement pruning**: Remove weights based on training dynamics
+
+Pruning can achieve 50–90% sparsity with minimal accuracy loss on some tasks, but requires model-specific tuning.
+
+### Knowledge Distillation
+
+**Distillation** trains a smaller "student" model to mimic a larger "teacher":
+
+1. Run teacher model on large unlabeled corpus
+2. Train student to match teacher outputs (soft labels)
+3. Student learns compressed version of teacher's knowledge
+
+Effective for:
+- Deploying on resource-constrained devices
+- Reducing inference cost for high-volume applications
+- Creating task-specific lightweight models
+
+### ONNX and TensorRT
+
+**ONNX** (Open Neural Network Exchange) provides a portable model format:
+
+```python
+import torch.onnx
+
+torch.onnx.export(model, sample_input, "model.onnx")
+```
+
+**TensorRT** optimizes ONNX models for NVIDIA GPUs:
+- Layer fusion
+- Kernel auto-tuning
+- Precision calibration
+
+TensorRT can provide 2–5× speedup over naive PyTorch inference.
+
+### Caching and Batching
+
+**KV-cache** stores attention key/value pairs for autoregressive generation, avoiding recomputation.
+
+**Speculative decoding** uses a small draft model to propose tokens, verified in parallel by the main model.
+
+**Dynamic batching** groups incoming requests:
+- Increases GPU utilization
+- Trades latency for throughput
+- Configurable wait time and batch size limits
+
+## Benchmarking and Monitoring {#sec-apx-b-monitoring}
+
+### Performance Metrics
+
+| Metric | Description | Target |
+|--------|-------------|--------|
+| **Latency (p50)** | Median response time | Application-dependent |
+| **Latency (p99)** | 99th percentile response time | Critical for SLAs |
+| **Throughput** | Requests/second | Scale with load |
+| **GPU utilization** | GPU compute usage | >80% for efficiency |
+| **Memory utilization** | GPU memory usage | Monitor for OOM |
+
+### Monitoring Stack
+
+```
+Metrics → Prometheus → Grafana (visualization)
+                    → AlertManager (alerts)
+
+Logs → Elasticsearch → Kibana (search/analysis)
+
+Traces → Jaeger/Zipkin (request tracing)
+```
+
+Key monitoring points:
+- Request latency distribution
+- Error rates by error type
+- Queue depth (if using async processing)
+- Model prediction distribution (detect drift)
+- Input sequence characteristics (length, composition)
+
+### Load Testing
+
+Before production deployment:
+
+```bash
+# Example with locust
+locust -f load_test.py --host=http://model-api:8080 \
+       --users=100 --spawn-rate=10 --run-time=10m
+```
+
+Test scenarios:
+- Sustained load at expected traffic
+- Burst traffic (10× normal)
+- Long sequences (stress memory)
+- Concurrent batch requests
+
+## Cost Optimization {#sec-apx-b-cost}
+
+### Right-Sizing
+
+Match hardware to workload:
+- Don't use A100 for models that fit on RTX 4090
+- Use CPU inference for low-throughput applications
+- Consider spot instances for batch processing
+
+### Autoscaling
+
+Scale resources with demand:
+
+```yaml
+# Kubernetes HPA example
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+spec:
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+```
+
+Scale-to-zero during idle periods for significant savings.
+
+### Batch Processing
+
+For non-real-time workloads:
+- Accumulate requests and process in batches
+- Use spot instances with checkpointing
+- Schedule during off-peak hours for lower costs
+
+### Model Selection
+
+Choose appropriately sized models:
+- 110M parameter *DNABERT* vs. 2.5B *Nucleotide Transformer*
+- Evaluate if larger model accuracy justifies cost
+- Consider distilled/pruned versions for production
+
+## Security Considerations {#sec-apx-b-security}
+
+### Data Privacy
+
+Genomic data is sensitive:
+- Process in compliant environments (HIPAA, GDPR)
+- Encrypt data at rest and in transit
+- Implement access controls and audit logging
+- Consider on-premises deployment for sensitive data
+
+### Model Security
+
+- **Input validation**: Reject malformed sequences
+- **Rate limiting**: Prevent abuse
+- **Authentication**: Require API keys/tokens
+- **Model versioning**: Track deployed versions for reproducibility
+
+### Federated Learning
+
+For multi-institution collaboration:
+- Train on distributed data without centralization
+- Share only model updates, not raw data
+- Enables learning from diverse populations
+- See @sec-ch09-emerging-approaches for details
+
+## Reference Architecture {#sec-apx-b-architecture}
+
+A production genomic model deployment might include:
+
+```
+                                    ┌─────────────┐
+                                    │  Model      │
+                                    │  Registry   │
+                                    └──────┬──────┘
+                                           │
+┌──────────┐    ┌──────────┐    ┌─────────▼─────────┐    ┌──────────┐
+│  Client  │───►│   API    │───►│  Inference Server │───►│  Cache   │
+│   App    │    │ Gateway  │    │  (Triton/vLLM)    │    │ (Redis)  │
+└──────────┘    └────┬─────┘    └─────────┬─────────┘    └──────────┘
+                     │                    │
+                     ▼                    ▼
+               ┌──────────┐        ┌──────────┐
+               │ Metrics  │        │   GPU    │
+               │(Prometheus)│       │ Cluster  │
+               └──────────┘        └──────────┘
+```
+
+Components:
+- **API Gateway**: Authentication, rate limiting, routing
+- **Inference Server**: Model hosting, batching, optimization
+- **GPU Cluster**: Kubernetes-managed GPU nodes
+- **Cache**: Store frequent predictions
+- **Model Registry**: Version and track deployed models
+- **Metrics**: Monitor performance and health
+
+## Checklist for Production Deployment {#sec-apx-b-checklist}
+
+Before deploying a genomic model to production:
+
+**Model Validation**
+
+- [ ] Validated on held-out test set matching deployment distribution
+- [ ] Evaluated across relevant subgroups (populations, variant types)
+- [ ] Calibration assessed and documented
+- [ ] Failure modes characterized
+
+**Infrastructure**
+
+- [ ] Hardware sized for expected load with headroom
+- [ ] Autoscaling configured for traffic variation
+- [ ] Rollback procedure tested
+- [ ] Disaster recovery plan in place
+
+**Monitoring**
+
+- [ ] Latency and throughput metrics tracked
+- [ ] Error alerting configured
+- [ ] Input/output distribution monitoring for drift
+- [ ] Resource utilization dashboards
+
+**Security**
+
+- [ ] Data encryption at rest and in transit
+- [ ] Access controls and authentication
+- [ ] Audit logging enabled
+- [ ] Compliance requirements verified
+
+**Documentation**
+
+- [ ] Model card with capabilities and limitations
+- [ ] API documentation
+- [ ] Runbook for common issues
+- [ ] Version history and changelog

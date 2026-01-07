@@ -1,62 +1,201 @@
 # Model Reference {#sec-apx-d-models}
 
-| Model | Category | Chapter(s) | Citation |
-|-------|----------|------------|----------|
-| **DNA Language Models** | | | |
-| DNABERT | DNA LM | 10, 12, App A | @ji_dnabert_2021 |
-| DNABERT-2 | DNA LM | 10, 12 | @zhou_dnabert-2_2024 |
-| Nucleotide Transformer | DNA LM | 10, 12, 20 | @dalla-torre_nucleotide_2023 |
-| HyenaDNA | DNA LM | 10, 12, 20 | @nguyen_hyenadna_2023 |
-| Caduceus | DNA LM | 10, 12 | @schiff_caduceus_2024 |
-| GROVER | DNA LM | 10, 12 | @sanabria_grover_2024 |
-| Gene42 | DNA LM | 12 | — |
-| BioToken | DNA LM | 12 | @medvedev_biotoken_2025 |
-| **Protein Language Models** | | | |
-| ESM / ESM-2 | PLM | 9, 12 | @rives_esm_2021; @lin_esm-2_2022 |
-| ESM-1v | PLM | 4, 9 | @brandes_genome-wide_2023 |
-| **Sequence-to-Function (Regulatory)** | | | |
-| DeepSEA | Seq→Func | 5, 7, 12 | @zhou_deepsea_2015 |
-| Beluga | Seq→Func | 5, 6 | @zhou_expecto_2018 |
-| Sei | Seq→Func | 5, 12 | @chen_deepsea_2022 |
-| Enformer | Seq→Func / GFM | 11, 12, 19, 20 | @avsec_enformer_2021 |
-| Basenji | Seq→Func | 11 | @kelley_basenji_2018 |
-| Basenji2 | Seq→Func | 11 | @kelley_cross-species_2020 |
-| ExPecto | Seq→Func | 6, 7 | @zhou_expecto_2018 |
-| Borzoi | Seq→Func | 11, 19 | @linder_borzoi_2025 |
-| **Splice Prediction** | | | |
-| SpliceAI | Splice | 7, 12, 13 | @jaganathan_spliceai_2019 |
-| MaxEntScan | Splice | 7 | @yeo_maxentscan_2004 |
-| **Variant Effect Predictors** | | | |
-| CADD | VEP (integrative) | 4, 12, 13, 20 | @rentzsch_cadd_2019; @schubach_cadd_2024 |
-| SIFT | VEP (conservation) | 4, 13 | @ng_sift_2003 |
-| PolyPhen | VEP (conservation) | 4, 13 | @adzhubei_polyphen_2010 |
-| AlphaMissense | VEP (PLM + structure) | 9, 12, 13, 19, 20 | @cheng_alphamissense_2023 |
-| GPN-MSA | VEP (alignment LM) | 13, 19, 20 | @benegas_gpn-msa_2024 |
-| Evo 2 | VEP / GFM | 13, 19 | @brixi_evo_2025 |
-| AlphaGenome | VEP / GFM | 13, 19, 20 | @avsec_alphagenome_2025 |
-| **Clinical / Polygenic Models** | | | |
-| Delphi | PGS (deep) | 12, 18, 19 | @georgantas_delphi_2024 |
-| MIFM | Fine-mapping | 12, 18, 19 | @rakowski_mifm_2025 |
-| DeepRVAT | Rare variant | 19 | @clarke_deeprvat_2024 |
-| G2PT | PGS | 18 | @lee_g2pt_2025 |
-| **Multi-omics / Graph Models** | | | |
-| GLUE | Multi-omics integration | 18, 19 | @cao_glue_2022 |
-| MoGCN | Gene GNN | 19 | @li_mogcn_2022 |
-| CGMega | Gene GNN | 19 | @li_cgmega_2024 |
-| **Structure Prediction** | | | |
-| AlphaFold2 | Structure | 9, 13 | @jumper_alphafold2_2021 |
-| AlphaFold3 | Structure | 9 | @abramson_alphafold3_2024 |
-| **Conservation Scores** | | | |
-| phyloP | Conservation | 4 | @siepel_phastcons_2005 |
-| GERP++ | Conservation | 4 | @davydov_gerp_2010 |
+This appendix provides a reference catalog of genomic foundation models and related computational tools discussed throughout the book. Models are organized by category with key specifications to help practitioners select appropriate tools for their applications.
 
-## Category Definitions
+## DNA Language Models {#sec-apx-d-dna-lm}
 
-- **DNA LM**: DNA language models using self-supervised pretraining on genomic sequences
-- **PLM**: Protein language models trained on protein sequences
-- **Seq→Func**: Supervised sequence-to-function models predicting chromatin/expression from DNA
-- **Splice**: Specialized splice site prediction models
-- **VEP**: Variant effect predictors (various paradigms)
-- **GFM**: Genomic foundation model (broad, reusable representations)
-- **PGS**: Polygenic score or risk prediction models
-- **GNN**: Graph neural network for gene/pathway analysis
+| Model | Parameters | Context | Tokenization | Key Capability | Citation |
+|-------|-----------|---------|--------------|----------------|----------|
+| *DNABERT* | 110M | 512 bp | 6-mer | Chromatin accessibility, TF binding | @ji_dnabert_2021 |
+| *DNABERT-2* | 117M | 512 bp | BPE | Improved efficiency, multi-species | @zhou_dnabert-2_2024 |
+| *Nucleotide Transformer* | 50M–2.5B | 6 kb | 6-mer | Embeddings, regulatory prediction | @dalla-torre_nucleotide_2023 |
+| *HyenaDNA* | 1.4M–6.6M | 1 Mb | Single nucleotide | Long-range dependencies | @nguyen_hyenadna_2023 |
+| *Caduceus* | 1.8M–7.4M | 131 kb | Single nucleotide | Bidirectional, reverse complement | @schiff_caduceus_2024 |
+| *GROVER* | 80M–520M | 2 kb | Single nucleotide | DNA + RNA understanding | @sanabria_grover_2024 |
+| *Evo* | 7B | 131 kb | Single nucleotide | Generation, whole-genome | @nguyen_sequence_2024 |
+| *Evo 2* | 7B–40B | 1 Mb | Single nucleotide | Multi-scale prediction | @brixi_evo_2025 |
+
+### Model Access
+
+| Model | Repository | Weights | License |
+|-------|-----------|---------|---------|
+| *DNABERT* | [github.com/jerryji1993/DNABERT](https://github.com/jerryji1993/DNABERT) | HuggingFace | MIT |
+| *DNABERT-2* | [github.com/MAGICS-LAB/DNABERT_2](https://github.com/MAGICS-LAB/DNABERT_2) | HuggingFace | MIT |
+| *Nucleotide Transformer* | [github.com/instadeepai/nucleotide-transformer](https://github.com/instadeepai/nucleotide-transformer) | HuggingFace | CC BY-NC-SA 4.0 |
+| *HyenaDNA* | [github.com/HazyResearch/hyena-dna](https://github.com/HazyResearch/hyena-dna) | HuggingFace | Apache 2.0 |
+| *Caduceus* | [github.com/kuleshov-group/caduceus](https://github.com/kuleshov-group/caduceus) | HuggingFace | Apache 2.0 |
+| *Evo* | [github.com/evo-design/evo](https://github.com/evo-design/evo) | HuggingFace | Apache 2.0 |
+
+## Protein Language Models {#sec-apx-d-plm}
+
+| Model | Parameters | Context | Architecture | Key Capability | Citation |
+|-------|-----------|---------|--------------|----------------|----------|
+| *ESM-2* | 8M–15B | 1,024 AA | Transformer encoder | Structure, function, variants | @lin_language_2023 |
+| *ESM-1v* | 650M | 1,024 AA | Transformer encoder | Zero-shot variant effects | @meier_esm-1v_2021 |
+| *ESMFold* | 15B | 1,024 AA | Encoder + structure | Single-sequence folding | @lin_language_2023 |
+| *ProtTrans* | 420M–3B | 1,024 AA | Transformer | Multilingual protein embeddings | @elnaggar_prottrans_2022 |
+| *ProGen2* | 151M–6.4B | 1,024 AA | Autoregressive | Protein generation | @nijkamp_progen2_2023 |
+
+### Model Access
+
+| Model | Repository | Weights | License |
+|-------|-----------|---------|---------|
+| *ESM-2* | [github.com/facebookresearch/esm](https://github.com/facebookresearch/esm) | HuggingFace | MIT |
+| *ESMFold* | [github.com/facebookresearch/esm](https://github.com/facebookresearch/esm) | HuggingFace | MIT |
+| *ProtTrans* | [github.com/agemagician/ProtTrans](https://github.com/agemagician/ProtTrans) | HuggingFace | Academic |
+
+## Sequence-to-Function Models {#sec-apx-d-seq2func}
+
+| Model | Input | Output | Architecture | Key Capability | Citation |
+|-------|-------|--------|--------------|----------------|----------|
+| *DeepSEA* | 1 kb | 919 chromatin features | CNN | Regulatory variant effects | @zhou_deep_2015 |
+| *Beluga* | 2 kb | 2,002 features | CNN | Extended DeepSEA | @zhou_expecto_2018 |
+| *Sei* | 4 kb | 21,907 targets | CNN | Sequence classes | @chen_sequence-based_2022 |
+| *Basenji* | 131 kb | 4,229 tracks | Dilated CNN | Expression prediction | @kelley_basenji_2018 |
+| *Basenji2* | 131 kb | 5,313 tracks | Dilated CNN | Cross-species, human + mouse | @kelley_cross-species_2020 |
+| *Enformer* | 196 kb | 5,313 tracks | Transformer | Long-range regulation | @avsec_enformer_2021 |
+| *Borzoi* | 524 kb | RNA-seq | Transformer | RNA expression | @linder_borzoi_2025 |
+
+### Model Access
+
+| Model | Repository | Weights | License |
+|-------|-----------|---------|---------|
+| *DeepSEA/Beluga* | [kipoi.org](https://kipoi.org/models/DeepSEA/) | Kipoi | Academic |
+| *Sei* | [github.com/FunctionLab/sei-framework](https://github.com/FunctionLab/sei-framework) | Zenodo | MIT |
+| *Basenji/Basenji2* | [github.com/calico/basenji](https://github.com/calico/basenji) | Direct | Apache 2.0 |
+| *Enformer* | [github.com/deepmind/deepmind-research/tree/master/enformer](https://github.com/deepmind/deepmind-research/tree/master/enformer) | TF Hub | Apache 2.0 |
+| *Borzoi* | [github.com/calico/borzoi](https://github.com/calico/borzoi) | Direct | Apache 2.0 |
+
+## Splice Prediction Models {#sec-apx-d-splice}
+
+| Model | Input | Output | Architecture | Key Capability | Citation |
+|-------|-------|--------|--------------|----------------|----------|
+| *SpliceAI* | 10 kb context | Splice probability | ResNet | Cryptic splice sites | @jaganathan_spliceai_2019 |
+| *MaxEntScan* | 9+23 nt | Splice score | Position weight matrix | Consensus scoring | @yeo_maximum_2004 |
+| *Pangolin* | 5 kb | Tissue-specific splicing | Transformer | Tissue context | @zeng_predicting_2022 |
+
+### Model Access
+
+| Model | Repository | Web Interface | License |
+|-------|-----------|---------------|---------|
+| *SpliceAI* | [github.com/Illumina/SpliceAI](https://github.com/Illumina/SpliceAI) | [spliceailookup.broadinstitute.org](https://spliceailookup.broadinstitute.org/) | GPLv3 |
+| *Pangolin* | [github.com/tkzeng/Pangolin](https://github.com/tkzeng/Pangolin) | — | MIT |
+
+## Variant Effect Predictors {#sec-apx-d-vep}
+
+### Integrative Scores
+
+| Model | Input | Method | Key Features | Citation |
+|-------|-------|--------|--------------|----------|
+| *CADD* | Any variant | Ensemble ML | 100+ annotations, universal | @rentzsch_cadd_2019 |
+| *REVEL* | Missense | Ensemble | 13 tool integration | @ioannidis_revel_2016 |
+| *PrimateAI-3D* | Missense | Deep learning + structure | Primate conservation | @sundaram_primateai_2018 |
+
+### Protein Language Model–Based
+
+| Model | Input | Method | Key Features | Citation |
+|-------|-------|--------|--------------|----------|
+| *AlphaMissense* | Missense | ESM + AlphaFold | Structure-aware PLM | @cheng_accurate_2023 |
+| *ESM-1v* | Missense | Zero-shot PLM | No training required | @meier_esm-1v_2021 |
+| *EVE* | Missense | VAE on MSA | Evolutionary model | @frazer_disease_2021 |
+| *GPN-MSA* | Any variant | Alignment LM | Conservation + context | @benegas_gpn-msa_2024 |
+
+### Conservation-Based
+
+| Model | Input | Method | Key Features | Citation |
+|-------|-------|--------|--------------|----------|
+| *SIFT* | Missense | Sequence conservation | Fast, interpretable | @ng_sift_2003 |
+| *PolyPhen-2* | Missense | Conservation + structure | HumDiv/HumVar models | @adzhubei_method_2010 |
+| *GERP++* | Any position | Rejected substitutions | Base-level conservation | @davydov_identifying_2010 |
+| *phyloP* | Any position | Phylogenetic model | Acceleration/conservation | @pollard_detection_2010 |
+
+### Model Access
+
+| Model | Access | Web Interface |
+|-------|--------|---------------|
+| *CADD* | [cadd.gs.washington.edu](https://cadd.gs.washington.edu/) | Score lookup + download |
+| *AlphaMissense* | [github.com/google-deepmind/alphamissense](https://github.com/google-deepmind/alphamissense) | Precomputed scores |
+| *REVEL* | [sites.google.com/site/revelgenomics](https://sites.google.com/site/revelgenomics/) | Precomputed scores |
+| *gnomAD* | [gnomad.broadinstitute.org](https://gnomad.broadinstitute.org/) | Integrated VEP scores |
+
+## Structure Prediction {#sec-apx-d-structure}
+
+| Model | Input | Output | Key Capability | Citation |
+|-------|-------|--------|----------------|----------|
+| *AlphaFold2* | Protein sequence + MSA | 3D structure | High-accuracy folding | @jumper_highly_2021 |
+| *AlphaFold3* | Protein/DNA/RNA/ligand | Complex structure | Multi-molecule complexes | @abramson_accurate_2024 |
+| *ESMFold* | Protein sequence | 3D structure | Single-sequence, fast | @lin_language_2023 |
+| *RoseTTAFold* | Protein sequence + MSA | 3D structure | Three-track architecture | @baek_accurate_2021 |
+
+### Model Access
+
+| Model | Repository | Server | License |
+|-------|-----------|--------|---------|
+| *AlphaFold2* | [github.com/google-deepmind/alphafold](https://github.com/google-deepmind/alphafold) | [alphafold.ebi.ac.uk](https://alphafold.ebi.ac.uk/) | Apache 2.0 |
+| *AlphaFold3* | [github.com/google-deepmind/alphafold3](https://github.com/google-deepmind/alphafold3) | [alphafoldserver.com](https://alphafoldserver.com/) | Research only |
+| *ESMFold* | [github.com/facebookresearch/esm](https://github.com/facebookresearch/esm) | [esmatlas.com](https://esmatlas.com/) | MIT |
+
+## Single-Cell and Multi-Omics Models {#sec-apx-d-singlecell}
+
+| Model | Input | Output | Key Capability | Citation |
+|-------|-------|--------|----------------|----------|
+| *scGPT* | scRNA-seq | Cell embeddings | Cell type, perturbation | @cui_scgpt_2024 |
+| *Geneformer* | scRNA-seq | Gene embeddings | Transfer learning | @theodoris_geneformer_2023 |
+| *scBERT* | scRNA-seq | Cell embeddings | Cell annotation | @yang_scbert_2022 |
+| *GLUE* | Multi-omics | Integrated embeddings | Cross-modality integration | @cao_multi-omics_2022 |
+
+## Polygenic and Clinical Models {#sec-apx-d-clinical}
+
+| Model | Input | Output | Key Capability | Citation |
+|-------|-------|--------|----------------|----------|
+| *Delphi* | Genotypes | Disease risk | Deep PGS | @georgantas_delphi_2024 |
+| *DeepRVAT* | Rare variants | Gene burden | Rare variant aggregation | @clarke_deeprvat_2024 |
+| *G2PT* | Genotypes + phenotypes | Risk prediction | Genotype-to-phenotype | @lee_g2pt_2025 |
+
+## Category Definitions {#sec-apx-d-categories}
+
+**DNA LM**
+: DNA language models using self-supervised pretraining (masked language modeling or autoregressive) on genomic sequences. Produce embeddings useful for diverse downstream tasks.
+
+**PLM**
+: Protein language models trained on protein sequences using similar self-supervised objectives. Capture evolutionary and structural information.
+
+**Seq→Func**
+: Supervised sequence-to-function models predicting molecular phenotypes (chromatin accessibility, histone modifications, gene expression) directly from DNA sequence.
+
+**Splice**
+: Specialized models for splice site recognition and splicing outcome prediction.
+
+**VEP**
+: Variant effect predictors spanning multiple paradigms: conservation-based, integrative ensemble, and foundation model–based approaches.
+
+**Structure**
+: Protein (and nucleic acid) structure prediction models.
+
+**GFM**
+: Genomic foundation model—a broad term for models with reusable representations applicable across multiple downstream tasks.
+
+## Practical Considerations {#sec-apx-d-practical}
+
+### Selecting a Model
+
+When choosing a model for a specific application:
+
+1. **Task alignment**: Does the model's pretraining objective match your task? MLM-pretrained models excel at classification; autoregressive models enable generation.
+
+2. **Context requirements**: Long-range regulatory effects require models with large context windows (*Enformer*, *HyenaDNA*, *Evo*). Local motif tasks work with shorter contexts.
+
+3. **Computational resources**: Parameter counts range from millions to billions. Smaller models (*DNABERT*, 110M) run on consumer GPUs; larger models (*Evo 2*, 40B) require substantial infrastructure.
+
+4. **License restrictions**: Some models restrict commercial use (CC BY-NC) or require academic affiliation. Verify license compatibility before deployment.
+
+5. **Benchmark performance**: Consult @sec-ch11-benchmarks for standardized comparisons on tasks relevant to your application.
+
+### Model Versioning
+
+Foundation models are actively developed, with new versions often substantially outperforming predecessors. When citing or deploying models:
+
+- Specify exact version and checkpoint (e.g., "ESM-2 650M, checkpoint esm2_t33_650M_UR50D")
+- Record model weights hash for reproducibility
+- Note training data version (UniRef versions change over time)
+- Document inference parameters (temperature, sampling strategy for generative models)

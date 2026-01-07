@@ -4,7 +4,7 @@ This report evaluates every paper cited in Chapter 1 (from `p1-ch01.bib`) under 
 
 ## Summary
 
-Chapter 1 cites 31 papers. Status breakdown: INCLUDE: 31.
+Chapter 1 cites 34 papers. Status breakdown: INCLUDE: 34.
 
 ## Preprints and publication status
 
@@ -841,3 +841,87 @@ The following citations are preprints or cite preprint versions based on venue m
 **Longevity (+).** Longevity outlook is positive: likely to remain a standard reference or durable exemplar through 2030.
 
 **Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
+
+### @rubinacci_efficient_2021
+
+**Bibliographic anchor.** *Efficient phasing and imputation of low-coverage sequencing data using large reference panels* (2021; Nat Genet).
+
+**Scope fit.** Scope fit is supportive: this is a core genomics pipeline or sequencing method that underpins the data used by genomic foundation models.
+
+**Recency relevance.** Recency relevance is acceptable: it represents established practice that is still directly used or cited in modern pipelines.
+
+**Venue signal.** Venue signal is strong: it is published in a reputable journal or conference and has clear provenance.
+
+**Tier 1 red-flags check.** Based on the citation context and the paper's role (method, resource, or benchmark), there are no obvious immediate red flags like missing evaluation, but a full read should still confirm held-out testing, leakage control, and appropriate baselines when the paper is used for performance claims.
+
+**Reproducibility (score 3).** High reproducibility signal: the work is typically accompanied by usable implementations and sufficient methodological detail to re-run, and in many cases has become part of standard toolchains.
+
+**Validation rigor (score 3).** Strong validation signal: results are typically supported across multiple independent datasets, cohorts, or orthogonal truth sets, often with careful stratification or error analysis.
+
+**Claim calibration.** Claims appear calibrated to the evidence as cited in the chapter.
+
+**Book relevance and integration.** In the manuscript, this citation supports **Ch01-Imputation/LowCoverage**. Integration cost is low because it is already positioned as a reference point in that section.
+
+**Pedagogical value (H).** High pedagogical value: it teaches a durable concept, provides a canonical reference, or includes figures and experimental framing that readers can reuse.
+
+**Longevity (+).** Longevity outlook is positive: likely to remain a standard reference or durable exemplar through 2030.
+
+**Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
+
+**Notes.** GLIMPSE method for low-coverage WGS imputation; demonstrates 90% reduction in false call rates; key enabler of low-pass sequencing strategies.
+
+### @zanger_cytochrome_2013
+
+**Bibliographic anchor.** *Cytochrome P450 enzymes in drug metabolism: regulation of gene expression, enzyme activities, and impact of genetic variation* (2013; Pharmacol Ther).
+
+**Scope fit.** Scope fit is partial: it is cited for context but is not central to deep learning on genomic sequence.
+
+**Recency relevance.** Recency relevance is strong in the 'foundational' sense: although older, it remains influential and is still commonly cited or used.
+
+**Venue signal.** Venue signal is strong: it is published in a reputable journal or conference and has clear provenance.
+
+**Tier 1 red-flags check.** Based on the citation context and the paper's role (method, resource, or benchmark), there are no obvious immediate red flags like missing evaluation, but a full read should still confirm held-out testing, leakage control, and appropriate baselines when the paper is used for performance claims.
+
+**Reproducibility (score 1).** Limited reproducibility signal: the citation is mainly a review, high-level resource description, or guidance; re-running is not the core contribution.
+
+**Validation rigor (score 2).** Moderate validation signal: comprehensive review synthesizing evidence from many primary studies.
+
+**Claim calibration.** Claims appear calibrated to the evidence as cited in the chapter.
+
+**Book relevance and integration.** In the manuscript, this citation supports **Ch01-SegmentalDuplications/CYP2D6**. Integration cost is low because it is already positioned as a reference point in that section.
+
+**Pedagogical value (H).** High pedagogical value: it teaches a durable concept, provides a canonical reference, or includes figures and experimental framing that readers can reuse.
+
+**Longevity (+).** Longevity outlook is positive: likely to remain a standard reference or durable exemplar through 2030.
+
+**Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
+
+**Notes.** Comprehensive CYP450 review; source for "~25% of drugs metabolized by CYP2D6" statistic; highly cited pharmacogenomics reference.
+
+### @ingelman-sundberg_genetic_2005
+
+**Bibliographic anchor.** *Genetic polymorphisms of cytochrome P450 2D6 (CYP2D6): clinical consequences, evolutionary aspects and functional diversity* (2005; Pharmacogenomics J).
+
+**Scope fit.** Scope fit is partial: it is cited for context but is not central to deep learning on genomic sequence.
+
+**Recency relevance.** Recency relevance is strong in the 'foundational' sense: although older, it remains influential and is still commonly cited or used.
+
+**Venue signal.** Venue signal is strong: it is published in a reputable journal or conference and has clear provenance.
+
+**Tier 1 red-flags check.** Based on the citation context and the paper's role (method, resource, or benchmark), there are no obvious immediate red flags like missing evaluation, but a full read should still confirm held-out testing, leakage control, and appropriate baselines when the paper is used for performance claims.
+
+**Reproducibility (score 1).** Limited reproducibility signal: the citation is mainly a review, high-level resource description, or guidance; re-running is not the core contribution.
+
+**Validation rigor (score 2).** Moderate validation signal: comprehensive review synthesizing evidence from many primary studies.
+
+**Claim calibration.** Claims appear calibrated to the evidence as cited in the chapter.
+
+**Book relevance and integration.** In the manuscript, this citation supports **Ch01-SegmentalDuplications/CYP2D6**. Integration cost is low because it is already positioned as a reference point in that section.
+
+**Pedagogical value (M).** Moderate pedagogical value: it is useful for context and as a reference, but it may not be the clearest teaching vehicle on its own.
+
+**Longevity (+).** Longevity outlook is positive: likely to remain a standard reference or durable exemplar through 2030.
+
+**Framework decision.** Decision: INCLUDE as a durable anchor for the chapter section noted below.
+
+**Notes.** Classic CYP2D6-specific reference; covers clinical phenotypes (poor/intermediate/extensive/ultra-rapid metabolizers) and substrate specificity.

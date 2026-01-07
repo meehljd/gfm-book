@@ -1,13 +1,551 @@
 # Data Curation {#sec-apx-c-data-curation}
-**Label**: `@sec-apx-data-curation`  
-**Old source**: **NEW**
 
-**Purpose**: Guide to constructing training sets for genomic FMs
+Training genomic foundation models requires carefully curated datasets that balance scale with quality. Poor data curation propagates errors into model representations, creating systematic biases that persist through downstream applications. This appendix provides practical guidance for constructing training sets, detecting contamination, and documenting data provenance.
 
-**Content**:
-- Data sources and access
-- Quality filtering strategies
-- Deduplication and redundancy reduction
-- Contamination detection
-- Data provenance and versioning
-- Bias assessment
+## Data Sources {#sec-apx-c-sources}
+
+Genomic foundation models draw from diverse data sources, each with distinct characteristics, biases, and access requirements.
+
+### Reference Genomes and Assemblies
+
+**Human reference genome** (GRCh38/hg38) provides the coordinate system for human genomics:
+
+| Assembly | Release | Key Features |
+|----------|---------|--------------|
+| GRCh38 | 2013 | Current standard, alternate loci |
+| T2T-CHM13 | 2022 | First complete human genome |
+| Pangenome | 2023 | Graph-based, population diversity |
+
+**Species genomes** from Ensembl, NCBI, and UCSC provide sequences for comparative genomics and cross-species pretraining.
+
+**Considerations**:
+- Reference genome represents a single haplotype, missing population diversity
+- Repetitive regions and centromeres are poorly represented in older assemblies
+- Coordinate systems differ between assemblies; ensure consistency
+
+### Population-Scale Sequencing
+
+| Resource | Samples | Data Type | Access |
+|----------|---------|-----------|--------|
+| **gnomAD** | 730,000+ | Exomes/genomes | Open |
+| **UK Biobank** | 500,000 | WGS, WES, arrays | Controlled |
+| **All of Us** | 1,000,000+ | WGS | Controlled |
+| **TOPMed** | 180,000+ | WGS | Controlled |
+| **1000 Genomes** | 3,200 | WGS | Open |
+
+Population databases provide variant frequency information and diverse genetic backgrounds. gnomAD's open access makes it valuable for training; controlled-access resources like UK Biobank require applications and data use agreements.
+
+### Protein Sequence Databases
+
+| Database | Sequences | Coverage |
+|----------|-----------|----------|
+| **UniRef100** | 300M+ | Non-redundant proteins |
+| **UniRef90** | 150M+ | 90% identity clusters |
+| **UniRef50** | 55M+ | 50% identity clusters |
+| **UniParc** | 500M+ | All known proteins |
+
+UniRef provides clustered protein sequences at different identity thresholds, enabling control over sequence redundancy during pretraining. Lower redundancy (UniRef50) reduces training time but may miss sequence diversity; higher redundancy captures more variation but increases computational cost.
+
+### Functional Annotation
+
+| Resource | Assays | Cell Types |
+|----------|--------|------------|
+| **ENCODE** | ChIP-seq, ATAC-seq, RNA-seq | 500+ |
+| **Roadmap** | Histone marks, DNase | 127 |
+| **GTEx** | RNA-seq | 54 tissues |
+| **FANTOM5** | CAGE | 1,800+ |
+
+Functional genomics data provides supervision signals for regulatory sequence models. ENCODE and Roadmap offer consistent protocols across cell types; GTEx provides tissue-specific expression. Data quality varies by assay and cell type; metadata review is essential.
+
+### Clinical Variant Databases
+
+| Database | Variants | Curation |
+|----------|----------|----------|
+| **ClinVar** | 2M+ | Submitter-dependent |
+| **HGMD** | 350K+ | Expert curated |
+| **ClinGen** | Genes + variants | Expert panels |
+| **LOVD** | Gene-specific | Variable |
+
+ClinVar provides the largest open-access collection of clinical variant interpretations but includes submitter variability and classification conflicts. See @sec-ch02-data for detailed discussion of ClinVar biases.
+
+### Access and Licensing
+
+Data access requirements vary:
+
+| Access Type | Examples | Requirements |
+|-------------|----------|--------------|
+| **Open** | gnomAD, 1000G, ClinVar | None |
+| **Registered** | ENCODE, GTEx | Account creation |
+| **Controlled** | UK Biobank, dbGaP | Application, IRB approval |
+| **Commercial** | HGMD Professional | Subscription |
+
+**Controlled-access data** requires:
+- Institutional review board (IRB) approval
+- Data use agreements (DUA)
+- Secure computing environments
+- Compliance with return/destruction policies
+
+## Quality Filtering {#sec-apx-c-quality}
+
+Raw genomic data contains errors from sequencing, alignment, and annotation. Quality filtering removes problematic entries before training.
+
+### Sequence Quality Filters
+
+**For DNA sequences**:
+
+| Filter | Threshold | Rationale |
+|--------|-----------|-----------|
+| N content | <5% | Removes poorly sequenced regions |
+| Low complexity | DUST score | Removes repetitive sequence |
+| Length | Task-dependent | Ensures sufficient context |
+| GC content | Species-appropriate | Flags contamination |
+
+```python
+def filter_sequence(seq, max_n_frac=0.05, min_length=100):
+    """Basic sequence quality filter."""
+    n_frac = seq.count('N') / len(seq)
+    if n_frac > max_n_frac:
+        return False
+    if len(seq) < min_length:
+        return False
+    return True
+```
+
+**For protein sequences**:
+
+| Filter | Threshold | Rationale |
+|--------|-----------|-----------|
+| X content | <1% | Removes ambiguous residues |
+| Length | 30–10,000 AA | Filters fragments and artifacts |
+| Stop codons | 0 internal | Removes pseudogenes |
+
+### Variant Quality Filters
+
+Variant calls include false positives from sequencing errors and alignment artifacts:
+
+| Filter | Typical Threshold | Notes |
+|--------|-------------------|-------|
+| **QUAL** | >20 | Phred-scaled quality |
+| **DP** | >10 | Read depth |
+| **GQ** | >20 | Genotype quality |
+| **FILTER** | PASS | Caller-specific filters |
+| **AF_gnomAD** | <0.01 for rare | Population frequency |
+
+GATK and other variant callers apply default filters; additional filtering may be needed for training data. Overly stringent filtering biases toward common variants; overly permissive filtering includes false positives.
+
+### Annotation Quality
+
+Clinical annotations have variable quality:
+
+| Quality Indicator | Interpretation |
+|-------------------|----------------|
+| **Review status** (ClinVar) | Stars indicate curation level |
+| **Submission count** | More submissions increase confidence |
+| **Date** | Recent annotations reflect current knowledge |
+| **Conflicts** | Multiple interpretations reduce reliability |
+
+**Filtering strategy for ClinVar**:
+- Require ≥2 stars review status for training labels
+- Exclude variants with conflicting interpretations
+- Consider date cutoffs for temporal validation
+
+### Handling Missing Data
+
+Missing annotations are common:
+
+- **Explicit missing**: Marked as unknown/uncertain
+- **Implicit missing**: Simply not annotated
+
+Strategies:
+- Exclude samples with critical missing fields
+- Impute where appropriate (mean, median, model-based)
+- Model missingness explicitly (separate category)
+- Document missing data rates
+
+## Deduplication {#sec-apx-c-dedup}
+
+Duplicate sequences inflate dataset size without providing new information and can cause train-test leakage.
+
+### Exact Deduplication
+
+Remove identical sequences:
+
+```python
+import hashlib
+
+def deduplicate_exact(sequences):
+    """Remove exact duplicate sequences."""
+    seen = set()
+    unique = []
+    for seq in sequences:
+        seq_hash = hashlib.md5(seq.encode()).hexdigest()
+        if seq_hash not in seen:
+            seen.add(seq_hash)
+            unique.append(seq)
+    return unique
+```
+
+### Near-Duplicate Detection
+
+Sequences differing by few positions may represent the same biological entity:
+
+**For DNA**:
+- MinHash/LSH for approximate matching
+- CD-HIT for clustering at identity thresholds
+- MMseqs2 for scalable clustering
+
+**For proteins**:
+- CD-HIT at 90%, 70%, 50%, 30% identity
+- MMseqs2 for large-scale clustering
+- PSI-BLAST for remote homology
+
+**Example CD-HIT usage**:
+```bash
+# Cluster at 90% sequence identity
+cd-hit -i proteins.fasta -o proteins_nr90.fasta -c 0.9 -n 5
+
+# Cluster at 50% identity (requires different word size)
+cd-hit -i proteins.fasta -o proteins_nr50.fasta -c 0.5 -n 3
+```
+
+### Redundancy Levels
+
+| Redundancy | Use Case |
+|------------|----------|
+| **100% (no dedup)** | Maximum data, risk of memorization |
+| **90% identity** | Reduce near-duplicates, preserve variants |
+| **70% identity** | Balance diversity and coverage |
+| **50% identity** | Maximize diversity, may lose variants |
+| **30% identity** | Remote homologs only |
+
+The optimal redundancy level depends on the task and model capacity. Larger models can benefit from more redundancy; smaller models may need aggressive deduplication.
+
+### Train-Test Deduplication
+
+Critical for valid evaluation:
+
+1. Define test set sequences first
+2. Remove training sequences similar to test sequences
+3. Use appropriate similarity threshold (often 30–50% for proteins)
+4. Document the deduplication procedure
+
+```python
+def remove_test_similar(train_seqs, test_seqs, threshold=0.5):
+    """Remove training sequences similar to test set."""
+    # Use MMseqs2 or similar for actual implementation
+    # This is pseudocode for the concept
+    clean_train = []
+    for train_seq in train_seqs:
+        if not any(similarity(train_seq, test_seq) > threshold
+                   for test_seq in test_seqs):
+            clean_train.append(train_seq)
+    return clean_train
+```
+
+## Contamination Detection {#sec-apx-c-contamination}
+
+Contamination introduces sequences from unintended sources, corrupting training data.
+
+### Types of Contamination
+
+| Type | Source | Detection |
+|------|--------|-----------|
+| **Cross-species** | Sample mix-up, xenograft | BLAST to species databases |
+| **Microbial** | Sample contamination | Screen against microbial genomes |
+| **Adapter** | Library prep artifacts | Match adapter sequences |
+| **Vector** | Cloning artifacts | Screen UniVec database |
+| **Human** | Non-human samples | Screen against human genome |
+
+### Screening Approaches
+
+**BLAST-based screening**:
+```bash
+# Screen against human genome for non-human samples
+blastn -query sequences.fasta -db human_genome \
+       -outfmt 6 -evalue 1e-10 > human_hits.txt
+```
+
+**Specialized tools**:
+
+| Tool | Purpose |
+|------|---------|
+| **FastQ Screen** | Multi-genome contamination |
+| **Kraken2** | Taxonomic classification |
+| **BBDuk** | Adapter/contaminant removal |
+| **VecScreen** | Vector contamination |
+
+### Benchmark Contamination
+
+A subtle but critical issue: test benchmarks contaminated in pretraining data inflate performance estimates.
+
+**Detection**:
+- Search pretraining corpus for benchmark sequences
+- Check for substring matches, not just exact matches
+- Verify temporal separation (benchmark created after pretraining data)
+
+**Prevention**:
+- Document pretraining data sources and dates
+- Use chromosome-based holdouts where possible
+- Report contamination checks in publications
+
+## Data Provenance {#sec-apx-c-provenance}
+
+Tracking data origins enables reproducibility and debugging.
+
+### Metadata Requirements
+
+Essential metadata for each data source:
+
+| Field | Description |
+|-------|-------------|
+| **Source** | Database/repository name |
+| **Version** | Release version or date |
+| **Access date** | When data was downloaded |
+| **URL** | Exact download location |
+| **Processing** | Filters and transformations applied |
+| **Checksum** | MD5/SHA256 for verification |
+
+### Documentation Template
+
+```yaml
+# data_manifest.yaml
+dataset:
+  name: "variant_training_v2"
+  created: "2024-01-15"
+
+sources:
+  - name: "ClinVar"
+    version: "2024-01"
+    url: "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/..."
+    checksum: "abc123..."
+    filters:
+      - "review_status >= 2 stars"
+      - "no conflicting interpretations"
+    records_raw: 2500000
+    records_filtered: 850000
+
+  - name: "gnomAD"
+    version: "4.0"
+    url: "https://gnomad.broadinstitute.org/..."
+    checksum: "def456..."
+    filters:
+      - "FILTER == PASS"
+      - "AF > 0.001"
+    records_raw: 750000000
+    records_filtered: 45000000
+
+processing:
+  deduplication: "exact + 90% identity clustering"
+  train_test_split: "chromosome-based (chr8 test)"
+
+final_counts:
+  train: 800000
+  validation: 50000
+  test: 100000
+```
+
+### Version Control
+
+For reproducibility:
+- Store data manifests in version control
+- Use content-addressable storage for large files (DVC, git-lfs)
+- Tag dataset versions with model training runs
+- Archive exact preprocessing scripts
+
+## Bias Assessment {#sec-apx-c-bias}
+
+Training data biases propagate into model predictions. Proactive assessment enables mitigation.
+
+### Population Bias
+
+Genomic databases are not representative of global populations:
+
+| Database | European | African | Asian | Other |
+|----------|----------|---------|-------|-------|
+| ClinVar | ~70% | ~5% | ~15% | ~10% |
+| gnomAD | ~50% | ~10% | ~25% | ~15% |
+| UK Biobank | ~95% | ~2% | ~2% | ~1% |
+
+**Consequences**:
+- Variant frequency estimates biased toward Europeans
+- Pathogenic variants in non-European populations underrepresented
+- Models may perform worse on underrepresented populations
+
+**Assessment**:
+- Compute ancestry distribution of training samples
+- Evaluate model performance stratified by ancestry
+- Document limitations for underrepresented groups
+
+### Gene Coverage Bias
+
+Some genes are more studied than others:
+
+- Cancer genes (*BRCA1*, *TP53*) have extensive annotation
+- Novel disease genes have sparse data
+- Gene function determines ascertainment
+
+**Assessment**:
+- Plot variants per gene vs. gene length
+- Identify genes with suspiciously high/low variant counts
+- Consider gene-level normalization
+
+### Ascertainment Bias
+
+Clinical databases reflect clinical practice:
+
+- Common diseases overrepresented
+- Severe phenotypes more likely to reach clinical attention
+- Geographic patterns in healthcare access
+
+**Assessment**:
+- Compare phenotype distribution to population prevalence
+- Identify systematic gaps in disease coverage
+- Document clinical ascertainment assumptions
+
+### Label Bias
+
+Annotations reflect annotator knowledge and conventions:
+
+- Historical classifications may be outdated
+- Different submitters use different standards
+- Pathogenicity thresholds vary by context
+
+**Assessment**:
+- Track annotation dates and sources
+- Identify conflicting labels
+- Consider temporal validation (train on old, test on new)
+
+## Building Training Sets {#sec-apx-c-building}
+
+Practical workflow for constructing training data.
+
+### Step 1: Define Scope
+
+- What sequences will the model process?
+- What predictions will it make?
+- What populations/contexts must it serve?
+
+### Step 2: Identify Sources
+
+- List candidate data sources
+- Assess access requirements and licenses
+- Evaluate quality and coverage
+
+### Step 3: Download and Verify
+
+```bash
+# Download with verification
+wget https://example.com/data.vcf.gz
+md5sum data.vcf.gz  # Compare to published checksum
+
+# Document in manifest
+echo "Downloaded data.vcf.gz on $(date)" >> data_log.txt
+echo "MD5: $(md5sum data.vcf.gz)" >> data_log.txt
+```
+
+### Step 4: Quality Filter
+
+Apply appropriate filters for each data type:
+- Sequence quality (N content, length, complexity)
+- Variant quality (QUAL, DP, GQ, FILTER)
+- Annotation quality (review status, conflicts)
+
+### Step 5: Deduplicate
+
+- Remove exact duplicates
+- Cluster at appropriate identity threshold
+- Ensure train-test separation
+
+### Step 6: Split Data
+
+| Split | Purpose | Size |
+|-------|---------|------|
+| **Train** | Model training | 80–90% |
+| **Validation** | Hyperparameter tuning | 5–10% |
+| **Test** | Final evaluation | 5–10% |
+
+**Splitting strategies**:
+- Random (simple but may leak related samples)
+- Chromosome-based (ensures spatial separation)
+- Temporal (train on older data, test on newer)
+- Gene-family-based (tests generalization to new genes)
+
+### Step 7: Assess Bias
+
+- Compute population/gene/phenotype distributions
+- Compare to expected distributions
+- Document known biases and limitations
+
+### Step 8: Document
+
+- Create comprehensive data manifest
+- Archive preprocessing scripts
+- Record final counts and splits
+- Publish data card with limitations
+
+## Data Cards {#sec-apx-c-datacards}
+
+A **data card** documents dataset characteristics for users:
+
+```markdown
+# Dataset: VariantBench-v2
+
+## Overview
+- Purpose: Training variant effect predictors
+- Size: 950,000 variants (800K train / 50K val / 100K test)
+- Created: January 2024
+
+## Sources
+- ClinVar 2024-01 (pathogenic/benign labels)
+- gnomAD 4.0 (population frequencies)
+
+## Curation
+- Required 2+ stars review status
+- Excluded conflicting interpretations
+- 90% identity clustering applied
+- Chromosome 8 held out for testing
+
+## Known Biases
+- 70% European ancestry
+- Cancer genes overrepresented (*BRCA1*: 15K variants)
+- Recent submissions may have unstable classifications
+
+## Intended Use
+- Training and evaluating pathogenicity predictors
+- NOT suitable for: clinical diagnosis without validation
+
+## Updates
+- v2.1 (March 2024): Added 50K variants from new ClinVar release
+```
+
+## Checklist {#sec-apx-c-checklist}
+
+Before using a dataset for training:
+
+**Data Quality**
+
+- [ ] Sources documented with versions and dates
+- [ ] Quality filters applied and documented
+- [ ] Deduplication performed at appropriate threshold
+- [ ] Train-test leakage prevented
+
+**Bias Assessment**
+
+- [ ] Population distribution analyzed
+- [ ] Gene coverage distribution analyzed
+- [ ] Ascertainment biases documented
+- [ ] Label quality assessed
+
+**Documentation**
+
+- [ ] Data manifest created
+- [ ] Preprocessing scripts archived
+- [ ] Data card written
+- [ ] Limitations clearly stated
+
+**Reproducibility**
+
+- [ ] Checksums recorded
+- [ ] Random seeds documented
+- [ ] Scripts version-controlled
+- [ ] Environment recorded

@@ -1,3 +1,296 @@
 # Deep Learning Primer {#sec-apx-a-dl}
 
-...
+This appendix provides a concise introduction to deep learning concepts for readers with limited machine learning background. It covers the foundational ideas necessary to understand genomic foundation models without requiring prior exposure to neural networks. Readers already familiar with deep learning can skip this appendix; those seeking deeper treatment should consult the resources in @sec-apx-e-resources.
+
+## Neural Networks as Function Approximators {#sec-apx-a-nn-basics}
+
+A neural network is a parameterized function that maps inputs to outputs through a series of transformations. For genomic applications, inputs might be DNA sequences, protein sequences, or variant annotations; outputs might be pathogenicity scores, expression predictions, or functional class probabilities.
+
+### The Perceptron and Linear Layers
+
+The simplest neural network component, the **perceptron**, computes a weighted sum of inputs plus a bias term:
+
+$$y = \sigma\left(\sum_{i=1}^{n} w_i x_i + b\right) = \sigma(\mathbf{w}^T \mathbf{x} + b)$$
+
+where $\mathbf{x}$ is the input vector, $\mathbf{w}$ are learnable weights, $b$ is a learnable bias, and $\sigma$ is an activation function. A **linear layer** (also called a fully connected or dense layer) extends this to multiple outputs by using a weight matrix $\mathbf{W}$ instead of a vector:
+
+$$\mathbf{y} = \sigma(\mathbf{W}\mathbf{x} + \mathbf{b})$$
+
+### Activation Functions
+
+Without nonlinear activation functions, stacking linear layers produces only linear transformations (the composition of linear functions is linear). **Activation functions** introduce nonlinearity, enabling networks to learn complex mappings.
+
+| Function | Formula | Properties |
+|----------|---------|------------|
+| ReLU | $\max(0, x)$ | Simple, fast; standard default |
+| GELU | $x \cdot \Phi(x)$ | Smooth; used in transformers |
+| Sigmoid | $1/(1 + e^{-x})$ | Output in (0, 1); used for probabilities |
+| Softmax | $e^{x_i}/\sum_j e^{x_j}$ | Output sums to 1; used for classification |
+| Tanh | $(e^x - e^{-x})/(e^x + e^{-x})$ | Output in (-1, 1); centered |
+
+**ReLU** (Rectified Linear Unit) is the most common choice for hidden layers due to computational efficiency and good gradient properties. **GELU** (Gaussian Error Linear Unit) has become standard in transformer architectures. **Softmax** converts a vector of scores into a probability distribution and is typically used in the final layer for classification tasks.
+
+### Depth and Width
+
+A network's **depth** refers to the number of layers; its **width** refers to the number of units per layer. Deeper networks can represent more complex hierarchical features but are harder to train. Wider networks have more capacity per layer but may require more data to avoid overfitting.
+
+Modern genomic foundation models are both deep (dozens to hundreds of layers) and wide (thousands of units per layer), requiring specialized training techniques and substantial computational resources.
+
+## Training Neural Networks {#sec-apx-a-training}
+
+Training a neural network means finding parameter values that minimize a **loss function** measuring the discrepancy between predictions and targets.
+
+### Loss Functions
+
+The loss function quantifies prediction error. Common choices:
+
+**Cross-entropy loss** for classification measures the divergence between predicted probabilities and true labels:
+
+$$\mathcal{L} = -\sum_{i} y_i \log(\hat{y}_i)$$
+
+where $y_i$ is the true label (1 for correct class, 0 otherwise) and $\hat{y}_i$ is the predicted probability.
+
+**Mean squared error** for regression measures average squared difference:
+
+$$\mathcal{L} = \frac{1}{n}\sum_{i}(y_i - \hat{y}_i)^2$$
+
+### Gradient Descent and Backpropagation
+
+Neural networks are trained using **gradient descent**: iteratively adjusting parameters in the direction that reduces the loss. The gradient (partial derivatives of the loss with respect to each parameter) indicates the direction of steepest increase; moving opposite to the gradient decreases the loss.
+
+**Backpropagation** efficiently computes gradients by applying the chain rule layer by layer, propagating error signals backward from the output to the input. This algorithm makes training deep networks computationally tractable.
+
+The **learning rate** $\eta$ controls step size:
+
+$$\theta_{t+1} = \theta_t - \eta \nabla_\theta \mathcal{L}$$
+
+Too large a learning rate causes unstable training; too small a rate causes slow convergence.
+
+### Stochastic Gradient Descent and Minibatches
+
+Computing gradients over the entire dataset is expensive. **Stochastic gradient descent (SGD)** approximates the full gradient using random subsets (**minibatches**) of training examples. This introduces noise but enables efficient training on large datasets and can help escape local minima.
+
+**Batch size** affects training dynamics: larger batches provide more stable gradient estimates but may converge to sharper minima that generalize worse; smaller batches introduce more noise but often find flatter minima with better generalization.
+
+### Optimizers
+
+Modern optimizers improve on basic SGD:
+
+| Optimizer | Key Feature |
+|-----------|-------------|
+| **SGD with momentum** | Accumulates gradient history for smoother updates |
+| **Adam** | Adapts learning rate per-parameter; default choice |
+| **AdamW** | Adam with decoupled weight decay; standard for transformers |
+| **LAMB** | Layer-wise adaptive rates; enables large batch training |
+
+**Adam** (Adaptive Moment Estimation) maintains running averages of gradients and squared gradients, adapting the learning rate for each parameter. It is the default optimizer for most deep learning applications. **AdamW** adds proper weight decay regularization and is standard for transformer training.
+
+### Regularization
+
+**Regularization** techniques prevent overfitting by constraining model complexity:
+
+**Weight decay** (L2 regularization) penalizes large weights by adding $\lambda \|\theta\|^2$ to the loss, encouraging simpler solutions.
+
+**Dropout** randomly sets a fraction of activations to zero during training, preventing co-adaptation of features. At inference, all units are active but scaled appropriately.
+
+**Early stopping** monitors validation loss during training and stops when it begins increasing, preventing the model from memorizing training data.
+
+**Data augmentation** artificially expands training data by applying label-preserving transformations. For sequences, this might include reverse complementation (for strand-symmetric tasks) or random masking.
+
+## Convolutional Neural Networks {#sec-apx-a-cnn}
+
+**Convolutional neural networks (CNNs)** are designed for data with spatial or sequential structure. They were the dominant architecture for genomic sequence analysis before transformers and remain important for certain applications.
+
+### Convolution Operation
+
+A **convolutional layer** applies learnable filters (kernels) that slide across the input, computing dot products at each position. For a 1D sequence (like DNA), a filter of width $k$ detects patterns of length $k$ nucleotides:
+
+$$y_i = \sigma\left(\sum_{j=0}^{k-1} w_j \cdot x_{i+j} + b\right)$$
+
+The same filter is applied at every position, so the network learns position-invariant patterns. A filter trained to recognize a TATA box will detect it regardless of its location in the sequence.
+
+### Key CNN Components
+
+**Multiple filters** learn different patterns. A layer with 64 filters of width 8 learns 64 different 8-bp motifs.
+
+**Pooling** reduces spatial dimensions by taking the maximum or average over local regions, providing translation invariance and reducing computational cost.
+
+**Dilation** inserts gaps in the filter, allowing detection of patterns spanning larger regions without increasing parameters. A dilated convolution with dilation rate 2 and filter width 3 spans 5 positions.
+
+**Stride** controls how far the filter moves between applications. Stride > 1 downsamples the output.
+
+### CNNs for Genomics
+
+Early genomic deep learning models (*DeepSEA*, *Basset*, *DeepBind*) used CNNs to predict regulatory function from DNA sequence. The architecture naturally captures motifs: first-layer filters learn individual transcription factor binding motifs; deeper layers combine these into higher-order regulatory logic.
+
+CNNs remain useful for:
+
+- **Short-range patterns**: Splice sites, promoter elements, binding sites
+- **Computational efficiency**: Faster training than transformers for local tasks
+- **Interpretability**: First-layer filters directly correspond to sequence motifs
+
+Limitations include difficulty capturing long-range dependencies (addressed by dilated convolutions in *Basenji*) and lack of position-specific processing (every position is treated identically).
+
+## Recurrent Neural Networks {#sec-apx-a-rnn}
+
+**Recurrent neural networks (RNNs)** process sequences by maintaining hidden state that accumulates information across positions. At each position, the network updates its hidden state based on the current input and previous state:
+
+$$h_t = f(h_{t-1}, x_t)$$
+
+This allows modeling dependencies across arbitrary distances, in principle.
+
+### LSTM and GRU
+
+Basic RNNs suffer from **vanishing gradients**: signals from distant positions decay exponentially, preventing learning of long-range dependencies.
+
+**Long Short-Term Memory (LSTM)** addresses this with gated units that control information flow, allowing the network to selectively remember or forget information across many steps.
+
+**Gated Recurrent Unit (GRU)** is a simplified variant with fewer parameters that often performs comparably.
+
+### Limitations
+
+RNNs process sequences sequentially, preventing parallelization and making training slow for long sequences. They also struggle with very long-range dependencies despite architectural improvements. These limitations motivated the development of attention mechanisms and transformers, which have largely replaced RNNs in genomic applications.
+
+## Attention and Transformers {#sec-apx-a-attention}
+
+The **transformer** architecture, introduced by Vaswani et al. [@vaswani_attention_2017], has become the foundation for modern language models and genomic foundation models. Its key innovation is the **attention mechanism**, which allows direct interaction between any two positions in a sequence.
+
+### Self-Attention
+
+**Self-attention** computes, for each position, a weighted combination of all positions based on their relevance. Given input representations $\mathbf{X}$, the mechanism computes:
+
+1. **Queries** $\mathbf{Q} = \mathbf{X}\mathbf{W}_Q$: What information is this position looking for?
+2. **Keys** $\mathbf{K} = \mathbf{X}\mathbf{W}_K$: What information does this position contain?
+3. **Values** $\mathbf{V} = \mathbf{X}\mathbf{W}_V$: What information should be retrieved?
+
+Attention weights are computed as:
+
+$$\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right)\mathbf{V}$$
+
+The softmax ensures weights sum to 1; the $\sqrt{d_k}$ scaling prevents dot products from growing too large for high-dimensional representations.
+
+### Multi-Head Attention
+
+**Multi-head attention** runs several attention operations in parallel with different learned projections, allowing the model to attend to different types of relationships simultaneously:
+
+$$\text{MultiHead}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h)\mathbf{W}_O$$
+
+Each head might capture different patterns: one head might attend to nearby positions for local context, another to conserved positions across the sequence, another to structurally related positions.
+
+### Transformer Architecture
+
+A transformer layer combines multi-head attention with a feed-forward network and residual connections:
+
+```
+Input → LayerNorm → Multi-Head Attention → + → LayerNorm → Feed-Forward → + → Output
+         ↑_____________________________|         ↑_____________________|
+                (residual connection)                (residual connection)
+```
+
+**Layer normalization** stabilizes training by normalizing activations.
+
+**Residual connections** add the input directly to the output, allowing gradients to flow unchanged and enabling training of very deep networks.
+
+**Feed-forward networks** (typically two linear layers with GELU activation) process each position independently, providing additional transformation capacity.
+
+### Positional Encoding
+
+Self-attention is permutation-invariant: it treats positions as a set, not a sequence. **Positional encodings** inject position information, either through learned embeddings or fixed sinusoidal patterns. For genomic sequences, positional encoding enables the model to learn position-dependent patterns (like distance from transcription start sites).
+
+### Encoder vs. Decoder
+
+**Encoder** transformers (like *BERT*, *DNABERT*) use bidirectional attention: each position attends to all positions. They excel at classification and embedding tasks.
+
+**Decoder** transformers (like GPT, *HyenaDNA* in autoregressive mode) use **causal attention**: each position attends only to preceding positions. They excel at generation tasks.
+
+**Encoder-decoder** transformers use both, with the decoder attending to encoder outputs. Less common in genomics.
+
+### Computational Complexity
+
+Standard attention scales quadratically with sequence length ($O(n^2)$), limiting context length. A 200 kb genomic sequence would require attention over 200,000 positions, demanding enormous memory.
+
+Efficient attention variants address this:
+
+- **Sparse attention**: Attend only to local windows plus global tokens
+- **Linear attention**: Approximate attention with linear complexity
+- **Flash attention**: Exact attention with optimized memory access patterns
+
+Models like *HyenaDNA* use alternative architectures (state space models) to achieve sub-quadratic scaling while maintaining long-range modeling.
+
+## Embeddings and Representations {#sec-apx-a-embeddings}
+
+**Embeddings** are dense vector representations of discrete inputs. Rather than representing a nucleotide as a one-hot vector (A = [1,0,0,0]), an embedding maps it to a learned vector in continuous space (A = [0.2, -0.5, 0.8, ...]).
+
+### Token Embeddings
+
+The **embedding layer** is a lookup table mapping each token (nucleotide, k-mer, amino acid) to a vector. These embeddings are learned during training, with similar tokens (functionally similar amino acids, for instance) often ending up with similar vectors.
+
+### Contextual Embeddings
+
+Unlike static embeddings (where each token always has the same representation), transformer outputs are **contextual**: the same token has different representations depending on its context. An alanine in a buried hydrophobic core has a different representation than an alanine on a solvent-exposed surface, because the surrounding context is different.
+
+These contextual embeddings capture rich information about each position's functional role and can be extracted for downstream tasks.
+
+## Pretraining and Transfer Learning {#sec-apx-a-pretraining}
+
+**Pretraining** trains a model on a large dataset with a self-supervised objective (one that does not require human labels), then **fine-tunes** or adapts the model for specific downstream tasks. This approach leverages abundant unlabeled data to learn general representations.
+
+### Self-Supervised Objectives
+
+**Masked language modeling (MLM)**: Randomly mask tokens and train the model to predict them from context. Used by *BERT*, *DNABERT*, *ESM*. Captures bidirectional context.
+
+**Next-token prediction**: Train the model to predict the next token given all preceding tokens. Used by GPT, *HyenaDNA*. Enables generation.
+
+**Contrastive learning**: Train the model to distinguish related from unrelated examples. Useful for learning representations without reconstruction.
+
+### Transfer Learning
+
+After pretraining, the model can be adapted to downstream tasks:
+
+- **Linear probing**: Freeze pretrained weights, train only a new output layer
+- **Fine-tuning**: Update all or some pretrained weights on labeled data
+- **Parameter-efficient fine-tuning**: Update only small adapter modules
+
+See @sec-ch09-transfer for detailed treatment of transfer learning strategies.
+
+## Practical Considerations {#sec-apx-a-practical}
+
+### Hardware Requirements
+
+Deep learning requires specialized hardware:
+
+- **GPUs**: Graphics processing units optimized for parallel matrix operations
+- **TPUs**: Tensor processing units designed specifically for neural networks
+- **Memory**: Large models require substantial GPU memory (VRAM)
+
+Foundation models with billions of parameters require multiple high-end GPUs or TPUs for training; smaller models can run on single consumer GPUs for inference.
+
+### Software Frameworks
+
+| Framework | Description |
+|-----------|-------------|
+| **PyTorch** | Dominant framework; flexible, research-friendly |
+| **TensorFlow** | Production-focused; strong deployment tools |
+| **JAX** | Functional approach; used by DeepMind |
+| **HuggingFace** | Model hub and high-level training utilities |
+
+Most genomic foundation models are implemented in PyTorch and distributed through HuggingFace.
+
+### Common Pitfalls
+
+**Overfitting**: Model memorizes training data instead of learning generalizable patterns. Detect via validation loss diverging from training loss. Address with regularization, more data, or simpler models.
+
+**Underfitting**: Model fails to capture data patterns. Detect via high training loss. Address with larger models, longer training, or better architectures.
+
+**Vanishing/exploding gradients**: Gradients become too small or large for stable training. Address with proper initialization, normalization, and residual connections.
+
+**Data leakage**: Test data information inadvertently appears in training, inflating performance estimates. Ensure strict separation of training, validation, and test sets.
+
+## Further Reading {#sec-apx-a-further}
+
+This primer covers only the essentials. For deeper understanding:
+
+- **Fundamentals**: Goodfellow et al., *Deep Learning* (@sec-apx-e-textbooks)
+- **Transformers**: Vaswani et al. (2017), "Attention Is All You Need"
+- **Genomic applications**: Main text chapters, especially @sec-ch05-representations through @sec-ch09-transfer
+- **Practical tutorials**: fast.ai course, D2L.ai (@sec-apx-e-courses)
