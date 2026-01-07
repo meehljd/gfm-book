@@ -44,6 +44,30 @@ Consider predicting whether a splice site variant in *DMD* will cause exon skipp
 
 MLM treats sequences as partially observed and trains models to reconstruct missing content. The procedure is straightforward: randomly mask portions of an input sequence, feed the corrupted sequence to the model, and train the model to predict the original tokens at masked positions. A **masking strategy** replaces selected tokens with a special `[MASK]` token, leaving the surrounding context intact. The model processes the masked sequence through its layers and produces predictions for the masked positions, typically optimizing cross-entropy loss over the vocabulary at each masked location.
 
+::: {.callout-note title="Worked Example: MLM on a Promoter Sequence"}
+Consider this 12-nucleotide promoter fragment containing a TATA box:
+
+**Original sequence:** `GCTATAAAGCTT`
+
+**Step 1 - Masking (15%):** Randomly mask ~2 positions
+`GCT[MASK]TAAGC[MASK]T`
+
+**Step 2 - Model prediction:** The model sees the masked sequence and, for each [MASK] position, outputs a probability distribution over {A, C, G, T}.
+
+**Step 3 - Loss computation:** For position 4 (true answer: A), suppose the model predicts:
+
+| Nucleotide | Probability |
+|------------|-------------|
+| A | 0.70 |
+| T | 0.20 |
+| G | 0.05 |
+| C | 0.05 |
+
+Cross-entropy loss = $-\log(0.70) = 0.36$
+
+**What the model learns:** Positions within TATA boxes strongly predict A/T nucleotides from surrounding context. After seeing millions of promoters, the model internalizes that sequences matching `...TAT_AA...` almost always have A or T in the masked position---this is exactly the regulatory grammar that transfers to splice prediction and variant interpretation.
+:::
+
 ::: {.callout-tip}
 ## Key Insight: What MLM Prediction Difficulty Reveals
 

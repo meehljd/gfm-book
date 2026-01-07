@@ -330,6 +330,25 @@ This section explains the PHRED scaling used for *CADD* scores. If the formula i
 
 Raw classifier outputs are not directly interpretable as probabilities or biological effect sizes. A clinician presented with a **support vector machine** decision value has no intuitive understanding of what that number means. To address this, *CADD* defines PHRED-scaled scores based on the rank of each variant among all possible single-nucleotide substitutions in the reference genome. A scaled score of 10 indicates that a variant falls in the top 10% of predicted deleteriousness. A score of 20 indicates the top 1%, and a score of 30 indicates the top 0.1%. This rank-based transformation ensures comparability across *CADD* versions and provides immediate interpretability: a clinician can understand that a score of 25 places this variant among the most extreme 0.3% of possible mutations without needing to understand the underlying classifier.
 
+::: {.callout-note title="Worked Example: CADD PHRED Scoring"}
+Suppose *CADD's* classifier assigns a raw score to a missense variant in *BRCA1*. To convert this to the interpretable scaled score, *CADD* ranks this variant against all ~8.6 billion possible single-nucleotide substitutions in the reference genome.
+
+**Step 1:** The classifier produces a raw score (e.g., 2.34 on the SVM decision boundary).
+
+**Step 2:** *CADD* determines where this score ranks among all possible variants. If this variant's raw score places it at the 99th percentile (more extreme than 99% of possible variants), it receives a scaled score of 20.
+
+**Step 3:** The PHRED formula: scaled score = $-10 \times \log_{10}(\text{percentile rank})$
+
+| Raw Percentile | Calculation | Scaled Score |
+|----------------|-------------|--------------|
+| Top 10% (0.10) | $-10 \times \log_{10}(0.10)$ | 10 |
+| Top 1% (0.01) | $-10 \times \log_{10}(0.01)$ | 20 |
+| Top 0.1% (0.001) | $-10 \times \log_{10}(0.001)$ | 30 |
+| Top 0.03% (0.0003) | $-10 \times \log_{10}(0.0003)$ | ~35 |
+
+Each 10-point increase represents a 10-fold enrichment in predicted deleteriousness. A variant with a scaled score of 25 is rarer (more extreme) than 99.7% of all possible substitutions.
+:::
+
 *CADD's* classifier operates on the high-dimensional feature vector assembled for each variant. The original *CADD* model (v1.0) used a linear support vector machine trained to discriminate proxy-neutral and proxy-deleterious variants based on approximately 30 million training examples. The choice of a linear model was deliberate and pragmatic: with tens of millions of training examples and dozens of features, a linear classifier is computationally tractable while capturing the main structure of the classification problem. More fundamentally, the proxy labeling strategy means training labels are inherently noisy: the proxy-neutral class contains some deleterious variants, and the proxy-deleterious class contains some neutral ones. A simple linear model is less likely to overfit to this label noise than a complex nonlinear model, which might learn to memorize spurious patterns in the noisy labels rather than the generalizable structure that distinguishes evolutionary constraint from neutrality. Subsequent versions (v1.1 onward) transitioned to logistic regression, which offers comparable discriminative performance while providing native probability outputs and faster scoring of new variants [@rentzsch_cadd-splice_2021]. Version 1.7 expanded the feature set to include protein language model scores and regulatory predictions from deep learning models [@schubach_cadd_2024].
 
 ::: {.callout-tip title="Practical Guidance: Interpreting CADD Scores"}

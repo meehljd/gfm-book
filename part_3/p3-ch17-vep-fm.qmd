@@ -87,6 +87,25 @@ The simplest foundation model approach to missense VEP requires no task-specific
 
 $$\Delta \text{LLR} = \log P(a_\text{var} | \text{context}) - \log P(a_\text{ref} | \text{context})$$
 
+::: {.callout-note title="Worked Example: Computing LLR Variant Scores"}
+Consider a missense variant in *BRCA1* that substitutes leucine (L) with proline (P) at position 1780.
+
+**Step 1:** The protein language model examines the sequence context around position 1780 and predicts probabilities for each amino acid at that position:
+
+| Amino Acid | Probability |
+|------------|-------------|
+| Leucine (L, reference) | 0.35 |
+| Proline (P, variant) | 0.02 |
+| Isoleucine (I) | 0.28 |
+| Other residues | 0.35 |
+
+**Step 2:** Compute the log-likelihood ratio:
+$$\Delta \text{LLR} = \log(0.02) - \log(0.35) = -3.91 - (-1.05) = -2.86$$
+
+**Step 3:** Interpret the score:
+A score of -2.86 indicates the variant amino acid (proline) is substantially less probable than the reference (leucine) given the evolutionary context. The model has learned that this position strongly favors aliphatic residues (L, I, V), and the rigid proline is unexpected---consistent with a functionally important position where proline would disrupt structure.
+:::
+
 Negative scores indicate that the variant amino acid is less probable than reference in learned evolutionary context, suggesting potential deleteriousness. The model sees only the single query sequence, not multiple sequence alignments, yet achieves discrimination competitive with alignment-based methods on deep mutational scanning benchmarks. The emergence of this capability from masked token prediction, without explicit training on variant effects, exemplifies the emergent biological knowledge discussed in @sec-ch12-emergent-knowledge.
 
 ::: {.callout-note title="Computing Variant Likelihoods from Language Models"}

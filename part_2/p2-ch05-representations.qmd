@@ -78,6 +78,35 @@ The overlapping design creates additional complications beyond computational cos
 
 The limitations of $k$-mer tokenization raise a question: what if the vocabulary itself could be learned from data? **Byte Pair Encoding (BPE)** addresses this by constructing vocabulary through iterative discovery of frequent subsequences rather than defining tokens through a fixed rule. The algorithm, originally developed for data compression, builds vocabulary through a simple procedure. BPE initializes the vocabulary with single nucleotides: {A, C, G, T}. It then scans the training corpus to count all adjacent token pairs, identifies the most frequent pair, merges this pair into a new token added to the vocabulary, and replaces all instances in the corpus with the merged token. The process repeats through many iterations (typically thousands), building a vocabulary of variable-length tokens capturing frequently occurring sequence patterns. *[Citation Needed]*
 
+::: {.callout-note title="Worked Example: BPE in Action"}
+Consider a tiny corpus consisting of a single sequence: `ACGTACGTACGT`
+
+**Step 1: Initialize vocabulary**
+Vocabulary: {A, C, G, T}
+Tokenized sequence: A-C-G-T-A-C-G-T-A-C-G-T (12 tokens)
+
+**Step 2: Count adjacent pairs**
+- AC appears 3 times
+- CG appears 3 times
+- GT appears 3 times
+- TA appears 2 times
+
+**Step 3: Merge most frequent pair (tie-break: AC)**
+New vocabulary: {A, C, G, T, AC}
+Tokenized sequence: AC-G-T-AC-G-T-AC-G-T (9 tokens)
+
+**Step 4: Count pairs again**
+- ACG appears 3 times
+- GT appears 3 times
+- TAC appears 2 times
+
+**Step 5: Merge ACG**
+Vocabulary: {A, C, G, T, AC, ACG}
+Tokenized sequence: ACG-T-ACG-T-ACG-T (6 tokens)
+
+After just 2 merge iterations, our 12-nucleotide sequence compressed from 12 tokens to 6 tokens---a 2× compression. The algorithm discovered that "ACG" is a repeating unit worth representing as a single token. In real genomic applications with millions of sequences, BPE discovers biologically meaningful patterns like Alu element fragments, common regulatory motifs, and repetitive sequences.
+:::
+
 Why does frequency-based merging produce biologically meaningful tokens? Frequency in genomic sequence is not random: sequences that appear repeatedly throughout the genome often represent functional units or structural patterns. Alu elements, the most abundant transposable elements in the human genome, appear over one million times; their characteristic subsequences will be merged into dedicated tokens early in BPE training. Regulatory motifs like the TATA box or common transcription factor binding sites recur across thousands of promoters. Microsatellites and other repetitive elements have characteristic patterns that appear genome-wide. By iteratively merging what co-occurs most often, BPE's vocabulary converges on tokens that reflect genuine patterns in genome organization rather than imposing arbitrary boundaries. A token that appears frequently across the training corpus likely represents something biologically coherent---whether a functional motif, a repetitive element, or a conserved structural pattern---while unique random sequences remain decomposed into shorter subunits.
 
 ::: {.callout-tip title="Stop and Think"}

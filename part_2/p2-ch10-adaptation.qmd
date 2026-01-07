@@ -74,6 +74,26 @@ When configuring LoRA for a new task:
 
 These heuristics provide starting points, not guarantees. The interaction between model architecture, pretraining objective, target task, and available data creates a combinatorial space that resists simple rules. Systematic hyperparameter search over rank, layer selection, and weight matrix targeting, guided by validation performance on data matching the deployment distribution, remains the most reliable path to effective adaptation.
 
+::: {.callout-note title="Worked Example: Configuring LoRA for Tissue-Specific Prediction"}
+Consider adapting *Nucleotide Transformer* (500M parameters) for predicting chromatin accessibility in liver tissue, with 2,000 labeled training examples.
+
+**Step 1: Choose initial rank.** With moderate data (2,000 examples) and a task similar to pretraining (sequence to chromatin state), start with rank 16.
+
+**Step 2: Select layers.** *Nucleotide Transformer* is an encoder model with 24 layers. Apply LoRA to layers 17-24 (final third), prioritizing attention weights (Q, K, V projections).
+
+**Step 3: Count parameters.**
+
+| Component | Calculation | Parameters |
+|-----------|-------------|------------|
+| Original attention (per layer) | $4 \times d \times d = 4 \times 1024 \times 1024$ | 4.2M |
+| LoRA matrices (per layer) | $4 \times (d \times r + r \times d) = 4 \times 2 \times 1024 \times 16$ | 131K |
+| 8 adapted layers | $8 \times 131K$ | ~1M trainable |
+
+Result: ~1M trainable parameters vs. 500M frozen---a 500-fold reduction.
+
+**Step 4: Validate.** Compare against frozen features baseline. If validation performance plateaus, try rank 32 or extend to feed-forward weights. If performance matches frozen features, the task may not require adaptation beyond linear probing.
+:::
+
 ## Layer Selection for Embedding Extraction {#sec-ch10-layer-selection}
 
 A research team attempting to use *HyenaDNA* for splice site classification discovers an unexpected problem. Following standard practice from encoder models, they extract embeddings from the final transformer layer and train a linear classifier. Performance barely exceeds random guessing. Frustrated, they try layer 6 of 12 on a hunch and accuracy jumps by 15 percentage points. Layer 4 performs better still for their particular task. The team has stumbled onto a systematic challenge that distinguishes decoder-based foundation models from their encoder counterparts: the optimal layer for embedding extraction varies dramatically by task, and the final layer is often the worst choice.

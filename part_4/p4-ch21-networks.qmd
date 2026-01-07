@@ -138,6 +138,29 @@ Message passing in graph neural networks. (A) Initial state: each node has featu
 
 After $L$ layers, a node's representation incorporates information from all nodes within $L$ hops. For biological networks, this means a gene's learned embedding can reflect not only its own features but signals from interaction partners, their partners, and so on, capturing pathway-level and module-level context.
 
+::: {.callout-note title="Worked Example: One Message Passing Step"}
+Consider a small PPI network where protein A interacts with proteins B and C.
+
+**Initial embeddings** (from a foundation model):
+
+- $\mathbf{h}_A = [0.8, 0.2]$ (kinase signature)
+- $\mathbf{h}_B = [0.3, 0.7]$ (receptor signature)
+- $\mathbf{h}_C = [0.5, 0.5]$ (adapter protein)
+
+**Step 1 - Message computation:** Using a simple linear transformation $W$:
+
+- Message from B to A: $\mathbf{m}_{BA} = W \cdot \mathbf{h}_B = [0.4, 0.6]$
+- Message from C to A: $\mathbf{m}_{CA} = W \cdot \mathbf{h}_C = [0.5, 0.5]$
+
+**Step 2 - Aggregation (mean):**
+$$\text{aggregated} = \frac{1}{2}([0.4, 0.6] + [0.5, 0.5]) = [0.45, 0.55]$$
+
+**Step 3 - Update (residual connection + ReLU):**
+$$\mathbf{h}_A' = \text{ReLU}(\mathbf{h}_A + \text{aggregated}) = \text{ReLU}([1.25, 0.75]) = [1.25, 0.75]$$
+
+After this layer, protein A's representation now incorporates information about its interaction partners. If B is a known receptor for a disease-relevant ligand, that signal has begun propagating to A.
+:::
+
 :::{.callout-note}
 ## Knowledge Check
 

@@ -36,6 +36,35 @@ A convolutional filter slides across an input sequence, computing similarity sco
 Convolutional filters are learned position weight matrices. The difference from classical PWMs is not in what they compute, but in how they are derived: through gradient descent on prediction tasks rather than sequence alignment. This means filters discover patterns that predict the training labels, not just patterns that recur in sequences.
 :::
 
+::: {.callout-note title="Worked Example: Convolution Computation"}
+Consider a filter of width 4 learning to detect the TATA box motif. After training, the filter weights might be:
+
+| Position | A | C | G | T |
+|----------|-----|-----|-----|-----|
+| 1 | -0.2 | -0.5 | -0.5 | **1.8** |
+| 2 | **1.5** | -0.3 | -0.4 | -0.2 |
+| 3 | -0.2 | -0.5 | -0.5 | **1.9** |
+| 4 | **1.6** | -0.4 | -0.3 | -0.3 |
+
+**For input sequence "TATA":**
+
+- Position 1 (T): weight = 1.8
+- Position 2 (A): weight = 1.5
+- Position 3 (T): weight = 1.9
+- Position 4 (A): weight = 1.6
+- **Total activation: 6.8** (high match)
+
+**For input sequence "GCGC":**
+
+- Position 1 (G): weight = -0.5
+- Position 2 (C): weight = -0.3
+- Position 3 (G): weight = -0.5
+- Position 4 (C): weight = -0.4
+- **Total activation: -1.7** (low match)
+
+The filter produces high activation for sequences matching its learned pattern (TATA) and low/negative activation for mismatches. As this filter slides across a long sequence, it produces a profile of TATA box likelihood at each position.
+:::
+
 The first layer of a genomic CNN typically contains hundreds of such filters, each learning to detect different local patterns. Analysis of trained filters consistently reveals correspondence to known transcription factor binding motifs. The CTCF insulator motif, the ETS family consensus sequence, the AP-1 binding site: these patterns emerge from training on chromatin data without any explicit motif supervision. The network identifies them because they predict the training labels. Supervision on chromatin state induces discovery of the sequence patterns that create chromatin state, providing unsupervised motif learning as a byproduct of supervised prediction.
 
 Deeper layers operate on the output of earlier layers rather than raw sequence. A second-layer filter might learn to detect specific arrangements of first-layer motifs: two ETS sites within 20 base pairs, or a CTCF motif flanked by particular spacing patterns. This hierarchical feature learning enables CNNs to capture regulatory grammar beyond individual motifs, including spacing constraints, orientation preferences, and combinatorial requirements that govern transcription factor cooperativity.

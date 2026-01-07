@@ -241,7 +241,31 @@ The method modifies the softmax function by dividing logits by a temperature par
 
 $$\hat{p}_i = \frac{\exp(z_i / T)}{\sum_j \exp(z_j / T)}$$
 
-where *z_i* are the logits (pre-softmax outputs) and *p̂_i* are the calibrated probabilities. When *T* > 1, the distribution becomes softer (more uniform), reducing overconfidence. When *T* < 1, the distribution becomes sharper, increasing confidence. The optimal temperature is learned by minimizing negative log-likelihood on a held-out calibration set, typically yielding *T* between 1.5 and 3 for overconfident deep networks.
+where *z_i* are the logits (pre-softmax outputs) and *p̂_i* are the calibrated probabilities.
+
+::: {.callout-note title="Worked Example: Temperature Scaling"}
+A variant effect prediction model produces logits for a missense variant:
+
+**Before calibration (T = 1.0):**
+- Logits: $z = [2.5, -1.2]$ for [pathogenic, benign]
+- Softmax: $p = [\frac{e^{2.5}}{e^{2.5} + e^{-1.2}}, \frac{e^{-1.2}}{e^{2.5} + e^{-1.2}}] = [0.976, 0.024]$
+- The model claims 97.6% confidence in pathogenicity
+
+**After calibration (T = 2.0, learned from calibration set):**
+- Scaled logits: $z/T = [1.25, -0.6]$
+- Softmax: $p = [\frac{e^{1.25}}{e^{1.25} + e^{-0.6}}, \frac{e^{-0.6}}{e^{1.25} + e^{-0.6}}] = [0.86, 0.14]$
+- Now the model reports 86% confidence---still favoring pathogenic, but acknowledging greater uncertainty
+
+| Temperature | P(pathogenic) | P(benign) | Interpretation |
+|-------------|---------------|-----------|----------------|
+| T = 1.0 (uncalibrated) | 0.976 | 0.024 | Overconfident |
+| T = 2.0 (calibrated) | 0.86 | 0.14 | Realistic uncertainty |
+| T = 4.0 (over-softened) | 0.71 | 0.29 | Underconfident |
+
+Note that the ranking is preserved: pathogenic remains more likely than benign. Only the magnitude of confidence changes.
+:::
+
+When *T* > 1, the distribution becomes softer (more uniform), reducing overconfidence. When *T* < 1, the distribution becomes sharper, increasing confidence. The optimal temperature is learned by minimizing negative log-likelihood on a held-out calibration set, typically yielding *T* between 1.5 and 3 for overconfident deep networks.
 
 Temperature scaling preserves the model's ranking because dividing all logits by the same constant does not change their relative ordering. A variant ranked as more likely pathogenic than another remains more likely after temperature scaling; only the magnitudes of probability estimates change. This preservation of discrimination while improving calibration makes temperature scaling particularly attractive: calibration improves without sacrificing the model's hard-won ability to distinguish pathogenic from benign variants.
 

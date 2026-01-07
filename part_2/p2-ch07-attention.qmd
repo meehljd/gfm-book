@@ -63,6 +63,21 @@ $$
 
 Why is this scaling necessary? The dot product between two random vectors with unit-variance components has variance proportional to the number of dimensions. In a 512-dimensional space, the dot product between typical query and key vectors will be roughly $\sqrt{512} \approx 22$ times larger than in a single dimension. Without scaling, these large values push softmax outputs toward extreme distributions where nearly all weight concentrates on a single position, effectively collapsing attention into hard selection rather than soft weighting. The gradients through such saturated softmax outputs vanish, making learning impossible. Dividing by $\sqrt{d_k}$ normalizes the variance regardless of dimension, keeping softmax in its useful operating regime where it can distribute attention across multiple relevant positions.
 
+::: {.callout-note title="Worked Example: Why Scaling Matters"}
+Consider query and key vectors in 512 dimensions, where each component is drawn from a standard normal distribution (mean 0, variance 1).
+
+**Without scaling:** The dot product of two such 512-dimensional vectors has expected variance of 512. Typical scores might range from +30 to -25---values so extreme that softmax assigns nearly 100% weight to the highest-scoring position, collapsing to hard selection.
+
+**With scaling:** Dividing by $\sqrt{512} \approx 22.6$ normalizes scores to variance ~1. Now scores are typically between -3 and +3, and softmax can meaningfully distribute attention across multiple positions.
+
+| Scenario | Score Range | Softmax Behavior |
+|----------|-------------|------------------|
+| Unscaled (d=512) | ±25 to ±30 | ~100% on one position |
+| Scaled (d=512) | ±2 to ±3 | Distributed weights |
+
+This is why scaling is essential: it keeps attention "soft" rather than collapsing to hard selection, allowing the model to attend to multiple relevant positions simultaneously.
+:::
+
 A softmax function converts these scores into attention weights $\alpha_{ij}$ that form a probability distribution over positions:
 
 $$
