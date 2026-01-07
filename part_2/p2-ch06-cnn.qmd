@@ -1,5 +1,19 @@
 # Convolutional Networks {#sec-ch06-cnn}
 
+::: {.callout-note title="Chapter Overview"}
+**Prerequisites:** Understanding of one-hot encoding and tokenization (see @sec-ch05-representations), basic familiarity with neural network concepts (layers, activation functions, gradient descent). No prior deep learning architecture knowledge required.
+
+**You will learn:**
+
+- How convolutional filters detect sequence patterns analogous to transcription factor motifs
+- The end-to-end learning paradigm: from raw sequence to regulatory predictions
+- How *DeepSEA*, *Basset*, *ExPecto*, and *SpliceAI* transformed variant interpretation
+- Why receptive field limitations constrain what CNNs can learn about long-range regulation
+- The tradeoffs between task-specific and general-purpose genomic models
+
+**Key insight:** Convolutional networks proved that gradient descent on raw DNA sequence could discover regulatory patterns without encoding human assumptions about what matters. This paradigm, not any specific architecture, was the lasting contribution that modern foundation models inherit.
+:::
+
 In 2015, a **convolutional neural network** trained on ENCODE chromatin data learned to recognize transcription factor binding motifs that matched entries in the JASPAR database, despite never seeing those motifs during training [@zhou_deepsea_2015]. The network had discovered, through gradient descent on raw sequence, patterns that experimental biologists had spent decades cataloging. This was not merely a demonstration that deep learning could match human-curated databases. The deeper insight was that learned representations could transcend existing annotations: predicting regulatory effects for any sequence, in any genomic context, including regions never assayed in any experiment. For the first time, computational methods could move beyond annotating known regulatory elements to predicting the functional consequences of sequence variation genome-wide.
 
 The early convolutional models established paradigms that persist in modern genomic AI. *DeepSEA* demonstrated that CNNs could predict chromatin marks and transcription factor binding directly from DNA sequence, enabling variant effect prediction without requiring experimental measurements for every variant of interest. *Basset* extended this approach to chromatin accessibility across cell types, learning representations that transferred to new cellular contexts. *SpliceAI* achieved clinical-grade accuracy for splice site prediction, demonstrating that deep learning could match or exceed hand-crafted algorithms developed over decades. Each model followed a common pattern: train on functional genomics data, learn sequence features through convolutional filters, and apply to variant interpretation. The success was substantial; the paradigm seemed complete.
@@ -8,27 +22,65 @@ Yet these models revealed a fundamental architectural limitation. Convolutional 
 
 ## Convolutions as Sequence Pattern Detectors {#sec-ch06-convolutions}
 
+::: {.callout-tip title="Stop and Think"}
+Before reading about how convolutions work, consider: if you wanted to detect a transcription factor binding site (typically 6-12 nucleotides) at any position along a DNA sequence, what properties would your detection algorithm need? How would it differ from simply searching for an exact sequence match?
+:::
+
 A variant in an enhancer 50 kilobases from its target gene cannot be connected to that gene by a model that sees only 1,000 base pairs of context. Consider a patient with familial hypercholesterolemia whose whole-genome sequencing reveals a novel variant upstream of *LDLR*. The variant sits within a known enhancer region, but the enhancer and the *LDLR* promoter lie beyond the window any convolutional layer can span. The model might correctly identify regulatory features at the variant position, but it cannot learn that those features regulate *LDLR* rather than some other gene. This receptive field constraint, inherent to convolutional architectures, determines what relationships these networks can and cannot discover. The constraint is not a limitation of training data or compute; it is architectural.
 
 A convolutional filter slides across an input sequence, computing similarity scores at each position. For genomic applications, the input is typically **one-hot encoded** DNA: a binary matrix with four rows (A, C, G, T) and columns for each position (see @sec-ch05-representations for detailed treatment of sequence encoding strategies). Filters learn weight patterns that respond to specific nucleotide arrangements. A filter of width 8 nucleotides, for instance, computes a weighted sum of the underlying nucleotides at each position, producing high activation when the sequence matches its learned pattern and low activation otherwise. This operation is mathematically equivalent to scanning a position weight matrix across the sequence, but with a crucial difference: the filter weights are learned during training rather than derived from aligned binding site sequences.
+
+::: {.callout-important title="Key Insight"}
+Convolutional filters are learned position weight matrices. The difference from classical PWMs is not in what they compute, but in how they are derived: through gradient descent on prediction tasks rather than sequence alignment. This means filters discover patterns that predict the training labels, not just patterns that recur in sequences.
+:::
 
 The first layer of a genomic CNN typically contains hundreds of such filters, each learning to detect different local patterns. Analysis of trained filters consistently reveals correspondence to known transcription factor binding motifs. The CTCF insulator motif, the ETS family consensus sequence, the AP-1 binding site: these patterns emerge from training on chromatin data without any explicit motif supervision. The network identifies them because they predict the training labels. Supervision on chromatin state induces discovery of the sequence patterns that create chromatin state, providing unsupervised motif learning as a byproduct of supervised prediction.
 
 Deeper layers operate on the output of earlier layers rather than raw sequence. A second-layer filter might learn to detect specific arrangements of first-layer motifs: two ETS sites within 20 base pairs, or a CTCF motif flanked by particular spacing patterns. This hierarchical feature learning enables CNNs to capture regulatory grammar beyond individual motifs, including spacing constraints, orientation preferences, and combinatorial requirements that govern transcription factor cooperativity.
 
 ::: {#fig-conv-pattern-detector layout-ncol=3}
-![**FIGURE PLACEHOLDER A**](../figs/part_2/ch06/01-A-fig-conv-pattern-detector.png)
+![Sliding convolution](../figs/part_2/ch06/01-A-fig-conv-pattern-detector.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_2/ch06/01-B-fig-conv-pattern-detector.png)
+![Learned filter as sequence logo](../figs/part_2/ch06/01-B-fig-conv-pattern-detector.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_2/ch06/01-C-fig-conv-pattern-detector.png)
+![Multiple filter diversity](../figs/part_2/ch06/01-C-fig-conv-pattern-detector.svg)
 
-[Essential] Three-panel figure showing convolution mechanics. Panel A: Single convolutional filter (width 8) sliding across one-hot encoded DNA, producing activation scores at each position; show high activation where filter matches a motif. Panel B: Learned filter weights visualized as sequence logo (PWM-style), aligned to corresponding JASPAR motif showing the biological pattern discovered. Panel C: Multiple filters from first convolutional layer, each detecting different motifs (CTCF, ETS, AP-1), showing diverse pattern detection.
+Convolutional filters as learned position weight matrices. (A) A filter of width 8 slides across one-hot encoded DNA, producing activation scores at each position. High activation indicates sequence matching the learned pattern. (B) Visualizing filter weights as sequence logos reveals correspondence to known transcription factor motifs. This filter has learned the CTCF binding site consensus matching the JASPAR database entry. (C) Multiple first-layer filters detect diverse motifs including CTCF, ETS, AP-1, and TATA box elements. This specialization emerges from training on chromatin prediction without explicit motif supervision.
 :::
 
 Between convolutional layers, spatial resolution must decrease while the receptive field expands. **Pooling** operations achieve this tradeoff: max pooling selects the strongest activation within a window, achieving position-invariant detection where the network responds to a motif's presence somewhere in a region rather than its exact position. This property suits regulatory genomics, where binding site positions within an enhancer often matter less than their presence and combination.
 
+::: {.callout-note title="Deep Dive: Receptive Field"}
+**For biology readers:** The receptive field is how much input sequence can influence each output prediction:
+
+**The concept:** Imagine looking at a photo through a small window—you can only see a portion at a time. A CNN's receptive field is like this window: it determines how much genomic context the model can "see" when making predictions at any position.
+
+**How it grows:**
+
+- A single convolutional layer with filter width 8 sees 8 nucleotides
+- Stacking layers expands the view: each layer adds context from the previous layer's outputs
+- Pooling (downsampling) dramatically expands receptive field by compressing spatial information
+
+**Typical sizes:**
+
+| Model | Receptive Field | What It Can Capture |
+|-------|-----------------|---------------------|
+| *DeepSEA* | ~1,000 bp | Local motifs, TF binding |
+| *SpliceAI* | ~10,000 bp | Splice sites + nearby regulatory elements |
+| *Enformer* | ~200,000 bp | Enhancer-promoter interactions |
+
+**The limitation:** Biology doesn't respect receptive field boundaries. If an enhancer 50 kb from a gene affects its expression, a model with 10 kb receptive field cannot learn this relationship—it simply cannot see both elements simultaneously. This architectural ceiling motivated the move to attention mechanisms.
+:::
+
+::: {.callout-warning title="Mathematical Detail"}
+The following paragraph introduces the receptive field formula. If you prefer to focus on intuition, the key point is: more layers and wider filters increase how much sequence a CNN can see, but these increases are limited by computational constraints.
+:::
+
 The receptive field of a convolutional network defines how much input sequence can influence a single output prediction. For a network with kernel width $k$, pooling factor $p$, and $L$ layers, the receptive field grows with depth but remains fundamentally limited by architecture. A three-layer network with typical parameters might integrate information from 200 to 1,000 base pairs. Reaching further requires either more layers (increasing computational cost and training difficulty) or **dilated convolutions** that space filter weights to sample larger regions. When biological dependencies span tens of kilobases, this receptive field ceiling becomes the fundamental constraint that no amount of training data can overcome.
+
+::: {.callout-tip title="Knowledge Check"}
+Before continuing, make sure you can answer: (1) What is a convolutional filter learning to detect? (2) Why does pooling create position invariance? (3) What determines how far a CNN can "see" in the input sequence?
+:::
 
 ## *DeepSEA*: Regulatory Prediction from Sequence {#sec-ch06-deepsea}
 
@@ -38,14 +90,18 @@ Existing approaches to noncoding variant interpretation relied on this overlap p
 
 *DeepSEA*, introduced by Zhou and Troyanskaya, reframed the problem: rather than asking whether a variant overlaps known annotations, ask what regulatory activities a sequence encodes and how mutations would alter them [@zhou_deepsea_2015]. The shift from annotation lookup to sequence-based prediction enabled scoring any variant in any genomic context, including regions never assayed in any experiment. This reframing would prove more consequential than any specific architectural choice.
 
+::: {.callout-important title="Key Insight"}
+*DeepSEA's* lasting contribution was conceptual, not architectural. The shift from "does this variant overlap an annotation?" to "what does this sequence encode?" changed variant interpretation from database lookup to computational prediction. This reframing enabled scoring variants in any genomic context, including regions never experimentally assayed.
+:::
+
 ::: {#fig-deepsea-architecture layout-ncol=3}
-![**FIGURE PLACEHOLDER A**](../figs/part_2/ch06/02-A-fig-deepsea-architecture.png)
+![Architecture schematic](../figs/part_2/ch06/02-A-fig-deepsea-architecture.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_2/ch06/02-B-fig-deepsea-architecture.png)
+![First-layer filter motif match](../figs/part_2/ch06/02-B-fig-deepsea-architecture.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_2/ch06/02-C-fig-deepsea-architecture.png)
+![Allelic imbalance validation](../figs/part_2/ch06/02-C-fig-deepsea-architecture.svg)
 
-[High] Three-panel figure. Panel A: Architecture schematic showing input (1000bp one-hot), three convolutional layers with pooling (320→480→960 filters), fully connected layer, and 919 sigmoid outputs for chromatin features. Panel B: First-layer filter aligned to JASPAR motif (e.g., CTCF), demonstrating learned = known biology. Panel C: Scatter plot of predicted vs. observed allelic imbalance for DNase-seq, showing correlation that validates variant effect prediction.
+DeepSEA: regulatory prediction from sequence. (A) Architecture schematic showing progression from 1,000 bp one-hot input through three convolutional layers to 919 chromatin feature predictions. (B) First-layer filters learn to recognize known transcription factor motifs, with this example matching JASPAR's CTCF consensus. (C) Variant effect predictions validated against allelic imbalance measurements, confirming that sequence-based predictions capture genuine regulatory variation. DeepSEA demonstrated that deep learning on functional genomics data could discover regulatory patterns without encoding human assumptions about what matters.
 :::
 
 
@@ -59,10 +115,43 @@ Training data came from ENCODE and Roadmap Epigenomics (see @sec-ch02-data for c
 
 The **multi-task learning** formulation proved essential for generalization. Predicting 919 features simultaneously forced the network to learn shared representations useful across many prediction problems. The first convolutional layer learns general sequence patterns (GC content, common dinucleotides, ubiquitous motifs); these representations then feed task-specific combinations in later layers. Joint training provides implicit regularization, preventing overfitting to any single task while amortizing the cost of learning basic sequence features across all outputs.
 
+::: {.callout-note title="Deep Dive: Multi-Task Learning"}
+**For biology readers:** Multi-task learning means training one model to predict many outputs simultaneously:
+
+**The concept:** Instead of training 919 separate models (one per chromatin feature), *DeepSEA* trains one model with 919 output nodes. All predictions share the same learned sequence features.
+
+**Why it helps:**
+
+1. **Shared learning:** Basic motifs (CTCF, ETS family) are useful for predicting many chromatin features. Learning them once and sharing across tasks is more efficient than re-learning for each task.
+
+2. **Regularization:** Predicting many related outputs prevents the model from memorizing quirks of any single dataset. It must learn general patterns useful across contexts.
+
+3. **Transfer:** Features learned from abundant data (e.g., well-studied cell lines) help predictions for scarce data (e.g., rare cell types with few experiments).
+
+**The biology analog:** Think of it like this—understanding general transcription factor binding helps you interpret specific experiments across many cell types, rather than starting from scratch for each.
+
+**Trade-off:** Multi-task learning assumes tasks share structure. If tasks are unrelated, forcing them to share features can hurt performance. For chromatin features, the shared regulatory grammar makes multi-task learning highly effective.
+:::
+
+| Design Choice | *DeepSEA* Implementation | Rationale |
+|---------------|--------------------------|-----------|
+| Input length | 1,000 bp | Balance between context and computation |
+| Encoding | One-hot (4 × L matrix) | Preserves single-nucleotide resolution |
+| Architecture | 3 conv layers + 1 FC | Sufficient depth for motif combinations |
+| Output targets | 919 chromatin profiles | Multi-task learning improves generalization |
+| Loss function | Binary cross-entropy | Independent predictions per feature |
+| Validation | Chromosome 8 held out | Ensures genomic generalization |
+
+: Summary of *DeepSEA's* key architectural and training decisions. {#tbl-deepsea-design}
+
 
 ### Learned Representations and Biological Validation {#sec-ch06-deepsea-validation}
 
 Any sequence model faces a fundamental question: do learned features correspond to biological reality, or do they exploit statistical shortcuts that happen to correlate with labels? *DeepSEA* provided the first large-scale evidence that deep learning could recover genuine regulatory logic.
+
+::: {.callout-tip title="Stop and Think"}
+Why is it significant that *DeepSEA's* learned filters matched known transcription factor motifs? What would it mean if the filters learned to predict chromatin state without capturing recognizable biological patterns?
+:::
 
 Analysis of first-layer filters revealed learned patterns matching known transcription factor motifs. The network had independently recovered sequence preferences cataloged in JASPAR and TRANSFAC, confirming that the training objective (predicting chromatin state) induced biologically meaningful feature extraction. This interpretability distinguished deep learning from prior black-box approaches and suggested that the models captured genuine regulatory logic rather than spurious correlations. Systematic methods for extracting and visualizing these learned representations, from filter analysis to attribution mapping, are examined in @sec-ch24-interpretability.
 
@@ -90,6 +179,16 @@ The key contribution was demonstrating that *in silico* saturation mutagenesis p
 
 *DanQ* explored whether regulatory grammar involves sequential dependencies that convolutions alone might miss, combining convolutional layers with bidirectional LSTMs to integrate motif detections across the input window [@quang_danq_2016]. The hybrid architecture achieved modest improvements on chromatin prediction benchmarks, though the recurrent components introduced costs examined in @sec-ch06-sequential.
 
+| Model | Year | Prediction Target | Input Length | Key Innovation |
+|-------|------|-------------------|--------------|----------------|
+| *DeepSEA* | 2015 | 919 chromatin features | 1,000 bp | Multi-task learning, in silico mutagenesis |
+| *Basset* | 2016 | 164 cell-type DNase-seq | 600 bp | Batch normalization, larger first-layer filters |
+| *DanQ* | 2016 | 919 chromatin features | 1,000 bp | CNN + bidirectional LSTM hybrid |
+| *ExPecto* | 2018 | 218 tissue expression | 40 kb (aggregated) | Tissue-specific expression from chromatin |
+| *SpliceAI* | 2019 | Splice sites | 10,000 bp | Dilated convolutions, 32-layer depth |
+
+: Progression of CNN-based regulatory genomics models. Note the trend toward longer input contexts and more specialized prediction targets. {#tbl-cnn-models}
+
 These variations illustrated a broader principle: multiple architectures could learn useful regulatory representations from sequence. The specific choices (filter sizes, layer depths, recurrent components) mattered less than the fundamental framework of learning from one-hot encoded sequence to predict chromatin labels. This robustness suggested that the underlying signal, sequence determinants of regulatory activity, was strong enough to be captured by diverse architectural approaches. For clinical applications, prediction quality depends more on training data quality and task definition than on architectural details within the CNN family.
 
 
@@ -97,14 +196,18 @@ These variations illustrated a broader principle: multiple architectures could l
 
 A patient's tumor harbors a somatic variant in a putative enhancer region. Chromatin profiling in matching tissue shows the region is accessible. The variant is predicted to disrupt a transcription factor binding site. Yet the clinician's question remains unanswered: does this variant actually change expression of a target gene? Which gene? By how much? In which tissues?
 
+::: {.callout-tip title="Stop and Think"}
+Chromatin accessibility tells us where the genome is "open" for regulation, but accessibility alone does not tell us which genes are affected or by how much. What additional information would a model need to predict gene expression from sequence? How would you connect a variant in an enhancer to its target gene?
+:::
+
 Chromatin accessibility and transcription factor binding are intermediate phenotypes, means rather than ends. The ultimate functional readout for most regulatory variants is their effect on gene expression. A variant might disrupt a binding site, but sites can be redundant, effects can be buffered, and the relationship between binding and expression is not one-to-one. Predicting expression change from sequence requires integrating regulatory signals across distances that determine which enhancers control which promoters. A variant that disrupts binding but does not alter expression is unlikely to be pathogenic, while a variant with modest chromatin effects but strong expression consequences may drive disease.
 
 *ExPecto*, introduced by Zhou et al. in 2018, addressed these questions by extending sequence-to-chromatin prediction toward tissue-specific gene expression [@zhou_expecto_2018]. The framework predicts expression levels across 218 tissues and cell types by integrating predicted chromatin signals across a 40 kb promoter-proximal window. This context expansion, from *DeepSEA's* 1 kb to *ExPecto's* 40 kb, represented a significant architectural commitment: expression prediction requires integrating regulatory signals from distances far exceeding typical motif sizes.
 
 ::: {#fig-expecto-pipeline}
-![**FIGURE PLACEHOLDER**](../figs/part_2/ch06/03-fig-expecto-pipeline.png)
+![ExPecto pipeline: from chromatin to expression](../figs/part_2/ch06/03-fig-expecto-pipeline.svg)
 
-[Enhancing] Three-component pipeline diagram. Component 1: Beluga CNN scanning 40kb window around TSS with sliding 2kb windows, producing chromatin predictions at 200 spatial positions. Component 2: Spatial transformation with exponential decay functions (upstream and downstream), reducing to ~20,000 features. Component 3: 218 tissue-specific linear regression models, producing per-tissue expression predictions. Show example delta scores for variant effect.
+ExPecto pipeline: from chromatin to expression. The modular architecture comprises three components. (1) Beluga CNN scans a 40kb window around each transcription start site with 2kb sliding windows, predicting 2,002 chromatin features at 200 spatial positions and generating over 400,000 features per gene. (2) Spatial transformation applies exponential decay functions separately for upstream and downstream regions, encoding the prior that nearby elements contribute more to expression than distant ones, reducing dimensionality to approximately 20,000 features. (3) Tissue-specific linear regression models (218 total, one per tissue) predict log expression from transformed features. This modular design separates shared sequence-to-chromatin processing from tissue-specific expression modeling, enabling interpretable analysis of which chromatin features drive expression in each context.
 :::
 
 ### Modular Architecture {#sec-ch06-expecto-architecture}
@@ -116,6 +219,10 @@ The first component, an enhanced CNN called *Beluga*, predicts 2,002 chromatin p
 The second component transforms these high-dimensional features through spatial aggregation. Ten exponential decay functions, applied separately to upstream and downstream regions, encode the prior belief that nearby elements contribute more than distant ones. This transformation reduces dimensionality while preserving spatial relationships, producing approximately 20,000 features per gene that capture both which chromatin features are predicted and where they occur relative to the TSS.
 
 The final component comprises 218 *L*₂-regularized linear regression models, one per tissue, predicting log expression from spatially-transformed features. Linear models were chosen deliberately: they provide interpretability, prevent overfitting given the high-dimensional feature space, and enable coefficient analysis to identify which chromatin features drive expression in each tissue. The combination of a shared sequence-to-chromatin CNN with separate tissue-specific linear heads cleanly separates sequence-level regulatory grammar from tissue-specific regulatory programs.
+
+::: {.callout-important title="Key Insight"}
+*ExPecto's* modular design reflects a key principle: different aspects of gene regulation require different modeling approaches. Convolutional networks excel at learning local sequence patterns (motifs), while linear models with spatial priors capture how these patterns integrate across distance. This separation enables interpretation at each stage and prevents end-to-end black boxes.
+:::
 
 
 ### Expression Prediction and Variant Effects {#sec-ch06-expecto-validation}
@@ -135,10 +242,18 @@ This scenario, replicated across thousands of unsolved rare disease cases, illus
 
 *SpliceAI*, introduced by Jaganathan et al. in 2019, demonstrated that deep neural networks could learn sequence-intrinsic splicing rules sufficient to predict the majority of splice sites used by the spliceosome [@jaganathan_spliceai_2019]. The model predicts splice site locations directly from pre-mRNA sequence using 10,000 nucleotides of context, an order of magnitude beyond prior methods. This context expansion enabled recognition of distant splicing determinants invisible to annotation-based approaches.
 
+::: {.callout-tip title="Stop and Think"}
+*SpliceAI* uses 10,000 nucleotides of context, compared to MaxEntScan's 9 nucleotides. What biological features might be captured by this expanded context? Think about the components involved in splicing beyond just the GT/AG dinucleotides.
+:::
+
 
 ### Architecture: Depth and Dilation {#sec-ch06-spliceai-architecture}
 
 Learning splicing rules from 10 kb of sequence context requires an architecture that can integrate information across this entire span while maintaining nucleotide-level resolution. *SpliceAI* achieves this through two innovations: extreme depth enabled by residual connections, and dilated convolutions that expand receptive fields without proportional parameter growth.
+
+::: {.callout-warning title="Mathematical Detail"}
+The following section describes residual connections and dilated convolutions. The key intuition: residual connections let gradients flow through very deep networks by providing "shortcuts," and dilated convolutions let filters "skip" positions to see further without adding parameters.
+:::
 
 *SpliceAI* employs an ultra-deep residual network with 32 convolutional layers. Residual connections address the **vanishing gradient problem** that otherwise prevents training at this depth:
 
@@ -153,11 +268,11 @@ Dilated convolutions expand the receptive field efficiently. A dilated convoluti
 For each position in the pre-mRNA sequence, *SpliceAI* outputs three probabilities: splice acceptor, splice donor, or neither. This per-position classification enables fine-grained predictions across entire transcripts. Training used GENCODE annotations, with odd and even chromosomes split for training and testing.
 
 ::: {#fig-spliceai-architecture layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](../figs/part_2/ch06/04-A-fig-spliceai-architecture.png)
+![Dilated convolutions](../figs/part_2/ch06/04-A-fig-spliceai-architecture.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_2/ch06/04-A-fig-spliceai-architecture.png)
+![Residual block structure](../figs/part_2/ch06/04-B-fig-spliceai-architecture.svg)
 
-[High] Two-panel figure. Panel A: Diagram showing how dilated convolutions expand receptive field without proportional parameter growth. Show dilation rates (1, 2, 4, 8, 16...) with gaps between filter taps, illustrating how 32 layers with dilation reach 10kb context. Panel B: *SpliceAI's* residual block structure with skip connections from every 4th block to output, enabling gradient flow through 32 layers.
+SpliceAI architecture innovations for long-range splicing prediction. (A) Dilated convolutions expand the receptive field efficiently by sampling input positions at intervals. Stacking layers with dilation rates 1, 2, 4, 8, 16... enables integration of 10,000 nucleotides of context without proportional parameter growth. Lower layers with small dilation capture local splice site grammar while upper layers with large dilation integrate distal determinants like branch points and exonic splicing enhancers. (B) Residual block structure with skip connections from every 4th block to the output. This enables training of 32 layers by providing multiple gradient pathways, preventing vanishing gradients that would otherwise block learning in such a deep network.
 :::
 
 ### Performance and Validation {#sec-ch06-spliceai-performance}
@@ -170,6 +285,8 @@ For each position in the pre-mRNA sequence, *SpliceAI* outputs three probabiliti
 | *SpliceAI*-400nt | 200 bp | 0.93 |
 | *SpliceAI*-2k | 1,000 bp | 0.96 |
 | *SpliceAI*-10k | 5,000 bp | 0.98 |
+
+: *SpliceAI* performance improves substantially with context length, confirming that distal sequence features contribute meaningfully to splicing decisions. Diminishing returns above 2 kb suggest most determinants lie within this range. {#tbl-spliceai-context}
 
 This progression confirms that distal sequence features contribute meaningfully to splicing decisions. The diminishing returns above 2 kb suggest that most splicing determinants lie within this range, though the additional context still provides measurable benefit.
 
@@ -185,12 +302,27 @@ Validation against GTEx RNA-seq showed that mutations with higher delta scores s
 
 *SpliceAI's* most significant contribution may be quantifying cryptic splice mutations as a major, previously underappreciated cause of rare genetic disorders. Analysis of *de novo* mutations in over $4{,}000$ individuals with intellectual disability found significant enrichment of predicted splice-disrupting variants compared to unaffected controls ($1.51$-fold, $p = 4.2 \times 10^{-4}$). Approximately $9\%$ of pathogenic *de novo* mutations in intellectual disability act through cryptic splicing [@jaganathan_spliceai_2019]. Including these variants in gene discovery analyses identified additional candidate genes that would have fallen below discovery thresholds when considering only protein-coding mutations.
 
+::: {.callout-tip title="Practical Guidance: Using *SpliceAI* Scores"}
+When interpreting *SpliceAI* delta scores in clinical contexts:
+
+- **Delta < 0.2**: Low confidence; variant unlikely to affect splicing
+- **Delta 0.2-0.5**: Moderate confidence; consider RNA-seq validation if clinically relevant
+- **Delta 0.5-0.8**: High confidence; strong candidate for splice effect
+- **Delta > 0.8**: Very high confidence; treat similarly to canonical splice site variants
+
+Remember that *SpliceAI* predicts whether splicing *changes*, not whether the change is pathogenic. A variant might create a new in-frame splice site that has minimal functional impact.
+:::
+
 This clinical utility explains *SpliceAI's* rapid adoption. Illumina integrated *SpliceAI* into their annotation pipelines. Clinical genetics laboratories worldwide use delta scores to flag potential splice-affecting variants for RNA-seq follow-up. The model exemplifies how task-specific deep learning can achieve clinical-grade accuracy on well-defined problems. *SpliceAI's* integration into modern variant interpretation workflows is examined in @sec-ch17-vep-fm, and its role in rare disease diagnosis pipelines appears in @sec-ch28-rare-disease.
 
 
 ## Receptive Field Ceiling {#sec-ch06-receptive-field}
 
 Consider a 45-year-old woman with early-onset breast cancer and a family history suggesting hereditary risk. Whole-genome sequencing identifies a novel variant 80 kilobases upstream of *BRCA1*, within an established enhancer region. The enhancer is known to regulate *BRCA1* expression in mammary epithelium. Does this variant reduce *BRCA1* expression enough to increase cancer risk? *DeepSEA* can predict whether the variant disrupts transcription factor binding at that position. *SpliceAI* confirms no splice effects. *ExPecto's* 40 kb window cannot reach from the variant to the *BRCA1* promoter. No convolutional model can connect the enhancer variant to its target gene because the distance exceeds their receptive fields. The clinical question remains unanswered.
+
+::: {.callout-important title="Key Insight"}
+The receptive field limitation is architectural, not statistical. No amount of training data can teach a CNN to model dependencies that exceed its receptive field. This fundamental constraint, not model performance on short-range tasks, motivated the architectural shift to attention mechanisms.
+:::
 
 This case illustrates a fundamental limitation rooted in architecture: convolutional networks can only integrate information within their receptive fields. *DeepSEA's* three-layer architecture effectively considers roughly 1 kb of context. *ExPecto's* *Beluga* component operates on 2 kb windows, aggregated across a 40 kb region by the spatial transformation layer. *SpliceAI* pushes to 10 kb through dilated convolutions and 32 layers. Each expansion required significant architectural engineering, and each reached a practical ceiling beyond which further expansion yielded diminishing returns or became computationally prohibitive.
 
@@ -201,24 +333,41 @@ This creates a systematic mismatch between biological importance and computation
 The architectural response to this challenge evolved through two stages. Recurrent networks initially seemed promising, carrying context through hidden states rather than expanding receptive fields. When recurrence proved insufficient, attention mechanisms provided the architectural solution that modern genomic models required.
 
 ::: {#fig-receptive-field-ceiling}
-![**FIGURE PLACEHOLDER**](../figs/part_2/ch06/05-fig-receptive-field-ceiling.png)
+![The receptive field ceiling of convolutional architectures](../figs/part_2/ch06/05-fig-receptive-field-ceiling.svg)
 
-[Essential] Horizontal genome diagram comparing effective context windows across CNN architectures. Show: *DeepSEA* (~1 kb), *ExPecto*/*Beluga* (2 kb windows, 40 kb aggregated), *SpliceAI* (10 kb), and for contrast, *Enformer* (200 kb). Overlay biologically relevant distances: typical TF binding site (~10bp), promoter region (~1kb), enhancer-gene distance (10-100kb), TAD size (~1Mb). Highlight the gap: "Most enhancer-promoter interactions exceed CNN receptive fields."
+The receptive field ceiling of convolutional architectures. Context windows of representative CNN-based models compared to biologically relevant regulatory distances. DeepSEA integrates approximately 1kb of context; SpliceAI extends to 10kb through dilated convolutions; ExPecto aggregates predictions across 40kb. These contexts suffice for local features like transcription factor binding sites (~10bp) and promoter elements (~1kb) but cannot capture enhancer-promoter interactions typically spanning 10-100kb. Even SpliceAI's 10kb context falls short of the distances at which most GWAS signals reside from their target genes. This architectural limitation, not data scarcity, motivated the shift to attention mechanisms that compute direct interactions across arbitrary distances.
+:::
+
+::: {.callout-tip title="Knowledge Check"}
+Before proceeding, ensure you can explain: (1) Why can't a CNN learn dependencies that exceed its receptive field, even with more training data? (2) What biological phenomena require context longer than typical CNN receptive fields? (3) What architectural approaches extend receptive fields in CNNs?
 :::
 
 ## Sequential Approaches and Their Costs {#sec-ch06-sequential}
 
-If convolutional networks cannot reach far enough, why not simply carry information forward through the sequence? Recurrent neural networks offered an intuitive solution to the receptive field problem: maintain a hidden state that accumulates context as the network processes each position in turn. Where a convolutional filter sees only its local window, a **recurrent neural network (RNN)*'s* hidden state can, in principle, carry information from the beginning of a sequence to its end. For biological sequences, this seemed natural. DNA is read by polymerases in one direction; transcripts are processed sequentially by ribosomes; regulatory elements exert effects that propagate through chromatin. A computational architecture that mirrors this sequential logic appeared well-suited to genomic modeling.
+If convolutional networks cannot reach far enough, why not simply carry information forward through the sequence? Recurrent neural networks offered an intuitive solution to the receptive field problem: maintain a hidden state that accumulates context as the network processes each position in turn. Where a convolutional filter sees only its local window, a **recurrent neural network (RNN)'s** hidden state can, in principle, carry information from the beginning of a sequence to its end. For biological sequences, this seemed natural. DNA is read by polymerases in one direction; transcripts are processed sequentially by ribosomes; regulatory elements exert effects that propagate through chromatin. A computational architecture that mirrors this sequential logic appeared well-suited to genomic modeling.
 
 The hidden state mechanism works as follows. At each position *t*, the network combines the current input $x_t$ with the previous hidden state $h_{t-1}$ to produce a new hidden state $h_t$. This recurrence allows information from early positions to influence computations at later positions through the chain of hidden states. A regulatory element at position 1,000 can, in theory, affect predictions at position 50,000 because its influence persists in the hidden state across all intervening positions. No receptive field limits this reach; the constraint becomes whether information survives the journey.
 
 ### Vanishing Gradient Problem {#sec-ch06-vanishing-gradient}
+
+::: {.callout-warning title="Mathematical Detail"}
+This section discusses gradient propagation through recurrent networks. The key intuition: when you multiply small numbers many times, the result quickly approaches zero. This is why RNNs struggle to learn long-range dependencies.
+:::
 
 Information rarely survives. Training RNNs requires backpropagating gradients through time, computing how errors at late positions depend on parameters applied at early positions. These gradients pass through the same recurrent weight matrix at each step. When gradients are multiplied through hundreds or thousands of steps, they either explode (growing exponentially) or vanish (shrinking toward zero). The vanishing gradient problem makes it nearly impossible for RNNs to learn dependencies spanning more than a few dozen positions. A regulatory element 10,000 base pairs upstream might as well not exist: by the time gradients propagate backward through 10,000 recurrent steps, they have decayed to numerical insignificance.
 
 Gating mechanisms that control information flow resolved the vanishing gradient problem. **Long Short-Term Memory (LSTM)** networks achieve this through a separate cell state with learned gates that determine what information to store, what to forget, and what to output [@hochreiter_long_1997]. The forget gate can preserve information indefinitely by setting its value near one, allowing gradients to flow through the cell state without repeated multiplication by small values. **Gated Recurrent Units (GRUs)** simplified this design by combining gates while retaining the core insight: learned gating prevents gradient decay [@cho_learning_2014].
 
 These gated architectures extended effective memory from tens to hundreds of positions, sometimes thousands. For natural language, where most dependencies span fewer than 50 words, LSTMs proved transformative. For genomic sequences, where relevant context can span tens of kilobases (tens of thousands of nucleotides), even gated recurrence falls short. The mathematics of gradient propagation through recurrent connections imposes limits that no gating mechanism fully overcomes.
+
+| Architecture | Theoretical Range | Practical Range | Key Limitation |
+|--------------|-------------------|-----------------|----------------|
+| Vanilla RNN | Unlimited | ~10-50 positions | Vanishing gradients |
+| LSTM/GRU | Unlimited | ~100-1000 positions | Gradient decay through gates |
+| Bidirectional LSTM | Unlimited | ~100-1000 positions | Sequential computation bottleneck |
+| Attention | Unlimited | Limited by memory | Quadratic complexity |
+
+: Comparison of sequence modeling architectures for learning long-range dependencies. Theoretical range assumes perfect gradient flow; practical range reflects empirical observations. {#tbl-rnn-comparison}
 
 ### *DanQ*: Combining Convolutions and Recurrence {#sec-ch06-danq}
 
@@ -240,6 +389,35 @@ The attention mechanism resolved both limitations simultaneously. **Self-attenti
 
 The convolutional models examined here established paradigms that persist in modern genomic AI. End-to-end learning from one-hot encoded sequence demonstrated that gradient descent on functional labels could discover regulatory patterns without encoding human assumptions about what matters. Multi-task training across hundreds of chromatin features showed that shared representations improve both accuracy and generalization. *In silico* mutagenesis, comparing predictions for reference and alternative sequences, established the dominant approach for deep learning-based variant effect prediction: scoring variants without training on variant labels, thereby avoiding the ascertainment biases that confound association-based methods (see @sec-ch12-confounding).
 
+::: {.callout-tip title="Stop and Think"}
+*SpliceAI* achieves clinical-grade accuracy on splice prediction that general-purpose foundation models have not matched. Under what circumstances might a specialized model outperform a general-purpose foundation model? When might the reverse be true?
+:::
+
 These principles carry forward into foundation model architectures. What CNNs could not resolve was the receptive field limitation. Genomic regulation operates across scales that exceed practical convolutional depth: enhancers modulating genes across hundreds of kilobases, topologically associating domains spanning megabases. Dilated convolutions and deeper networks extend reach but cannot fundamentally escape the constraint that convolutions aggregate local information through hierarchical composition.
 
 Yet specialization retains value even as general-purpose models advance. *SpliceAI* achieves clinical-grade splice site prediction that broader foundation models have not matched. When the prediction target is well-defined, training data abundant, and the relevant context fits within architectural constraints, task-specific models remain competitive with or superior to general-purpose approaches. This tension between specialized accuracy and general capability defines architectural choices across genomic AI. For clinical deployment requiring high reliability on specific tasks, specialized architectures may remain preferred. For discovery applications requiring broad coverage across diverse molecular mechanisms, the foundation model paradigm (see @sec-ch13-fm-principles) offers different trade-offs. Attention mechanisms provide the architectural substrate for long-range modeling while inheriting the end-to-end learning principles that convolutional networks established.
+
+::: {.callout-note title="Chapter Summary"}
+**Key concepts covered:** Convolutional filters as learned position weight matrices, receptive fields and their architectural limits, multi-task learning for regularization, *in silico* mutagenesis for variant effect prediction, dilated convolutions for expanded context, residual connections for deep networks, the sequential bottleneck of recurrent architectures.
+
+**Models examined:**
+
+| Model | Contribution | Limitation Revealed |
+|-------|--------------|---------------------|
+| *DeepSEA* | End-to-end learning discovers motifs; in silico mutagenesis for VEP | 1 kb context insufficient for distal regulation |
+| *Basset* | Cell-type specific accessibility; causal variant prioritization | Cannot model enhancer-promoter relationships |
+| *ExPecto* | Expression from chromatin; tissue-specific prediction | 40 kb aggregation, not end-to-end |
+| *SpliceAI* | Clinical-grade splicing; dilated convolutions | 10 kb still misses some long-range effects |
+| *DanQ* | Hybrid CNN-RNN | Recurrence adds cost without solving receptive field problem |
+
+**Main takeaways:**
+
+1. CNNs proved that gradient descent on DNA sequence discovers regulatory patterns matching experimental biology
+2. Multi-task learning across hundreds of chromatin features enables generalization and interpretability
+3. *In silico* mutagenesis enables variant effect prediction without training on variant data
+4. Receptive field limitations are architectural constraints that no amount of training data overcomes
+5. Specialized models (*SpliceAI*) can achieve clinical-grade accuracy that general models do not match
+6. Attention mechanisms, not recurrence, provide the path beyond receptive field constraints
+
+**Looking ahead:** @sec-ch07-attention examines how self-attention computes direct interactions between all positions, enabling the long-range modeling that CNNs cannot achieve. Understanding CNNs' strengths (motif detection, multi-task learning) and limitations (receptive fields) clarifies why modern genomic foundation models typically combine convolutional pattern detection with attention-based long-range integration.
+:::

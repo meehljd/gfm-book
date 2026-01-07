@@ -1,10 +1,32 @@
 # Frontiers and Synthesis {#sec-ch31-frontiers}
 
+::: {.callout-note}
+## Chapter Overview
+
+**Prerequisites:** This capstone chapter synthesizes material from the entire book. Readers should be familiar with foundation model architectures (Part III), multi-modal integration approaches (Part IV), and responsible deployment considerations (Part V). Key background includes uncertainty quantification (@sec-ch23-uncertainty), interpretability (@sec-ch24-interpretability), causal inference (@sec-ch25-causal), and regulatory governance (@sec-ch26-regulatory).
+
+**Learning Objectives:** After completing this chapter, you should be able to:
+
+1. Identify the three major open technical challenges limiting genomic foundation model impact
+2. Evaluate emerging directions---multimodal architectures, agentic systems, and learning health systems---in terms of both promise and risk
+3. Articulate why capability and trustworthiness are both necessary for clinical translation
+4. Assess specific technical bottlenecks (scaling, multi-scale integration, causality) in their research or application context
+5. Synthesize the themes from preceding chapters into a framework for evaluating future developments
+
+**Key Insight:** The gap between a model that predicts well on benchmarks and a patient who benefits from better care encompasses not just technical challenges but the full complexity of clinical translation---validation, workflow integration, equitable access, and ongoing governance.
+:::
+
 The preceding chapters surveyed responsible deployment: model trust through uncertainty quantification and interpretability (@sec-ch23-uncertainty, @sec-ch24-interpretability), causal reasoning that bridges prediction and intervention (@sec-ch25-causal), and the regulatory and governance frameworks that constrain deployment (@sec-ch26-regulatory). This final chapter looks forward: the technical challenges that remain unsolved, the emerging directions that may address them, and the work ahead for the field.
 
 ## Open Technical Problems {#sec-ch31-technical}
 
 The technical challenges surveyed in preceding chapters remain only partially solved. Foundation models for genomics have demonstrated remarkable capabilities, but they operate far below theoretical limits and fail in ways that better architectures, training strategies, or data could address. Three challenges stand out as particularly important for the field's trajectory: scaling models to capture biological complexity, integrating information across biological scales, and moving from correlation to causal and mechanistic understanding. Progress on any of these fronts would unlock applications currently beyond reach.
+
+::: {.callout-tip}
+## Stop and Think
+
+Before reading about specific technical challenges, reflect on your own experience with genomic models (or machine learning models more broadly): What are the most frustrating limitations you have encountered? Are they due to insufficient model capacity, wrong training data, inappropriate evaluation, or something else entirely? Keep your answer in mind as you read this section.
+:::
 
 ### Scaling and Efficiency {#sec-ch31-scaling}
 
@@ -12,7 +34,22 @@ The largest foundation models in natural language processing now exceed a trilli
 
 Scaling genomic foundation models faces several bottlenecks. Training data availability constrains scale when models exhaust unique sequences and must rely on data augmentation or repetition. Compute costs remain prohibitive for most academic groups and limit experimentation with truly large architectures. Long sequence lengths required for genomic context (regulatory elements can span hundreds of kilobases) create quadratic attention costs that limit practical context windows despite architectural innovations (see @sec-ch07-attention).
 
+| Bottleneck | Current State | Potential Solutions |
+|------------|---------------|---------------------|
+| **Training data** | Finite unique genomes (~100k species with assemblies) | Multi-species pretraining, synthetic data, data augmentation |
+| **Compute cost** | Trillion-parameter models cost $10M+ to train | Sparse attention, state space models, knowledge distillation |
+| **Context length** | Quadratic cost limits practical windows to ~100kb | Linear-time architectures (Mamba), chunking strategies |
+| **Evaluation** | Benchmarks saturate before biological problems solved | Task-specific evaluation, clinical validation |
+
+: Scaling bottlenecks for genomic foundation models and emerging approaches to address them. Each bottleneck involves fundamental trade-offs that must be navigated empirically. {#tbl-scaling-bottlenecks}
+
 Efficiency improvements that reduce compute requirements without sacrificing capability are thus particularly valuable for genomic applications. Approaches include **sparse attention** patterns that avoid full quadratic costs, **state space models** that process sequences in linear time [@gu_mamba_2024], **knowledge distillation** that transfers capability from large models to smaller ones, and **quantization** that reduces precision requirements for inference (see @sec-apx-b-compute). Each approach involves trade-offs between efficiency gains and capability preservation that must be evaluated empirically on genomic tasks.
+
+::: {.callout-important}
+## Key Insight: Scaling Laws Are Not Universal
+
+The scaling laws that govern language models may not directly transfer to genomic applications. Genomic sequences have different statistical properties (lower entropy, stronger long-range dependencies, reverse-complement symmetry), and biological function imposes constraints absent in natural language. A model that memorizes more of the genome is not necessarily better at predicting variant effects or gene regulation. The key question is not "how big?" but "what capabilities emerge at what scale for which tasks?"
+:::
 
 ### Context and Multi-Scale Integration {#sec-ch31-multiscale}
 
@@ -20,30 +57,53 @@ Biological phenomena span scales from nucleotides to ecosystems. Foundation mode
 
 Current approaches typically focus on single scales or model multi-scale relationships implicitly through large training datasets rather than explicitly through architectural design. A DNA language model processes sequence tokens without explicit representation of chromatin structure. A single-cell model embeds cells without explicit representation of tissue organization. A regulatory model predicts expression without explicit representation of 3D genome contacts.
 
-Architectures that explicitly integrate across scales remain a frontier. Hierarchical models that compose representations at different resolutions, graph neural networks that encode biological relationships across scales (@sec-ch18-canonical-architectures), and hybrid systems that combine modality-specific encoders with cross-modal attention layers all represent active research directions. Success will require not just architectural innovation but appropriate training data that captures multi-scale relationships and evaluation protocols that probe multi-scale reasoning.
+::: {.callout-tip}
+## Knowledge Check
+
+Can you map each of the following model types to the scale(s) they primarily operate at? (1) ESM-2, (2) Enformer, (3) scGPT, (4) Akita, (5) AlphaMissense
+
+*Hint: Review the model taxonomy from @sec-ch13-taxonomy and the specific model chapters if needed.*
+:::
+
+Architectures that explicitly integrate across scales remain a frontier. Hierarchical models that compose representations at different resolutions, graph neural networks that encode biological relationships across scales (@sec-ch21-canonical-architectures), and hybrid systems that combine modality-specific encoders with cross-modal attention layers all represent active research directions. Success will require not just architectural innovation but appropriate training data that captures multi-scale relationships and evaluation protocols that probe multi-scale reasoning.
 
 ::: {#fig-multiscale-integration}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch29/03-fig-multiscale-integration.png)
+![Multiscale integration for future foundation models](../figs/part_6/ch31/01-fig-multiscale-integration.svg)
 
-[High] Scale hierarchy visualization. Levels: (1) Nucleotide (base pairs, modifications); (2) Sequence element (motifs, domains, genes); (3) Molecular complex (chromatin, ribonucleoprotein); (4) Cell (transcriptome, proteome, state); (5) Cell population (tissue, heterogeneity); (6) Tissue/Organism (intercellular communication, development). Current model coverage: DNA-LM (nucleotide → gene); Protein models (residue → protein); Single-cell models (cell state). Scale boundary challenges: Arrow indicating information loss at each boundary; hierarchical models emerging; graph networks for relational structure. Key insight: Biology operates across scales; future models must integrate.
+Multiscale integration for future foundation models. Biology spans scales from nucleotides (10^0 bp) to populations (10^6+ individuals). Current foundation models excel at single scales: DNA language models at sequence level, protein models at structure level, single-cell models at cellular level. The frontier challenge: integrating across scales so that molecular perturbations can be traced to organismal phenotypes. Approaches include hierarchical architectures, cross-scale attention mechanisms, and explicit causal structure encoding.
 :::
 
 ### Causality and Mechanism {#sec-ch31-causality}
 
 The distinction between correlation and causation pervades genomic analysis. A variant associated with disease in genome-wide association study (GWAS) may be causal, in linkage disequilibrium with a causal variant, or confounded by population structure or other factors (@sec-ch03-ld). A regulatory element predicted to affect expression may directly drive transcription or may merely co-occur with other causal elements. Foundation models, like other statistical learners, capture patterns in training data without distinguishing causal from correlational relationships.
 
-Progress toward causal and mechanistic reasoning in genomic AI likely requires integrating diverse evidence types. Perturbation experiments (CRISPR knockouts, drug treatments, environmental exposures) provide interventional data that can distinguish causal effects from correlations. **Mendelian randomization** approaches leverage genetic instruments to estimate causal effects from observational data [@davey_smith_mendelian_2003] Structural causal models provide formal frameworks for encoding and reasoning about causal relationships.
+::: {.callout-important}
+## Key Insight: Correlation Versus Causation in Foundation Models
+
+Foundation models learn statistical associations from data. When a DNA language model assigns high likelihood to a sequence, it indicates the sequence is consistent with patterns in the training corpus---not that the sequence functions in any particular way. When a variant effect predictor scores a mutation as deleterious, it reflects features associated with pathogenic variants in training data---not necessarily the causal mechanism of pathogenicity. This distinction, discussed in detail in @sec-ch25-causal, remains the central limitation for applications requiring mechanistic understanding.
+:::
+
+Progress toward causal and mechanistic reasoning in genomic AI likely requires integrating diverse evidence types. Perturbation experiments (CRISPR knockouts, drug treatments, environmental exposures) provide interventional data that can distinguish causal effects from correlations. **Mendelian randomization** approaches leverage genetic instruments to estimate causal effects from observational data [@davey_smith_mendelian_2003]. Structural causal models provide formal frameworks for encoding and reasoning about causal relationships.
 
 Incorporating causal structure into foundation models is technically challenging. Causal relationships are often unknown, contested, or context-dependent. Training objectives that encourage causal reasoning must balance causal accuracy against predictive performance on tasks where correlation suffices. Evaluation of causal reasoning requires benchmarks with known causal ground truth, which are scarce for complex biological systems.
+
+| Approach | Mechanism | Limitations | Chapter Reference |
+|----------|-----------|-------------|-------------------|
+| **Mendelian randomization** | Uses genetic variants as instruments for causal inference | Requires valid instruments; pleiotropy confounds | @sec-ch25-mendelian-randomization |
+| **Perturbation screens** | Direct experimental intervention (CRISPR, drugs) | Expensive; context-specific; off-target effects | @sec-ch25-crispr-screens |
+| **Structural causal models** | Explicit DAG representation of causal relationships | Requires prior knowledge; difficult to scale | @sec-ch25-causal-discovery |
+| **Counterfactual prediction** | Model what would happen under intervention | Training data observational; extrapolation risk | @sec-ch25-counterfactual-limits |
+
+: Approaches to causal reasoning in genomic AI. No single approach resolves the correlation-causation gap; integration across methods provides the strongest evidence. {#tbl-causal-approaches}
 
 ## Emerging Directions {#sec-ch31-emerging}
 
 Beyond incremental improvements to existing approaches, several emerging directions may reshape how genomic foundation models develop and deploy. Multimodal architectures that jointly model sequence, structure, expression, and phenotype could capture biological relationships invisible to single-modality models. Agentic systems that autonomously design experiments, interpret results, and iterate toward biological goals could accelerate discovery while raising new governance challenges. Clinical integration through learning health systems could enable models that improve continuously from deployment experience. Each direction carries both promise and risk; realizing benefits while managing harms will require technical innovation alongside thoughtful governance.
 
 ::: {#fig-agentic-systems}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch29/04-fig-agentic-systems.png)
+![Agentic scientific systems for autonomous discovery](../figs/part_6/ch31/02-fig-agentic-systems.svg)
 
-[High] Autonomous design cycle with oversight. Cycle components: (1) Generative model (proposes candidates, optimizes toward objective); (2) Safety filter (screen against hazard databases, reject concerning, log for audit); (3) Automated synthesis (DNA/protein production, QC, physical realization); (4) High-throughput assay (functional measurement, multiplexed readouts, data generation); (5) Model update (results improve predictions, refine objective, guide next iteration). Human oversight points: Objective specification (before cycle); periodic review (during); stopping criteria (when to halt); anomaly investigation (if unexpected). Risk management: Containment, audit trails, escalation, kill switches. Key insight: Agentic systems require careful objective specification and monitoring; human oversight essential.
+Agentic scientific systems for autonomous discovery. An AI agent combines foundation model capabilities (reasoning, hypothesis generation) with lab automation (liquid handlers, sequencers, synthesis). The closed loop: agent proposes experiments, automation executes, results return, agent learns and proposes improved hypotheses. Human oversight provides strategic direction, ethical boundaries, and safety constraints. Example application: autonomous protein engineering cycles through design-build-test-learn faster than human-only teams while maintaining scientific rigor.
 :::
 
 ### Multimodal Integration {#sec-ch31-multimodal}
@@ -52,13 +112,49 @@ Current genomic foundation models largely operate on single modalities: DNA sequ
 
 Early multimodal genomic models combine encoders trained separately on different modalities, using **cross-attention** or shared embedding spaces to enable cross-modal reasoning. More ambitious architectures train end-to-end on multimodal data, learning unified representations that capture relationships between sequence and structure, expression and chromatin state, genotype and phenotype. The data requirements for such training are substantial, requiring aligned measurements across modalities at scale.
 
+::: {.callout-tip}
+## Stop and Think
+
+Consider a clinical scenario where you want to predict which patients will respond to a new cancer immunotherapy. What modalities would be most informative? Sequence (tumor mutations)? Expression (immune infiltrate signatures)? Imaging (tumor microenvironment)? Clinical history (prior treatments)? How would you combine them, and what challenges would arise?
+
+*This exercise illustrates why multimodal integration is both essential and difficult for clinical applications.*
+:::
+
 Clinical applications particularly benefit from multimodal integration. A diagnostic model that combines genomic variants with electronic health record data, imaging findings, and laboratory values can capture patterns invisible to any single modality. A prognostic model that integrates germline genetics with tumor transcriptomics and treatment history can personalize predictions in ways that purely genetic models cannot. Building such systems requires not just technical capability but also data governance frameworks that permit multimodal combination while protecting privacy.
+
+::: {.callout-note}
+## Practical Guidance: Starting with Multimodal Integration
+
+For researchers beginning multimodal projects:
+
+1. **Start simple**: Late fusion (separate encoders, combined predictions) provides a baseline before attempting end-to-end training
+2. **Align carefully**: Ensure samples are truly matched across modalities; batch effects compound across modalities
+3. **Handle missing data**: In clinical settings, not all patients have all modalities; design for graceful degradation
+4. **Evaluate per-modality**: Understand what each modality contributes before combining
+5. **Consider causality**: Which modalities are upstream (sequence) versus downstream (expression)? This affects how to interpret integration
+
+See @sec-ch22-strategies for detailed integration strategies.
+:::
 
 ### Agentic and Closed-Loop Systems {#sec-ch31-agentic}
 
 Foundation models have traditionally operated as passive tools: given an input, they produce an output, and humans decide what to do with it. Emerging agentic architectures allow models to take actions, observe outcomes, and adapt behavior based on feedback. In genomic contexts, agentic systems might design experiments, interpret results, revise hypotheses, and iterate toward biological goals with minimal human intervention.
 
 **Closed-loop systems** couple computational prediction with experimental validation in automated cycles. A design model proposes sequences optimized for a target function. An automated synthesis and screening platform tests proposed sequences. Results feed back to update the model or guide subsequent proposals. Such systems can explore sequence space far more efficiently than sequential human-directed experimentation, as discussed in the design-build-test-learn cycles of @sec-ch30-dbtl.
+
+::: {.callout-warning}
+## Governance Challenge: Agentic Autonomy
+
+Agentic systems raise governance questions absent from traditional models:
+
+- **Objective specification**: How do we ensure the optimization objective captures what we actually want?
+- **Monitoring and oversight**: How do we detect when the system pursues unintended goals?
+- **Stopping criteria**: When should autonomous operation halt for human review?
+- **Accountability**: When an autonomous system makes an error, who is responsible?
+- **Dual use**: How do we prevent agentic systems from being misused for harmful purposes?
+
+These questions connect to the biosecurity considerations in @sec-ch26-biosecurity and require governance frameworks that evolve with technical capabilities.
+:::
 
 The promise of agentic and closed-loop approaches is accelerated discovery: identifying functional sequences, characterizing biological mechanisms, and optimizing therapeutic candidates faster than traditional workflows. The risks include models pursuing objectives that diverge from human intent, experimental systems generating safety hazards, and accountability gaps when autonomous systems make consequential errors. Realizing benefits while managing risks requires careful attention to objective specification, monitoring and oversight mechanisms, and safety boundaries that constrain autonomous action.
 
@@ -71,9 +167,17 @@ The ultimate test of genomic foundation models is whether they improve health ou
 The foundation model paradigm offers particular advantages for learning health systems. Pretrained models can be adapted to local populations and practices through fine-tuning on institutional data (@sec-ch09-full-finetuning; @sec-ch22-domain-adaptation). Improvements demonstrated at one institution can potentially transfer to others through shared model updates. Common architectures enable comparison across sites and accumulation of evidence across diverse populations.
 
 ::: {#fig-learning-health-system}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch29/05-fig-learning-health-system.png)
+![Learning health system integrating genomic foundation models](../figs/part_6/ch31/03-fig-learning-health-system.svg)
 
-[Enhancing] Circular learning system. Components: (1) Clinical deployment (FM informs decisions, predictions reach patients); (2) Outcome observation (what happened? correct/incorrect?); (3) Data aggregation (outcomes linked to predictions, privacy-preserving); (4) Model refinement (updated training data, improved predictions, federated learning); (5) Validation and approval (updated model validated, regulatory approval, return to deployment). Governance at each stage: Who controls learning? How are improvements validated? How are benefits distributed? How are underrepresented populations protected? Multi-site collaboration: Common architecture enables comparison; improvements transfer; accumulate evidence across diverse populations. Key insight: Learning systems create virtuous cycles; governance must ensure benefits reach all equitably.
+Learning health system integrating genomic foundation models. Clinical care generates data: genomic testing, FM-based interpretation, treatment decisions, outcomes. The learning loop: outcomes tracked against predictions, models updated on aggregated data, improved predictions deployed back to care. Multi-institutional networks amplify learning through federated approaches that preserve privacy. Governance layer ensures equity monitoring, consent compliance, and regulatory adherence. Vision: every patient encounter contributes to better predictions for future patients, creating a continuously improving healthcare system.
+:::
+
+::: {.callout-tip}
+## Knowledge Check
+
+A learning health system is deployed at three hospitals. After six months, Hospital A (large academic center) shows improved outcomes while Hospital B (community hospital) and Hospital C (rural clinic) show no change. What are three possible explanations, and what would you do to investigate?
+
+*This scenario illustrates why deployment alone is insufficient without careful monitoring and equity analysis.*
 :::
 
 Realizing this vision requires infrastructure for secure data sharing, governance frameworks that enable learning while protecting privacy, regulatory pathways that accommodate evolving systems, and clinical workflows that support appropriate use and oversight. Technical capabilities alone are necessary but not sufficient. Genomic foundation models will achieve their potential only through sustained collaboration among technologists, clinicians, patients, policymakers, and communities working together to build systems that are both capable and trustworthy.
@@ -82,6 +186,54 @@ Realizing this vision requires infrastructure for secure data sharing, governanc
 
 The ultimate test of genomic foundation models is whether they improve health outcomes. The technical capabilities surveyed in the preceding chapters, from sequence representations through foundation model architectures to clinical applications, are necessary but not sufficient for that goal. Between a model that predicts well on benchmarks and a patient whose diagnosis comes faster or whose treatment works better lies the full complexity of clinical translation: validation across populations, integration into workflows, regulatory approval, equitable access, and ongoing monitoring for drift and harm.
 
+::: {.callout-important}
+## Key Insight: The Translation Gap
+
+Benchmark performance is seductive but insufficient. A variant effect predictor with state-of-the-art AUC may fail to improve clinical outcomes if:
+
+- It performs well on average but poorly for underrepresented populations (@sec-ch12-fairness)
+- Its predictions are uncalibrated and clinicians cannot interpret confidence levels (@sec-ch23-calibration)
+- It flags the same variants that existing tools flag, adding no new information
+- It cannot integrate into existing clinical workflows without disruptive changes
+- Regulatory uncertainty prevents adoption despite technical merit
+
+Each of these failure modes requires different solutions---technical, organizational, regulatory, or social.
+:::
+
 Learning health systems provide a framework for bridging this gap: clinical use generates data that feeds back into model refinement, creating virtuous cycles where models improve as they serve more patients. Such systems raise governance questions as important as the technical ones. Who controls the learning process? How are improvements validated before deployment? How are benefits and risks distributed across patients, providers, and technology developers? How do we ensure that populations underrepresented in training data are not further disadvantaged by systems that learn primarily from others?
 
+::: {.callout-tip}
+## Stop and Think
+
+As you finish this book, consider: What is the most important problem in your domain that genomic foundation models could help solve? What would success look like? What are the barriers---technical, regulatory, social, or economic---between current capabilities and that success? This reflection can guide your next steps, whether in research, clinical application, or policy.
+:::
+
 Genomic foundation models will achieve their potential only through sustained collaboration among technologists, clinicians, patients, policymakers, and communities working together to build systems that are both capable and trustworthy. Capability without trustworthiness is dangerous: models that predict accurately but fail silently for certain populations cause harm even as they help others. Trustworthiness without capability is insufficient: systems that are transparent and fair but do not improve on existing practice offer nothing worth adopting. Technical achievements in genomic deep learning enable new capabilities; the human systems that govern their development and deployment will determine whether those capabilities translate into genuine benefit for the patients and populations that genomic medicine aims to serve.
+
+::: {.callout-note}
+## Chapter Summary
+
+**Core Concepts:**
+
+- **Open technical problems**: Scaling (data, compute, context length), multi-scale integration (nucleotide to organism), and causality (distinguishing correlation from mechanism) remain fundamental challenges
+- **Emerging directions**: Multimodal architectures, agentic systems, and learning health systems each offer promise alongside new governance challenges
+- **Translation gap**: Benchmark performance is necessary but insufficient; clinical impact requires validation, workflow integration, regulatory approval, and equitable access
+
+**Key Connections:**
+
+- Scaling challenges connect to architectural choices (@sec-ch07-attention) and efficiency techniques (@sec-apx-b-compute)
+- Multi-scale integration builds on single-cell (@sec-ch19-single-cell), 3D genome (@sec-ch20-3d-genome), and network approaches (@sec-ch21-networks)
+- Causality challenges extend the discussion from @sec-ch25-causal
+- Governance requirements connect to @sec-ch26-regulatory and responsible development practices
+
+**Looking Forward:**
+
+The field stands at an inflection point. Technical capabilities have advanced dramatically, but realizing clinical impact requires progress on multiple fronts simultaneously---not just better models, but better evaluation, better integration, better governance, and better collaboration across disciplines. The work ahead is not just technical; it is fundamentally human.
+
+**Further Reading:**
+
+- For scaling laws in foundation models: @chowdhery_palm_2022
+- For state space models as efficient alternatives: @gu_mamba_2024
+- For causal inference frameworks: @davey_smith_mendelian_2003
+- For learning health systems: Institute of Medicine (2013) *Best Care at Lower Cost*
+:::

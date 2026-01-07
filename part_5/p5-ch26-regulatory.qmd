@@ -1,5 +1,22 @@
 # Regulatory and Governance {#sec-ch26-regulatory}
 
+::: {.callout-note}
+## Chapter Overview
+
+**Prerequisites:** This chapter builds on concepts from @sec-ch12-confounding (data leakage and validation pitfalls), @sec-ch23-uncertainty (uncertainty quantification), and @sec-ch24-attribution (interpretability methods). Familiarity with variant effect prediction (@sec-ch14-protein-vep) and clinical genomics applications (@sec-ch27-clinical) will enhance understanding of regulatory context.
+
+**Learning Objectives:** After completing this chapter, you should be able to:
+
+1. Explain how regulatory agencies classify genomic AI tools and what evidence they require for approval
+2. Compare FDA, EU MDR, and other jurisdictional approaches to AI-based medical devices
+3. Evaluate consent frameworks and their adequacy for foundation model training data
+4. Analyze privacy risks specific to genomic data and assess technical mitigation strategies
+5. Assess dual-use concerns for generative genomic models and appropriate governance responses
+6. Apply principles of responsible AI development to genomic foundation model projects
+
+**Why This Matters:** A variant classifier achieving 0.95 auROC on benchmarks means nothing if regulatory barriers prevent its clinical use, if patients cannot trust how their data is used, or if the same capabilities enable biosecurity threats. This chapter bridges the gap between technical achievement and responsible deployment.
+:::
+
 The first genomic foundation model to receive U.S. Food and Drug Administration (FDA) clearance as a medical device will face a peculiar regulatory challenge: demonstrating that a system trained on millions of sequences from research biobanks, academic databases, and public repositories can safely inform clinical decisions for individual patients who never consented to such use. Clinical-grade variant interpretation tools already incorporate deep learning predictions, yet the regulatory frameworks governing their deployment were designed for deterministic software with traceable decision logic, not for neural networks whose internal representations resist simple explanation. As of 2024, more than 500 AI-enabled medical devices have received FDA authorization, but fewer than a dozen involve genomic interpretation, and none yet deploys a foundation model at scale [@fda_aiml_devices_2025]. The gap between technical capability and regulatory readiness defines one of the central tensions facing the field.
 
 This asymmetry between what models can do *in silico* and what they may do in clinical practice shapes every translational decision. A variant effect predictor achieving 0.95 area under the receiver operating characteristic curve (auROC) on a curated benchmark may fail unpredictably on the rare variants that matter most for diagnosis. A regulatory sequence model that accurately predicts chromatin accessibility in well-characterized cell lines may produce unreliable predictions in patient-derived tissues never seen during training. Technical achievements in genomic deep learning represent necessary but insufficient conditions for clinical impact. Realizing the benefits of genomic **foundation models** while managing their risks requires navigating regulatory pathways designed for different technologies, building governance structures for data that spans generations and continents, and confronting ethical questions that genomics and artificial intelligence raise independently but compound when combined.
@@ -12,9 +29,21 @@ Genomic foundation models exist in regulatory limbo. They are clearly software, 
 
 Regulatory agencies worldwide classify AI-based clinical tools as **software as a medical device (SaMD)**, a category that applies when software itself constitutes the medical device rather than merely controlling hardware. The International Medical Device Regulators Forum defines SaMD risk tiers based on the seriousness of the health condition and the role software plays in clinical decision-making: software that provides information to drive clinical management of a serious condition receives higher scrutiny than software that merely informs decisions about non-serious conditions [@imdrf_samd_2014].
 
+::: {.callout-tip}
+## Stop and Think
+
+Before reading further, consider: What makes a genomic variant classifier different from, say, a radiology AI that identifies tumors in CT scans? Both inform clinical decisions about serious conditions. What unique challenges might genomic AI face that imaging AI does not?
+:::
+
 Genomic foundation models typically fall into higher-risk categories. A tool that classifies variants as pathogenic or benign directly influences diagnostic conclusions for conditions ranging from hereditary cancer syndromes to rare developmental disorders. The consequences of misclassification can be severe: a false negative may delay life-saving interventions, while a false positive may trigger unnecessary prophylactic surgery or cascade into family-wide psychological harm. Regulators accordingly require substantial evidence across the ACCE framework: analytical validity (does the model measure what it claims to measure?), clinical validity (does measurement correlate with the clinical outcome?), and in some cases clinical utility (does using the model improve patient outcomes?) [@acce_framework_2004].
 
 The FDA's approach to AI-enabled devices has evolved considerably since the first autonomous diagnostic AI received FDA clearance in 2018 [@abramoff_pivotal_2018]. The agency now distinguishes between "locked" algorithms whose behavior is fixed at approval and "adaptive" algorithms that continue learning from new data after deployment [@fda_aiml_framework_2021]. Most foundation models fall into neither category cleanly: their weights are frozen after pretraining, but their outputs depend on prompts, fine-tuning, or downstream heads that may change across applications. This architectural ambiguity creates regulatory uncertainty. A foundation model serving as the backbone for multiple clinical applications might require separate submissions for each use case, or a single submission might cover the shared backbone while individual fine-tuned heads receive separate clearances.
+
+::: {.callout-important}
+## Key Insight: The Locked vs. Adaptive Dilemma
+
+Foundation models challenge the FDA's locked/adaptive dichotomy. A model with frozen pretrained weights appears "locked," but fine-tuning for specific clinical applications, prompt engineering, and evolving downstream heads create "adaptive" behavior in practice. This architectural flexibility---a technical strength---becomes a regulatory liability when approval pathways assume static behavior.
+:::
 
 ### European and Global Regulatory Landscapes {#sec-ch26-global-regulation}
 
@@ -22,11 +51,30 @@ The European Union's approach differs from the FDA's in several respects relevan
 
 Regulatory divergence across jurisdictions creates practical challenges for global deployment. A genomic foundation model cleared by the FDA may require separate CE marking for European markets, TGA approval in Australia, and PMDA review in Japan, each with distinct evidentiary standards and submission formats. Harmonization efforts through the International Medical Device Regulators Forum provide common frameworks for definitions and risk classification, but substantive requirements continue to differ [@imdrf_samd_clinical_2017]. Companies developing clinical-grade genomic AI must either design validation programs that satisfy the most stringent jurisdiction or pursue market-by-market strategies that delay access in some regions.
 
+: Comparison of major regulatory frameworks for genomic AI {#tbl-regulatory-comparison}
+
+| Dimension | FDA (United States) | EU MDR + AI Act | PMDA (Japan) | TGA (Australia) |
+|-----------|---------------------|-----------------|--------------|-----------------|
+| **Primary pathway** | 510(k), De Novo, PMA | Conformity assessment via notified body | PMDA review with MHLW approval | Conformity assessment |
+| **Risk classification** | Class I, II, III | Class I, IIa, IIb, III | Class I-IV | Class I, IIa, IIb, III |
+| **Adaptive AI stance** | Predetermined Change Control Plan | Post-market surveillance emphasis | Case-by-case evaluation | Follows IMDRF guidance |
+| **LDT oversight** | Expanding (2024 rule) | Included under IVD Regulation | Laboratory discretion | Limited |
+| **AI-specific rules** | Framework guidance | AI Act (2024) | Soft law guidance | Follows international norms |
+| **Typical timeline** | 6-18 months | 12-24 months | 12-18 months | 6-12 months |
+
 The regulatory landscape for **laboratory-developed tests (LDTs)** further complicates matters in the United States. Clinical laboratories have historically been able to develop and offer tests under their own validation without FDA premarket review, relying instead on CLIA certification and state licensure. Many clinical genomics laboratories use in-house bioinformatics pipelines, variant callers, and annotation tools that incorporate machine learning components without seeking FDA clearance. Recent FDA guidance signals intent to assert greater oversight over LDTs, particularly those using complex algorithms, but the boundary between regulated devices and unregulated laboratory procedures remains contested [@fda_ldt_final_rule_2024].
 
 ### Validation Requirements for Clinical Genomic AI {#sec-ch26-validation}
 
 Regulatory submissions for genomic AI devices require validation evidence spanning multiple dimensions. Analytical validation typically involves demonstrating that the model performs consistently across different sequencing platforms, library preparation methods, and sample types. For a variant effect predictor, this might include showing that scores remain calibrated when inputs come from whole-genome sequencing versus targeted panels, from fresh blood versus archived FFPE tissue, or from healthy individuals versus cancer patients with complex somatic variation.
+
+::: {.callout-tip}
+## Knowledge Check
+
+The chapter on confounding (@sec-ch12-confounding) introduced a critical validation pitfall. Can you recall what it is? How might this same pitfall affect regulatory submissions for a variant classifier trained on ClinVar data?
+
+*Hint: Think about where training labels come from and how evaluation benchmarks are constructed.*
+:::
 
 Clinical validation connects model outputs to clinical outcomes. For a variant classifier, clinical validation might assess concordance with expert panel classifications, correlation with functional assay results, or agreement with segregation patterns in affected families. The choice of reference standard is itself contentious: ClinVar classifications, which many models use as training labels, reflect historical expert consensus that may lag behind accumulating evidence, and circular validation using the same database for training and evaluation produces misleadingly optimistic results (see @sec-ch12-confounding). The deployment realities discussed in @sec-ch27-validation-hierarchy and @sec-apx-b-compute illustrate how these validation requirements interact with institutional workflows, reimbursement constraints, and clinician trust; regulatory clearance represents only one barrier among many.
 
@@ -38,11 +86,27 @@ Foundation models require training data at scales that strain every assumption u
 
 ### Consent Problem at Scale {#sec-ch26-consent}
 
+::: {.callout-warning}
+## Difficulty Warning
+
+This section addresses legal and ethical frameworks that vary significantly across jurisdictions and evolve rapidly. The concepts are not technically complex but require careful attention to nuance. What constitutes valid consent in one jurisdiction may be insufficient in another, and best practices continue to evolve.
+:::
+
 Foundation model training requires data at scales that challenge traditional consent paradigms. A protein language model trained on UniRef encompasses sequences from millions of organisms, including many species for which consent concepts do not apply and human sequences contributed under varied research protocols. A model trained on human genomic data from multiple biobanks aggregates information collected under different consent frameworks, some permitting broad secondary research use and others restricting use to specific studies.
 
 The legal and ethical status of such aggregated training depends on how consent documents were written, how thoroughly participants understood the scope of future use, and how jurisdictions interpret secondary use provisions. GDPR provisions treat genetic data as a special category requiring explicit consent, but may permit research use under legitimate interest or public interest provisions with appropriate safeguards [@gdpr_2016]. United States regulations under the Common Rule permit secondary research on properly deidentified data, but genomic data resist complete deidentification given the uniqueness of individual genomes [@common_rule_2018].
 
 Even when consent technically permits model training, broader ethical questions remain. Participants who consented to genomic research in 2005 could not have anticipated that their data might train AI systems capable of generating novel sequences or predicting sensitive traits. The temporal gap between data collection and model development strains the fiction of informed consent. **Dynamic consent** systems that allow ongoing engagement and preference updates address some concerns but are difficult to retrofit onto legacy collections and impose burdens on participants and institutions alike [@kaye_dynamic_2015].
+
+: Comparison of consent models for genomic data use {#tbl-consent-models}
+
+| Consent Model | Description | Strengths | Limitations | Examples |
+|---------------|-------------|-----------|-------------|----------|
+| **Broad consent** | Authorizes future unspecified research | Enables innovation; low participant burden | Weak autonomy protection; trust-dependent | UK Biobank, All of Us |
+| **Specific consent** | Authorizes named studies only | Strong autonomy protection | Limits secondary use; recontact burden | Traditional clinical trials |
+| **Tiered consent** | Participants choose categories | Balances autonomy and utility | Complex to implement; decision fatigue | Some disease registries |
+| **Dynamic consent** | Ongoing digital engagement | Responsive; respects evolving preferences | Infrastructure intensive; selection bias | Personal Genome Project |
+| **Community consent** | Tribal/community approval required | Respects collective interests | Slower; may conflict with individual wishes | Indigenous biobanks |
 
 ### Biobank Governance Models {#sec-ch26-biobanks}
 
@@ -51,6 +115,12 @@ Large biobanks have developed varied governance approaches that shape how their 
 Other biobanks operate under more restrictive frameworks. Some disease-specific registries limit use to research on particular conditions. Some indigenous and community biobanks require tribal or community approval for research access, reflecting concerns about historical exploitation and the importance of data sovereignty. The tension between open science norms that favor broad data sharing and community governance norms that prioritize local control creates friction for foundation model developers seeking diverse training data.
 
 **Federated learning** and other privacy-preserving techniques offer partial solutions by enabling model training without centralizing raw data [@rieke_future_2020]. Under federated approaches, each data custodian trains local models that share only gradients or model updates with a central coordinator. The approach protects against centralization risks but introduces technical complexity, may reduce model quality compared to centralized training, and does not eliminate all privacy risks. Zhu et al. demonstrated that gradient updates can sometimes reveal individual-level information through reconstruction attacks [@zhu_deep_2019]. Practical federated training for genomic foundation models remains an active research area with limited deployment experience.
+
+::: {.callout-tip}
+## Stop and Think
+
+Consider a scenario: You are developing a genomic foundation model and want to include data from an indigenous biobank that requires community consent. The community's governance council is concerned about potential misuse but also wants their members to benefit from genomic medicine advances. What governance structures or technical safeguards might address both concerns? There is no single right answer, but think through the tradeoffs before reading on.
+:::
 
 ### Secondary Use and Data Futures {#sec-ch26-secondary-use}
 
@@ -64,16 +134,22 @@ No consensus has emerged on optimal governance structures for genomic foundation
 
 Genomes are simultaneously the most personal data and the most shareable. A genome uniquely identifies its owner, reveals information about disease risk and ancestry, and exposes details about biological relatives who never consented to any disclosure. Standard anonymization techniques fail because the genome itself is an identifier. Foundation models compound these challenges by potentially memorizing and recombining information in ways that defeat conventional privacy protections. The technical solutions, from **differential privacy** to federated learning, each involve tradeoffs between utility and protection that genomic applications make particularly acute.
 
-::: {#fig-data-governance}
-![**FIGURE PLACEHOLDER A**](../figs/part_6/ch29/01-A-fig-data-governance.png)
+::: {.callout-important}
+## Key Insight: Genomes Are Their Own Identifiers
 
-![**FIGURE PLACEHOLDER B**](../figs/part_6/ch29/01-B-fig-data-governance.png)
+Unlike most personal data, genomic sequences cannot be truly anonymized because the sequence itself is a unique identifier. Removing names and demographics from a genomic dataset provides no protection if the sequence can be matched against any other database containing that individual's DNA. This fundamental property distinguishes genomic privacy from conventional data privacy and explains why standard anonymization approaches fail.
+:::
 
-![**FIGURE PLACEHOLDER C**](../figs/part_6/ch29/01-C-fig-data-governance.png)
+::: {#fig-data-governance layout-ncol=2}
+![Privacy-utility tradeoff: stronger protection reduces utility](../figs/part_5/ch26/01-A-fig-data-governance.svg)
 
-![**FIGURE PLACEHOLDER D**](../figs/part_6/ch29/01-D-fig-data-governance.png)
+![Consent models from broad to dynamic](../figs/part_5/ch26/01-B-fig-data-governance.svg)
 
-[High] Multi-panel governance challenges. Panel A (Privacy vs. Utility): Anonymized data (limited utility) vs identified data (utility but privacy risk); differential privacy tradeoff curve. Panel B (Consent Complexity): Broad consent, specific consent, dynamic consent, tiered consent; each with implications. Panel C (Federated Learning): Data stays local; model travels; gradient aggregation; privacy-preserving computation. Panel D (Cross-Border Issues): Different jurisdictions with different rules; GDPR, HIPAA, emerging regulations; data localization requirements. Key insight: No perfect solution; governance requires ongoing negotiation between stakeholder interests.
+![Federated learning: data stays local, model travels](../figs/part_5/ch26/01-C-fig-data-governance.svg)
+
+![Cross-border regulatory complexity](../figs/part_5/ch26/01-D-fig-data-governance.svg)
+
+Data governance challenges for genomic foundation models. (A) Privacy-utility tradeoff: stronger privacy protection (e.g., differential privacy with small ε) reduces model utility—there is no free lunch. (B) Consent complexity: models range from broad (simple, enables innovation) to dynamic (responsive, resource-intensive). (C) Federated learning: data stays local while model updates travel, but gradient attacks remain a risk. (D) Cross-border complexity: different jurisdictions (HIPAA, GDPR, MDR) impose different requirements, complicating global deployment.
 :::
 
 ### Re-identification Challenge {#sec-ch26-reidentification}
@@ -83,6 +159,16 @@ Genomic data pose fundamental privacy challenges because genomes are simultaneou
 Conventional anonymization techniques that remove names and obvious identifiers provide limited protection. Re-identification of individuals from genomic data combined with surname inference through Y-chromosome analysis has been demonstrated [@gymrek_identifying_2013] Subsequent work has shown re-identification from aggregate genomic statistics under certain conditions and through **membership inference attacks** on genomic databases [@homer_resolving_2008; @erlich_routes_2014]. Foundation models compound these concerns by potentially extracting and recombining information in ways that defeat simple deidentification. A model trained on sequences from many individuals might, under adversarial prompting, generate outputs that reveal information about specific training examples.
 
 Technical safeguards include differential privacy (which adds calibrated noise to training procedures to bound individual-level information leakage), **secure multi-party computation** (which enables joint computation over distributed data without revealing inputs), and **synthetic data generation** (which produces training data that preserves statistical properties without corresponding to real individuals). Each approach involves tradeoffs between privacy protection and model utility. Differential privacy with strong guarantees may degrade model performance substantially. Secure computation adds computational overhead and complexity. Synthetic data may fail to capture rare variants or unusual correlations essential for clinical applications.
+
+: Privacy-preserving techniques for genomic AI {#tbl-privacy-techniques}
+
+| Technique | How It Works | Privacy Guarantee | Utility Cost | Maturity |
+|-----------|--------------|-------------------|--------------|----------|
+| **Differential privacy** | Adds calibrated noise during training | Mathematical bound on individual information leakage | Moderate to high; depends on epsilon | Production-ready |
+| **Federated learning** | Data stays local; only gradients shared | No raw data centralization | Low to moderate; communication overhead | Research to early production |
+| **Secure multi-party computation** | Encrypted computation across parties | Strong cryptographic guarantees | High computational overhead | Research stage |
+| **Synthetic data generation** | Train on fake data with real statistics | No real individuals in training | Variable; may miss rare variants | Early production |
+| **Trusted execution environments** | Hardware-isolated computation | Hardware-enforced isolation | Low | Production-ready |
 
 ### Family and Relational Privacy {#sec-ch26-family-privacy}
 
@@ -104,6 +190,18 @@ The situation differs for synthetic or engineered sequences, which may qualify f
 
 For foundation model developers, the key practical questions concern what restrictions apply to training data and what rights attach to model outputs. Training on publicly available sequences may be permissible under database terms of use, research exemptions, or fair use principles depending on jurisdiction and use context. Commercial deployment of models trained on restricted-access data may require additional authorization. Outputs generated by models may be freely usable by the model operator, or may carry through restrictions from training data, depending on legal interpretation and contractual provisions.
 
+::: {.callout-tip}
+## Knowledge Check
+
+The 2013 Myriad decision addressed naturally occurring DNA sequences. But what about a novel protein sequence generated by a foundation model? Consider the following:
+
+1. Can such a sequence be patented?
+2. Who would be the inventor---the model developer, the user who prompted the generation, or the AI itself?
+3. How might your answers change if the generated sequence is 95% identical to a natural protein versus entirely novel?
+
+These questions remain unsettled, but thinking through them helps clarify the IP landscape.
+:::
+
 ### Model Weights as Assets {#sec-ch26-model-weights}
 
 Foundation model weights represent substantial investments of compute, data, and expertise, creating obvious commercial value. Companies training large genomic models face decisions about whether to release weights openly, provide API access without weight release, or restrict access entirely. Each approach carries different implications for scientific progress, commercial competition, and safety management.
@@ -120,6 +218,22 @@ Current legal frameworks generally hold clinicians responsible for clinical deci
 
 These liability questions have practical implications for foundation model deployment. Developers may structure their offerings to minimize liability exposure, for instance by providing research-use-only tools that shift responsibility to users, or by limiting outputs to information that falls short of clinical recommendations. Such structuring may impede beneficial clinical applications if it creates uncertainty about appropriate use or fragments responsibility in ways that leave harms uncompensated.
 
+::: {.callout-note}
+## Practical Guidance: Navigating Liability in Model Deployment
+
+For researchers and companies deploying genomic foundation models:
+
+1. **Document intended use clearly.** Specify whether outputs are for research only or clinical decision support, and what validation has been performed.
+
+2. **Understand the liability chain.** Map out who bears responsibility at each stage: developer, deployer, laboratory, clinician, institution.
+
+3. **Consider "research use only" designations carefully.** They limit liability but also limit beneficial use and may not hold up if models are predictably used clinically.
+
+4. **Engage legal counsel early.** Liability frameworks for AI are evolving rapidly; what holds today may change.
+
+5. **Maintain audit trails.** Documentation of model versions, validation results, and deployment decisions supports liability defense and regulatory compliance.
+:::
+
 ## Responsible Development Practices {#sec-ch26-responsible}
 
 Technical capability without responsible deployment causes harm. A foundation model that achieves excellent benchmark performance but fails silently on underrepresented populations widens health disparities. A tool that provides confident predictions without communicating uncertainty misleads clinicians. A system deployed without documentation leaves users unable to assess whether its outputs apply to their context. Responsible development encompasses the entire lifecycle from training data selection through deployment and monitoring, requiring attention to transparency, fairness, and human oversight at each stage.
@@ -135,6 +249,12 @@ The challenge is ensuring that documentation reaches users who need it and influ
 ### Fairness and Performance Equity {#sec-ch26-fairness}
 
 Ancestry bias manifests technically at every stage of the genomic AI pipeline. Polygenic scores derived from European-ancestry GWAS show 40 to 75 percent reductions in prediction accuracy for African-ancestry individuals (@sec-ch03-portability). Variant effect predictors trained on ClinVar inherit that database's overrepresentation of European-ancestry variants, performing better for populations already well-served by genomic medicine (@sec-ch14-protein-vep; @sec-ch02-clinvar). Models can exploit ancestry as a confounding shortcut, achieving high benchmark performance while systematically underperforming for underrepresented groups (@sec-ch22-ancestry-confounding). Clinical risk models calibrated on single-institution data may provide inferior risk stratification to patients from populations or care settings not represented in development (@sec-ch27-fairness). These are not independent problems but manifestations of a single structural issue: genomic datasets encode historical inequities in who gets sequenced, which populations are recruited into biobanks, and whose variants receive clinical characterization.
+
+::: {.callout-important}
+## Key Insight: Bias Is Structural, Not Just Technical
+
+Ancestry bias in genomic AI is not merely a technical problem solvable by better algorithms. It reflects decades of research prioritization that sequenced European populations first, recruited from academic medical centers, and characterized variants common in well-studied groups. Technical mitigations (stratified evaluation, calibration adjustment, uncertainty flagging) can reduce harm but cannot substitute for structural change: diversifying who participates in research, who builds models, and whose health needs drive development priorities.
+:::
 
 Technical solutions exist but require deliberate implementation. **Ancestry-stratified evaluation** mandates reporting performance separately for major population groups, not just aggregate metrics that obscure disparities. Calibration assessment by subgroup reveals when models systematically over- or under-estimate risk for specific populations. Uncertainty quantification can flag predictions for patients from underrepresented ancestries as less reliable, enabling appropriate clinical caution (see @sec-ch23-uncertainty). Reweighting training data or applying group-wise calibration adjustments can partially mitigate disparities, though these post-hoc corrections cannot fully compensate for fundamental data gaps.
 
@@ -154,17 +274,35 @@ Effective oversight requires that model outputs be interpretable enough for huma
 
 System design must also prevent **automation bias**, the tendency for human operators to defer to automated recommendations even when independent judgment would lead to different conclusions [@parasuraman_complacency_2010]. Training clinicians to use AI tools effectively, designing interfaces that prompt critical evaluation rather than passive acceptance, and monitoring for over-reliance patterns are all components of responsible oversight architecture.
 
+::: {.callout-tip}
+## Stop and Think
+
+Consider two interface designs for a variant classification tool:
+
+**Design A:** Displays "Pathogenic" or "Benign" in large text with a confidence percentage.
+
+**Design B:** Displays the classification with uncertainty bars, lists the top 3 evidence sources, shows known limitations for this variant type, and asks "Does this match your clinical assessment?" before proceeding.
+
+Which design better supports human oversight? What tradeoffs does each involve? How might busy clinicians respond differently to each?
+:::
+
 ## Dual Use and Biosecurity {#sec-ch26-biosecurity}
 
 The same capabilities that enable therapeutic protein design could, in principle, enable pathogen enhancement. A model that generates functional regulatory sequences could optimize expression in beneficial or harmful contexts. These dual-use concerns are not unique to foundation models, but the combination of generative capability, broad accessibility, and rapid improvement creates genuinely novel considerations. The gap between computational generation and biological realization provides some natural barrier, yet that gap narrows as both computational and wetlab capabilities advance. Balancing open scientific exchange against biosecurity risks requires ongoing assessment as model capabilities evolve.
 
 ::: {#fig-dual-use-governance}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch29/02-fig-dual-use-governance.png)
+![Dual-use risk assessment for generative genomic models](../figs/part_5/ch26/02-fig-dual-use-governance.svg)
 
-[High] Risk assessment matrix. Axes: Capability (what the model can do) × Access (who can use it). Quadrants: Low capability/restricted (current academic); high capability/restricted (industrial deployment with oversight); low capability/open (open-source educational); high capability/open (highest concern). Risk factors: Pathogen design, antibiotic resistance, agricultural biosecurity, emergent capabilities. Governance mechanisms: Pre-release evaluation, staged release, monitoring, audit trails, benefit-risk assessment. Key insight: Balancing open science benefits against misuse risks.
+Dual-use risk assessment for generative genomic models. The risk matrix considers model capability and access openness: high-capability models with open access pose the greatest concern. Risk factors include pathogen enhancement, resistance design, and emergent capabilities. Governance mechanisms span the deployment lifecycle: pre-release evaluation, staged release, usage monitoring, and audit trails. The gap between computational generation and biological realization provides some natural protection, but this gap narrows as both computational and wetlab capabilities advance.
 :::
 
 ### Generative Models and Pathogen Enhancement {#sec-ch26-pathogen}
+
+::: {.callout-warning}
+## Difficulty Warning
+
+This section addresses sensitive dual-use concerns that require careful reasoning about risks that are uncertain and contested. Experts disagree about the severity of biosecurity risks from generative genomic models. The goal is not to resolve these debates but to understand the considerations that inform responsible development decisions.
+:::
 
 Foundation models capable of generating functional biological sequences raise biosecurity concerns distinct from those posed by predictive models. A protein language model trained to generate functional enzymes might, in principle, be prompted to design proteins with enhanced pathogenic properties. A regulatory sequence model might generate promoters optimized for expression in human tissues of concern. A generative DNA model might propose sequences that evade detection by standard diagnostics.
 
@@ -179,4 +317,50 @@ Foundation model developers must decide how to release models in ways that enabl
 Access controls can operate at multiple levels: restricting weight access while providing API availability, limiting API capabilities through output filtering, requiring applications and use agreements for access, or monitoring usage patterns for indicators of concerning applications. Each control imposes costs on legitimate users and may prove circumventable by determined malicious actors. The effectiveness of controls depends on the specific model, the capability of concern, and the technical sophistication of potential misusers.
 
 For genomic foundation models specifically, the biosecurity risks are generally lower than for models capable of synthesizing pathogen sequences from scratch, but concerns about privacy violations, discriminatory applications, and scientific misconduct remain. A model capable of inferring sensitive traits from genomic data might be misused for unauthorized health prediction. A model capable of generating realistic synthetic genomic data might be used to fabricate research results. Responsible release strategies must consider these diverse risk profiles.
+
+::: {.callout-note}
+## Chapter Summary
+
+This chapter examined the regulatory, governance, and ethical landscape for genomic foundation models. Key takeaways:
+
+**Regulatory Frameworks:**
+
+- Genomic AI tools are classified as Software as Medical Device (SaMD) with risk-based oversight
+- The FDA's locked/adaptive algorithm distinction fits poorly with foundation model architectures
+- Regulatory requirements differ substantially across jurisdictions, complicating global deployment
+- Laboratory-developed tests occupy an uncertain regulatory space in the United States
+
+**Data Governance:**
+
+- Foundation model training scales challenge traditional consent paradigms
+- Consent models range from broad to dynamic, each with tradeoffs between utility and autonomy
+- Federated learning offers partial solutions but does not eliminate privacy risks
+- Secondary use concerns require governance structures that anticipate unknown future applications
+
+**Privacy:**
+
+- Genomes are unique identifiers that cannot be truly anonymized
+- Technical safeguards (differential privacy, secure computation) involve utility-privacy tradeoffs
+- Relational privacy extends concerns to biological relatives who did not consent
+
+**Intellectual Property:**
+
+- Naturally occurring sequences cannot be patented (Myriad), but synthetic sequences may be
+- Model weights represent substantial assets with contested norms around release
+- Liability for AI-informed clinical decisions remains uncertain across the value chain
+
+**Responsible Development:**
+
+- Transparency through model cards and datasheets is necessary but insufficient
+- Ancestry bias is structural, requiring more than technical fixes
+- Human oversight requires interpretable outputs and designs that prevent automation bias
+
+**Dual Use:**
+
+- Generative models raise biosecurity concerns that predictive models do not
+- The gap between computational generation and biological realization provides some protection
+- Responsible release strategies must balance openness against misuse potential
+
+These challenges are not barriers to be overcome once but ongoing tensions to be managed as capabilities advance and governance frameworks evolve.
+:::
 

@@ -1,5 +1,20 @@
 # Clinical Risk Prediction {#sec-ch27-clinical-risk}
 
+::: {.callout-note}
+## Chapter Overview
+
+**Prerequisites:** This chapter builds on concepts from multiple earlier chapters. You should be familiar with polygenic risk scores (@sec-ch03-pgs-construction), foundation model architectures for DNA and protein sequences (@sec-ch14-dna-lm, @sec-ch15-protein-lm), transfer learning approaches (@sec-ch09-transfer), and uncertainty quantification principles (@sec-ch23-uncertainty). Understanding of evaluation metrics (@sec-ch11-metrics-genomic-tasks) and interpretability methods (@sec-ch24-interpretability) will help you assess clinical deployment requirements.
+
+**Learning Objectives:** After completing this chapter, you should be able to:
+
+1. Explain why traditional polygenic scores often fail clinical translation and how foundation model features address these limitations
+2. Compare early, intermediate, and late fusion architectures for integrating genomic and clinical data
+3. Distinguish discrimination, calibration, and clinical utility as distinct but complementary evaluation criteria
+4. Design validation studies appropriate for different levels of the evidence hierarchy
+5. Identify sources of bias in genomic and EHR data and describe mitigation strategies for equitable deployment
+6. Articulate the workflow, monitoring, and governance requirements for clinical integration of foundation model-based risk tools
+:::
+
 A risk prediction has clinical value only if it changes what happens next. A cardiologist who receives a **polygenic risk score** for coronary artery disease faces a simple question: does this information alter the treatment recommendation? If a patient with a high score receives the same statin prescription, lifestyle counseling, and follow-up schedule as a patient without genetic testing, the score added nothing to care regardless of its statistical validity. The fundamental challenge is not generating genomic predictions but translating them into actions that improve outcomes. This translation requires more than **discrimination** between who will and will not develop disease; it requires that the prediction reach clinicians in a usable form, at a decision point where alternatives exist, for a patient population where the prediction performs equitably.
 
 Traditional polygenic scores, despite their scientific validity, often fail this translation test. They reduce entire genomes to single numbers that provide little mechanistic insight. They transfer poorly across ancestries because training data overrepresent European populations. They exist outside the electronic health records where clinical decisions actually happen, requiring manual lookup that busy clinicians rarely perform. Most fundamentally, the clinical actions available in response to a polygenic risk score (PRS), such as lifestyle modification, earlier screening, or preventive medication, are often the same actions recommended for patients with conventional risk factors, leaving unclear what the genetic information specifically enables.
@@ -10,11 +25,30 @@ Genomic foundation models offer capabilities that may address some of these limi
 
 The limitations of classical polygenic risk scores define the opportunity for foundation model approaches. As discussed in @sec-ch03-pgs-construction, polygenic scores aggregate the effects of common variants into weighted sums, with weights derived from genome-wide association study effect sizes. This framework has demonstrated that common genetic variation contributes substantially to risk for conditions including coronary artery disease, type 2 diabetes, and breast cancer. A patient in the top percentile of polygenic risk for coronary disease faces roughly threefold higher lifetime risk than one in the bottom percentile, a gradient comparable to traditional risk factors like smoking or hyperlipidemia *[Citation Needed]*.
 
+::: {.callout-tip}
+## Stop and Think
+Before reading further, consider the three main limitations of traditional polygenic scores mentioned in the introduction: lack of mechanistic insight, poor cross-ancestry portability, and disconnection from clinical workflows. For each limitation, what kind of technical capability would be needed to address it? How might richer representations from foundation models help with each?
+:::
+
 Several limitations constrain the clinical impact of this approach. The linear additive model cannot capture **epistatic** interactions where one variant's effect depends on others, nor can it represent the nonlinear relationships between genetic variation and disease that emerge from regulatory networks and cellular pathways. Polygenic scores derived from European-ancestry genome-wide association studies substantially underperform in other populations, with effect sizes often attenuating by half or more in African or East Asian ancestries due to differences in linkage disequilibrium structure and allele frequencies (@sec-ch22-ancestry-confounding; @sec-ch03-portability). Beyond these technical constraints, a single scalar provides no mechanistic insight: a high polygenic score for diabetes does not indicate whether risk stems from impaired insulin secretion, insulin resistance, or altered satiety signaling, information that might guide intervention selection.
 
 Foundation models address these limitations through richer representations. Instead of treating variants as independent weighted features, models like *Delphi* and *G2PT* learn genome-wide embeddings that encode sequence context, regulatory annotations, and cross-variant interactions [@georgantas_delphi_2024; @lee_g2pt_2025]. These approaches can capture nonlinear structure in genetic risk, leverage functional priors that transfer across ancestries, and provide attention-based attributions that highlight which genomic regions contribute most to predictions. Fine-mapping models like *MIFM* estimate posterior probabilities for causal variants within association loci, allowing risk models to weight variants by evidence for causality rather than treating all correlated variants equally [@rakowski_mifm_2025].
 
+::: {.callout-important}
+## Key Insight: From Scalar Scores to Rich Representations
+The core advancement of foundation model approaches is not simply "better prediction" but a fundamental shift in what the model produces. A polygenic score yields a single number; a foundation model yields a high-dimensional embedding that preserves information about *which* genomic regions contribute, *how* they interact, and *why* they matter biologically. This richer output enables downstream tasks (pathway attribution, cross-ancestry transfer, mechanistic interpretation) that scalar scores cannot support.
+:::
+
 The practical architecture of a foundation model-enabled risk system typically involves three components: pretrained encoders that transform genomic data into embeddings, aggregation modules that summarize variant-level or region-level representations into patient-level features, and prediction heads that map these features (combined with clinical covariates) to risk estimates. This modular design separates the computationally expensive foundation model inference from the task-specific prediction layer, enabling updates to either component while maintaining clear interfaces for validation.
+
+| Approach | Representation | Ancestry Transfer | Mechanistic Insight | Computational Cost |
+|----------|---------------|-------------------|--------------------|--------------------|
+| Traditional PRS | Scalar (single number) | Poor (LD-dependent) | None | Low |
+| PRS + annotations | Scalar + categorical | Moderate | Limited | Low |
+| FM embeddings | High-dimensional vector | Better (sequence-based) | Via attribution | High (precompute) |
+| FM + fine-mapping | Weighted embeddings | Best (causal priors) | Strong | High |
+
+: Comparison of polygenic risk approaches: traditional polygenic scores versus foundation model-enhanced methods. {#tbl-prs-vs-fm}
 
 ## Defining Clinical Risk Prediction {#sec-ch27-defining-risk}
 
@@ -24,7 +58,46 @@ Consider a 55-year-old woman with moderately elevated cholesterol and a family h
 
 Each of these applications represents a different prediction task with distinct requirements. The 10-year risk estimate for major adverse cardiovascular events is an individual-level incident risk problem where discrimination and calibration matter most. The pathway-level attribution is an interpretability challenge requiring mechanistic grounding. The pharmacogenomic prediction is a treatment selection problem where the relevant outcome is adverse drug reaction risk conditional on therapy initiation.
 
+::: {.callout-note title="Deep Dive: Clinical Validity vs. Clinical Utility"}
+**For technical readers:** These distinct concepts determine whether a test should enter clinical practice:
+
+**Analytical validity:** Does the test accurately measure what it claims to measure?
+
+- Example: Does the genotyping array correctly call the variant genotypes?
+- Metrics: Call rate, concordance with sequencing, reproducibility
+
+**Clinical validity:** Is the measurement associated with the clinical outcome of interest?
+
+- Example: Does the polygenic score correlate with disease risk?
+- Metrics: Discrimination (auROC), calibration, hazard ratios
+
+**Clinical utility:** Does using the test improve patient outcomes?
+
+- Example: Does knowing the polygenic score lead to interventions that reduce disease incidence?
+- Metrics: Net reclassification, decision curve analysis, clinical trial outcomes
+
+**Why the distinction matters:**
+
+| Level | Can Be High While Others Are Low? | Example |
+|-------|-----------------------------------|---------|
+| Analytical validity | Yes | Perfectly accurate test for a biomarker that doesn't predict disease |
+| Clinical validity | Yes | Highly predictive test that doesn't change management |
+| Clinical utility | Requires others | Test must be valid and actually improve care |
+
+A model can achieve excellent discrimination (clinical validity) yet provide no clinical utility if the resulting predictions don't change clinical decisions, if the population tested differs from training, or if interventions triggered by the prediction are ineffective.
+:::
+
 Clinical risk prediction tasks cluster into several archetypes. Incident risk concerns whether a currently disease-free individual will develop disease within a specified window, such as 10-year diabetes risk for prediabetic patients. Progression risk asks which patients with existing disease will develop complications, for instance nephropathy in diabetes or heart failure after myocardial infarction. Survival and prognosis involve time-from-diagnosis to events like death, recurrence, or transplant, often requiring survival models that handle censoring and competing risks. Treatment response and toxicity concerns whether a patient will benefit from one therapy versus another and their probability of experiencing serious adverse effects.
+
+| Task Type | Example Question | Time Structure | Key Metrics | FM Role |
+|-----------|-----------------|----------------|-------------|---------|
+| Incident risk | Will this patient develop T2D in 10 years? | Fixed window | Discrimination, calibration | Risk stratification features |
+| Progression | Will this diabetic develop nephropathy? | Conditional on disease | Time-to-event | Trajectory modeling |
+| Survival/prognosis | How long after cancer diagnosis? | Open-ended, censored | C-index, survival curves | Tumor embeddings |
+| Treatment response | Will this patient respond to drug X? | Conditional on treatment | Relative benefit | Drug-gene interactions |
+| Toxicity | Adverse event risk with drug X? | Conditional on treatment | auPRC (rare outcomes) | Pharmacogenomic features |
+
+: Clinical risk prediction task archetypes and their distinct requirements. {#tbl-risk-task-types}
 
 Foundation models enter these problems as feature generators. They transform raw sequence data into structured representations that downstream prediction models combine with clinical covariates. The architectural choices for this combination, and the evidence required to trust the resulting predictions, constitute the core methodological challenges of clinical translation.
 
@@ -35,13 +108,13 @@ The features available for clinical risk models draw on multiple foundation mode
 DNA-level foundation models provide variant effect predictions without requiring trait-specific training. Systems like *Nucleotide Transformer*, *HyenaDNA*, and *GPN* compute sequence-based deleteriousness scores that reflect how mutations disrupt regulatory grammar, splice sites, or protein-coding sequences [@dalla-torre_nucleotide_2023; @nguyen_hyenadna_2023; @benegas_gpn_2023]. These **zero-shot** predictions transfer across traits and ancestries because they derive from sequence properties rather than population-specific association statistics (@sec-ch14-dna-lm). Fine-mapping models integrate these functional priors with association evidence to estimate which variants within a locus are likely causal, providing principled weights for aggregation (@sec-ch03-fine-mapping). Fine-mapping models like *MIFM* integrate such functional priors with association evidence to estimate which variants within a locus are likely causal, providing principled weights for aggregation [@rakowski_mifm_2025].
 
 ::: {#fig-feature-integration layout-ncol=3}
-![**FIGURE PLACEHOLDER A**](../figs/part_6/ch25/01-A-fig-feature-integration.png)
+![DNA foundation models contribute regulatory variant effects](../figs/part_6/ch27/01-A-fig-feature-integration.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_6/ch25/01-B-fig-feature-integration.png)
+![Expression foundation models provide cell state embeddings](../figs/part_6/ch27/01-B-fig-feature-integration.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_6/ch25/01-C-fig-feature-integration.png)
+![Protein foundation models add coding variant pathogenicity](../figs/part_6/ch27/01-C-fig-feature-integration.svg)
 
-[Essential] Three-column comparison. Column 1 (Early Fusion): All features concatenated → single model → risk. Column 2 (Intermediate Fusion): Separate encoders (FM as genomic encoder) → embeddings → fusion → risk. Column 3 (Late Fusion): Independent models → scores → ensemble → risk. For each: pros/cons, missing data handling, compute. Comparison table: Cross-modal interactions, missing data, modularity, best for. Key insight: Intermediate balances modularity with interaction learning.
+Feature integration for clinical risk prediction. (A) DNA foundation models contribute regulatory variant effects, enhancer predictions, and PRS enhancement. (B) Expression foundation models provide cell state embeddings, pathway activities, and disease signatures. (C) Protein foundation models add coding variant pathogenicity and structural effects. Integration combines features across modalities for unified risk prediction with calibrated uncertainty.
 :::
 
 Protein language models add coding variant interpretation. *AlphaMissense* and related systems predict pathogenicity for missense mutations based on evolutionary conservation patterns learned from millions of protein sequences, as discussed in @sec-ch15-protein-lm. For conditions with strong coding variant contributions (Mendelian cardiomyopathies, cancer predisposition syndromes), these predictions provide crucial signal beyond what noncoding regulatory models capture.
@@ -58,7 +131,18 @@ The architectural question is how to combine these heterogeneous inputs. Three f
 
 **Late fusion** trains independent models for each modality and combines their predictions through ensemble methods or meta-learning. A polygenic score model, an electronic health record model, and a multi-omic model each produce risk estimates that a final layer integrates. This approach handles missing modalities gracefully (each submodel operates independently) and allows modality-specific architectures but may underutilize cross-modal structure since interactions can only be captured at the final combination stage.
 
+| Fusion Strategy | Cross-Modal Interactions | Missing Data Handling | Modularity | Best For |
+|-----------------|-------------------------|----------------------|------------|----------|
+| Early | Full (learned jointly) | Poor (all required) | Low | Dense, complete data |
+| Intermediate | Moderate (fusion layer) | Moderate (graceful degradation) | High | Evolving FM ecosystems |
+| Late | Limited (output only) | Excellent (independent) | Moderate | Heterogeneous availability |
+
+: Comparison of fusion architectures for combining genomic and clinical features. {#tbl-fusion-strategies}
+
+::: {.callout-note}
+## Practical Guidance: Choosing a Fusion Architecture
 For clinical deployment, intermediate fusion often provides the best balance. It enables modular updates as foundation models improve, allows graceful degradation when modalities are missing, and captures cross-modal interactions that late fusion misses. The specific fusion mechanism (attention, concatenation, cross-modal transformer) matters less than ensuring the architecture supports the operational requirements of clinical deployment: batch computation, uncertainty quantification, and interpretable feature attribution.
+:::
 
 ## EHR Integration and Phenotype Embeddings {#sec-ch27-ehr-integration}
 
@@ -75,6 +159,11 @@ The framework proceeds in stages. Embedding models (Word2Vec trained on ICD-10 c
 Validation in UK Biobank demonstrated consistent improvement over single-trait polygenic scores across 41 clinical traits. Cardiovascular conditions showed the largest gains: ischemic stroke improved by 66%, heart failure by 32%, and peripheral artery disease by 25% *[Citation Needed]*. These improvements concentrate in traits where related phenotypes share genetic architecture, allowing the embedding-based scores to leverage cross-phenotype genetic correlation. For isolated traits without strong embedding-dimension associations, improvements were modest or absent.
 
 ### Understanding When Embeddings Help {#sec-ch27-embeddings-help}
+
+::: {.callout-tip}
+## Knowledge Check
+The EEPRS framework showed large improvements for cardiovascular conditions but minimal improvement for breast cancer. Before reading the explanation, can you hypothesize why? Consider what phenotype embeddings capture and how genetic architecture might differ between these conditions.
+:::
 
 The pattern of improvement across traits reveals when EHR embeddings add value to polygenic prediction. Conditions that cluster together in clinical space, co-occurring in patients and sharing risk factors, benefit most. The cardiovascular cluster (coronary artery disease, ischemic stroke, peripheral artery disease, heart failure, angina, type 2 diabetes) forms a coherent group in both clinical practice and genetic architecture. Embeddings trained on EHR data capture this clustering, and GWAS on embedding dimensions identify variants associated with the shared liability across the cluster. These variants provide additional prediction signal beyond what single-trait GWAS can detect.
 
@@ -111,16 +200,21 @@ The combination of phenotype embeddings and foundation model features remains la
 
 Clinical risk prediction spans diverse temporal structures, and the choice of modeling framework must match the prediction task. A screening tool estimating whether a patient will develop diabetes within ten years faces different statistical challenges than a monitoring system tracking whether a patient's kidney function trajectory signals imminent decline. Foundation model features can integrate into each framework, but the integration patterns differ.
 
+::: {.callout-warning}
+## Challenging Material Ahead
+The following section introduces survival analysis concepts (hazard functions, censoring, proportional hazards assumptions) and longitudinal modeling frameworks (joint models, time-varying coefficients). Readers unfamiliar with these statistical foundations may benefit from reviewing standard biostatistics references before proceeding. The key conceptual distinction is between models that predict *whether* an event occurs within a fixed window versus models that track *how* risk evolves over time.
+:::
+
 **Survival models** address time-to-event outcomes where patients are followed until an event occurs or observation ends. The Cox proportional hazards model remains the workhorse of clinical risk prediction, estimating hazard ratios for features while making minimal assumptions about baseline hazard shape. Foundation model embeddings enter as covariates alongside clinical variables, with the proportional hazards assumption requiring that genomic risk effects remain constant over time. When this assumption fails (as when genetic effects on cancer recurrence differ between early and late periods), stratified or time-varying coefficient extensions accommodate the violation.
 
 ::: {#fig-temporal-modeling layout-ncol=3}
-![**FIGURE PLACEHOLDER A**](../figs/part_6/ch25/02-A-fig-temporal-modeling.png)
+![Static vs dynamic risk over patient lifetime](../figs/part_6/ch27/02-A-fig-temporal-modeling.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_6/ch25/02-B-fig-temporal-modeling.png)
+![Longitudinal trajectory modeling with sequential observations](../figs/part_6/ch27/02-B-fig-temporal-modeling.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_6/ch25/02-C-fig-temporal-modeling.png)
+![Bayesian updating as evidence accumulates](../figs/part_6/ch27/02-C-fig-temporal-modeling.svg)
 
-[High] Three-panel comparison. Panel A (Survival Models): Timeline with events (X) or censoring (O); Cox PH diagram; FM embeddings as static covariates; "10-year CV risk at baseline." Panel B (Longitudinal Models): Repeated measurements over time; time-varying features; FM re-encodes at each timepoint; "Updated prognosis as disease evolves." Panel C (Hybrid/Joint): Baseline genomic risk + trajectory updating; static genomic embedding + dynamic clinical transformer; "Genetic predisposition modified by treatment response."
+Temporal dynamics in clinical risk prediction. (A) Static versus dynamic risk: genetic risk sets baseline trajectory while environmental factors and interventions modify it over time. (B) Longitudinal trajectory modeling: sequential observations (labs, imaging, symptoms) update risk predictions with widening uncertainty into the future. (C) Prediction updating: Bayesian framework incorporates new evidence, adjusting risk as interventions and events occur.
 :::
 
 Deep survival models extend this framework through neural network architectures that learn nonlinear feature interactions. *DeepSurv* replaces the linear Cox predictor with a multilayer network while preserving the partial likelihood objective [@katzman_deepsurv_2018]. Deep Survival Machines model the survival distribution as a mixture of parametric components, enabling richer distributional assumptions than the semiparametric Cox approach [@nagpal_deep_2021]. These architectures naturally accommodate the high-dimensional embeddings that foundation models produce, though the risk of overfitting increases and careful regularization becomes essential.
@@ -131,11 +225,21 @@ Foundation model features integrate into longitudinal frameworks at multiple lev
 
 Transformer architectures designed for irregularly sampled time series offer a natural framework for clinical trajectories. Models like *STraTS* and similar clinical transformers handle the variable timing and missing measurements characteristic of real-world healthcare data [@tipirneni_self-supervised_2022]. Position encodings based on actual timestamps rather than sequence position accommodate irregular sampling. Attention mechanisms identify which historical measurements most inform current predictions. Foundation model embeddings at each timepoint provide richer input representations than raw laboratory values alone.
 
+::: {.callout-important}
+## Key Insight: Static Genetics, Dynamic Clinical Context
+The fundamental design choice in temporal genomic risk modeling is how to combine time-invariant genetic features (germline sequence does not change) with time-varying clinical context (laboratory values, disease progression, treatment response). The most effective architectures treat genetics as a "prior" that sets baseline risk trajectory, then update predictions as clinical observations accumulate. This mirrors clinical reasoning: genetic predisposition establishes susceptibility, but current clinical state determines immediate risk.
+:::
+
 The choice between survival and longitudinal frameworks depends on the clinical question and available data. When the goal is baseline risk stratification (identifying high-risk patients at a single decision point), survival models with static genomic features often suffice. When the goal is dynamic monitoring (detecting deterioration as it develops), longitudinal models that update predictions as new measurements arrive become necessary. Hybrid approaches that initialize with genomic risk and update based on clinical trajectory combine the strengths of both paradigms.
 
 ## Evaluation for Clinical Deployment {#sec-ch27-evaluation}
 
 High performance on held-out test sets is necessary but far from sufficient for clinical deployment. Risk models must satisfy multiple evidence standards that typical machine learning papers do not address, and teams planning translation must understand these requirements from the outset rather than discovering them after development is complete.
+
+::: {.callout-tip}
+## Stop and Think
+Imagine you have developed a foundation model-based cardiovascular risk predictor that achieves auROC of 0.82 on your test set, substantially better than the 0.76 of the traditional Pooled Cohort Equations. A health system is interested in deploying it. What questions should they ask before integration? What evidence would you need beyond test set performance? Think about this before reading the evaluation framework below.
+:::
 
 ### Discrimination {#sec-ch27-discrimination}
 
@@ -157,14 +261,23 @@ Beyond discrimination and calibration, **clinical utility** asks whether using t
 
 For foundation model-based tools, these analyses must demonstrate incremental value over existing alternatives. If a complex genomic foundation model provides only marginal improvement over a traditional polygenic score plus standard clinical calculator, the additional complexity, cost, and implementation burden may not be justified. The relevant comparison is not "better than nothing" but "better than what clinicians can already access."
 
+| Evaluation Dimension | Key Question | Primary Metrics | Subgroup Requirements |
+|---------------------|--------------|-----------------|----------------------|
+| Discrimination | Does the model rank patients correctly? | auROC, auPRC, C-index | By ancestry, sex, age |
+| Calibration | Do predicted probabilities match reality? | Calibration slope, ECE, Brier | By ancestry, comorbidity |
+| Clinical utility | Does using the model improve decisions? | NRI, decision curves, net benefit | By decision threshold |
+| Incremental value | Is it better than existing tools? | Delta-metrics vs. baseline | Across care settings |
+
+: The three pillars of clinical evaluation for risk prediction models. {#tbl-evaluation-pillars}
+
 ### Validation Hierarchy {#sec-ch27-validation-hierarchy}
 
 Evidence strength depends critically on validation design. Internal validation through cross-validation or temporal splits within development data is useful but insufficient due to potential overfitting and subtle data leakage issues discussed in @sec-ch11-label-leakage. External validation across institutions and ancestries tests the same locked model in independent health systems and diverse populations. This step is essential for assessing whether performance reflects genuine biological signal versus idiosyncratic features of the development dataset.
 
 ::: {#fig-validation-hierarchy}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch25/03-fig-validation-hierarchy.png)
+![Clinical validation hierarchy from internal holdout to prospective trials](../figs/part_6/ch27/03-fig-validation-hierarchy.svg)
 
-[Essential] Pyramid/staircase with evidence levels. Levels bottom to top: (1) Internal validation (CV, temporal splits; low evidence; proof of concept; overfitting risk); (2) External validation (same locked model in independent systems; moderate; transportability; multiple institutions/ancestries); (3) Prospective observational (model runs silently; moderate-high; real-time performance, drift detection; months-years); (4) Prospective interventional (randomized/quasi-experimental; high; clinical outcome improvement; trial registration, IRB). Annotations: Cost/time increasing; regulatory requirements; "Most FM tools stop here" at external validation.
+Clinical validation hierarchy. From bottom: internal holdout validation is easiest but overestimates deployment performance; external retrospective validation tests generalization across institutions; prospective observational validation monitors real-time performance without influencing care; prospective interventional trials demonstrate clinical utility through randomized comparisons; long-term outcome tracking provides ultimate validation but is rarely achieved. Each level requires greater investment but provides stronger evidence.
 :::
 
 Prospective observational validation runs the model silently alongside clinical care without influencing decisions, measuring real-time performance and drift in deployment conditions. Prospective interventional trials use randomized or quasi-experimental designs to assess whether model-guided care actually improves outcomes, equity, and cost-effectiveness compared to usual care.
@@ -178,12 +291,17 @@ In clinical settings, models must know when they do not know. A risk prediction 
 Two sources of uncertainty require distinction. **Aleatoric uncertainty** reflects irreducible noise in the outcome: even with perfect input features, some patients with identical measured characteristics will experience different outcomes due to unmeasured variables, stochastic biology, or measurement error. **Epistemic uncertainty** reflects model limitations: insufficient training data, architectural constraints, or distributional shift between training and deployment conditions. Aleatoric uncertainty cannot be reduced by collecting more data or improving models; epistemic uncertainty can (@sec-ch23-types).
 
 ::: {#fig-clinical-uncertainty}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch25/04-fig-clinical-uncertainty.png)
+![Communicating uncertainty in clinical risk prediction](../figs/part_6/ch27/04-fig-clinical-uncertainty.svg)
 
-[High] Uncertainty decomposition. Components: (1) Genomic Uncertainty (under-represented ancestry, rare variants, novel genes; detection: embedding distance; response: flag for review); (2) Clinical Uncertainty (extrapolation to new settings; detection: feature distribution monitoring; response: local calibration); (3) Outcome Uncertainty/Aleatoric (biological variability, incomplete penetrance; detection: heteroscedastic models; response: communicate irreducible). Visualization: Venn or stacked bar. Example patient profiles with different compositions. Decision support: When total exceeds threshold → abstain/flag.
+Communicating uncertainty in clinical risk prediction. Single point estimates without context can mislead; intervals with best estimates provide actionable uncertainty. Visual formats include icon arrays (intuitive for patients), risk thermometers (familiar to clinicians), and contextual comparisons. Decision support should integrate uncertainty directly: flagging predictions with high epistemic uncertainty, showing confidence bands around thresholds, and providing sensitivity analysis.
 :::
 
 Practical uncertainty quantification methods include ensemble approaches, where multiple models trained with different random seeds provide prediction intervals based on their disagreement (@sec-ch23-deep-ensembles). Monte Carlo dropout approximates Bayesian uncertainty by averaging predictions across stochastic forward passes (@sec-ch23-mc-dropout). **Conformal prediction** provides principled prediction intervals with guaranteed coverage under exchangeability assumptions, avoiding the distributional assumptions required by parametric methods (@sec-ch23-conformal). Temperature scaling post-hoc adjusts model outputs to improve calibration without retraining (@sec-ch23-post-hoc-calibration).
+
+::: {.callout-tip}
+## Knowledge Check
+A foundation model-based risk tool provides a prediction of 35% 10-year cardiovascular risk for a patient of Nigerian ancestry, along with a wide confidence interval of 15-55%. The model was trained primarily on European-ancestry data. Is this wide interval more likely reflecting aleatoric or epistemic uncertainty? What would you recommend the clinician do with this prediction?
+:::
 
 For foundation model-based systems, uncertainty decomposes into genomic and clinical components. Genomic uncertainty reflects confidence in variant effect predictions, fine-mapping probabilities, or embedding reliability; it increases for variants from underrepresented populations, rare variants with limited training examples, or sequences falling outside the distribution seen during pretraining. Clinical uncertainty reflects extrapolation to new care settings, practice patterns, or patient populations not represented in development data.
 
@@ -195,18 +313,23 @@ Many genomic and electronic health record datasets encode historical inequities 
 
 The structural biases that genomic datasets inherit, from sequencing cohort recruitment to biobank composition to ClinVar submission patterns, create cascading effects on model performance. These biases manifest not as random noise but as systematic underperformance for populations historically excluded from genomic research (@sec-ch22-ancestry-confounding).
 
+::: {.callout-important}
+## Key Insight: Bias Compounds Through the Pipeline
+Underrepresentation of non-European ancestries compounds at each stage of the genomic AI pipeline. GWAS discovery is underpowered. Fine-mapping resolution is reduced due to different LD patterns. Variant effect predictors have fewer training examples. PRS portability suffers. Foundation model embeddings are less well-calibrated. Each layer of the stack inherits and potentially amplifies the biases of preceding layers, making end-to-end equity evaluation essential rather than optional.
+:::
+
 The ancestry bias in genome-wide association studies persists in foundation model applications. As discussed in @sec-ch03-portability, polygenic scores derived from European-ancestry data substantially underperform in other populations. Foundation models have the opportunity but not the guarantee to improve portability by leveraging functional priors that transfer across ancestries (sequence-based deleteriousness does not depend on population-specific linkage disequilibrium) and by incorporating multi-ancestry training data. Whether they succeed depends on training data composition, evaluation practices, and explicit attention to cross-ancestry performance throughout development.
 
 ::: {#fig-fairness-assessment layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](../figs/part_6/ch25/05-A-fig-fairness-assessment.png)
+![Ancestry-stratified performance reveals masked disparities](../figs/part_6/ch27/05-A-fig-fairness-assessment.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_6/ch25/05-B-fig-fairness-assessment.png)
+![Calibration varies by group with overconfidence for underrepresented](../figs/part_6/ch27/05-B-fig-fairness-assessment.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_6/ch25/05-C-fig-fairness-assessment.png)
+![Bias accumulates from training data through deployment](../figs/part_6/ch27/05-C-fig-fairness-assessment.svg)
 
-![**FIGURE PLACEHOLDER D**](../figs/part_6/ch25/05-D-fig-fairness-assessment.png)
+![Mitigation strategies for equitable performance](../figs/part_6/ch27/05-D-fig-fairness-assessment.svg)
 
-[High] Equity dashboard. Panel A (Performance Disparity): Bar chart AUROC by ancestry; confidence intervals; reference line; highlight underperformance. Panel B (Calibration Disparity): Multiple reliability diagrams overlaid; ECE per group. Panel C (Clinical Utility Disparity): Decision curves by subgroup; net benefit at thresholds; model improves over treat-all/treat-none? Panel D (Access and Outcome Metrics): Who receives testing? Who benefits? Model reduces or amplifies disparities? Mitigation callout: Reweighting, group-wise calibration, expanding sequencing access.
+Fairness assessment in clinical genomic AI. (A) Ancestry-stratified performance reveals disparities masked by aggregate metrics—African ancestry AUC significantly lower than European. (B) Calibration varies by group: models may be overconfident for underrepresented populations. (C) Bias accumulates: European-dominated training data leads to models that underperform on other populations, compounded by EHR biases. (D) Mitigation strategies: stratified evaluation disclosure, training reweighting, group-specific calibration, and uncertainty flagging for underrepresented inputs.
 :::
 
 Electronic health record features introduce additional bias sources. Which patients receive genetic testing, which laboratory tests are ordered, how diagnoses are coded, and how thoroughly clinical notes are documented all differ systematically across patient populations, care settings, and health systems. A model trained on one institution's data may encode those institutional patterns rather than underlying biology.
@@ -224,9 +347,9 @@ The governance frameworks, regulatory considerations, and responsible developmen
 Even a comprehensively validated model can fail in practice if it does not integrate into clinical workflows. Genomic risk predictions must reach clinicians at decision points, in formats that support rather than disrupt care delivery, with appropriate interpretability and uncertainty communication.
 
 ::: {#fig-clinical-workflow}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch25/06-fig-clinical-workflow.png)
+![Clinical workflow integration for genomic risk prediction](../figs/part_6/ch27/06-fig-clinical-workflow.svg)
 
-[High] Workflow diagram. Clinical workflow: Patient presents → Assessment → Decision point → Action. Integration patterns: (1) Laboratory Interpretation Augmentation (FM scores in variant report; human geneticist reviews; variant classification); (2) Risk Embedded in electronic health record (EHR) (precomputed scores in structured fields; dashboard at point of care; clinical decision support); (3) Pharmacogenomic Alert (synchronous alert at prescription entry; drug-gene interaction flagged; medication ordering). For each: When computation happens, who sees output, what action triggered. System architecture: Model serving, adapters, logging, version control.
+Clinical workflow integration for genomic risk prediction. From data collection through processing, result generation, clinical review, and action. Foundation models contribute during processing and result generation. Human oversight checkpoints ensure clinician review before action. Adoption barriers include compute infrastructure, reimbursement, liability concerns, and clinician trust. Effective integration requires attention to timing, display, and action triggers at each stage.
 :::
 
 ### Workflow Integration Patterns {#sec-ch27-workflow-patterns}
@@ -236,6 +359,18 @@ Clinical genomics has established pathways for returning results through CLIA-ce
 Design choices include batch versus on-demand computation (batch overnight processing is often preferable given foundation model computational costs and the relative stability of genomic data), synchronous alerts at order entry versus asynchronous reports in clinical inboxes, and whether high-impact predictions require human-in-the-loop review before reaching front-line clinicians.
 
 The specifics vary by clinical context. Pharmacogenomic alerts might appear synchronously at prescription order entry, providing immediate guidance on drug selection or dosing. Cardiometabolic risk scores might appear in primary care dashboards updated weekly, informing prevention discussions at annual visits. Oncology prognosis estimates might be generated at diagnosis and reviewed in tumor board settings where multidisciplinary teams make treatment decisions.
+
+::: {.callout-note}
+## Practical Guidance: Integration Patterns by Use Case
+
+**Pharmacogenomics:** Synchronous alerts at prescription entry. Pre-compute patient drug-gene interaction profiles. Alert must include actionable alternatives, not just warnings.
+
+**Primary care prevention:** Batch scoring with dashboard display. Weekly updates sufficient given slow-changing genomic risk. Integrate with existing cardiovascular risk calculators.
+
+**Oncology prognosis:** Generate at diagnosis for tumor board review. Include uncertainty bounds and subgroup performance caveats. Human geneticist review before clinical action.
+
+**Rare disease diagnosis:** On-demand for active diagnostic workups. Prioritize interpretability (which variants, what mechanisms) over pure risk scores.
+:::
 
 ### System Architecture {#sec-ch27-system-architecture}
 
@@ -265,6 +400,11 @@ Foundation models introduce additional documentation requirements. Descriptions 
 
 Three stylized case studies illustrate how foundation model features integrate into clinical risk prediction across different disease contexts, time horizons, and decision types.
 
+::: {.callout-tip}
+## Stop and Think
+As you read each case study, consider: (1) What specific clinical decision does the prediction inform? (2) What evidence would be required before deployment? (3) What equity considerations apply? These questions connect the abstract principles discussed earlier to concrete clinical scenarios.
+:::
+
 ### Cardiometabolic Risk Stratification {#sec-ch27-case-cardio}
 
 A 52-year-old man presents to his primary care physician for an annual wellness visit. His LDL cholesterol is 145 mg/dL, blood pressure is 138/88 mmHg, and hemoglobin A1c is 5.9%, placing him in the prediabetic range. His father had a myocardial infarction at age 58. The standard Pooled Cohort Equations estimate his 10-year atherosclerotic cardiovascular disease risk at 8.2%, just below the threshold where guidelines recommend statin therapy.
@@ -272,9 +412,9 @@ A 52-year-old man presents to his primary care physician for an annual wellness 
 A foundation model-augmented risk system could refine this assessment. Variant effect scores from DNA foundation models annotate variants in cardiometabolic risk loci with predicted regulatory and coding impacts, combining sequence-based scores with fine-mapping probabilities to prioritize likely causal variants (@sec-ch14-dna-vep; @sec-ch14-combining-evidence). A polygenic embedding model like *Delphi* or *G2PT* produces a genome-wide representation capturing nonlinear risk structure beyond simple effect size sums [@georgantas_delphi_2024; @lee_g2pt_2025]. This genomic embedding combines with electronic health record features through an intermediate fusion architecture, producing an updated 10-year risk estimate of 11.4%, above the treatment threshold.
 
 ::: {#fig-cardio-case-study}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch25/07-fig-cardio-case-study.png)
+![FM-enhanced cardiovascular risk prediction case study](../figs/part_6/ch27/07-fig-cardio-case-study.svg)
 
-[Enhancing] Patient journey diagram. Patient profile: 52yo man, LDL 145, BP 138/88, HbA1c 5.9%; family history (father MI at 58); traditional risk 8.2% (below statin threshold). FM integration: DNA FMs annotate variants; polygenic embedding (Delphi/G2PT) captures nonlinear risk; fusion with EHR; updated estimate 11.4% (above threshold). Clinical decision impact: Threshold crossed → statin indicated; pathway attribution → LDL metabolism (supports mechanism); attention attribution → regions for counseling. Validation requirements: External validation, equity analysis. Key insight: Value depends on whether refined estimate enables different action.
+Case study: FM-enhanced cardiovascular risk prediction. A 45-year-old male with family history integrates genetic PRS (enhanced by regulatory variant effects), LDLR coding variant (scored by AlphaMissense), inflammatory expression signature, and clinical features. FM-integrated prediction (28% 10-year risk) exceeds both traditional Framingham (18%) and PRS-only (24%) approaches. Clinical action: statin therapy with annual monitoring. Caveat: model validated primarily in European populations; additional caution warranted for other ancestries.
 :::
 
 The clinical value depends on what this refined estimate enables. If genomic foundation model features merely replicate traditional polygenic score information with higher computational cost, the benefit is marginal. But if the embedding captures pathway-level structure that identifies this patient's risk as concentrating in LDL metabolism pathways rather than inflammatory or thrombotic mechanisms, that information might strengthen the indication for statin therapy specifically. Attention-based attributions highlighting which genomic regions contribute most to the elevated risk could inform counseling about heritability and family screening.
@@ -310,3 +450,27 @@ Success for genomic foundation models in clinical medicine will depend less on m
 The representational advances that foundation models provide become valuable only when they flow through validated, equitable, well-integrated clinical tools into decisions that improve patient outcomes. A pathogenicity score with state-of-the-art discrimination adds nothing to care if it reaches clinicians at the wrong moment, in the wrong format, without appropriate uncertainty communication. A risk prediction that performs excellently on average but fails systematically for underrepresented populations may widen health disparities rather than narrow them. Technical capability is necessary but not sufficient for clinical impact.
 
 Rare disease diagnosis illustrates these translation principles in a particularly high-stakes context: where risk prediction addresses population-level stratification, variant interpretation addresses individual patients, with different evidence requirements, clinical workflows, and definitions of success (@sec-ch28-rare-disease).
+
+::: {.callout-note}
+## Chapter Summary
+
+This chapter examined the translation of genomic foundation models into clinical risk prediction tools that can improve patient outcomes.
+
+**Key Concepts:**
+
+- **From PRS to embeddings:** Traditional polygenic scores are scalar summaries with limited mechanistic insight and poor cross-ancestry portability. Foundation models produce rich embeddings that preserve information about which variants matter, how they interact, and why they contribute to risk.
+
+- **Fusion architectures:** Early, intermediate, and late fusion strategies offer different tradeoffs for combining genomic and clinical features. Intermediate fusion typically provides the best balance of modularity, cross-modal learning, and graceful degradation for missing data.
+
+- **Evaluation beyond discrimination:** Clinical deployment requires not just good ranking (discrimination) but also accurate probability estimates (calibration) and demonstrated benefit over existing tools (clinical utility). Each must be evaluated across clinically relevant subgroups.
+
+- **Validation hierarchy:** Evidence strength increases from internal validation through external validation, prospective observational studies, and prospective interventional trials. Most foundation model tools require at minimum robust external validation.
+
+- **Uncertainty quantification:** Distinguishing aleatoric (irreducible) from epistemic (model-limited) uncertainty enables appropriate clinical responses. Selective prediction allows abstention when confidence is low.
+
+- **Equity as design principle:** Bias compounds through the genomic AI pipeline. Equity evaluation must span discrimination, calibration, and clinical utility across ancestry, sex, and socioeconomic subgroups. Technical mitigation alone cannot overcome structural inequities.
+
+- **Workflow integration:** Valid models fail in practice without appropriate integration into clinical workflows, monitoring for drift, and governance structures for oversight and incident response.
+
+**Looking Ahead:** @sec-ch28-rare-disease applies these translation principles to rare disease diagnosis, where the stakes are individual patients rather than population-level risk stratification, and where foundation models offer particularly compelling advantages over traditional approaches.
+:::

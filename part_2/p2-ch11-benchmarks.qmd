@@ -1,13 +1,30 @@
 # Benchmarks and Evaluation {#sec-ch11-benchmarks}
 
+::: {.callout-note}
+## Chapter Overview
+
+**Prerequisites:** This chapter assumes familiarity with basic machine learning concepts including train/test splits, common metrics (accuracy, auROC), and model evaluation (@sec-ch05-representations). Understanding of genomic data types (@sec-ch02-data) and variant effect prediction concepts (@sec-ch04-vep-classical) will help contextualize benchmark tasks.
+
+**Learning Objectives:** After completing this chapter, you should be able to:
+
+1. Navigate the major benchmark suites for protein (*TAPE*, *FLIP*, *ProteinGym*), DNA (*BEND*, *Genomic Benchmarks*), and variant effect prediction (ClinVar, CAGI)
+2. Identify and prevent common leakage pathways in genomic evaluations (homology leakage, label circularity, temporal leakage)
+3. Select appropriate splitting strategies (homology-aware, chromosome-based, ancestry-stratified) based on the generalization question being asked
+4. Choose metrics aligned with deployment objectives, distinguishing discrimination, calibration, and clinical utility
+5. Design ablation studies and baseline comparisons that isolate genuine model contributions
+6. Critically evaluate benchmark claims by identifying proxy-target gaps and systematic biases
+
+**Chapter Structure:** We first survey *what* benchmarks exist across modalities (Sections 1-5), then examine *how* to evaluate properly (Sections 6-11), and finally address the gap between benchmark success and deployment value (Sections 12-13).
+:::
+
 Every **benchmark** measures a proxy. ClinVar pathogenicity labels proxy clinical impact. Area under the receiver operating characteristic curve (auROC) on held-out variants proxies discrimination ability in deployment. Chromatin accessibility predictions proxy regulatory function. The gap between proxy and target varies across benchmarks, across variant types, and across populations. A model achieving state-of-the-art performance on ClinVar may systematically miscalibrate predictions for the rare variants that matter most clinically, because ClinVar's composition does not reflect the distribution of variants clinicians actually encounter. A DNA language model excelling at enhancer classification may have learned GC content rather than regulatory grammar, because the benchmark's negative examples differ from positives in ways that have nothing to do with enhancer function.
 
 Understanding what benchmarks actually measure, and how that differs from what we need to know, is prerequisite to interpreting any leaderboard result. The genomic AI field has accumulated substantial evaluation infrastructure. Dozens of benchmark suites target different modalities: protein structure and function, DNA regulatory elements, variant pathogenicity, gene expression prediction, and more. Hundreds of individual tasks probe specific capabilities. Thousands of models have reported results, creating leaderboards that rank approaches and track progress over time. This infrastructure enables comparison and drives methodological improvement. Yet the relationship between benchmark success and deployment value remains poorly characterized. A **foundation model** that dominates protein benchmarks may fail on the specific protein family relevant to a drug discovery campaign. A variant effect predictor that leads regulatory benchmarks may provide no clinical utility for the variant classes that lack representation in evaluation data.
 
 ::: {#fig-benchmark-landscape}
-![**FIGURE PLACEHOLDER**](../figs/part_5/ch20/01-fig-benchmark-landscape.png)
+![The genomic AI benchmark landscape](../figs/part_2/ch11/01-fig-benchmark-landscape.svg)
 
-[Essential] Navigational map organized as matrix. Rows (modalities): Protein, DNA/Regulatory, Variant Effect, Trait-Level. Columns (benchmark types): Structure, Function, Effect Prediction, Clinical Relevance. Include: *TAPE*, *FLIP*, *ProteinGym*, *Genomic Benchmarks*, *BEND*, ClinVar, CAGI, deep mutational scanning (DMS)/MaveDB, *TraitGym*, *EmbedGEM*. Visual encoding: icons per modality, color intensity for maturity, size for scale. Annotations: typical evaluation progression, prospective vs retrospective benchmarks.
+The genomic AI benchmark landscape organized by task category (rows) and evaluation paradigm (columns). Major benchmarks are positioned according to what they test: variant effect prediction relies on ClinVar, DMS assays, and ProteinGym; regulatory classification uses ENCODE and custom enhancer datasets; expression prediction evaluates against GTEx and tissue-specific measurements; protein structure benchmarks include CASP and AlphaFold evaluations. Evaluation paradigms range from zero-shot (no task-specific training) through linear probing (frozen embeddings) to full fine-tuning. Color intensity indicates benchmark maturity and community adoption. Warning symbols mark benchmarks with known limitations including potential leakage or approaching saturation.
 :::
 
 ## Protein Language Model Benchmarks {#sec-ch11-protein-benchmarks}
@@ -22,6 +39,12 @@ The Tasks Assessing Protein Embeddings (*TAPE*) benchmark, introduced in 2019, e
 
 The benchmark's design reflects deliberate methodological choices. Train, validation, and test splits enforce sequence identity thresholds to prevent homology-based leakage (@sec-ch11-leakage-detection). Evaluation uses simple linear or shallow neural network heads rather than complex task-specific architectures, isolating representation quality from modeling capacity. Standardized preprocessing and data loading eliminate confounds from inconsistent implementation.
 
+::: {.callout-tip}
+## Key Insight: The Transfer Learning Evaluation Framework
+
+*TAPE* established a crucial principle: evaluate representations separately from task-specific modeling. By using simple linear classifiers on top of frozen embeddings, *TAPE* isolates what the pretrained model learned from what a complex head might learn during fine-tuning. This approach became the standard template for foundation model evaluation across genomics, enabling fair comparison between models with different architectures and pretraining objectives.
+:::
+
 *TAPE's* influence extended beyond its specific tasks. The benchmark established norms for protein representation evaluation: systematic coverage of diverse prediction targets, controlled transfer learning protocols, and explicit attention to data splitting. Subsequent benchmarks adopted and extended this framework.
 
 ### FLIP: Function-Linked Protein Benchmark {#sec-ch11-flip}
@@ -34,6 +57,14 @@ The benchmark's value lies in its experimental grounding. Computational structur
 
 *FLIP* also introduced systematic evaluation of different splitting strategies. Random splits, where training and test variants are sampled uniformly from the same protein, represent the easiest setting. Contiguous splits, where training and test variants occupy different sequence regions, test spatial generalization. Modulo splits, which interleave training and test positions along the sequence, provide intermediate difficulty. Performance typically degrades from random to contiguous splits, revealing how much models rely on local sequence context versus genuine functional understanding.
 
+::: {.callout-note}
+## Stop and Think: Splitting Strategy Implications
+
+Before reading on, consider: If a model achieves 0.85 correlation on *FLIP* with random splits but only 0.60 correlation with contiguous splits, what does this reveal about what the model has learned? What kind of information would be available in random splits but not contiguous splits?
+
+*Hint: Think about what information from nearby positions might "leak" across random splits.*
+:::
+
 ### ProteinGym: Comprehensive Variant Effect Evaluation {#sec-ch11-proteingym}
 
 *ProteinGym* has emerged as the most comprehensive benchmark for protein variant effect prediction, compiling 217 deep mutational scanning assays across diverse protein families [@notin_proteingym_2024]. The benchmark's scale enables statistically robust comparison across modeling approaches while its diversity reveals where different methods excel or struggle.
@@ -45,6 +76,14 @@ The primary evaluation metric is Spearman correlation between predicted and expe
 The benchmark reveals systematic patterns in model performance. Protein language models generally outperform conservation-based methods, particularly for variants in regions with sparse evolutionary sampling. Structure-aware models show advantages for variants affecting protein stability or buried residues. Ensemble methods that combine multiple predictors often achieve the highest correlations, suggesting that different approaches capture complementary information.
 
 *ProteinGym's* limitations mirror those of its constituent datasets. Deep mutational scanning experiments are biased toward well-studied proteins amenable to high-throughput screening. Assay-specific selection pressures affect which variants appear deleterious: a variant may strongly affect enzymatic activity while leaving thermostability unchanged, or vice versa. The benchmark measures correlation with specific experimental readouts rather than clinical pathogenicity, which integrates multiple functional consequences in complex ways.
+
+| Benchmark | Tasks | Labels | Splitting | Strengths | Limitations |
+|-----------|-------|--------|-----------|-----------|-------------|
+| *TAPE* | 5 (structure, homology, fitness) | Mixed (experimental + computational) | Homology-aware | Established template; diverse tasks | Some computational labels; limited DMS coverage |
+| *FLIP* | Multiple DMS datasets | Experimental only | Multiple strategies (random, contiguous, modulo) | Experimental grounding; systematic split analysis | Limited to proteins with DMS data |
+| *ProteinGym* | 217 DMS assays | Experimental only | Zero-shot + supervised | Comprehensive scale; diverse protein families | Biased toward well-studied proteins |
+
+: Comparison of major protein benchmarks. Each benchmark makes different trade-offs between scale, label quality, and evaluation rigor. {#tbl-protein-benchmarks}
 
 ### Structure Prediction Benchmarks {#sec-ch11-structure-benchmarks}
 
@@ -68,7 +107,11 @@ These tasks derive from consortia like ENCODE and Roadmap Epigenomics (@sec-ch02
 
 Models such as *DeepSEA*, *Basset*, and *DanQ* established baseline performance on these tasks (@sec-ch06-cnn for architectural details). Their success demonstrated that convolutional networks could learn sequence features predictive of regulatory state without hand-crafted motifs. Modern foundation models still report performance on similar tasks as sanity checks, though these classical benchmarks have significant limitations.
 
-The primary limitation is that binary classification over short windows fails to capture the quantitative, cell-type-specific, and long-range nature of transcriptional regulation. A region may be weakly accessible in some cell types and strongly accessible in others; binary labels collapse this continuous variation. Short windows cannot assess whether models capture distal regulatory interactions that span tens to hundreds of kilobases. Evaluation on curated peak regions may overestimate performance relative to genome-wide prediction, where the vast majority of positions are regulatory "background."
+::: {.callout-warning}
+## Limitation Alert: Binary Classification Over Short Windows
+
+The primary limitation of classical regulatory benchmarks is that binary classification over short windows fails to capture the quantitative, cell-type-specific, and long-range nature of transcriptional regulation. A region may be weakly accessible in some cell types and strongly accessible in others; binary labels collapse this continuous variation. Short windows cannot assess whether models capture distal regulatory interactions that span tens to hundreds of kilobases. Evaluation on curated peak regions may overestimate performance relative to genome-wide prediction, where the vast majority of positions are regulatory "background."
+:::
 
 ### Quantitative Regulatory Prediction {#sec-ch11-quantitative-regulatory}
 
@@ -94,6 +137,18 @@ The benchmark's limitations reflect its design priorities. Focus on classificati
 
 Comparative evaluations using *BEND* reveal that no single model dominates across all tasks. Architecture choices (CNN versus transformer versus state space model), tokenization schemes (single nucleotide versus k-mer versus BPE), and pretraining corpora all influence task-specific performance (@sec-ch05-representations). These patterns inform model selection for specific applications while highlighting the limitations of aggregate benchmarks that obscure such variation.
 
+::: {.callout-note}
+## Knowledge Check: DNA Benchmark Landscape
+
+Test your understanding of the DNA benchmark landscape:
+
+1. What is the key difference between classical regulatory benchmarks (binary classification) and modern quantitative benchmarks?
+2. Why might a model perform well on *Genomic Benchmarks* but poorly on *BEND*?
+3. What does it mean when "no single model dominates across all tasks" in *BEND*?
+
+*Consider how benchmark design choices affect what capabilities are actually being measured.*
+:::
+
 ### Long-Range Benchmarks {#sec-ch11-long-range}
 
 Long-range regulatory interactions, where enhancers tens to hundreds of kilobases from their target genes influence expression, require benchmarks that specifically test extended context modeling. The Long Range Benchmark (*LRB*) evaluates models' ability to integrate information across large genomic distances, with tasks including predicting distal enhancer-promoter interactions, modeling TAD boundary effects, and identifying long-range regulatory dependencies *[Citation Needed]*.
@@ -118,7 +173,11 @@ ClinVar provides the most widely used labels for clinical variant effect predict
 
 ClinVar's value as a benchmark stems from its clinical relevance. Variants classified in ClinVar represent the actual population of variants encountered in clinical testing. Performance on ClinVar directly addresses whether a model can assist variant interpretation workflows. The database's scale (over 2 million variant submissions as of 2024) enables statistically robust evaluation [@landrum_clinvar_2018].
 
-ClinVar's limitations as a benchmark are equally important. Submission heterogeneity means that label quality varies dramatically: expert-curated panels provide high-confidence classifications while single-laboratory submissions may reflect limited evidence. Version sensitivity means that benchmark composition changes over time as new submissions arrive and old classifications are updated. Most consequentially, circularity with computational predictors creates feedback loops: variants may have been classified using the very tools being evaluated, inflating apparent performance. This circularity problem, examined in detail for classical predictors in @sec-ch04-circularity and for its broader confounding implications in @sec-ch22-label-bias, represents one of the most insidious forms of benchmark contamination.
+::: {.callout-warning}
+## Critical Limitation: ClinVar Circularity
+
+ClinVar's limitations as a benchmark are equally important. Submission heterogeneity means that label quality varies dramatically: expert-curated panels provide high-confidence classifications while single-laboratory submissions may reflect limited evidence. Version sensitivity means that benchmark composition changes over time as new submissions arrive and old classifications are updated. Most consequentially, **circularity with computational predictors creates feedback loops**: variants may have been classified using the very tools being evaluated, inflating apparent performance. This circularity problem, examined in detail for classical predictors in @sec-ch04-circularity and for its broader confounding implications in @sec-ch22-label-bias, represents one of the most insidious forms of benchmark contamination.
+:::
 
 Ancestry and gene coverage biases profoundly shape what ClinVar benchmarks measure. Variants from European ancestry individuals and well-studied disease genes are heavily overrepresented. High performance on ClinVar demonstrates accuracy for this specific population rather than robust generalization across human genetic diversity (@sec-ch03-portability). Benchmarks stratified by ancestry reveal substantial performance gaps, with models typically performing worse on variants from underrepresented populations.
 
@@ -130,7 +189,17 @@ The Critical Assessment of Genome Interpretation (CAGI) challenges provide prosp
 
 CAGI challenges cover diverse prediction targets. Some challenges focus on molecular phenotypes: predicting the effect of variants on protein stability, binding affinity, or enzymatic activity. Others target clinical phenotypes: predicting disease risk, drug response, or clinical severity from individual genomes. The diversity of challenges tests whether models generalize across different types of variant effects.
 
-The prospective design provides several advantages over retrospective benchmarks. Predictions must be made before labels are known, eliminating leakage from any source. The timeline forces models to commit to predictions rather than post-hoc optimization. Community participation enables comparison across many approaches under identical conditions.
+::: {.callout-tip}
+## Key Insight: The Value of Prospective Evaluation
+
+The prospective design of CAGI provides several crucial advantages over retrospective benchmarks:
+
+1. **Predictions must be made before labels are known**, eliminating leakage from any source
+2. **The timeline forces models to commit** to predictions rather than post-hoc optimization
+3. **Community participation enables fair comparison** across many approaches under identical conditions
+
+This prospective design represents the gold standard for benchmark validity. When evaluating any retrospective benchmark result, ask: "Would this performance hold up in a CAGI-style prospective evaluation?"
+:::
 
 CAGI's limitation is scale: challenges include hundreds to thousands of variants rather than the millions available in databases like ClinVar. Statistical power to detect small performance differences is correspondingly limited. The challenges also depend on experimental collaborators willing to withhold data until after the prediction deadline, limiting the range of phenotypes that can be assessed.
 
@@ -149,6 +218,16 @@ Non-coding variants require specialized benchmarks because their effects operate
 The challenge for non-coding benchmarks is connecting molecular effects to phenotypic consequences. A variant may alter chromatin accessibility without affecting any gene's expression. A variant may affect expression without influencing disease risk. This gap between molecular and clinical effects complicates interpretation: high performance on MPRA prediction does not necessarily translate to accurate regulatory disease variant interpretation.
 
 Fine-mapped **genome-wide association study** (GWAS) variants provide another benchmark source for non-coding VEP. Statistical **fine-mapping** identifies putatively causal variants within associated loci (@sec-ch03-fine-mapping), and models can be evaluated on their ability to prioritize these variants over nearby non-causal variants. Performance on fine-mapping tasks more directly assesses clinical relevance than molecular phenotype prediction, though fine-mapping itself has substantial uncertainty.
+
+| Benchmark Type | Label Source | Strengths | Limitations | Best For |
+|----------------|--------------|-----------|-------------|----------|
+| ClinVar | Clinical assertions | Clinical relevance; scale | Circularity; ancestry bias; heterogeneous quality | Clinical deployment validation (with caveats) |
+| CAGI | Prospective experiments | No leakage possible; forces commitment | Limited scale; infrequent | Gold-standard validation |
+| DMS/MaveDB | High-throughput assays | Direct experimental measurement | Assay-specific; fitness != pathogenicity | Molecular mechanism understanding |
+| MPRA | Reporter assays | Quantitative; regulatory focus | Reporter != endogenous; context-dependent | Regulatory variant effects |
+| eQTL/GWAS | Statistical associations | Population-level evidence | Correlation != causation; LD confounding | Common variant prioritization |
+
+: Comparison of variant effect prediction benchmark types. Each provides different evidence about model capabilities, with distinct validity trade-offs. {#tbl-vep-benchmarks}
 
 ## Trait and Population-Level Benchmarks {#sec-ch11-trait-benchmarks}
 
@@ -190,6 +269,18 @@ Benchmark labels derive from diverse sources with different properties. Experime
 
 The provenance of benchmark labels determines what success on that benchmark actually means. High performance on experimentally derived labels suggests the model captures the specific molecular process assayed. High performance on clinical labels may indicate genuine clinical utility or may reflect circularity with existing prediction tools. Understanding label provenance is prerequisite to interpreting benchmark results.
 
+::: {.callout-note}
+## Stop and Think: Label Provenance
+
+Consider a variant effect predictor that achieves 0.95 auROC on a ClinVar benchmark. Before interpreting this result, you should ask:
+
+1. What evidence types contributed to the ClinVar classifications? (Functional assays? Segregation? Computational predictions?)
+2. Did any of those computational predictions use similar features to your model?
+3. How would you detect whether circularity inflated your performance?
+
+*These questions apply to any benchmark with aggregated or curated labels.*
+:::
+
 ### Splitting Strategies and Leakage {#sec-ch11-splitting}
 
 How benchmarks partition data into training and test sets determines whether evaluation measures generalization or memorization (@sec-ch11-eval). Random splitting, where examples are assigned to splits uniformly at random, represents the weakest form of evaluation. In genomics, random splits often permit homology-based leakage: training and test sequences may share sufficient similarity that memorization suffices for good performance.
@@ -199,9 +290,9 @@ Homology-aware splitting clusters sequences by similarity before assigning clust
 Chromosome-based splitting holds out entire chromosomes for testing, preventing any position-based leakage within chromosomes. This approach is common for regulatory benchmarks but does not account for homologous sequences on different chromosomes. Temporal splitting reserves recent data for testing, appropriate when benchmarks derive from databases with submission timestamps. Each splitting strategy tests different aspects of generalization; the choice should match the intended deployment scenario.
 
 ::: {#fig-leakage-pathways}
-![**FIGURE PLACEHOLDER**](../figs/part_5/ch20/02-fig-leakage-pathways.png)
+![Data leakage pathways in genomic foundation model evaluation](../figs/part_2/ch11/02-fig-leakage-pathways.svg)
 
-[High] Flow diagram showing data flow with leakage highlighted. Central pipeline: Pretraining → FM → Fine-tuning → Benchmark. Leakage pathways (red): Direct overlap, homology leakage, label circularity, resource sharing, community iteration. Specific examples: *ESM*/UniRef→*ProteinGym*, ClinVar/*CADD* circularity, ENCODE in both. Visual encoding: legitimate flow blue, leakage red dashed.
+Data leakage pathways in genomic foundation model evaluation. The legitimate pipeline (blue) flows from pretraining through fine-tuning to benchmark evaluation. Leakage pathways (red dashed) create spurious performance: direct overlap when pretraining includes benchmark sequences; homology leakage when training and test sets share high-similarity sequences; label circularity when computational predictions influence ground truth labels that later serve as training targets; resource sharing when databases like ENCODE appear in both pretraining and evaluation; and community iteration when the field collectively overfits to standard benchmarks through publication cycles. Each pathway inflates apparent performance without improving genuine biological understanding.
 :::
 
 ### Metric Selection and Aggregation {#sec-ch11-metrics}
@@ -239,11 +330,11 @@ Detecting saturation requires estimating the irreducible error. For benchmarks w
 The response to saturation should be moving to harder benchmarks that still discriminate between methods, developing new benchmarks that capture aspects of performance that existing benchmarks miss, and retiring saturated benchmarks from active leaderboard competition while retaining them as sanity checks.
 
 ::: {#fig-benchmark-saturation layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](../figs/part_5/ch20/03-A-fig-benchmark-saturation.png)
+![Benchmark saturation over time](../figs/part_2/ch11/03-A-fig-benchmark-saturation.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_5/ch20/03-B-fig-benchmark-saturation.png)
+![Benchmark staleness timeline](../figs/part_2/ch11/03-B-fig-benchmark-saturation.svg)
 
-[High] Two-panel figure. Panel A (Saturation curve): Time vs benchmark performance; multiple lines; ceiling line; saturation zone annotation. Panel B (Staleness timeline): Benchmark creation dates above; data collection/annotation dates; current year below; growing gap; examples (ENCODE 2012, ClinVar evolving).
+Benchmark saturation and staleness limit evaluation validity. (A) Performance saturation: multiple model generations converge toward benchmark ceilings where marginal improvements no longer indicate meaningful advances. The saturation zone (shaded) suggests benchmarks have lost discriminative power. (B) Benchmark staleness: growing temporal gaps between benchmark creation and current evaluation. Benchmarks created years ago may reflect outdated annotations, superseded biological understanding, or distributions that no longer match contemporary data. Together, saturation and staleness motivate development of new benchmarks that capture aspects of biological prediction that current standards miss.
 :::
 
 ### Staleness: When Benchmarks Diverge from Practice {#sec-ch11-staleness}
@@ -267,9 +358,9 @@ Mitigating leakage from scale requires explicit documentation of pretraining cor
 High benchmark performance does not guarantee deployment success. Understanding why requires examining the systematic differences between benchmark settings and real-world applications.
 
 ::: {#fig-proxy-target-gap}
-![**FIGURE PLACEHOLDER**](../figs/part_5/ch20/04-fig-proxy-target-gap.png)
+![The proxy-target gap in genomic AI evaluation](../figs/part_2/ch11/04-fig-proxy-target-gap.svg)
 
-[Essential] Conceptual diagram with layers. Left column (What we measure): ClinVar labels, held-out auROC, DMS correlation, expression prediction accuracy. Right column (What we want): True clinical impact, deployment discrimination, actual protein function, regulatory mechanism. Center: Arrows with gap indicators. Gap factors: label quality, distribution shift, metric mismatch, temporal drift. Width of arrows indicates strength of proxy. Key insight: gap not uniform.
+The proxy-target gap in genomic AI evaluation. What benchmarks measure (left) differs systematically from what we ultimately want (right). ClinVar labels proxy for clinical impact but reflect curation biases and circularity with computational predictions. Held-out auROC proxies for deployment discrimination but assumes matched distributions. DMS correlations proxy for protein function but capture only selected perturbations in specific assay conditions. Expression prediction accuracy proxies for regulatory understanding but may reflect technical confounds. Arrow widths indicate proxy strength; gap annotations identify sources of misalignment. The central insight: high benchmark performance does not guarantee deployment success.
 :::
 
 ### Distribution Shift {#sec-ch11-distribution-shift}
@@ -305,9 +396,9 @@ Variant types remain inadequately covered: structural variants, inversions, copy
 Population representation shows profound disparities: non-European ancestry groups remain severely underrepresented (@sec-ch03-portability). The confounding implications of this underrepresentation extend beyond benchmark validity to fairness concerns examined in @sec-ch22-fairness. Performance stratified by ancestry reveals gaps that aggregate metrics conceal. Environmental diversity (lifestyle, exposures, treatments) that shapes phenotypic expression is rarely incorporated.
 
 ::: {#fig-cross-population-performance}
-![**FIGURE PLACEHOLDER**](../figs/part_5/ch20/05-fig-cross-population-performance.png)
+![Cross-population performance reveals systematic failures](../figs/part_2/ch11/05-fig-cross-population-performance.svg)
 
-[High] Grouped bar chart or heatmap. Rows: Different tasks/models. Columns: Ancestry groups (European, African, East Asian, South Asian, Admixed). Values: Performance metrics. Specific comparisons: PGS 40-75% reduction non-European; ClinVar-trained models across ancestries. Annotations: sample sizes, significance, training data representation. Key insight: aggregate conceals systematic failures.
+Cross-population performance reveals systematic failures for underrepresented ancestries. Relative performance (European as reference) degrades substantially for non-European groups across multiple model types: polygenic risk scores (blue), variant classifiers (green), and regulatory predictors (orange). African-ancestry individuals show 40-75% performance reductions despite constituting only 2% of typical training data while representing 16% of the global population. These disparities reflect both training data composition (inset: ~78% European) and fundamental differences in linkage disequilibrium structure across populations. Aggregate benchmark metrics that do not report stratified performance by ancestry conceal these failures.
 :::
 
 Modality coverage remains uneven: long-read sequencing data is scarce in benchmarks despite its advantages for structural variants and phasing (@sec-ch01-longread). Single-cell benchmarks are emerging but remain limited compared to bulk assay benchmarks; the evaluation challenges specific to single-cell models are examined in @sec-ch16-evaluation. Spatial transcriptomics and other emerging modalities have minimal coverage, though multi-omic integration approaches (@sec-ch22-multi-omics) are beginning to address cross-modality assessment.
@@ -323,10 +414,16 @@ Benchmarks structure the incentives of genomic AI development. The specific task
 The landscape surveyed here spans protein benchmarks (*TAPE*, *FLIP*, *ProteinGym*), DNA and regulatory benchmarks (*Genomic Benchmarks*, *BEND*), variant effect benchmarks (ClinVar, CAGI, DMS), and trait-level benchmarks (*TraitGym*, *EmbedGEM*). Across all categories, persistent challenges emerge: saturation that reduces discriminative power as models approach ceiling performance, staleness that erodes validity as benchmarks age, leakage risks that inflate apparent capabilities, and systematic gaps in population diversity, variant type coverage, and clinical endpoint representation.
 
 The benchmark-deployment gap represents perhaps the most consequential limitation. Strong performance on established benchmarks does not guarantee that models will behave reliably when deployed in clinical or research settings with different data distributions, patient populations, or outcome definitions. Proper benchmark use requires attention to experiment design, metric selection, and common pitfalls (@sec-ch11-eval). The confounding issues that plague both benchmark construction and model training receive dedicated treatment in @sec-ch12-confounding, while uncertainty quantification methods (@sec-ch23-uncertainty) provide tools for assessing when benchmark performance translates to deployment confidence. Interpretability approaches (@sec-ch24-interpretability) reveal whether benchmark success reflects genuine biological learning or exploitation of shortcuts. Together with this catalog of what benchmarks exist, these methodological principles provide the critical apparatus for evaluating genomic foundation model claims.
+
 ## Evaluation Methodology {#sec-ch11-evaluation-methodology}
 
 The preceding sections examined *what* benchmarks measure. This section examines *how* to evaluate models properly---the methodological foundations that determine whether benchmark results translate to deployment success.
 
+::: {.callout-warning}
+## Difficulty Warning: Methodological Rigor
+
+The following sections on evaluation methodology require careful attention. The concepts of leakage, confounding, and proper experimental design are subtle but essential. A model developer who masters these principles will avoid the common pitfalls that produce misleading benchmark results. Take time with each section; the investment will pay dividends in every evaluation you conduct.
+:::
 
 CD-HIT: Li W, Godzik A. Cd-hit: a fast program for clustering and comparing large sets of protein or nucleotide sequences. Bioinformatics. 2006;22(13):1658-1659. doi:10.1093/bioinformatics/btl158
 MMseqs2: Steinegger M, Söding J. MMseqs2 enables sensitive protein sequence searching for the analysis of massive data sets. Nature Biotechnology. 2017;35(11):1026-1028. doi:10.1038/nbt.3988
@@ -366,20 +463,24 @@ The standard machine learning recipe calls for randomly partitioning data into t
 Genomic data violates these assumptions at every level. Consider a protein dataset where the goal is to predict stability from sequence. Proteins in the same family share evolutionary history and often similar structures. If a training set includes beta-lactamase variants from *E. coli* and the test set includes beta-lactamase variants from *Klebsiella*, the model may appear to generalize to "new" proteins while actually recognizing sequence patterns it saw during training. The test performance reflects memorization of family-specific features rather than general principles of protein stability.
 
 ::: {#fig-random-splits-fail layout-ncol=3}
-![**FIGURE PLACEHOLDER A**](../figs/part_5/ch21/01-A-fig-random-splits-fail.png)
+![Images: Independent samples](../figs/part_2/ch11/06-A-fig-random-splits-fail.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_5/ch21/01-B-fig-random-splits-fail.png)
+![Proteins: Related by evolution](../figs/part_2/ch11/06-B-fig-random-splits-fail.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_5/ch21/01-C-fig-random-splits-fail.png)
+![Variants: Multiple dependencies](../figs/part_2/ch11/06-C-fig-random-splits-fail.svg)
 
-[Essential] Three-panel comparison. Panel A (Image classification): Grid of images; random assignment works; independent. Panel B (Protein classification): Family tree; random split places related across train/test; 80% identity highlighted; "memorization pathway." Panel C (Variant prediction): Gene diagram with variants; same gene in train/test; family pedigree spanning splits; population structure. Annotations: sequence identity, relatedness, pseudo-replication.
+Why random data splits fail for genomic machine learning. (A) Image classification: samples are truly independent, so random assignment provides valid performance estimates. (B) Protein classification: evolutionary relationships create dependencies; random splits place homologs (>80% identity) across train/test, enabling memorization of shared sequences rather than learning generalizable features. (C) Variant prediction: multiple dependencies compound—same genes across splits, related individuals sharing rare variants, and population structure confounding features and labels. These dependencies require structured splitting strategies that explicitly account for sequence homology, family relatedness, and population structure.
 :::
 
 The problem compounds when sequence identity is high. Two proteins sharing 80% sequence identity will typically have similar structures and functions. A model trained on one and tested on the other is not really being tested on a novel example; it is being asked to interpolate within a region of sequence space it has already explored. Even at 30% sequence identity, the so-called "twilight zone" of homology detection [@rost_twilight_1999], proteins often share structural and functional similarities that can be exploited by sufficiently powerful models.
 
 Variant-level data presents analogous challenges. Variants within the same gene share genomic context, and variants affecting the same protein domain share structural environment. Variants from the same individual share haplotype background. Variants from the same population share allele frequency distributions shaped by demographic history. Each of these relationships creates opportunities for models to learn shortcuts that generalize within the training distribution but fail on genuinely novel examples.
 
-The consequence is that random splits systematically overestimate generalization. A model that achieves 0.90 **area under the receiver operating characteristic curve (auROC)** with random splitting might achieve only 0.75 auROC when evaluated on truly held-out examples, with the gap reflecting how much the model learned about biology versus how much it learned about the structure of the training data. Recognizing this problem is the first step toward solving it.
+::: {.callout-tip}
+## Key Insight: The Independence Assumption
+
+The fundamental issue is that genomic data points are not independent. Random splits assume independence; when this assumption is violated, the test set no longer provides an unbiased estimate of generalization. The consequence is systematic overestimation of performance. A model that achieves 0.90 auROC with random splitting might achieve only 0.75 auROC when evaluated on truly held-out examples, with the gap reflecting how much the model learned about biology versus how much it learned about the structure of the training data.
+:::
 
 
 ## Homology-Aware Splitting {#sec-ch11-homology-aware-splitting}
@@ -387,9 +488,9 @@ The consequence is that random splits systematically overestimate generalization
 The solution to homology-driven leakage is to explicitly account for sequence similarity when constructing data splits. Rather than random assignment, examples are clustered by sequence identity, and entire clusters are assigned to training, validation, or test sets. This ensures that no test example is "too similar" to any training example, forcing the model to demonstrate genuine generalization.
 
 ::: {#fig-homology-splitting}
-![**FIGURE PLACEHOLDER**](../figs/part_5/ch21/02-fig-homology-splitting.png)
+![Homology-aware splitting workflow](../figs/part_2/ch11/07-fig-homology-splitting.svg)
 
-[Essential] Step-by-step workflow. Steps: (1) All sequences; (2) Clustering (CD-HIT/MMseqs2 at threshold); (3) Cluster visualization; (4) Split assignment (entire clusters to train/val/test); (5) Validation (no test >X% identity to training). Code snippets. Comparison table (strategy, strictness, efficiency, use case). Key insight: threshold determines hardness.
+Homology-aware splitting prevents sequence similarity leakage. Step 1: Start with all sequences in the dataset. Step 2: Cluster sequences by similarity using tools like CD-HIT or MMseqs2 at an appropriate threshold (30% identity typical for diverse protein tasks). Step 3: Visualize clusters showing which sequences are related. Step 4: Assign entire clusters to single splits—no cluster is divided across train/validation/test. Step 5: Validate that no test sequence exceeds the identity threshold with any training sequence. The threshold determines evaluation stringency: 30% identity tests distant generalization; 50% tests moderate generalization; higher thresholds permit more similarity but provide weaker generalization evidence.
 :::
 
 ### Clustering Tools and Workflows {#sec-ch11-clustering-tools}
@@ -398,7 +499,21 @@ Two tools dominate homology-aware splitting in practice. CD-HIT clusters sequenc
 
 MMseqs2 offers faster clustering with similar sensitivity, becoming essential for large-scale analyses [@steinegger_mmseqs2_2017]. The tool supports multiple clustering modes and can handle databases with hundreds of millions of sequences. For foundation model pretraining where deduplication affects billions of sequences, MMseqs2 is often the only practical option.
 
-The choice of identity threshold involves trade-offs. Stricter thresholds (lower identity for proteins, higher for nucleotides) create harder generalization tests but may leave insufficient data for training if clusters are small. Permissive thresholds retain more training data but allow more leakage through homologous sequences. For protein function prediction, 30-40% identity thresholds are common; for **variant effect prediction** within genes (@sec-ch17-vep-fm), even stricter gene-family-level splits may be necessary.
+::: {.callout-note}
+## Practical Guidance: Choosing Identity Thresholds
+
+The choice of identity threshold involves trade-offs:
+
+| Threshold | Proteins | Nucleotides | Trade-off |
+|-----------|----------|-------------|-----------|
+| **Stringent** | 30-40% | 80-85% | Hardest test; may lack training data |
+| **Moderate** | 50-70% | 85-90% | Balanced; typical benchmark choice |
+| **Permissive** | 80-90% | 95%+ | Retains data but allows some leakage |
+
+**Rule of thumb for proteins:** Use 40% identity for variant effect prediction, 30% for structure prediction (where even distant homologs share structure).
+
+**Rule of thumb for DNA:** Use 80% for regulatory prediction, but consider gene-family splits instead of sequence identity alone.
+:::
 
 ### Practical Considerations {#sec-ch11-homology-practical}
 
@@ -416,9 +531,9 @@ For genomic (non-protein) sequences, repeat elements and transposable elements c
 Beyond sequence homology, genomic data admits multiple axes along which splits can be constructed. The choice of axis determines what kind of generalization is being tested.
 
 ::: {#fig-splitting-strategies}
-![**FIGURE PLACEHOLDER**](../figs/part_5/ch21/03-fig-splitting-strategies.png)
+![Splitting strategies test different aspects of generalization](../figs/part_2/ch11/08-fig-splitting-strategies.svg)
 
-[High] Matrix: Splitting strategies vs. what they test. Rows: Random, individual-aware, family-aware, chromosome, gene/protein family, cohort/site, temporal, ancestry. Columns: Sequence generalization, individual, population, temporal robustness, cross-site. Cells: ✓, ✗, ~. Schematics for each strategy; performance drop annotations; combinable strategies note.
+Splitting strategies test different aspects of generalization. Each strategy (rows) addresses specific dependencies (columns): random splits address none; individual-aware prevents sample-level leakage; family-aware accounts for relatedness; chromosome holdout tests cross-genome transfer; gene/protein family prevents homology leakage; cohort/site holdout tests deployment robustness; temporal splits simulate prospective use; ancestry stratification reveals population biases. No single strategy addresses all dependencies; rigorous evaluation combines multiple strategies. Stricter splits produce lower but more realistic performance estimates that better predict clinical deployment success.
 :::
 
 ### Splitting by Individual {#sec-ch11-splitting-individual}
@@ -438,6 +553,19 @@ Region-based splits hold out contiguous segments (e.g., 1 Mb windows) distribute
 For variant effect prediction, holding out entire genes or protein families tests whether models learn general principles versus gene-specific patterns. A model that achieves high accuracy by memorizing that *TP53* variants are often pathogenic has not demonstrated understanding of mutational mechanisms. Gene-level splits force models to generalize to genes they have never seen, providing stronger evidence of biological insight.
 
 Family-level splits extend this logic to groups of related genes. Holding out all kinases or all GPCRs tests whether models can generalize across evolutionary families. This is particularly stringent for protein structure and function prediction, where family membership strongly predicts properties.
+
+::: {.callout-note}
+## Stop and Think: Choosing the Right Split
+
+Consider a project to predict whether coding variants cause loss of protein function. You have variants from 1000 genes, with 50-100 variants per gene. Which splitting strategy would you choose, and why?
+
+A. Random split (80/10/10)
+B. Chromosome-based (train on chr1-18, test on chr19-22)
+C. Gene-based (train on 800 genes, test on 200 held-out genes)
+D. Individual-based (split by patient ID)
+
+*Consider: What would each split actually test? Which shortcuts could models exploit?*
+:::
 
 ### Splitting by Experimental Context {#sec-ch11-splitting-experimental-context}
 
@@ -467,6 +595,15 @@ The key limitation of temporal splits is non-stationarity. The distribution of v
 Even with careful splitting, leakage can enter evaluations through multiple pathways. A variant effect predictor that achieves 0.95 auROC on held-out test data may be exploiting information that would never exist for truly novel variants, rendering the performance estimate meaningless for clinical deployment. Understanding common leakage patterns helps practitioners design cleaner evaluations and critically assess published results.
 
 Genomic machine learning faces four distinct leakage types, each creating different pathways for inflated performance: label leakage, feature leakage, temporal leakage, and benchmark leakage. These categories are not mutually exclusive; a single evaluation may suffer from multiple forms simultaneously, with compounding effects on apparent performance.
+
+| Leakage Type | Definition | Example | Detection Strategy |
+|--------------|------------|---------|-------------------|
+| **Label leakage** | Target labels derived from features the model can access | ClinVar classifications informed by SIFT/PolyPhen scores | Compare to baseline using only those features |
+| **Feature leakage** | Input features encode future or target information | Conservation scores for pathogenicity prediction | Ablate suspicious features; measure degradation |
+| **Temporal leakage** | Using future information to predict past | Training on 2023 labels to predict 2020 classifications | Strict temporal splits with date metadata |
+| **Benchmark leakage** | Test set construction influenced by evaluated methods | Benchmark selected proteins with good sequence coverage | Check benchmark construction procedure |
+
+: The four major leakage types in genomic machine learning, with detection strategies for each. {#tbl-leakage-types}
 
 ### Label Leakage {#sec-ch11-label-leakage}
 
@@ -504,6 +641,22 @@ This form of leakage is especially difficult to detect because it operates at th
 
 Several strategies help detect leakage, though none provides definitive proof of its absence. These approaches complement each other; rigorous evaluation employs multiple strategies, recognizing that each catches different leakage pathways while remaining blind to others.
 
+::: {.callout-note}
+## Practical Guidance: Leakage Detection Checklist
+
+When evaluating your own model or reviewing published results, work through these detection strategies:
+
+1. **Baseline analysis:** Does a simple model using only potentially leaky features (allele frequency, conservation) achieve similar performance?
+
+2. **Feature ablation:** Does removing suspicious features cause dramatic performance drops?
+
+3. **Confounder analysis:** Does performance remain after conditioning on potential confounders (gene, ancestry, batch)?
+
+4. **Temporal validation:** Does performance hold on prospectively collected data?
+
+5. **Overlap audit:** Has the overlap between pretraining data and benchmark test sets been documented and checked?
+:::
+
 Simple models that could not plausibly have learned biology provide an essential baseline analysis. If a linear model using only allele frequency achieves 0.80 auROC on a pathogenicity benchmark, and a sophisticated deep model achieves 0.82, the marginal improvement may not justify claims of biological insight. The deep model's performance is bounded by what simple confounders already explain.
 
 Systematic feature ablation removes potentially leaky features and measures performance degradation. If removing conservation scores causes a 20-point drop in auROC, the model was heavily dependent on conservation rather than learning independent predictors. This approach identifies which features drive performance but cannot distinguish legitimate signal from leakage without domain knowledge about what information should be available at prediction time.
@@ -520,9 +673,9 @@ Finally, overlap auditing explicitly checks for sequence or sample overlap betwe
 Metrics quantify model performance but different metrics answer different questions. Choosing appropriate metrics requires clarity about what aspect of performance matters for the intended application.
 
 ::: {#fig-metric-selection}
-![**FIGURE PLACEHOLDER**](../figs/part_5/ch21/04-fig-metric-selection.png)
+![Metric selection flowchart](../figs/part_2/ch11/10-fig-metric-selection.svg)
 
-[High] Decision flowchart. Decision points: Binary vs continuous? Balanced? Ranking vs probability? Clinical decisions? Metric recommendations at each terminal. Metric descriptions: auROC, **area under the precision-recall curve (auPRC)**, **calibration**, net benefit. Warning callouts: "auROC invariant to monotonic transforms"; "High correlation ≠ clinically meaningful."
+Metric selection depends on task characteristics and deployment requirements. Binary classification requires different metrics depending on class balance: auROC provides stable ranking assessment for balanced data, while auPRC is essential for imbalanced settings where auROC can mislead. Probability calibration matters for deployment: a model may rank correctly while producing systematically overconfident probabilities. Clinical decision-making requires metrics like net benefit that account for the costs of different error types. Continuous predictions use correlation and error metrics, but high correlation does not guarantee clinical utility—a model may track relative differences while failing to capture absolute effect sizes. Selecting appropriate metrics prevents optimizing for misleading targets.
 :::
 
 ### Discrimination Metrics {#sec-ch11-discrimination-metrics}
@@ -531,7 +684,16 @@ For binary outcomes (pathogenic versus benign, bound versus unbound, accessible 
 
 The auPRC better reflects performance when positives are rare. For variant pathogenicity prediction, where perhaps 1% of variants are truly pathogenic, a model achieving 0.95 auROC might still have poor precision at useful recall levels. auPRC directly captures the **precision**-**recall** trade-off that matters for applications requiring both high sensitivity and manageable false positive rates.
 
-The distinction between these metrics reflects a mathematical property with practical consequences. auROC is invariant to class imbalance: a model's auROC remains identical whether 1% or 50% of examples are positive, because it measures pairwise ranking between one positive and one negative. This invariance makes auROC valuable for comparing models across datasets with different prevalence. A variant effect predictor can be compared against the same model on a different benchmark without performance differences being confounded by differing positive rates in each benchmark.
+::: {.callout-tip}
+## Key Insight: Why auROC Can Mislead
+
+The distinction between auROC and auPRC reflects a mathematical property with practical consequences:
+
+- **auROC is invariant to class imbalance**: A model's auROC remains identical whether 1% or 50% of examples are positive, because it measures pairwise ranking between one positive and one negative.
+- **This invariance becomes a liability in deployment**: A model with 0.95 auROC applied to a dataset where 0.1% of variants are pathogenic might flag 100 false positives for every true positive at a threshold capturing 80% of positives.
+
+**Rule of thumb:** Report both auROC (for comparison across datasets) and auPRC (for realistic assessment of deployment utility). When in doubt, auPRC is the more honest metric for imbalanced problems.
+:::
 
 This same invariance becomes a liability when evaluating for deployment. A model with 0.95 auROC applied to a dataset where 0.1% of variants are pathogenic might flag 100 false positives for every true pathogenic variant at a threshold capturing 80% of positives. The auROC provides no warning of this behavior because it treats a positive-to-negative pair the same regardless of how many negatives exist. For any application where false positives carry real costs (manual curation, clinical follow-up, unnecessary patient anxiety), auROC presents an optimistic picture that collapses upon deployment.
 
@@ -571,6 +733,16 @@ For sequence-based predictions, **position weight matrices (PWMs)** and k-mer lo
 For variant effect prediction, simple features like allele frequency, conservation scores, and amino acid properties provide baselines that any sophisticated model should substantially exceed. *CADD* (@sec-ch04-cadd) serves as a well-calibrated baseline that combines many hand-crafted features; outperforming *CADD* demonstrates that learning provides value beyond feature engineering.
 
 For foundation models, comparisons should include both randomly initialized models of similar architecture (to isolate the value of pretraining) and simpler pretrained models (to isolate the value of scale or architectural innovations). Claiming that pretraining helps requires demonstrating improvement over training from scratch on the same downstream data.
+
+::: {.callout-note}
+## Knowledge Check: Baseline Selection
+
+For each scenario, identify the appropriate baseline:
+
+1. A new DNA language model claims to predict TF binding sites better than previous approaches. What baselines should it beat?
+2. A variant pathogenicity predictor claims state-of-the-art performance. What would a "straw man" comparison look like, and what would a rigorous comparison include?
+3. A foundation model claims that pretraining improves downstream performance. What comparison demonstrates the value of pretraining specifically?
+:::
 
 ### Historical Baselines and Progress Tracking {#sec-ch11-historical-baselines}
 
@@ -638,13 +810,13 @@ Deep learning models are sensitive to initialization and optimization stochastic
 Genomic foundation models (@sec-ch13-fm-principles) admit multiple evaluation paradigms, each testing different aspects of learned representations.
 
 ::: {#fig-fm-evaluation-paradigms layout-ncol=3}
-![**FIGURE PLACEHOLDER A**](../figs/part_5/ch21/05-A-fig-fm-evaluation-paradigms.png)
+![Zero-shot evaluation](../figs/part_2/ch11/09-A-fig-fm-evaluation-paradigms.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_5/ch21/05-B-fig-fm-evaluation-paradigms.png)
+![Linear probing](../figs/part_2/ch11/09-B-fig-fm-evaluation-paradigms.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_5/ch21/05-C-fig-fm-evaluation-paradigms.png)
+![Fine-tuning](../figs/part_2/ch11/09-C-fig-fm-evaluation-paradigms.svg)
 
-[Enhancing] Three-column comparison. Column 1 (Zero-shot): Frozen model → direct prediction; tests alignment; *ESM-1v* log-likelihood example; pros/cons. Column 2 (Linear Probing): Frozen → embeddings → linear classifier; tests linear accessibility; isolates representation quality; pros/cons. Column 3 (Fine-tuning): Gradients → adaptation; tests total potential; best performance but conflates representation with adaptation. Bottom: Data efficiency curve; "Pretraining value = gap at low data."
+Foundation model evaluation paradigms test different capabilities. (A) Zero-shot: frozen model predictions test whether pretraining captured task-relevant patterns; requires no task data but limited to aligned tasks. (B) Linear probing: frozen embeddings with learned linear classifier test whether task features are linearly accessible in representations; requires minimal data and isolates representation quality. (C) Fine-tuning: full gradient updates test total potential but conflate representation and adaptation; achieves best performance but requires substantial data. The value of pretraining is best measured by the gap between few-shot and from-scratch performance—large gaps indicate that pretraining provides transferable features beyond what task data alone would support.
 :::
 
 ### Zero-Shot Evaluation {#sec-ch11-zero-shot-eval}
@@ -701,6 +873,46 @@ Calibration can often be improved post-hoc without sacrificing discrimination. T
 
 When designing or evaluating a genomic model assessment, working through a systematic checklist helps identify gaps and potential problems. The following questions organize this review, though the specific considerations will vary by application.
 
+::: {.callout-note}
+## Practical Guidance: Evaluation Design Checklist
+
+Use this checklist when designing an evaluation or reviewing published work:
+
+**Data Splitting**
+
+- [ ] Have individuals, genomic regions, gene families, and ancestries been appropriately separated?
+- [ ] Has homology-aware clustering been applied with appropriate identity thresholds?
+- [ ] Is there any plausible pathway for leakage or circularity?
+
+**Baselines**
+
+- [ ] Are comparisons made against the best available alternatives?
+- [ ] Do non-deep-learning baselines establish floors that justify complexity?
+- [ ] Does improvement over baselines warrant additional computational costs?
+
+**Metrics**
+
+- [ ] Are multiple metrics reported (discrimination, calibration, ranking)?
+- [ ] Are confidence intervals provided?
+- [ ] Are subgroup-stratified metrics reported for clinically relevant populations?
+
+**Ablations**
+
+- [ ] Have systematic ablations demonstrated which design choices drive performance?
+- [ ] Is performance robust across hyperparameter ranges and random seeds?
+
+**Statistical Rigor**
+
+- [ ] Are significance tests applied with appropriate correction?
+- [ ] Are effect sizes reported alongside p-values?
+
+**For Foundation Models**
+
+- [ ] Is performance reported across zero-shot, probing, and fine-tuning regimes?
+- [ ] Do data efficiency curves reveal where pretraining provides value?
+- [ ] Has transfer been tested across diverse tasks?
+:::
+
 First, consider the level of decision the model is intended to support. A model intended for molecular prediction faces different evaluation requirements than one designed for variant prioritization, patient risk stratification, or clinical action. Metrics should align with the actual decision context: enrichment metrics suit variant ranking, while net benefit matters for clinical decisions.
 
 Second, examine whether data splits adequately prevent leakage. Are individuals, genomic regions, gene families, and ancestries appropriately separated? Has homology-aware clustering been applied with appropriate identity thresholds? Is there any plausible pathway for leakage or circularity through shared labels, features, or distributional overlap?
@@ -727,3 +939,32 @@ The question is never simply "what is the auROC?" but rather "what has been demo
 The shortcuts that accelerate research in other machine learning domains produce misleading conclusions when applied to genomic data. Random train-test splits ignore homology that creates pseudo-replication. Single-metric comparisons miss failure modes in clinically relevant subgroups. Significance tests without effect sizes conflate statistical and practical importance. Benchmark evaluation without temporal awareness allows indirect leakage through shared community resources. Homology, population structure, batch effects, and label circularity create countless opportunities for self-deception, and genomic data exhibit all of these in abundance.
 
 Rigorous evaluation requires sustained effort at every stage, from experimental design through statistical analysis. Confounding and leakage (@sec-ch12-confounding) examines how **population stratification**, batch effects, and ascertainment bias produce results that evaporate under deployment, with specific attention to ancestry-stratified evaluation in @sec-ch22-ancestry-confounding and batch effect detection in @sec-ch22-batch-effects. Uncertainty quantification (@sec-ch23-uncertainty) extends calibration assessment to epistemic versus aleatoric uncertainty (@sec-ch23-types) and selective prediction (@sec-ch23-selective-prediction). Interpretability (@sec-ch24-interpretability) addresses whether models have learned genuine biology or exploited confounded patterns, with attribution methods in @sec-ch24-attribution providing specific diagnostic tools. For clinical applications specifically, risk prediction frameworks (@sec-ch27-clinical-risk) develop evaluation approaches tailored to decision-making, where net benefit and decision curves supplement discrimination metrics. Together, these perspectives provide the critical apparatus for engaging with genomic foundation model claims.
+
+::: {.callout-note}
+## Chapter Summary
+
+This chapter covered the dual challenge of benchmarks (what to measure) and evaluation methodology (how to measure it properly).
+
+**Key Takeaways on Benchmarks:**
+
+- **Protein benchmarks** (*TAPE*, *FLIP*, *ProteinGym*) are most mature, with standardized transfer learning evaluation and homology-aware splitting
+- **DNA/regulatory benchmarks** (*Genomic Benchmarks*, *BEND*) are rapidly developing but face challenges with quantitative targets and long-range dependencies
+- **Variant effect benchmarks** span molecular (DMS) to clinical (ClinVar) levels, with critical circularity concerns for database-derived labels
+- **Trait-level benchmarks** (*TraitGym*, *EmbedGEM*) assess whether foundation models add value beyond classical PGS methods
+
+**Key Takeaways on Methodology:**
+
+- **Random splits fail** for genomic data because sequences share homology, individuals share ancestry, and samples share batch effects
+- **Homology-aware splitting** (CD-HIT/MMseqs2 at appropriate thresholds) prevents the most common leakage pathway
+- **Four leakage types** (label, feature, temporal, benchmark) require different detection strategies
+- **Metric selection** must match deployment objectives: auPRC for imbalanced data, calibration for probability estimates, ranking metrics for prioritization
+- **Strong baselines** and proper ablations distinguish genuine advances from benchmark-specific tuning
+
+**Looking Ahead:** The next chapter (@sec-ch12-confounding) examines how confounding and leakage structures beyond homology create spurious performance claims, including population stratification, batch effects, and ascertainment bias.
+
+**Connections:**
+
+- Apply evaluation principles when assessing claims in later chapters on foundation models (@sec-ch13-fm-principles through @sec-ch17-vep-fm)
+- Calibration concepts developed here connect to uncertainty quantification (@sec-ch23-uncertainty)
+- Clinical utility metrics introduced here are expanded for clinical risk prediction (@sec-ch27-clinical-risk)
+:::

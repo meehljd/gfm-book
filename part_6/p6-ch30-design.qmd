@@ -1,5 +1,28 @@
 # Sequence Design {#sec-ch30-design}
 
+::: {.callout-note}
+## Chapter Overview
+
+**Prerequisites:** Before reading this chapter, you should be familiar with:
+
+- Sequence representations and embedding spaces (@sec-ch05-representations)
+- Masked language modeling and pretraining objectives (@sec-ch08-pretraining)
+- Protein language models and structure prediction (@sec-ch15-protein-lm)
+- Uncertainty quantification and out-of-distribution detection (@sec-ch23-uncertainty)
+- Benchmark evaluation principles (@sec-ch11-benchmarks)
+
+**Learning Objectives:** After completing this chapter, you will be able to:
+
+1. Explain why sequence design inverts the prediction problem and the mathematical frameworks that formalize design objectives
+2. Compare sequence-based and structure-aware approaches to protein design
+3. Apply design principles to regulatory elements, mRNA therapeutics, and antibodies
+4. Evaluate generative models using novelty, validity, diversity, and functionality metrics
+5. Design closed-loop experimental workflows that integrate foundation model predictions with high-throughput validation
+6. Identify characteristic failure modes of model-guided design and mitigation strategies
+
+**Key Insight:** The transition from *prediction* to *design* fundamentally changes the role of foundation models. Prediction asks "what does this sequence do?" while design asks "what sequence achieves this function?" This inversion exposes limitations invisible during prediction: models must remain accurate in regions of sequence space far from their training data.
+:::
+
 Genomic foundation models predict the consequences of sequence variation with increasing accuracy. A protein language model estimates whether a missense variant disrupts function. A regulatory model forecasts how a promoter mutation alters expression across cell types. These predictive capabilities represent genuine advances. Yet prediction alone cannot create a therapeutic protein that nature never evolved, design a promoter that drives expression only in diseased tissue, or engineer an mRNA vaccine against a novel pathogen. The gap between reading genomes and writing them defines one of the central challenges in translational biology: we can characterize biological sequences with unprecedented resolution, but translating that understanding into designed molecules remains largely empirical, expensive, and slow.
 
 This asymmetry reflects a fundamental mismatch between what evolution produced and what therapeutics require. Evolution optimizes for reproductive fitness over geological timescales, producing sequences that satisfied survival constraints under ancestral conditions. Therapeutic applications demand sequences optimized for entirely different objectives: binding a specific epitope with high affinity, expressing at therapeutic levels in a particular tissue, or evading immune recognition while retaining function. The sequences we need often lie far from natural evolutionary trajectories, in regions of sequence space that foundation models have never observed during training. Navigating this *terra incognita* requires not just accurate oracles that score candidate sequences, but principled strategies for proposing, testing, and refining designs where model reliability is uncertain.
@@ -9,17 +32,34 @@ Foundation models have begun to address this challenge by providing both generat
 
 ## Design Formalism {#sec-ch30-formalism}
 
+::: {.callout-tip}
+## Stop and Think
+
+Before reading about the design formalism, consider: if you wanted to find a protein sequence with a specific binding property, why couldn't you simply enumerate all possible sequences and pick the best one? What makes this approach impractical, and what alternative strategies might you consider?
+:::
+
 **Sequence design** inverts the standard prediction problem. Where prediction maps from sequence to function (given sequence $x$, estimate property $f(x)$), design maps from desired function to sequence (given target property $y^\star$, find sequence $x^\star$ such that $f(x^\star) \approx y^\star$). This inversion is computationally challenging because biological sequence spaces are astronomically large. A 200-residue protein admits $20^{200}$ possible sequences, vastly exceeding the number of atoms in the observable universe. Even a modest 500-base-pair regulatory element spans $4^{500}$ possibilities. Exhaustive enumeration is impossible; intelligent search strategies are essential.
 
 ::: {#fig-design-formalism layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](../figs/part_6/ch28/01-A-fig-design-formalism.png)
+![Forward prediction: sequence to function](../figs/part_6/ch30/01-A-fig-design-formalism.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_6/ch28/01-B-fig-design-formalism.png)
+![Inverse design: function to sequence through vast fitness landscape](../figs/part_6/ch30/01-B-fig-design-formalism.svg)
 
-[Essential] Two-direction diagram. Top (Prediction Problem): Input sequence $x \rightarrow$ model $f_\theta \rightarrow$ property $f(x)$; arrow left to right; "Given sequence, estimate function." Bottom (Design Problem): Desired property $y^\* \rightarrow$ search for $x^\*$ such that $f(x^\*) \approx y^\* \rightarrow$ optimized sequence $x^\*$; arrow right to left; "Given function, find sequence." Design formulations: Optimization $\arg\max_x f_\theta(x)$, conditional generation $x \sim p_\theta(x \mid y)$, constrained optimization. Scale callout: $20^{200}$ protein possibilities, $4^{500}$ regulatory; "Exhaustive impossible—intelligent search required." FM roles: Generative prior, differentiable oracle, embedding function.
+Sequence design problem formulation. (A) Forward versus inverse problems: foundation models excel at forward prediction (sequence → function) but inverse design (function → sequence) requires search through vast combinatorial spaces. (B) Design space landscape: sequence fitness varies across 4^N (DNA) or 20^N (protein) possibilities. Optimization must navigate between local optima traps toward global optimum—a fundamentally harder problem than prediction.
 :::
 
 The design objective can take several mathematical forms depending on the application. **Optimization problems** seek sequences that maximize (or minimize) a scalar objective, such as finding $x^\star = \arg\max_x f_\theta(x)$ where $f_\theta$ might represent predicted binding affinity, expression level, or stability. **Conditional generation** problems sample sequences from a distribution conditioned on desired properties, drawing $x \sim p_\theta(x \mid y)$ where $y$ specifies structural constraints, functional requirements, or context. **Constrained optimization** problems combine objective maximization with explicit constraints, seeking $x^\star = \arg\max_x f_\theta(x)$ subject to $c(x) \leq 0$, where constraints $c$ might enforce GC content limits, avoid restriction sites, or maintain similarity to natural sequences.
+
+The table below summarizes how these different formulations apply to common design scenarios.
+
+| Design Formulation | Mathematical Form | Typical Applications | Key Challenge |
+|---|---|---|---|
+| **Optimization** | $x^\star = \arg\max_x f_\theta(x)$ | Maximize binding affinity, expression level | May find adversarial sequences |
+| **Conditional generation** | $x \sim p_\theta(x \mid y)$ | Generate sequences with specified structure | Requires well-calibrated conditional models |
+| **Constrained optimization** | $\max_x f_\theta(x)$ s.t. $c(x) \leq 0$ | Optimize function while avoiding restriction sites | Constraint satisfaction adds complexity |
+| **Multi-objective** | Pareto frontier of $(f_1, f_2, \ldots)$ | Balance affinity, stability, immunogenicity | No single optimal solution exists |
+
+: Design problem formulations and their applications. {#tbl-design-formulations}
 
 Foundation models contribute to design through multiple mechanisms. As **generative priors**, they assign higher probability to sequences resembling natural biology, regularizing optimization toward plausible regions of sequence space. As **differentiable oracles**, they enable gradient-based optimization where sequence modifications are guided by gradients of predicted properties. As **embedding functions**, they map discrete sequences into continuous spaces where interpolation and optimization become tractable (@sec-ch05-embeddings for representation fundamentals; @sec-ch08-mlm-learning for how pretraining shapes these spaces). The challenge lies in searching enormous combinatorial spaces while remaining within regimes where these model-based estimates remain reliable.
 
@@ -29,11 +69,11 @@ Foundation models contribute to design through multiple mechanisms. As **generat
 Protein language models trained on evolutionary sequence databases (@sec-ch15-protein-lm) have emerged as effective tools for protein design, providing both generative sampling capabilities and fitness estimation for candidate sequences. The masked language modeling objectives that enable fitness estimation are detailed in @sec-ch08-mlm. The success of these approaches stems from a key insight: evolution has conducted billions of years of experiments on protein sequence space, and models trained on the surviving sequences implicitly encode constraints on what works.
 
 ::: {#fig-protein-design layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](../figs/part_6/ch28/02-A-fig-protein-design.png)
+![Directed evolution in silico: mutate, score with FM, select, iterate](../figs/part_6/ch30/02-A-fig-protein-design.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_6/ch28/02-B-fig-protein-design.png)
+![Generative design: sample from FM-learned priors conditioned on properties](../figs/part_6/ch30/02-B-fig-protein-design.svg)
 
-[Essential] Two-pathway comparison. Pathway A (Sequence-Based): Protein LM (ProGen, *ESM*-2) → generate by sampling/infilling → screen for properties → iterate with fitness-guided selection. Pathway B (Structure-Aware): RFdiffusion generates backbone from noise (conditioned on interface, topology, symmetry) → ProteinMPNN/*ESM*-IF inverse folds → multiple sequences, select by expression/stability. Comparison table: Prior knowledge, novel structures, compute, examples. Multi-objective: Binding, stability, expression, immunogenicity; Pareto frontier; FM oracles for each.
+Protein design approaches. (A) Directed evolution in silico: generate variants through mutation, score with foundation models, select top performers, iterate. Achieves in seconds what lab evolution requires weeks for. (B) Generative design: sample from generative models (ProGen, ProteinMPNN, RFdiffusion) trained on evolutionary data, conditioning on desired properties. Foundation models contribute as fitness predictors (A) or as generative priors (B)—both leverage representations learned from millions of natural sequences.
 :::
 
 ### Sequence Generation from Language Model Priors {#sec-ch30-plm-generation}
@@ -48,15 +88,46 @@ The key advantage of protein language model-based design lies in data efficiency
 
 ### Structure-Aware Design with Diffusion Models {#sec-ch30-structure-diffusion}
 
+::: {.callout-warning}
+## Conceptual Difficulty
+
+Structure-aware design involves understanding how diffusion models operate in three-dimensional coordinate space. If you are unfamiliar with diffusion models (progressive denoising from noise to signal), you may wish to review the diffusion model literature or focus on the conceptual workflow rather than mathematical details.
+:::
+
 Structure-aware design addresses a fundamental limitation of sequence-only approaches: proteins function through three-dimensional structures, and sequence optimization without structural guidance may produce sequences that fail to fold correctly. The advent of accurate structure prediction (*AlphaFold2*, *ESMFold*; @sec-ch15-esmfold; @sec-ch15-esmfold) enables new design paradigms that jointly consider sequence and structure.
 
 *RFdiffusion* exemplifies this approach by generating protein backbones through a **diffusion** process in three-dimensional coordinate space [@watson_rfdiffusion_2023]. Starting from random noise, the model iteratively denoises toward plausible backbone geometries, conditioned on design specifications such as target binding interfaces, desired topology, or symmetric assembly requirements. The resulting backbones represent novel structures not observed in nature but predicted to be physically realizable.
 
 Converting designed backbones to sequences requires **inverse folding** models that predict amino acid sequences likely to adopt a given structure. *ProteinMPNN* and *ESM-IF* operate on this principle, taking backbone coordinates as input and outputting probability distributions over sequences predicted to fold onto that backbone[@dauparas_proteinmpnn_2022; @hsu_learning_2022]. *ESM-IF* leverages the representations learned by *ESM-2* to condition sequence generation on structural constraints, connecting the inverse folding task directly to the protein language model paradigm. The model can generate thousands of candidate sequences for a single backbone, enabling selection based on additional criteria such as expression likelihood or immunogenicity.
 
+::: {.callout-important}
+## Key Insight: Structure as Intermediate Representation
+
+The power of structure-aware design lies in using 3D structure as an *intermediate representation* between function and sequence. Rather than searching directly in the astronomically large space of sequences, design first identifies a structure that would achieve the desired function, then finds sequences that fold to that structure. This factorization dramatically constrains the search space.
+:::
+
 This two-stage pipeline (structure diffusion followed by inverse folding) has proven effective for creating novel proteins. Designed binders targeting challenging therapeutic targets, *de novo* enzymes with specified active site geometries, and symmetric protein assemblies with precise nanoscale dimensions have all been realized experimentally. *[Citation Needed]* The key insight is that structure provides a useful intermediate representation: rather than searching directly in the vast space of sequences, design proceeds through the more constrained space of physically realizable structures.
 
+The table below compares sequence-based and structure-aware approaches across key design considerations.
+
+| Consideration | Sequence-Based (PLM) | Structure-Aware (Diffusion + Inverse Folding) |
+|---|---|---|
+| **Prior knowledge required** | Protein family or starting sequence | Target structure or binding interface |
+| **Novel structure capability** | Limited to known folds | Can generate entirely new topologies |
+| **Computational cost** | Lower (sequence operations only) | Higher (3D coordinate generation) |
+| **Output diversity** | Depends on sampling temperature | High (many sequences per backbone) |
+| **Experimental success rate** | 30-50% express | 30-70% express; 5-30% functional |
+| **Best applications** | Variant optimization, library design | *De novo* binders, enzymes, assemblies |
+
+: Comparison of protein design paradigms. {#tbl-protein-design-comparison}
+
 ### Functional Conditioning and Multi-Objective Optimization {#sec-ch30-multi-objective}
+
+::: {.callout-tip}
+## Knowledge Check
+
+Consider a therapeutic antibody design project. List at least four properties you would need to optimize simultaneously, and explain why optimizing for just one property (e.g., binding affinity) would be insufficient for a successful therapeutic.
+:::
 
 Real therapeutic or industrial applications rarely optimize a single objective. A designed enzyme must not only be catalytically active but also stable at process temperatures, expressible in the production host, and resistant to proteolytic degradation. A therapeutic antibody must bind its target with high affinity while avoiding off-target interactions, maintaining solubility, and minimizing immunogenicity. These competing demands create multi-objective optimization problems where no single sequence optimizes all criteria simultaneously.
 
@@ -70,12 +141,18 @@ Foundation models contribute to multi-objective design in three ways. Generative
 Genomic foundation models trained on chromatin accessibility, transcription factor binding, and gene expression data enable design of synthetic regulatory elements with specified activity profiles. Unlike protein design where the sequence-to-function mapping operates through three-dimensional structure, regulatory design must account for the genomic and cellular context in which elements function. The functional genomics resources described in @sec-ch02-functional provide training data for these models, while the interpretability methods from @sec-ch24-attribution inform design strategies by revealing which sequence features drive predictions.
 
 ::: {#fig-regulatory-design}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch28/03-fig-regulatory-design.png)
+![Regulatory element design workflow with DNA foundation models](../figs/part_6/ch30/03-fig-regulatory-design.svg)
 
-[High] Optimization workflow. Steps: (1) Initial sequence (natural promoter or random); (2) FM prediction (Enformer → activity across cell types); (3) Gradient computation (∂expression/∂position); (4) Sequence update (relaxed representation, gradient step, project back); (5) Multi-objective balancing (maximize in target tissue, minimize off-target, respect constraints). Output examples: Cell-type-specific enhancer, inducible promoter, compact element for gene therapy. Generative alternative sidebar: Diffusion or autoregressive; condition on cell type labels; diverse library for screening. Key insight: Same saliency for interpretation runs in reverse for design.
+Regulatory element design with DNA foundation models. Design targets span synthetic promoters (expression level), tissue-specific enhancers (spatial control), 5' UTRs (translation efficiency), and CRISPR guides (specificity). Workflow combines sequence generation methods (gradient optimization, evolutionary search, generative sampling) with FM-based scoring. Validation through MPRA enables testing thousands of designs in parallel, creating feedback loops that improve both designs and models.
 :::
 
 ### Promoter and Enhancer Engineering {#sec-ch30-promoter-enhancer}
+
+::: {.callout-tip}
+## Stop and Think
+
+Gradient-based design for regulatory elements uses the same saliency computations described in @sec-ch24-gradient for interpretation, but runs them "in reverse." Before reading on, consider: if a saliency map tells you which nucleotides most affect the current prediction, how might you use this information to *increase* predicted expression in a target cell type?
+:::
 
 Massively parallel reporter assays (MPRAs) have generated training data for models that predict expression levels from promoter and enhancer sequences (@sec-ch02-dms; @sec-ch02-dms) [@deboer_deciphering_2020]. These models learn sequence determinants of regulatory activity, including transcription factor binding sites, spacing constraints between elements, and context-dependent interactions. Once trained, the same models serve as oracles for design: by evaluating expression predictions across millions of candidate sequences, optimization algorithms can identify synthetic regulatory elements with desired properties.
 
@@ -99,14 +176,20 @@ Design of splicing modulators requires particular attention to off-target effect
 The clinical success of mRNA vaccines has intensified interest in systematic approaches to mRNA sequence design. Unlike protein or regulatory element design where the primary challenge is achieving desired function, mRNA design must simultaneously optimize translation efficiency, molecular stability, immune evasion, and manufacturing tractability. Foundation models increasingly contribute to each of these objectives.
 
 ::: {#fig-mrna-optimization}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch28/04-fig-mrna-optimization.png)
+![mRNA therapeutic design optimization](../figs/part_6/ch30/04-fig-mrna-optimization.svg)
 
-[High] Multi-objective radar chart. Objectives (axes): Translation efficiency, mRNA stability, immunogenicity (minimize), manufacturing tractability, codon optimality. Design elements per objective: Translation (ribosome profiling models, avoid rare codons); Stability (UTR engineering, secondary structure); Immunogenicity (avoid TLR motifs, modified nucleosides); Manufacturing (GC content, complexity, yield). Trade-off visualization: Two candidate designs on same radar; Design A (high translation, moderate stability); Design B (balanced). UTR design callout: 5' affects ribosome recruitment, 3' affects stability/localization. Key insight: Codon synonymy creates vast space; FMs navigate tradeoffs.
+mRNA therapeutic design optimization. Each region requires distinct considerations: 5' UTR affects translation initiation (Kozak sequence, structure minimization); coding sequence requires codon optimization balanced against GC content and immunogenicity; 3' UTR controls stability and localization; chemical modifications (N1-methylpseudouridine) reduce immunogenicity. Foundation models predict translation efficiency, stability, and immunogenic potential. COVID-19 mRNA vaccines demonstrate successful integration of these design principles.
 :::
 
 ### Codon Optimization Principles {#sec-ch30-codon-optimization}
 
 The genetic code is degenerate: sixty-one sense codons encode twenty amino acids, meaning that any protein sequence can be encoded by many different mRNA sequences. These synonymous sequences differ in translation efficiency, mRNA stability, and immunogenicity despite producing identical proteins. **Codon optimization** exploits this redundancy to improve therapeutic mRNA performance.
+
+::: {.callout-important}
+## Key Insight: The Hidden Complexity of Synonymous Mutations
+
+Although synonymous codons produce identical proteins, the mRNA sequences differ in ways that profoundly affect therapeutic outcomes. A single synonymous mutation can alter: (1) translation speed at that position, (2) mRNA secondary structure affecting stability, (3) recognition by innate immune sensors, and (4) ribosome pausing that affects co-translational folding. Codon optimization must navigate all these effects simultaneously.
+:::
 
 Traditional codon optimization relied on codon adaptation indices derived from highly expressed genes in target organisms. Codons frequently used in abundant proteins were assumed to be efficiently translated, leading to optimization strategies that maximize use of preferred codons. This approach oversimplifies the complex relationship between codon choice and expression. Translation elongation rate varies with codon-anticodon interactions, tRNA abundance, mRNA secondary structure, and ribosome queuing effects. Local codon context matters: rare codons following abundant ones may be translated efficiently, while runs of preferred codons can cause ribosome collisions.
 
@@ -132,9 +215,9 @@ The immunostimulatory potential of mRNA depends on sequence features including G
 Antibody engineering represents one of the most commercially significant applications of computational protein design. The modular architecture of antibodies (framework regions that maintain structural integrity surrounding hypervariable **complementarity-determining regions (CDRs)** that mediate antigen recognition) creates a well-defined design problem: optimize CDR sequences to achieve desired binding properties while maintaining framework stability and developability.
 
 ::: {#fig-antibody-design}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch28/05-fig-antibody-design.png)
+![Antibody design with foundation models](../figs/part_6/ch30/05-fig-antibody-design.svg)
 
-[High] Antibody-specific pipeline. Starting point: Initial antibody from immunization/display; known antigen target. Steps: (1) Initial characterization (affinity, specificity, stability, developability); (2) CDR optimization (FM-guided mutations; sample CDR variants; maintain binding, improve developability); (3) Framework engineering (humanization, stability, expression); (4) Lead optimization (multi-objective: affinity, specificity, half-life, immunogenicity, manufacturability). FM contributions: Embedding space identifies similar therapeutic antibodies; structure prediction without experimental structure; developability prediction (aggregation, viscosity); liability scanning (post-translational modification, deamidation).
+Antibody design with foundation models. The antibody structure comprises framework regions (scaffold) and CDR loops (binding interface). Design challenges include affinity maturation (improve binding), specificity (reduce off-targets), humanization (reduce immunogenicity), and developability (ensure manufacturability). Foundation models contribute binding affinity prediction from sequence, humanness scoring against human antibody corpus, and biophysical property prediction (aggregation, stability). Iterative design cycles alternate between FM-guided mutagenesis and experimental validation.
 :::
 
 ### CDR Optimization and Humanization {#sec-ch30-cdr-optimization}
@@ -159,18 +242,35 @@ The rapid development of mRNA vaccines against SARS-CoV-2 demonstrated the poten
 Foundation models achieve their full potential when integrated into iterative experimental workflows. The **design-build-test-learn (DBTL)** paradigm treats computational predictions as hypotheses to be tested experimentally, with results feeding back to improve both the designed molecules and the models that guide design. This closed-loop approach connects to the lab-in-the-loop concepts introduced in @sec-ch27-lab-in-loop.
 
 ::: {#fig-dbtl-cycle}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch28/06-fig-dbtl-cycle.png)
+![Design-Build-Test-Learn cycle for sequence engineering](../figs/part_6/ch30/06-fig-dbtl-cycle.svg)
 
-[Essential] Circular workflow. Stages: (1) DESIGN (FM proposes candidates; generative sampling or optimization; active learning selects informative candidates); (2) BUILD (automated synthesis, library construction, QC); (3) TEST (high-throughput assays: binding, activity, stability, expression; multiplexed: DMS, MPRA, Perturb-seq); (4) LEARN (results update model; improve predictions; identify failure modes). Active learning integration: Acquisition function balances exploitation/exploration; maximize expected information gain. Safety and oversight callouts: Safety filters at design; human review before build; stopping criteria. Key insight: FMs achieve full potential in iterative cycles; each round improves molecules and predictions.
+Design-Build-Test-Learn cycle for sequence engineering. **Design**: foundation models score candidates and optimization identifies promising sequences. **Build**: DNA synthesis and assembly create physical constructs. **Test**: functional assays measure actual performance. **Learn**: results update models for next cycle. Each iteration improves both designed sequences and predictive accuracy. Bottleneck reality: Build and Test phases (days to weeks) limit iteration speed despite fast computational Design (~seconds). Closed-loop automation increasingly accelerates the cycle.
 :::
 
 ### Active Learning for Efficient Exploration {#sec-ch30-active-learning}
+
+::: {.callout-tip}
+## Stop and Think
+
+Imagine you have a budget to experimentally test 100 protein variants, but your foundation model proposes 10,000 candidates. Some candidates have high predicted fitness but the model is uncertain; others have moderate predictions but high confidence. How would you decide which 100 to test? What are the tradeoffs between "exploiting" high predictions versus "exploring" uncertain regions?
+:::
 
 Experimental validation remains the bottleneck in biological design. Even high-throughput assays can test at most thousands to millions of variants, a tiny fraction of possible sequences. **Active learning** strategies select which experiments to perform by balancing two competing objectives: exploiting current model predictions to test sequences likely to succeed, and exploring regions of uncertainty to gather data that will improve the model.
 
 **Bayesian optimization** provides a principled framework for this trade-off. A surrogate model (typically a Gaussian process or ensemble neural network) approximates the sequence-to-fitness mapping. **Acquisition functions** such as expected improvement or upper confidence bound combine predicted function values with uncertainty estimates to select informative test sequences. After each experimental round, the surrogate model is updated with new data, and the process repeats.
 
 Foundation models enhance active learning by providing informative priors and features. Rather than learning sequence-to-function mappings from scratch, surrogate models can operate on protein language model embeddings that capture evolutionary relationships and structural constraints. These embeddings provide a meaningful notion of sequence similarity even before any task-specific data is available, accelerating the early rounds of optimization when labeled data is scarce.
+
+::: {.callout-note}
+## Practical Guidance: Choosing an Active Learning Strategy
+
+Consider these factors when selecting an active learning approach:
+
+- **When labeled data is scarce:** Use foundation model embeddings as features for your surrogate model; they provide useful priors even with few labels
+- **When experimental costs are high:** Favor acquisition functions that emphasize exploration (e.g., upper confidence bound with high exploration parameter) to maximize information gain per experiment
+- **When you need quick wins:** Favor exploitation-heavy strategies that test sequences with highest predicted fitness, accepting that you may miss better optima
+- **When model reliability is uncertain:** Use ensemble disagreement as an additional uncertainty measure; avoid testing sequences where all models confidently agree (may be exploiting shared artifacts)
+:::
 
 ### High-Throughput Experimentation Integration {#sec-ch30-high-throughput}
 
@@ -192,6 +292,19 @@ Designed sequences must pass through multiple validation stages before achieving
 Success rates decline at each stage of this hierarchy. Computationally promising designs often fail to express or fold correctly. Designs that succeed *in vitro* may lose activity in cellular contexts due to incorrect localization, unexpected degradation, or off-target interactions. Molecules that perform well in model organisms may fail in human clinical trials due to immunogenicity, toxicity, or pharmacokinetic limitations. The attrition from computational design to clinical success remains substantial, motivating continued improvement in predictive accuracy and earlier identification of failure modes.
 
 ### Characteristic Failure Patterns {#sec-ch30-failure-patterns}
+
+::: {.callout-warning}
+## Common Pitfalls
+
+Practitioners should be aware of these systematic failure modes in model-guided design:
+
+1. **Distribution shift:** Optimization pushes sequences into regions where model predictions are unreliable
+2. **Mode collapse:** Generative models produce variants of training sequences rather than genuinely novel molecules
+3. **Reward hacking:** Optimization exploits model artifacts rather than genuine sequence-function relationships
+4. **Missing properties:** Models cannot predict properties absent from training data (e.g., aggregation under manufacturing conditions)
+
+Mitigation strategies include ensemble methods, novelty filters, uncertainty quantification, and experimental validation in application-relevant conditions.
+:::
 
 Foundation model-guided design exhibits systematic failure modes that practitioners must recognize and mitigate. **Distribution shift** occurs when optimization pushes sequences into regions where model predictions are unreliable (@sec-ch11-distribution-shift for detailed discussion of distribution shift in genomic models; @sec-ch23-ood-detection for detection methods). A model trained on natural proteins may produce confident but incorrect predictions for designed sequences that lie far from training data. Regularization toward natural sequence statistics and uncertainty quantification help identify when designs have strayed beyond reliable prediction regimes.
 
@@ -223,6 +336,17 @@ Current foundation models do not provide straightforward paths to bioweapon deve
 
 Design algorithms must navigate vast sequence spaces to identify candidates with desired properties. Several algorithmic paradigms have proven effective, each with characteristic strengths and limitations.
 
+::: {.callout-tip}
+## Knowledge Check
+
+For each of the following design scenarios, which algorithmic approach would you choose and why?
+
+1. Optimizing a single position in an enzyme active site for catalytic activity
+2. Designing a library of 10,000 diverse antibody variants for experimental screening
+3. Finding a sequence that maximizes binding affinity while maintaining stability above a threshold
+4. Exploring the fitness landscape around a well-characterized parental protein
+:::
+
 **Gradient-based optimization** treats foundation models as differentiable functions and computes gradients of objectives with respect to input sequence representations. Because sequences are discrete while gradients are continuous, optimization operates on relaxed representations (probability distributions over nucleotides or amino acids) that are projected back to discrete sequences for evaluation. This approach efficiently navigates high-dimensional spaces but can produce adversarial sequences that exploit model weaknesses rather than achieving genuine biological function.
 
 **Evolutionary algorithms** maintain populations of candidate sequences that undergo mutation, recombination, and selection based on fitness scores from foundation model oracles or experimental assays. This approach naturally handles discrete sequence spaces and can maintain diversity to avoid local optima. Multi-objective evolutionary algorithms explicitly construct Pareto frontiers of solutions trading off competing objectives.
@@ -230,6 +354,17 @@ Design algorithms must navigate vast sequence spaces to identify candidates with
 Bayesian optimization models the sequence-to-fitness mapping with a probabilistic surrogate (typically a Gaussian process or ensemble neural network) and uses acquisition functions to balance exploration of uncertain regions with exploitation of predicted optima. This approach is particularly effective when experimental evaluations are expensive and each design round must be carefully chosen.
 
 **Monte Carlo methods** sample sequences from distributions defined by foundation model likelihoods, optionally biased toward high-scoring regions through importance weighting or Markov chain Monte Carlo. These approaches naturally integrate foundation model priors with task-specific objectives and can generate diverse candidate sets for experimental screening.
+
+The table below summarizes when to use each algorithmic approach.
+
+| Algorithm | Best When | Strengths | Limitations |
+|---|---|---|---|
+| **Gradient-based** | Differentiable oracle available; continuous relaxation feasible | Fast; high-dimensional | Adversarial solutions; local optima |
+| **Evolutionary** | Need diversity; multi-objective | Handles discrete spaces; Pareto fronts | Slower convergence |
+| **Bayesian optimization** | Expensive experiments; need uncertainty | Sample-efficient; principled exploration | Scales poorly to high dimensions |
+| **Monte Carlo** | Foundation model provides good prior; want library diversity | Natural uncertainty; diverse outputs | May be slow to find optima |
+
+: Algorithm selection guide for sequence design. {#tbl-algorithm-selection}
 
 The choice among algorithmic approaches depends on the specific design problem, available computational resources, and experimental constraints. Many practical pipelines combine multiple approaches: generative sampling to produce initial candidate pools, gradient-based refinement to optimize specific objectives, and active learning to select informative experimental tests.
 
@@ -249,9 +384,9 @@ Assessing whether a generative model produces useful designs requires metrics th
 **Validity** assesses whether generated sequences satisfy basic biological constraints. For proteins, validity might require that sequences are predicted to fold (using *AlphaFold2* or *ESMFold* structure prediction), contain no forbidden amino acid patterns, and have appropriate length distributions. For regulatory elements, validity might require balanced GC content, absence of restriction enzyme sites, and compatibility with delivery vectors. Validity filters identify obvious failures before expensive experimental testing, but passing validity checks does not guarantee function.
 
 ::: {#fig-generative-evaluation}
-![**FIGURE PLACEHOLDER**](../figs/part_6/ch28/07-fig-generative-evaluation.png)
+![Evaluating generative sequence models](../figs/part_6/ch30/07-fig-generative-evaluation.svg)
 
-[High] Multi-dimensional evaluation framework. Panel A (Metric Landscape): Four axes radar chart showing novelty, validity, diversity, functionality; ideal designs occupy high values on all axes; trade-offs between axes. Panel B (Computational Metrics): Perplexity histogram comparing generated vs natural sequences; novelty: nearest-neighbor distance distribution; diversity: pairwise distance matrix within generated set. Panel C (Validity Pipeline): Generated sequence → structure prediction (folds? pLDDT > 70?) → constraint check (GC content, length, forbidden motifs) → passes to experimental testing. Panel D (Experimental Validation): Funnel showing attrition: 1000 generated → 500 valid → 100 synthesized → 30 express → 5 functional; success rate varies by task and model quality.
+Evaluating generative sequence models. Four dimensions: **Diversity** measures variation among outputs (avoiding mode collapse); **Novelty** assesses distance from training examples (avoiding memorization); **Validity** checks structural correctness (foldable, proper chemistry); **Function** measures experimental performance (ultimate test). These metrics can trade off—highly novel sequences may have lower validity. Critical insight: computational metrics provide useful screening, but only experimental validation confirms that generated sequences actually function as intended.
 :::
 
 ### Functional Assessment {#sec-ch30-functional-assessment}
@@ -284,3 +419,31 @@ Sequence design represents the frontier where foundation models transition from 
 The validation bottleneck persists as perhaps the most fundamental limitation. Computational design can propose candidates faster than experiments can test them, creating pressure to improve both predictive accuracy (reducing false positives that waste experimental resources) and experimental throughput (enabling more designs to be evaluated). Automated laboratories, standardized assay platforms, and improved experimental design methods all contribute to accelerating the design-build-test-learn cycle, but the gap between computational proposal and experimental validation remains substantial.
 
 The transition from prediction to design amplifies both the potential benefits and the risks of these technologies. A model that predicts protein function enables analysis; a model that designs protein function enables creation. Ensuring that designed biology serves human flourishing while minimizing potential harms requires not just technical advances but thoughtful governance, inclusive deliberation about applications, and ongoing attention to safety. These broader considerations connect sequence design to regulatory, ethical, and societal dimensions (@sec-ch26-regulatory), where the technical capabilities developed throughout genomic AI meet the human systems that will determine how they are used.
+
+::: {.callout-note}
+## Chapter Summary
+
+This chapter explored how foundation models enable the transition from predicting sequence function to designing sequences with desired properties.
+
+**Key Topics Covered:**
+
+- **Design formalism:** Mathematical frameworks (optimization, conditional generation, constrained optimization) that formalize the inverse prediction problem
+- **Protein design:** Sequence-based approaches using language models and structure-aware methods using diffusion and inverse folding
+- **Regulatory design:** Engineering promoters, enhancers, and splicing elements using gradient-based optimization and generative models
+- **mRNA optimization:** Balancing translation efficiency, stability, and immunogenicity through codon and UTR design
+- **Closed-loop workflows:** Design-Build-Test-Learn cycles with active learning for efficient experimental exploration
+- **Validation and failure modes:** Understanding distribution shift, mode collapse, and reward hacking in model-guided design
+- **Generative evaluation:** Metrics for novelty, validity, diversity, and functionality in design assessment
+
+**Key Takeaways:**
+
+1. Design inverts prediction: instead of asking "what does this sequence do?", we ask "what sequence achieves this function?" This inversion exposes model limitations invisible during prediction.
+2. Structure provides a powerful intermediate representation for protein design, constraining the search from astronomical sequence space to physically realizable geometries.
+3. Closed-loop DBTL cycles are essential because computational design generates hypotheses, not certainties. Models improve through iterative experimental feedback.
+
+**Looking Ahead:**
+
+- @sec-ch31-frontiers explores emerging directions in genomic AI, including many-body effects, temporal dynamics, and increasingly integrated models
+- The biosecurity considerations raised here connect to the broader governance discussion in @sec-ch26-regulatory
+- The lab-in-the-loop concepts from @sec-ch27-lab-in-loop provide the experimental infrastructure for scaling design campaigns
+:::

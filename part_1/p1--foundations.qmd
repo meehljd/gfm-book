@@ -1,7 +1,40 @@
 # Part I: Data Foundations {.unnumbered}
 
+::: {.callout-note}
+## Part I at a Glance
+
+**Central question:** What data and pre-deep-learning tools form the backdrop that any genomic foundation model must respect, integrate with, or improve upon?
+
+**Prerequisites:** Basic familiarity with molecular biology (DNA, genes, proteins) and statistics (regression, hypothesis testing). No deep learning background required.
+
+| Chapter | Topic | Key Concepts |
+|---------|-------|--------------|
+| @sec-ch01-ngs | Sequencing & Variant Calling | NGS technologies, alignment, variant calling pipelines, error sources |
+| @sec-ch02-data | Data Resources | Reference genomes, gnomAD, ClinVar, ENCODE, GTEx, UK Biobank |
+| @sec-ch03-gwas | GWAS & Polygenic Scores | Association studies, LD, fine-mapping, PGS construction, portability |
+| @sec-ch04-vep-classical | Classical VEP | SIFT, PolyPhen, CADD, feature engineering, circularity problems |
+
+**After completing Part I, you will understand:**
+
+- How sequencing data becomes the variants that models predict
+- What public resources exist and their systematic biases
+- What classical methods achieved and where they hit limitations
+- Why data quality and provenance matter for everything that follows
+:::
+
 Every genomic foundation model inherits the biases of its training data. A model trained on European-dominated biobanks will miscalibrate predictions for other populations. A variant effect predictor learning from ClinVar inherits whatever ascertainment biases clinical laboratories embedded in those classifications. A regulatory model trained on ENCODE cell lines may fail on primary tissues absent from the training compendium. Foundation models do not transcend their data sources; they compress and reflect them. Understanding what data resources contain, what they systematically miss, and what assumptions they encode is prerequisite to understanding what foundation models can and cannot accomplish.
 
 Genomic foundation models inherit both the power and the limitations of the technologies that generate their training data. Next-generation sequencing and variant calling (@sec-ch01-ngs) transform biological samples into the VCF files that serve as inputs to nearly all downstream analysis. Understanding these technologies reveals their remarkable power alongside their systematic blind spots: reference bias, missing structural variants, and error patterns that propagate into every model trained on their outputs.
 
 Public resources underpin modern computational genomics, serving simultaneously as training data, evaluation benchmarks, and sources of prior biological knowledge (@sec-ch02-data): reference genomes, population variation catalogs like gnomAD, functional genomics consortia such as ENCODE and Roadmap Epigenomics, and biobank-scale cohorts including the UK Biobank and GTEx. Genome-wide association studies and polygenic scores (@sec-ch03-gwas) provide both baselines against which deep models are measured and conceptual frameworks that inform their design. Pre-deep-learning variant effect prediction through CADD and related methods (@sec-ch04-vep-classical) establishes what careful feature engineering achieved and where its limitations motivated the learned representations developed in subsequent parts.
+
+::: {.callout-tip}
+## Connections to Later Parts
+
+The data foundations established here recur throughout the book:
+
+- **Part II** builds architectures that learn from the sequence data described in @sec-ch01-ngs
+- **Part III** foundation models are evaluated against the benchmarks derived from @sec-ch02-data resources
+- **Part V** (@sec-ch11-benchmarks, @sec-ch12-confounding) examines how biases introduced here propagate through evaluation
+- **Part VI** clinical applications must navigate the ancestry and ascertainment biases documented in @sec-ch03-gwas
+:::

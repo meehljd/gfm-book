@@ -1,19 +1,33 @@
 # Multi-Omics Integration {#sec-ch22-multi-omics}
 
+::: {.callout-note}
+## Chapter Overview
+
+**Prerequisites:** This chapter builds on foundation model concepts from @sec-ch13-fm-principles, single-cell integration methods from @sec-ch19-single-cell, and assumes familiarity with attention mechanisms (@sec-ch07-attention) and transfer learning (@sec-ch09-transfer). Understanding of GWAS (@sec-ch03-gwas) and expression quantitative trait loci helps but is not essential.
+
+**Learning Objectives:** After completing this chapter, you should be able to:
+
+1. Explain why naive concatenation of multi-omics features often degrades prediction performance
+2. Compare and contrast early, late, and intermediate fusion strategies, selecting the appropriate approach for different data characteristics
+3. Design multi-omics integration pipelines that handle missing modalities gracefully
+4. Trace information flow from genetic variants through molecular layers to clinical phenotypes
+5. Identify when multi-omics integration will likely help versus hurt prediction accuracy
+:::
+
 Combining data types should improve prediction. If genomic variants provide one signal and transcriptomic measurements provide another, their combination ought to be more informative than either alone. This intuition, while reasonable, proves frequently wrong in practice. Naive concatenation of multi-omics features often degrades performance relative to single-modality models. Noise from uninformative features overwhelms signal from informative ones. Batch effects between modalities create spurious correlations that models exploit. The curse of dimensionality intensifies when features from multiple assays are stacked without principled integration. The paradox is real: more data can mean worse predictions, and understanding why is prerequisite to making multi-omics integration work.
 
 Each molecular layer captures part of the biological story but not all of it. Genomic variants identify predisposition; transcriptomics reveals which genes respond; proteomics shows which proteins change; metabolomics measures downstream biochemical consequences. A patient with a *BRCA1* variant may show altered DNA repair gene expression, deficient homologous recombination protein activity, and characteristic metabolic signatures. No single layer provides the complete picture. Effective integration traces this causal cascade from genetic variation through molecular intermediates to clinical phenotype, distinguishing primary effects from downstream consequences and noise from signal.
 
-::: {#fig-integration-paradox}
-![**FIGURE PLACEHOLDER A**](../figs/part_4/ch19/01-A-fig-integration-paradox.png)
+::: {#fig-integration-paradox layout-ncol=2}
+![Different modalities capture different biological aspects](../figs/part_4/ch22/01-A-fig-integration-paradox.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_4/ch19/01-B-fig-integration-paradox.png)
+![More modalities can mean worse predictions](../figs/part_4/ch22/01-B-fig-integration-paradox.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_4/ch19/01-C-fig-integration-paradox.png)
+![When integration helps: complementary information](../figs/part_4/ch22/01-C-fig-integration-paradox.svg)
 
-![**FIGURE PLACEHOLDER D**](../figs/part_4/ch19/01-D-fig-integration-paradox.png)
+![When integration hurts: redundancy and batch effects](../figs/part_4/ch22/01-D-fig-integration-paradox.svg)
 
-[Essential] Central tension. Panel A (The Promise): Different modalities capture different aspects; genomics (heritable potential), transcriptomics (current state), proteomics (functional complement), metabolomics (downstream biochemistry); integration should improve prediction. Panel B (The Paradox): More modalities = more features = more overfitting risk; missing data compounds problem; when does integration actually help? Panel C (When Integration Helps): Complementary information (genomics + expression for complex traits), cross-modality validation, mechanistic interpretation. Panel D (When Integration Hurts): Redundant information, batch effects across modalities, sample size dilution.
+The multi-omics integration paradox. (A) Promise: each modality captures different aspects of biology—genomics shows heritable potential, transcriptomics reveals current state, proteomics measures functional complement, metabolomics tracks downstream biochemistry. (B) Paradox: more modalities can mean worse predictions when noise overwhelms signal. (C) When integration helps: complementary information, cross-modality validation, and mechanistic interpretation. (D) When integration hurts: redundant features, batch effects, and sample size reduction from incomplete overlap.
 :::
 
 The integration strategy matters as much as the data itself. **Early fusion** concatenates features before modeling, **intermediate fusion** learns joint representations across modalities, and **late fusion** combines predictions from modality-specific models. Each approach carries distinct tradeoffs for different applications and data characteristics. Multi-omics foundation models attempt to learn unified representations across genomics, transcriptomics, proteomics, and other modalities simultaneously, while clinical integration extends further still, combining electronic health records, imaging data, and molecular measurements for patient-level prediction. The practical challenges are substantial: missing modalities when not every patient has every assay, batch effects from technical variation between measurement platforms, and a persistent gap between multi-omics potential and deployment reality.
@@ -24,6 +38,12 @@ The integration strategy matters as much as the data itself. **Early fusion** co
 Each molecular layer tells an incomplete story. DNA sequence is static; it encodes potential but not state. A variant's presence says nothing about whether the gene is expressed, whether the protein is active, or whether the pathway is perturbed. Transcriptomic data captures expression state but misses post-transcriptional regulation, protein modifications, and metabolic flux. Proteomic measurements reveal protein abundance but not necessarily activity or localization. Methylation profiles indicate epigenetic state but require expression data to understand functional consequences.
 
 The incompleteness becomes concrete when modeling complex traits. Genome-wide association studies explain perhaps 10-20% of **heritability** for most common diseases through identified variants *[Citation Needed]*. Adding **expression quantitative trait loci (eQTLs)** improves **fine-mapping** by suggesting which variants affect gene expression (see @sec-ch03-fine-mapping), but many causal mechanisms operate through splicing, translation, or post-translational modification rather than expression level. **Single-cell RNA sequencing** reveals cellular heterogeneity invisible to bulk measurements, but the same cell cannot simultaneously undergo RNA-seq and **assay for transposase-accessible chromatin sequencing (ATAC-seq)**, forcing computational integration across modalities measured in different cells (see @sec-ch19-single-cell for approaches to this challenge).
+
+::: {.callout-tip}
+## Stop and Think
+
+Before reading further, consider a patient with type 2 diabetes. Which molecular layers would you expect to provide independent information about their disease state? Would genomic variants, gene expression, protein levels, and metabolite concentrations all be equally informative, or would some layers be redundant with others?
+:::
 
 Consider the challenge of predicting drug response. Germline variants in drug-metabolizing enzymes explain some inter-individual variation (see @sec-ch02-pharmacogenomics), but tumor-specific somatic mutations, expression programs, and microenvironment all influence therapeutic efficacy. A genomics-only model sees the inherited component; a transcriptomics-only model sees the current expression state; neither captures the full picture. Multi-omics integration promises to bridge these gaps by learning representations that span molecular layers.
 
@@ -39,13 +59,13 @@ These challenges motivate careful consideration of integration strategy. The que
 Three broad strategies have emerged for combining multi-omics data, each with distinct strengths and limitations.
 
 ::: {#fig-fusion-strategies layout-ncol=3}
-![**FIGURE PLACEHOLDER A**](../figs/part_4/ch19/02-A-fig-fusion-strategies.png)
+![Early fusion: concatenate features before modeling](../figs/part_4/ch22/02-A-fig-fusion-strategies.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_4/ch19/02-B-fig-fusion-strategies.png)
+![Late fusion: combine model predictions](../figs/part_4/ch22/02-B-fig-fusion-strategies.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_4/ch19/02-C-fig-fusion-strategies.png)
+![Intermediate fusion: shared latent space](../figs/part_4/ch22/02-C-fig-fusion-strategies.svg)
 
-[Essential] Strategy comparison. Panel A (Early Fusion): All features concatenated → single model; pros: can learn cross-modal interactions; cons: curse of dimensionality, requires complete data. Panel B (Late Fusion): Separate models → predictions combined; pros: handles missing, modality-specific architectures; cons: cannot learn feature interactions. Panel C (Intermediate Fusion): Modality-specific encoders → shared latent space → task head; pros: flexibility + robustness; cons: alignment complexity. Summary table comparing cross-modal interactions, missing data handling, compute.
+Multi-omics fusion strategies. (A) Early fusion: concatenate features before modeling. Enables cross-modal interaction learning but requires complete data and suffers from dimensionality. (B) Late fusion: train separate models and combine predictions. Handles missing modalities but cannot learn feature interactions. (C) Intermediate fusion: modality-specific encoders project to shared latent space. Balances interaction learning with missing data robustness.
 :::
 
 
@@ -81,11 +101,23 @@ Late fusion works well when modalities genuinely provide independent signals, wh
 
 ### Intermediate Fusion {#sec-ch22-intermediate-fusion}
 
+::: {.callout-tip}
+## Stop and Think
+
+You are designing a multi-omics model that must work even when patients are missing some data types. Early fusion requires all modalities; late fusion cannot capture cross-modal interactions. What properties would an ideal intermediate approach have? How might you encode different modalities into a common representation while preserving modality-specific structure?
+:::
+
 Intermediate fusion learns modality-specific encoders that map each data type into a shared latent space, then operates on the aligned representations for downstream tasks. This approach combines the flexibility of early fusion with the robustness of late fusion.
 
 Each modality has its own encoder architecture tailored to its characteristics. A variational autoencoder might encode single-cell expression data, handling sparsity and dropout noise. A convolutional network might process methylation profiles along chromosomal coordinates. A **graph neural network** might encode protein interaction data (see @sec-ch18-gnn-fundamentals). These diverse architectures share nothing except their output dimensionality: all encoders produce **embeddings** in a common latent space.
 
 Alignment between modalities is encouraged through multiple mechanisms. Reconstruction losses require each encoder's latent representation to support decoding back to the original features, ensuring that the embeddings retain modality-specific information. Contrastive terms pull together representations of the same biological entity across modalities: the expression embedding for a cell should be similar to the ATAC-seq embedding for the same cell. Graph constraints enforce consistency with known biological relationships: genes connected in interaction networks should have similar embeddings.
+
+::: {.callout-important}
+## Key Insight
+
+The power of intermediate fusion lies in the shared latent space. By forcing different modalities to project into the same embedding space, the model learns that expression patterns and chromatin accessibility in the same cell should map to nearby points. This alignment enables cross-modal reasoning: a classifier operating on this shared space can effectively learn from both modalities simultaneously, even when predicting for samples with only one modality available.
+:::
 
 The shared latent space enables cross-modal reasoning. A classifier operating on the shared space can learn interactions between genomic and transcriptomic features, since both are present in the same representation. Transfer becomes possible: a model trained on expression data can be applied to samples with only ATAC-seq by encoding through the ATAC-seq encoder into the shared space.
 
@@ -97,16 +129,24 @@ Intermediate fusion dominates modern multi-omics deep learning because it balanc
 
 The approach is not without limitations. The quality of alignment depends heavily on the training objective and the availability of paired samples where multiple modalities are measured in the same biological entity. Without sufficient anchoring, the shared space may fail to capture true biological correspondence. Hyperparameter choices for balancing reconstruction against alignment losses require careful tuning.
 
+| Strategy | Cross-Modal Interactions | Missing Data Handling | Computational Cost | Best When |
+|----------|-------------------------|----------------------|-------------------|-----------|
+| Early Fusion | Can learn arbitrary interactions | Poor: requires complete data | Low to moderate | Large samples, complete data, focused features |
+| Late Fusion | None: predictions combined only | Excellent: uses available modalities | Low: independent models | Independent signals, variable coverage, interpretability needed |
+| Intermediate Fusion | Learns in shared space | Good: graceful degradation | High: alignment training | Coupled modalities, transfer learning, paired training data |
+
+: Comparison of multi-omics fusion strategies. The choice depends on data characteristics, sample sizes, and downstream application requirements. {#tbl-fusion-comparison}
+
 ::: {#fig-intermediate-fusion layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](../figs/part_4/ch19/03-A-fig-intermediate-fusion.png)
+![Modality-specific encoders tailored to each data type](../figs/part_4/ch22/03-A-fig-intermediate-fusion.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_4/ch19/03-B-fig-intermediate-fusion.png)
+![Shared latent space with alignment losses](../figs/part_4/ch22/03-B-fig-intermediate-fusion.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_4/ch19/03-C-fig-intermediate-fusion.png)
+![Downstream task heads operate on shared representation](../figs/part_4/ch22/03-C-fig-intermediate-fusion.svg)
 
-![**FIGURE PLACEHOLDER D**](../figs/part_4/ch19/03-D-fig-intermediate-fusion.png)
+![Missing modalities enable graceful degradation](../figs/part_4/ch22/03-D-fig-intermediate-fusion.svg)
 
-[High] Detailed architecture. Panel A (Modality-Specific Encoders): Expression VAE, methylation CNN, proteomics MLP; each tailored to modality. Panel B (Shared Latent Space): All encoders output same dimensionality; alignment via reconstruction loss, contrastive loss, graph constraints. Panel C (Downstream Task Head): Classifier/regressor on latent representation; can use partial representations. Panel D (Missing Modality Handling): Complete sample all encoders fire; partial sample available encoders only; graceful degradation.
+Intermediate fusion architecture in detail. (A) Modality-specific encoders tailored to each data type: VAE for expression handling sparsity, CNN for methylation along genomic coordinates, MLP for proteomics. (B) Shared latent space: encoders produce embeddings aligned through reconstruction loss, contrastive terms, and biological graph constraints. (C) Downstream task heads operate on the shared representation, enabling cross-modal reasoning. (D) Missing modality handling: partial samples use only available encoders, enabling graceful degradation rather than sample exclusion.
 :::
 
 
@@ -134,6 +174,16 @@ The generative model structure enables imputation of missing modalities. Given R
 
 These Bayesian deep generative models exemplify intermediate fusion with principled uncertainty quantification. The posterior distributions over latent variables capture not just point estimates but confidence in the learned representations (see @sec-ch23-uncertainty for uncertainty quantification methods). This property becomes important for clinical applications where prediction uncertainty must inform decision-making.
 
+::: {.callout-tip}
+## Knowledge Check
+
+Consider *totalVI* integrating RNA and protein measurements from single-cell CITE-seq data. The model learns a joint latent space where cells map based on both modalities.
+
+1. Why does *totalVI* use different likelihood functions for RNA (zero-inflated negative binomial) versus protein (negative binomial)?
+2. If you had a new sample with only RNA measurements, how would the model generate a protein abundance prediction?
+3. What advantage does the Bayesian approach provide over simply training a regression from RNA to protein?
+:::
+
 
 ### Contrastive Multi-Modal Learning {#sec-ch22-contrastive}
 
@@ -159,7 +209,11 @@ Integrating EHR with genomics poses distinct challenges. The data types differ f
 
 Foundation models for EHR data learn representations from the longitudinal event sequences. These models, often based on transformer architectures that process sequences of medical codes (see @sec-ch07-attention), capture temporal dependencies and co-occurrence patterns in clinical trajectories. The resulting patient embeddings encode disease state and prognosis in a form amenable to integration with molecular data.
 
-Combining EHR embeddings with genomic features requires handling the different temporal scales. Genetic variants are constant throughout life; EHR observations accumulate over years. The integration must determine which clinical observations are relevant to a given molecular measurement, accounting for the time between sample collection and clinical events.
+::: {.callout-important}
+## Key Insight
+
+Combining EHR embeddings with genomic features requires handling different temporal scales. Genetic variants are constant throughout life; EHR observations accumulate over years. The integration must determine which clinical observations are relevant to a given molecular measurement, accounting for the time between sample collection and clinical events. A patient's genomic risk for a disease does not change, but their clinical trajectory unfolds over time, and the relevance of past clinical events depends on when the molecular sample was collected.
+:::
 
 
 ### Imaging Integration {#sec-ch22-imaging}
@@ -183,16 +237,27 @@ Missing modalities are common in clinical settings. Not all patients have genomi
 
 The clinical deployment path for such models requires validation on external cohorts, prospective evaluation, and regulatory clearance. These practical considerations, addressed in @sec-ch27-clinical-risk, shape model development from the outset. A model that performs well on a research cohort but requires modalities unavailable in clinical workflows provides little value. The practical deployment considerations, including feature availability and model calibration requirements, are examined in @sec-ch27-feature-integration.
 
+::: {.callout-note}
+## Practical Guidance
+
+When designing clinical multi-modal models, start from deployment constraints:
+
+1. **Identify available modalities**: Which data types will be available for the target patient population? Not all patients in a research cohort have all modalities available in routine clinical care.
+2. **Design for graceful degradation**: Choose intermediate fusion architectures that can produce useful predictions even with incomplete data.
+3. **Validate across missingness patterns**: Test performance not just on complete cases but on realistic subsets reflecting clinical data availability.
+4. **Consider timing**: When is each modality available relative to the clinical decision point? A model requiring data not yet collected provides no clinical value.
+:::
+
 ::: {#fig-clinical-multimodal layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](../figs/part_4/ch19/04-A-fig-clinical-multimodal.png)
+![Data modalities: longitudinal EHR, spatial imaging, static molecular](../figs/part_4/ch22/04-A-fig-clinical-multimodal.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_4/ch19/04-B-fig-clinical-multimodal.png)
+![Modality-specific encoders for each data type](../figs/part_4/ch22/04-B-fig-clinical-multimodal.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_4/ch19/04-C-fig-clinical-multimodal.png)
+![Patient representation space unifies all modalities](../figs/part_4/ch22/04-C-fig-clinical-multimodal.svg)
 
-![**FIGURE PLACEHOLDER D**](../figs/part_4/ch19/04-D-fig-clinical-multimodal.png)
+![Clinical prediction tasks with missing modality handling](../figs/part_4/ch22/04-D-fig-clinical-multimodal.svg)
 
-[High] Patient-level integration. Panel A (Data Modalities): EHR (diagnoses, procedures, medications, labs: longitudinal), imaging (CT, MRI, histopathology: spatial), molecular (genomics, expression, proteomics: static). Panel B (Modality-Specific Encoders): EHR transformer over event sequence; imaging vision encoder; molecular FM embeddings. Panel C (Patient Representation Space): All → shared patient embedding; EHR predicts molecular; imaging consistent with trajectory. Panel D (Clinical Prediction Tasks): Risk stratification, treatment response, prognosis; missing modality handling (not all patients have all data). Practical challenges callout: batch effects, temporal alignment, cost constraints.
+Clinical multi-modal integration. (A) Data modalities: longitudinal EHR (diagnoses, procedures, labs), spatial imaging (CT, MRI, histopathology), and static molecular measurements (genomics, expression, proteomics). (B) Modality-specific encoders: EHR transformer for event sequences, vision encoder for imaging, foundation model embeddings for molecular data. (C) Patient representation space: unified embedding where EHR predicts molecular state and imaging is consistent with clinical trajectory. (D) Clinical prediction tasks: risk stratification, treatment response, and prognosis—with the practical requirement of handling incomplete data.
 :::
 
 
@@ -211,20 +276,26 @@ Tissue-level phenotypes emerge from cellular behavior aggregated across the orga
 
 The cascade view suggests where different modalities provide information. Genomics captures the inherited potential and somatic alterations. Transcriptomics and epigenomics capture the current regulatory state. Proteomics and metabolomics capture the functional molecular complement. Clinical data captures the phenotypic consequences.
 
-::: {#fig-information-cascade}
-![**FIGURE PLACEHOLDER A**](../figs/part_4/ch19/05-A-fig-information-cascade.png)
+::: {#fig-information-cascade layout-ncol=2}
+![The causal cascade from variant to phenotype](../figs/part_4/ch22/05-A-fig-information-cascade.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_4/ch19/05-B-fig-information-cascade.png)
+![Where each modality provides information](../figs/part_4/ch22/05-B-fig-information-cascade.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_4/ch19/05-C-fig-information-cascade.png)
+![Bottleneck modalities vary by variant type](../figs/part_4/ch22/05-C-fig-information-cascade.svg)
 
-![**FIGURE PLACEHOLDER D**](../figs/part_4/ch19/05-D-fig-information-cascade.png)
+![Integration guided by causal architecture](../figs/part_4/ch22/05-D-fig-information-cascade.svg)
 
-[High] Systems biology view. Panel A (The Causal Cascade): Genetic variant → (cis-regulation) → Expression change → (translation) → Protein change → (metabolism) → Metabolite change → (cellular) → Cell behavior → (tissue) → Clinical phenotype. Panel B (Where Each Modality Provides Information): Genomics (starting point), transcriptomics (current state), proteomics (functional complement), metabolomics (downstream), clinical (manifestation). Panel C (Bottleneck Modalities): Coding variants bottleneck at protein; regulatory at expression; some phenotypes bottleneck downstream. Panel D (Integration Implications): Model should trace causal chain; not all modalities equally informative for all questions.
+Systems biology view of multi-omics integration. (A) The causal cascade: genetic variants propagate through molecular layers—expression, protein, metabolite, cellular behavior—to clinical phenotype. (B) Where each modality provides information: genomics captures the starting point, transcriptomics the current state, proteomics the functional complement, metabolomics downstream effects. (C) Bottleneck modalities: coding variants bottleneck at protein level, regulatory variants at expression level—determining which modality is most informative. (D) Integration implications: the causal architecture guides which modalities to prioritize for different biological questions.
 :::
 
 
 ### Bottleneck Modalities {#sec-ch22-bottleneck}
+
+::: {.callout-tip}
+## Stop and Think
+
+Consider two different variants: (1) a missense variant in *TP53* that disrupts DNA binding, and (2) an enhancer variant that reduces *TP53* expression by 30%. For which variant would expression data provide more information beyond genomic sequence alone? Why?
+:::
 
 Not all modalities are equally informative for all questions. The concept of bottleneck modalities identifies which molecular layers most directly mediate the relationship between genetic variation and phenotype.
 
@@ -233,6 +304,12 @@ For many coding variants, protein structure is the bottleneck. A missense varian
 For regulatory variants, expression is closer to the bottleneck. An enhancer variant affects disease through its effect on target gene expression, which affects downstream processes. Chromatin accessibility and transcription factor binding are intermediate steps; expression level is the more proximal readout. Models that predict expression effects from sequence address this bottleneck (see @sec-ch16-regulatory).
 
 For some phenotypes, the bottleneck may lie downstream of molecular measurements entirely. Behavioral traits depend on neural circuit function that emerges from complex cellular and network dynamics. Metabolic traits depend on flux through interconnected pathways that may not be apparent from enzyme abundance alone. These cases suggest that molecular measurements provide incomplete information regardless of integration sophistication.
+
+::: {.callout-important}
+## Key Insight
+
+The bottleneck concept provides practical guidance for integration strategy. If you know that a phenotype is driven primarily by coding variants affecting protein structure, investing in proteomics may be less valuable than deploying state-of-the-art protein structure prediction from sequence. Conversely, if regulatory variants dominate, expression or chromatin accessibility measurements add substantial information beyond genomic sequence. Understanding the causal architecture helps prioritize which modalities to measure and integrate.
+:::
 
 
 ### Causal vs. Correlational Integration {#sec-ch22-causal-correlational}
@@ -247,6 +324,12 @@ The distinction matters for interpretation and intervention. A predictive model 
 
 
 ## Handling Missing Modalities {#sec-ch22-missing-modalities}
+
+::: {.callout-warning}
+## Challenging Section
+
+Handling missing modalities requires understanding both the mathematical framework of intermediate fusion and the biological assumptions underlying cross-modal imputation. If the shared latent space concepts from @sec-ch22-intermediate-fusion are not yet clear, review that section before proceeding.
+:::
 
 Real-world multi-omics data are incomplete. Different studies measure different modalities. Within studies, technical failures, sample limitations, and cost constraints create missing data. Clinical deployment must handle patients with incomplete molecular profiles. Robust multi-omics methods must address missingness directly.
 
@@ -324,6 +407,16 @@ Biological validation through comparison to known biology provides another evalu
 
 Clinical evaluation, addressed in @sec-ch27-clinical-risk, requires prospective validation in real deployment settings. A model that improves prediction in research cohorts may not improve clinical decisions if the predictions do not change management or if the required modalities are unavailable in clinical workflows.
 
+::: {.callout-tip}
+## Knowledge Check
+
+A research team trains a multi-omics model integrating genomics, transcriptomics, and proteomics for cancer prognosis. The model achieves excellent cross-validation performance but fails when tested on data from a different hospital.
+
+1. What are three possible reasons for this failure?
+2. What evaluation strategies should have been included to detect this problem earlier?
+3. How might the fusion strategy choice (early, late, intermediate) affect robustness to this kind of distribution shift?
+:::
+
 
 ## Integration as Means, Not End {#sec-ch22-conclusion}
 
@@ -332,3 +425,33 @@ Multi-omics integration is not an end in itself but a means to improved predicti
 The systems view that multi-omics enables shapes how predictions should be interpreted. A risk prediction based on integrated features inherits explanatory power from the causal relationships linking molecular layers to phenotype. Understanding which modalities drive predictions, and how those modalities relate to underlying biology, supports clinical reasoning about mechanism and intervention. This explanatory capacity distinguishes multi-omics from single-modality approaches that may predict equally well but provide less insight into why predictions succeed or fail.
 
 The path from research models to clinical deployment requires addressing practical challenges that intensify with integration: batch effects across modalities and institutions, missing measurements that differ systematically across patients, sample size limitations that grow with feature dimensionality, and evaluation complexity when outcomes depend on multiple data types. The clinical applications examined in @sec-ch27-clinical-risk and @sec-ch28-rare-disease confront these realities. As the field advances toward whole-patient foundation models that jointly encode genomics, transcriptomics, proteomics, imaging, and clinical data, the integration principles established here provide the foundation. The trade-offs between fusion strategies, the importance of shared latent spaces, the challenge of missing modalities, and the systems biology perspective on information flow will remain relevant as scale and scope expand. The interpretability challenges that compound across modalities (@sec-ch24-interpretability) and the calibration requirements for clinical deployment (@sec-ch23-calibration) add further dimensions that shape how multi-omics models should be developed and evaluated.
+
+::: {.callout-note}
+## Chapter Summary
+
+**Core Concepts:**
+
+- The integration paradox: more data can mean worse predictions when noise overwhelms signal, batch effects create spurious correlations, or dimensionality outpaces sample size
+- Three fusion strategies (early, intermediate, late) offer different tradeoffs between cross-modal interaction learning and missing data robustness
+- Intermediate fusion dominates modern approaches by learning modality-specific encoders projecting to a shared latent space
+
+**Key Methods:**
+
+- *MOFA+* for probabilistic factor-based integration
+- *totalVI* and *MultiVI* for deep generative single-cell integration
+- Contrastive multi-modal learning for aligning embeddings across modalities
+
+**Design Principles:**
+
+- Identify bottleneck modalities: which molecular layers most directly mediate genotype-phenotype relationships for your question
+- Design for graceful degradation: models should produce useful predictions even with incomplete modality coverage
+- Distinguish causal from correlational integration: causal understanding enables intervention, correlation enables prediction
+
+**Practical Considerations:**
+
+- Batch effects compound across modalities and require per-modality correction or domain adaptation
+- Effective sample size shrinks with each required modality due to incomplete overlap
+- Interpretability requires cross-modal attribution normalization and validation against known biology
+
+**Looking Ahead:** @sec-ch23-uncertainty addresses how to quantify and communicate uncertainty in these complex models, while @sec-ch27-clinical-risk examines the deployment path from research to clinical practice.
+:::

@@ -1,16 +1,43 @@
 # Data Landscape {#sec-ch02-data}
 
+::: {.callout-note title="Chapter Overview"}
+
+**Prerequisites:** Basic understanding of DNA/RNA/protein structure; familiarity with sequencing concepts from @sec-ch01-ngs; awareness of variant calling pipelines.
+
+**Learning Objectives:** After completing this chapter, you should be able to:
+
+1. Identify the major genomic data resources and explain what type of evidence each provides
+2. Recognize systematic biases in training data and predict how they affect downstream models
+3. Distinguish between population-level variant catalogs, functional genomics datasets, and clinical interpretation databases
+4. Evaluate phenotype quality and anticipate its impact on genetic association studies
+5. Apply critical literacy when selecting training data for genomic machine learning models
+
+**Key Insight:** Every machine learning model inherits both the signal and the systematic gaps of its training data. Understanding what datasets contain, and what they miss, is prerequisite to interpreting what models learn.
+
+:::
+
 Genomic models learn from labels, and those labels come from somewhere. A variant effect predictor trained on ClinVar classifications learns whatever biases clinical laboratories embedded in those classifications. A chromatin accessibility model trained on Encyclopedia of DNA Elements (ENCODE) cell lines may fail on primary tissues absent from the training compendium. A constraint metric derived from European-ancestry cohorts will be poorly calibrated for variants private to other populations. Every machine learning model in genomics inherits both the signal and the systematic gaps of its training data. Understanding what genomic resources contain, and what they systematically miss, is prerequisite to interpreting what models learn.
 
 No single dataset captures the complexity of genomic function. The field depends on a mosaic of complementary resources: reference genomes and gene annotations that define the coordinate system, population variant catalogs that reveal what survives in healthy individuals, biobank datasets that link genetic variation to phenotypes at scale, functional genomics atlases that map biochemical activity across cell types and conditions, and clinical databases that aggregate expert variant interpretations. Each resource contributes a different type of evidence. Reference genomes provide the scaffold against which all variants are defined. Population databases like the Genome Aggregation Database (gnomAD) establish baseline expectations for variant frequency. Functional assays from ENCODE and Roadmap Epigenomics indicate where the genome shows evidence of regulatory activity. Clinical databases like ClinVar provide ground-truth labels for pathogenic and benign variants, at least for the subset of variants that have been expertly reviewed.
 
 ::: {#fig-data-ecosystem}
-![FIGURE PLACEHOLDER](../figs/part_1/ch02/01-fig-data-ecosystem.png)
+![The genomic data ecosystem organized into four functional layers](../figs/part_1/ch02/01-fig-data-ecosystem.svg)
 
-[Essential] Conceptual map showing how major data resources interconnect and flow into downstream applications. Organize into layers: (1) Foundation layer: Reference genomes (GRCh38, T2T-CHM13) and gene annotations (GENCODE, RefSeq, MANE); (2) Population layer: Variant catalogs (gnomAD, 1000 Genomes) and biobanks (UK Biobank, All of Us); (3) Functional layer: ENCODE, Roadmap Epigenomics, Cistrome, GTEx; (4) Clinical layer: ClinVar, ClinGen, OMIM, PharmGKB. Draw arrows showing dependencies. Indicate which resources provide "coordinates," "frequencies," "functions," or "labels."
+The genomic data ecosystem. Major resources are organized into four functional layers: reference assemblies and gene annotations provide the coordinate foundation; population catalogs and biobanks supply variant frequencies and phenotype associations; functional genomics consortia map biochemical activity across cell types; clinical databases aggregate pathogenicity interpretations. Arrows indicate data dependencies, with each layer building on those below. Every machine learning model in genomics inherits both the signal and the systematic gaps of resources in this ecosystem.
 :::
 
 The goal of this chapter is not encyclopedic completeness but critical literacy: the ability to recognize when training data may not represent the population, condition, or variant class at hand. This literacy becomes essential when deploying models in clinical contexts where failures have consequences. The biases introduced by population structure, label ascertainment, and technical artifacts create systematic confounding that propagates through every downstream model. These challenges receive detailed treatment, where @sec-ch22-ancestry-confounding examines ancestry-related confounding, @sec-ch22-label-bias addresses ascertainment patterns in clinical labels, and @sec-ch22-batch-effects covers technical batch effects. The present chapter establishes the data landscape from which those confounders arise.
+
+| Resource Type | Example Databases | What It Provides | Primary Use in ML |
+|--------------|-------------------|------------------|-------------------|
+| Reference Genomes | GRCh38, T2T-CHM13 | Coordinate system, sequence scaffold | Input sequences |
+| Gene Annotations | GENCODE, RefSeq, MANE | Exon/intron structure, transcript definitions | Variant annotation |
+| Population Catalogs | gnomAD, 1000 Genomes | Allele frequencies, constraint metrics | Filtering, features |
+| Biobanks | UK Biobank, All of Us | Genotype-phenotype associations | GWAS labels |
+| Functional Genomics | ENCODE, Roadmap, GTEx | Chromatin states, TF binding, expression | Training labels |
+| Clinical Databases | ClinVar, ClinGen | Pathogenicity classifications | Benchmark labels |
+
+: Major genomic data resource types and their roles in machine learning workflows. Each layer provides different evidence types, and models trained on any single layer inherit that layer's biases and blind spots. {#tbl-resource-overview}
 
 
 ## Reference Genomes and Gene Annotations {#sec-ch02-reference}
@@ -23,6 +50,10 @@ A family arrives at a genetics clinic after their newborn's screening reveals a 
 A patient's clinical sequencing reveals a potentially pathogenic variant in a duplicated region of chromosome 17. The variant calling pipeline reports a confident genotype, the annotation tool predicts a frameshift, and the clinical team prepares to discuss the finding with the family. Yet the "variant" may be an artifact of misalignment: reads from a paralogous sequence elsewhere in the genome mapped incorrectly because the reference assembly collapsed two distinct loci into one. Whether this error occurs, whether it can be detected, and whether the clinical interpretation has any foundation in biological reality all depend on the choice of reference genome.
 
 Most modern pipelines align reads to a small number of reference assemblies, predominantly Genome Reference Consortium Human Build 38 (GRCh38) or the newer telomere-to-telomere CHM13 assembly (T2T-CHM13) [@nurk_complete_2022]. A reference genome is not simply a consensus sequence; it encodes a series of consequential decisions about how to represent duplications, alternate haplotypes, and unresolved gaps. These decisions determine which regions are mappable by short reads, how structural variants are represented, and how comparable results will be across cohorts built on different assemblies. The variant calling pipelines described in @sec-ch01-ngs depend fundamentally on these reference choices. Variant callers that rely on these reference assemblies face characteristic failures in difficult regions, as detailed in @sec-ch01-difficult.
+
+::: {.callout-tip title="Key Insight: Reference Choice Shapes What Is Detectable"}
+The reference genome is not neutral infrastructure; it is an active filter. Regions absent from the reference cannot be mapped to. Collapsed duplications create spurious variants. Unresolved gaps hide entire genes. When a model fails to detect a variant or makes a false call, ask: could this be a reference assembly limitation rather than a model limitation?
+:::
 
 Graph-based and **pangenome** references relax the assumption of a single linear reference, representing multiple haplotypes and ancestries within a unified coordinate system [@liao_draft_2023]. Comparative multi-species references, such as those used in mammalian constraint maps from the Zoonomia consortium [@sullivan_leveraging_2023], extend this idea across species, providing evolutionary conservation scores that feed directly into deleteriousness predictors and gene-level constraint metrics discussed in @sec-ch04-constraint-metrics for evolutionary approaches and @sec-ch04-cadd for integrated scoring.
 
@@ -37,7 +68,30 @@ Gene annotation databases such as GENCODE and RefSeq define the biological vocab
 
 The MANE Select project provides a single matched transcript per protein-coding gene that is identical between GENCODE and RefSeq, simplifying clinical interpretation and variant reporting [@morales_mane_2022]. This standardization makes variant descriptions consistent across laboratories, yet it privileges a single isoform over biological complexity. In contexts where tissue-specific or developmentally regulated isoforms drive disease (alternative splicing in muscular dystrophies, isoform-specific expression in neuropsychiatric conditions), the canonical transcript may miss the relevant biology.
 
+::: {.callout-note title="Deep Dive: Alternative Splicing"}
+**For ML readers:** A single gene can produce multiple different proteins through *alternative splicing*:
+
+**The basics:** After DNA is transcribed into pre-mRNA, *introns* (non-coding segments) are removed and *exons* (coding segments) are joined together. Alternative splicing means different combinations of exons can be included in the final mRNA, producing different protein variants (*isoforms*) from the same gene.
+
+**Splicing patterns:**
+
+- *Exon skipping*: An exon is excluded from the final transcript
+- *Alternative 5' or 3' splice sites*: Different endpoints for exon boundaries
+- *Intron retention*: An intron is kept in the mature mRNA
+- *Mutually exclusive exons*: One of two exons is included, never both
+
+**Scale:** Over 95% of human multi-exon genes undergo alternative splicing. The ~20,000 human genes produce an estimated 100,000+ distinct protein isoforms.
+
+**Why it matters for genomic ML:** A variant might be benign in the canonical isoform but pathogenic in a tissue-specific isoform. Models trained only on canonical transcripts miss this complexity. Splicing prediction models like *SpliceAI* (@sec-ch06-spliceai) predict how variants affect splice site usage.
+:::
+
 New isoforms continue to be discovered, alternative splicing remains incompletely cataloged, and cell-type-specific transcripts may be absent from bulk-derived annotations. Non-coding RNA genes and pseudogenes are even more unevenly annotated. These gaps propagate through every tool built on them: variant effect predictors cannot score consequences for transcripts that do not exist in their reference annotation, and expression models cannot predict isoforms they were never trained on.
+
+::: {.callout-note title="Stop and Think: Annotation Dependencies"}
+Consider a variant effect predictor trained exclusively on MANE Select transcripts. What types of pathogenic variants might it systematically miss? Think about tissue-specific isoforms, retained introns, and alternative first exons before reading on.
+
+*The predictor would miss variants affecting: (1) tissue-specific isoforms not represented in MANE, (2) alternative exons used in specific developmental stages or cell types, (3) non-coding transcripts and regulatory RNAs, and (4) novel splice isoforms not yet annotated. This illustrates how annotation choices propagate into model blind spots.*
+:::
 
 
 ## Population Variant Catalogs and Allele Frequencies {#sec-ch02-population}
@@ -45,12 +99,35 @@ New isoforms continue to be discovered, alternative splicing remains incompletel
 A clinical geneticist evaluates a child with an undiagnosed syndrome and identifies a novel missense variant in a candidate gene. The question that determines what happens next is deceptively simple: has anyone else carried this variant? If the variant appears in thousands of healthy adults, it is almost certainly benign. If it has never been observed across hundreds of thousands of sequenced genomes, that absence becomes evidence of selective pressure against the variant, strongly suggesting functional consequence. Without population-scale variant catalogs, this inference is impossible, and every rare variant would demand the same level of scrutiny regardless of its actual likelihood of causing disease.
 
 ::: {#fig-ancestry-representation}
-![FIGURE PLACEHOLDER](../figs/part_1/ch02/02-fig-ancestry-representation.png)
+![Ancestry representation disparity across major genomic resources](../figs/part_1/ch02/02-fig-ancestry-representation.svg)
 
-[High] Stacked bar chart or waffle plot showing ancestry composition across key resources: gnomAD v4, UK Biobank, ClinVar submissions, GTEx donors, GWAS Catalog participants. Highlight the persistent European overrepresentation (approximately 78% of GWAS participants as of 2019) against global population proportions [@sirugo_diversity_2019]. Include a small world map inset showing which continental ancestries are represented vs underrepresented.
+Ancestry representation across major genomic resources. Stacked bars show the proportion of samples from different ancestral backgrounds in key databases. European-ancestry individuals (blue) comprise approximately 78% of GWAS participants despite representing roughly 16% of the global population. This overrepresentation propagates through variant interpretation databases, functional genomics atlases, and polygenic score development, creating systematic gaps in genomic medicine for underrepresented populations. Inset map highlights continental regions with the largest representation deficits relative to population size.
 :::
 
 **Allele frequency**, the proportion of chromosomes in a reference population carrying a given variant, serves as one of the most powerful priors in variant interpretation. Beyond simple filtering, allele frequencies inform statistical frameworks for case-control association, provide training signal for deleteriousness predictors, and enable **imputation** of ungenotyped variants through **linkage disequilibrium** (see @sec-ch03-gwas). The catalogs described below have progressively expanded in sample size, ancestral diversity, and annotation depth, transforming variant interpretation from an ad hoc exercise into a quantitative discipline.
+
+::: {.callout-note title="Deep Dive: Allele Frequency"}
+**For ML readers:** Allele frequency is the proportion of chromosomes carrying a particular variant in a population:
+
+**Minor Allele Frequency (MAF):** The frequency of the less common allele at a biallelic site. If 99% of chromosomes carry A and 1% carry G at a position, MAF = 0.01 (1%).
+
+**Frequency categories in practice:**
+
+| Category | MAF | Typical interpretation |
+|----------|-----|----------------------|
+| Common | >5% | Unlikely to cause severe disease (would be selected against) |
+| Low-frequency | 1-5% | May contribute to complex traits |
+| Rare | 0.1-1% | Candidates for Mendelian disease |
+| Ultra-rare | <0.1% | Strongest candidates for pathogenicity |
+
+**Why frequency matters:**
+
+1. **Filtering:** Variants common in healthy populations are unlikely to cause severe disease. A variant at 1% frequency in gnomAD cannot plausibly cause a dominant condition affecting 1 in 100,000 people.
+
+2. **Evolutionary signal:** Rare variants have been exposed to less natural selection. Absence from large population databases suggests the variant may be deleterious.
+
+3. **Population specificity:** A variant at 5% in one population but absent from another isn't "rare"—it's population-specific. Frequency filtering must be ancestry-aware.
+:::
 
 A crucial nuance shapes model interpretation: these catalogs record variants that are compatible with being sampled in the first place. Gene-lethal variants that cause embryonic death or severe childhood disease rarely appear, even when they are biologically informative. Variants causing late-onset conditions (Alzheimer's risk alleles, adult-onset cancer predisposition) can persist at appreciable frequencies because selection has not had time to remove them. Models trained on population data can only learn from variants present in these catalogs, which means they systematically underrepresent the most severe loss-of-function mutations.
 
@@ -87,6 +164,15 @@ LOEUF (loss-of-function observed/expected upper bound fraction) provides a conti
 
 :::
 
+| Metric | Range | Interpretation | When to Use |
+|--------|-------|----------------|-------------|
+| pLI | 0-1 | Probability gene is haploinsufficient | Categorical assessment; pLI > 0.9 indicates high constraint |
+| LOEUF | 0-2+ | Ratio of observed/expected LoF variants | Continuous ranking; lower = more constrained |
+| Missense Z | Any | Standard deviations from expected missense count | Missense constraint; higher = more constrained |
+| pRec | 0-1 | Probability gene causes recessive disease | Recessive disease candidate genes |
+
+: Comparison of gnomAD constraint metrics and their appropriate applications. LOEUF has largely superseded pLI for contemporary analyses due to its continuous scale. {#tbl-constraint-metrics}
+
 These resources are indispensable for filtering common variants in Mendelian disease diagnostics, distinguishing ultra-rare variants from recurrent ones, and providing population genetics priors for deleteriousness scores like *CADD* [@rentzsch_cadd_2019; @schubach_cadd_2024]. At the same time, they reflect the composition of the cohorts they aggregate: ancestry representation remains uneven despite ongoing efforts, structural variants and repeat expansions are less completely cataloged than SNVs and short indels, and individuals with severe early-onset disease are underrepresented by design. These biases propagate into every model that uses gnomAD frequencies or constraint scores as features.
 
 
@@ -99,9 +185,24 @@ The overrepresentation of European-ancestry individuals in most major biobanks c
 
 ### Large Population Cohorts {#sec-ch02-cohorts}
 
+::: {.callout-warning title="Statistical Note: Sample Size Requirements"}
+Detecting genetic associations with small effect sizes requires very large sample sizes. A variant increasing disease risk by OR = 1.05 requires approximately 50,000 cases and 50,000 controls to detect at genome-wide significance ($\alpha = 5 \times 10^{-8}$). Required sample size scales with the inverse square of effect size: halving the effect size quadruples the required sample. This relationship explains why modern GWAS require hundreds of thousands of participants.
+:::
+
 A variant that increases heart disease risk by 5% (OR = 1.05) requires approximately 50,000 cases and 50,000 controls to detect reliably at genome-wide significance ($\alpha = 5 \times 10^{-8}$). A variant shifting a continuous trait like blood pressure by 0.05 standard deviations demands even larger samples, often exceeding 100,000 individuals. The fundamental constraint is statistical: detecting small effect sizes against a backdrop of millions of tested variants requires both stringent significance thresholds and massive sample sizes to achieve adequate power. Required sample size scales with the inverse square of effect size, meaning a variant with half the effect requires four times the sample. This relationship explains why genetic discovery accelerated dramatically when biobanks reached the scale of hundreds of thousands of participants. @sec-ch27-clinical-risk provides a detailed treatment of these statistical foundations and their implications for clinical risk prediction.
 
 UK Biobank, with approximately 500,000 participants and deep phenotyping across thousands of traits, has become a dominant resource for methods development and benchmarking [@bycroft_uk_2018]. FinnGen leverages Finland's population history and unified healthcare records for large-scale disease association discovery [@kurki_finngen_2023]. The All of Us Research Program prioritizes diversity, aiming to enroll one million participants with deliberate oversampling of historically underrepresented groups [@null_all-of-us_2019]. deCODE genetics has genotyped a substantial fraction of Iceland's population, enabling unique studies of rare variants and founder effects in a population with detailed genealogical records [@gudbjartsson_decode_2015]. Additional resources include the Million Veteran Program, Mexican Biobank, BioBank Japan, China Kadoorie Biobank, and emerging African genomics initiatives such as H3Africa [@sirugo_diversity_2019].
+
+| Biobank | Sample Size | Key Strength | Primary Ancestry |
+|---------|-------------|--------------|------------------|
+| UK Biobank | ~500,000 | Deep phenotyping, imaging | European (94%) |
+| FinnGen | ~500,000 | Founder population, linked EHR | Finnish |
+| All of Us | 1,000,000 (target) | Diversity prioritized | Multi-ancestry |
+| deCODE | ~200,000 | Genealogical records | Icelandic |
+| BioBank Japan | ~200,000 | East Asian representation | Japanese |
+| Million Veteran Program | ~900,000 | Diverse U.S. veterans | Multi-ancestry |
+
+: Major biobanks and their characteristics. Note that most resources remain dominated by European-ancestry participants, creating systematic gaps in variant discovery for other populations. {#tbl-biobanks}
 
 Together, these efforts enable **genome-wide association studies (GWAS)** for thousands of traits, development and evaluation of polygenic scores, and fine-mapping of causal variants and genes [@marees_gwas_2018; @mountjoy_open_2021]. From a modeling perspective, they provide the large-scale genotype-phenotype matrices that power architectures ranging from classical linear mixed models to foundation models trained on biobank-scale data. The practical reality for most GWAS and polygenic score methods in @sec-ch03-gwas is data from either array genotyping with imputation or whole-exome/whole-genome sequencing with joint calling, as in *DeepVariant*/GLnexus-style pipelines [@yun_accurate_2021].
 
@@ -119,7 +220,9 @@ Summary statistics enable meta-analysis across cohorts without sharing individua
 
 Protein-coding exons constitute roughly 1.5% of the human genome, yet most disease-associated variants from GWAS fall outside coding regions. A massive study identifies 100 loci associated with schizophrenia, but 90 of them lie in non-coding regions with no obvious connection to any gene. This mismatch creates a fundamental interpretability problem: we can identify non-coding loci that harbor disease risk, but we cannot easily determine which base pairs matter, which genes they regulate, or in which cell types they act. Understanding these non-coding variants requires mapping the regulatory logic that governs when, where, and how much each gene is expressed. Functional genomics assays provide this map, identifying **transcription factor** binding sites, nucleosome positioning, **chromatin accessibility**, **histone modifications**, and three-dimensional genome organization across cell types and conditions.
 
-Functional genomics datasets serve a dual role in genomic deep learning. First, they supply the biological vocabulary for interpreting non-coding variants, linking sequence changes to potential regulatory consequences. Second, and more directly, they provide the training labels for sequence-to-function models. When a model learns to predict chromatin accessibility or histone marks from DNA sequence alone, it compresses into its parameters the regulatory code implicit in thousands of functional genomics experiments.
+::: {.callout-tip title="Key Insight: The Label Source Determines the Model"}
+Functional genomics datasets serve a dual role in genomic deep learning. First, they supply the biological vocabulary for interpreting non-coding variants. Second, they provide the training labels for sequence-to-function models. When *DeepSEA* learns to predict chromatin accessibility from DNA sequence, it compresses into its parameters the regulatory patterns implicit in thousands of ENCODE experiments. The model learns whatever biology ENCODE measured, and inherits whatever ENCODE missed.
+:::
 
 
 ### ENCODE, Roadmap, and Related Consortia {#sec-ch02-encode}
@@ -131,9 +234,15 @@ The Encyclopedia of DNA Elements (ENCODE) and Roadmap Epigenomics consortia desi
 The significance of these consortia lies less in any individual experiment than in the scale and standardization they provide. By generating hundreds of assays across dozens of cell types with consistent protocols, ENCODE and Roadmap created canonical reference datasets that define the regulatory landscape for the cell types they profiled. These resources enabled multiple generations of regulatory models. *DeepSEA* (@sec-ch06-deepsea) pioneered multi-task learning on ENCODE chromatin accessibility and transcription factor binding, where each prediction task corresponds to a ChIP-seq or accessibility experiment. *Enformer* (@sec-ch16-enformer) extended this paradigm with transformer attention mechanisms and longer context windows. The progression from convolutional to attention-based architectures reflects both the richness of ENCODE data and its limitations: models trained on these resources inherit ENCODE's choices about which cell types, factors, and experimental conditions merit inclusion.
 
 ::: {#fig-functional-genomics-matrix}
-![FIGURE PLACEHOLDER](../figs/part_1/ch02/03-fig-functional-genomics-matrix.png)
+![ENCODE and Roadmap Epigenomics data coverage matrix](../figs/part_1/ch02/03-fig-functional-genomics-matrix.svg)
 
-[High] Heatmap-style visualization showing the ENCODE/Roadmap data compendium structure. Rows represent cell types or tissues (group by category: cell lines, primary cells, tissues). Columns represent assay types (ChIP-seq for various TFs and histone marks, DNase-seq, ATAC-seq, RNA-seq). Color intensity indicates data availability (present/absent or coverage depth). Highlight which cell types have comprehensive coverage vs sparse coverage. Annotate example cell types that are well-profiled (K562, GM12878, HepG2) vs disease-relevant tissues that remain undersampled.
+Coverage of the ENCODE and Roadmap Epigenomics data compendium. Each row represents a cell type or tissue; each column represents an assay type (chromatin accessibility, histone modifications, transcription factor binding, gene expression). Color intensity indicates data availability, from absent (white) to comprehensively profiled (dark blue). Tier 1 cell lines (K562, GM12878, HepG2) show near-complete coverage across assay types, while many disease-relevant primary tissues remain sparsely profiled. Models trained on this compendium inherit its coverage biases, performing best for well-characterized cell types and potentially failing for undersampled contexts.
+:::
+
+::: {.callout-note title="Knowledge Check: Functional Genomics Coverage"}
+A model trained to predict chromatin accessibility performs excellently on K562 cells (a leukemia cell line) but poorly on primary pancreatic beta cells. Without looking back, can you explain why this might occur?
+
+*K562 is one of the most heavily profiled cell types in ENCODE with extensive training data. Pancreatic beta cells, despite their importance in diabetes, have sparse representation in training compendia. The model learned patterns specific to well-represented cell types and cannot generalize to cell types absent from training.*
 :::
 
 
@@ -144,6 +253,15 @@ ENCODE and Roadmap provide authoritative datasets for their chosen cell types an
 The Cistrome Data Browser addresses this gap by aggregating thousands of human and mouse ChIP-seq and chromatin accessibility datasets from ENCODE, Roadmap, GEO, and individual publications into a uniformly reprocessed repository [@zheng_cistrome_2019]. All datasets pass through standardized quality control and peak calling, enabling comparisons across experiments originally generated with different protocols.
 
 Cistrome provides uniform peak calls, signal tracks, and metadata for cell type, factor, and experimental conditions. The tradeoff is heterogeneity: while reprocessing harmonizes computational steps, the underlying experiments vary in sample preparation, antibody quality, sequencing depth, and experimental design. Cistrome expands coverage at the cost of the tight experimental control found in the primary consortia, a tradeoff that matters when models learn from noisy or inconsistent labels.
+
+| Resource | Scope | Quality Control | Key Tradeoff |
+|----------|-------|-----------------|--------------|
+| ENCODE | Consortium-generated | Stringent, standardized | Limited cell type coverage |
+| Roadmap Epigenomics | Primary tissues | Standardized protocols | Fewer factors profiled |
+| Cistrome | Aggregated public data | Uniform reprocessing | Variable original quality |
+| GEO | All submitted experiments | Minimal curation | Heterogeneous methods |
+
+: Comparison of functional genomics data sources. Resources vary in the tradeoff between standardization and coverage. {#tbl-functional-resources}
 
 
 ### From Assays to Training Labels {#sec-ch02-assays-labels}
@@ -160,6 +278,14 @@ Population variant catalogs tell us which variants survive in healthy individual
 These assays systematically introduce mutations (often approaching saturation mutagenesis for a protein domain or regulatory element), subject the resulting library to selection or screening, and use sequencing to quantify the representation of each variant before and after selection. The result is dense, quantitative measurements of variant effects under controlled conditions. Benchmarks such as ProteinGym compile large DMS datasets across proteins to evaluate variant effect predictors. TraitGym curates multiplexed reporter assays and other high-throughput readouts of regulatory variant effects [@notin_proteingym_2023; @benegas_traitgym_2025].
 
 These resources sit at the interface between genomic and protein-level modeling. Where gnomAD and biobanks catalog sparse, naturally occurring variation, DMS datasets offer dense, quantitative functional measurements across systematic variant libraries that test most or all possible substitutions. DMS data differ fundamentally from population catalogs: they measure functional impact directly under controlled conditions rather than inferring it from population survival. Protein sequence models (@sec-ch15-protein-lm) and regulatory variant predictors (@sec-ch17-vep-fm) use these DMS-style datasets as key benchmarks and training sources.
+
+| Data Type | Measurement | Coverage | Key Limitation |
+|-----------|-------------|----------|----------------|
+| Population catalogs (gnomAD) | Presence in healthy individuals | Natural variants only | Severe variants underrepresented |
+| Deep mutational scanning | Direct functional impact | Saturation mutagenesis | One protein/element at a time |
+| Clinical databases (ClinVar) | Expert pathogenicity assessment | Clinically observed variants | Ascertainment toward disease genes |
+
+: Comparison of variant-level data sources. Each provides different evidence types with complementary strengths and limitations. {#tbl-variant-data}
 
 
 ## Expression and eQTL Resources {#sec-ch02-expression}
@@ -188,6 +314,15 @@ Single-cell RNA-seq resolves this heterogeneity, identifying expression signatur
 
 These technologies introduce computational challenges: sparsity from dropout effects, batch variation across samples and technologies, and massive scale with millions of cells per study. They also offer an increasingly fine-grained view of the link between genotype, regulatory state, and cellular phenotype. Multi-omics integration (@sec-ch22-multi-omics) and systems-level modeling draw heavily on single-cell and spatial resources.
 
+| Technology | Resolution | Scale | Key Challenge |
+|------------|------------|-------|---------------|
+| Bulk RNA-seq | Tissue average | 100s of samples | Cell type confounding |
+| Single-cell RNA-seq | Individual cells | Millions of cells | Sparsity, dropout |
+| Spatial transcriptomics | Cells in tissue context | 1000s of spots | Lower gene coverage |
+
+: Expression profiling technologies and their tradeoffs. Higher resolution technologies introduce new computational challenges. {#tbl-expression-tech}
+
+
 ## Protein Databases {#sec-ch02-protein-databases}
 
 A researcher developing a variant effect predictor needs to understand whether a missense mutation disrupts protein function. Sequence conservation across species provides one signal, but structural context adds another dimension: a mutation at an active site or protein-protein interface may be more disruptive than one in a flexible loop. Training models that leverage this structural intuition requires databases cataloging both protein sequences and their three-dimensional structures. These resources have grown from modest beginnings (a few hundred structures in the early PDB) to comprehensive atlases covering essentially all known protein sequences with either experimental or predicted structures.
@@ -203,6 +338,12 @@ UniProt provides the foundational sequence resource, integrating manually curate
 
 The Big Fantastic Database (BFD) extends beyond curated sequences to include metagenomic data, capturing protein diversity from environmental samples that have never been cultured in laboratories [@steinegger_bfd_2019]. BFD contains over 2.5 billion protein sequences, an order of magnitude larger than UniProt, representing the vast majority of known protein sequence space. This scale proved critical for training models like ESM-2, where exposure to diverse evolutionary patterns during pretraining improved downstream performance on variant effect prediction and other tasks. However, metagenomic sequences carry higher annotation uncertainty and may include fragments, chimeras, and other artifacts that curated databases exclude.
 
+::: {.callout-note title="Stop and Think: Database Tradeoffs"}
+Consider training a protein language model. You have access to UniProt (curated, ~250 million sequences) and BFD (metagenomic, ~2.5 billion sequences). What are the arguments for using each? What might you lose by using only one?
+
+*UniProt advantages: higher quality annotations, fewer artifacts, established functional knowledge. BFD advantages: 10x more sequences, broader evolutionary coverage, rare protein families. Using only UniProt might miss patterns in understudied protein families; using only BFD might introduce noise from low-quality sequences. Modern approaches often combine both, using BFD for pretraining diversity and UniProt for downstream task fine-tuning.*
+:::
+
 
 ### Structure Databases {#sec-ch02-protein-structure}
 
@@ -211,6 +352,7 @@ Experimental protein structures anchor computational predictions in physical rea
 The *AlphaFold* Protein Structure Database transformed this landscape by providing predicted structures for essentially all proteins in UniProt [@varadi_alphafold_2022]. These predictions, generated by *AlphaFold2* [@jumper_alphafold2_2021], achieve accuracy competitive with experimental determination for well-folded domains. The database democratized structural biology, enabling researchers to access structural hypotheses for any protein of interest without experimental effort. For variant interpretation, *AlphaFold* structures provide context that was previously available only for the small fraction of proteins with experimental structures.
 
 However, predicted structures carry important caveats. *AlphaFold* provides confidence scores (pLDDT) that indicate prediction reliability, with disordered regions and novel folds receiving lower scores. Models trained on *AlphaFold* structures inherit both the power of comprehensive coverage and the uncertainty of computational prediction. The distinction between experimental and predicted structures matters when using structural features for clinical variant interpretation, where the evidentiary standards are higher than for research applications. Structure-aware variant effect prediction is discussed in @sec-ch12-structure-vep, while the role of protein language models in genomic foundation models appears in @sec-ch15-protein-lm.
+
 
 ## Phenotype Definition and Data Quality {#sec-ch02-phenotypes}
 
@@ -237,6 +379,16 @@ Electronic health records promise comprehensive phenotyping at scale: every diag
 Missing data pervades EHR phenotyping. Laboratory values are measured when clinically indicated, not at random, creating informative missingness where the absence of a measurement conveys information about the patient's health status. Patients who transfer between health systems appear to have incomplete histories. Conditions managed by specialists outside the health system may be entirely absent from the record. These gaps are not random but systematically related to patient characteristics, healthcare access, and disease severity in ways that can bias genetic analyses.
 
 Temporal dynamics add further complexity. Disease onset rarely corresponds to diagnosis date; patients carry pathology for years before clinical recognition. Medication records indicate prescriptions but not adherence. Procedure dates capture interventions but not the progression of disease that motivated them. Time-to-event analyses must grapple with left truncation (patients entering observation after disease onset), interval censoring (disease status observed only at discrete timepoints), and the distinction between incident and prevalent cases that confounds cross-sectional analyses.
+
+::: {.callout-warning title="Practical Guidance: Working with EHR Phenotypes"}
+When using EHR-derived phenotypes for genetic analysis:
+
+1. **Specify inclusion/exclusion criteria precisely.** Which ICD codes define cases? What time windows apply?
+2. **Document missingness patterns.** Is absence of a code evidence of absence, or missing data?
+3. **Consider ascertainment bias.** Who gets tested, screened, or referred? This shapes who appears as cases.
+4. **Check for temporal artifacts.** Did coding practices change during your study period?
+5. **Validate against chart review.** Even small validation studies (n=100) reveal systematic misclassification.
+:::
 
 
 ### Coding Inconsistencies and Label Noise {#sec-ch02-label-noise}
@@ -281,6 +433,10 @@ A clinical laboratory sequences a patient with suspected hereditary cancer syndr
 
 ClinVar provides standardized classifications following ACMG/AMP guidelines (pathogenic, likely pathogenic, benign, likely benign, **variant of uncertain significance**) that are central to diagnostic pipelines and to benchmarking variant effect predictors. It has become the *de facto* reference for variant pathogenicity labels, but its contents reflect systematic biases that affect any downstream use. These biases operate at multiple levels and warrant careful consideration.
 
+::: {.callout-tip title="Key Insight: The Circularity Problem"}
+ClinVar serves simultaneously as (1) a source of training labels for variant effect predictors and (2) a benchmark for evaluating those same predictors. This dual role creates circularity: if ClinVar classifications increasingly incorporate computational scores, and those scores were trained on earlier ClinVar classifications, the benchmark becomes contaminated. A model may appear to perform well simply by reproducing the computational component of its training labels rather than learning independent biological signal.
+:::
+
 Submission heterogeneity poses a fundamental challenge. Annotations come from diverse submitters, including diagnostic laboratories, research groups, expert panels, and database exports. Submitters apply varying evidentiary standards; some provide detailed supporting evidence while others offer only assertions. Conflicting interpretations are common, particularly for variants of uncertain significance.
 
 Classifications evolve as evidence accumulates. A variant classified as VUS in 2018 may be reclassified as likely pathogenic by 2023 based on new functional studies or additional patient observations. ClinVar releases monthly snapshots rather than maintaining formal version control, so models trained on older releases may learn outdated classifications that have since been revised. Specifying the exact ClinVar release date is essential for reproducibility.
@@ -296,20 +452,30 @@ Variants of uncertain significance constitute the majority of rare variant class
 Despite these limitations, ClinVar remains invaluable. The key is using it appropriately: recognizing biases when training models, accounting for version differences when comparing studies, stratifying performance by ancestry and gene coverage, and treating computational predictions as one line of evidence rather than definitive classifications.
 
 ::: {#fig-clinvar-landscape layout-ncol=3}
-![FIGURE PLACEHOLDER A](../figs/part_1/ch02/04-A-fig-clinvar-landscape.png)
+![Classification distribution showing VUS dominance](../figs/part_1/ch02/04-A-fig-clinvar-landscape.svg)
 
-![FIGURE PLACEHOLDER B](../figs/part_1/ch02/04-B-fig-clinvar-landscape.png)
+![Gene coverage showing uneven classification density](../figs/part_1/ch02/04-B-fig-clinvar-landscape.svg)
 
-![FIGURE PLACEHOLDER C](../figs/part_1/ch02/04-C-fig-clinvar-landscape.png)
+![Classification evolution over time](../figs/part_1/ch02/04-C-fig-clinvar-landscape.svg)
 
-[High] Three-panel figure. Panel A: Pie or bar chart showing distribution of ClinVar classifications (Pathogenic, Likely Pathogenic, VUS, Likely Benign, Benign, Conflicting). Highlight that VUS dominates. Panel B: Heatmap showing classification density by gene, with well-studied genes (*BRCA1*, *BRCA2*, *CFTR*) having many submissions vs sparse coverage elsewhere. Panel C: Timeline showing how classifications evolve (example of a variant reclassified from VUS to Pathogenic over time, illustrating version sensitivity).
+The ClinVar variant interpretation landscape. (A) Distribution of clinical significance classifications, highlighting that variants of uncertain significance dominate the database. (B) Classification density across genes, showing that well-studied genes have orders of magnitude more classified variants than the long tail of rarely-studied genes. (C) Temporal evolution of classifications, illustrating how variant interpretations change as evidence accumulates. Together, these panels reveal why computational variant interpretation remains challenging: most variants lack confident classifications, coverage is highly uneven across genes, and ground truth labels are themselves unstable over time.
 :::
+
 
 ### Complementary Clinical Databases {#sec-ch02-clinical-other}
 
 ClinVar's open-access model and broad submission base make it the most widely used resource, but it is not the only source of clinical variant interpretations. The Human Gene Mutation Database (HGMD) maintains a curated collection of disease-causing mutations compiled from the published literature, with particular depth in rare Mendelian disorders [@stenson_hgmd_2017]. HGMD's professional version includes variants not yet publicly released, and its curation emphasizes literature-reported pathogenic variants rather than the full spectrum of classifications in ClinVar. The Leiden Open Variation Database (LOVD) takes a gene-centric approach, with individual databases maintained by gene experts who curate variants according to locus-specific knowledge [@fokkema_lovd_2011]. LOVD instances often capture variants and functional evidence specific to particular disease communities that may not appear in broader databases.
 
 These resources complement ClinVar in important ways: HGMD provides literature-derived pathogenic variants that may precede ClinVar submissions, while LOVD captures expert knowledge from disease-specific research communities. For model development and benchmarking, awareness of these alternative sources matters because training exclusively on ClinVar may miss variants documented elsewhere, and apparent novel predictions may simply reflect incomplete training data rather than genuine generalization.
+
+| Database | Content Focus | Access Model | Strengths |
+|----------|--------------|--------------|-----------|
+| ClinVar | All classifications | Open access | Broad coverage, standardized format |
+| HGMD | Literature-derived pathogenic | Subscription | Early capture of published variants |
+| LOVD | Gene-specific curation | Open access | Deep expert knowledge per gene |
+| ClinGen | Expert panel consensus | Open access | High-confidence curations |
+
+: Clinical variant databases and their complementary roles. Training on any single database may miss variants documented elsewhere. {#tbl-clinical-databases}
 
 
 ### ClinGen and Expert Curation {#sec-ch02-clingen}
@@ -342,8 +508,6 @@ The *CYP2D6* gene exemplifies the complexity. This cytochrome P450 enzyme metabo
 From a modeling perspective, pharmacogenomic resources offer a complementary type of label linking variants to molecular and clinical outcomes through different mechanisms than Mendelian disease pathogenicity. Where ClinVar labels indicate whether a variant causes disease, PharmGKB labels indicate how a variant affects drug response in individuals who may be otherwise healthy.
 
 
-
-
 ## Inherited Constraints {#sec-ch02-constraints}
 
 Every genomic model inherits both the power and the biases of its training data. A variant effect predictor trained on ClinVar labels absorbs the ascertainment patterns of clinical sequencing: European ancestry overrepresented, rare diseases enriched, incidental findings undersampled. A chromatin model trained on ENCODE immortalized cell lines learns regulatory patterns that may not generalize to primary tissues with different epigenetic landscapes. Models that estimate genetic constraint quantify how strongly purifying selection acts against damaging variants in each gene, comparing observed variant counts to expectations. But when trained on human population databases, these models systematically miss the most severe cases: gene-lethal variants never appear because carriers do not survive to be sequenced.
@@ -351,3 +515,30 @@ Every genomic model inherits both the power and the biases of its training data.
 These biases compound as data flows through analysis pipelines. GWAS summary statistics carry ancestry composition forward into polygenic scores. Conservation scores calculated from biased multiple sequence alignments propagate into variant effect predictions. Foundation model pretraining on reference genomes from limited populations shapes the representations available for all downstream applications. Each transformation amplifies some biases while masking others, making the provenance of model behavior increasingly difficult to trace.
 
 The critical question is not whether models trained on these data contain biases; they do. The question is whether those biases can be characterized, bounded, and ultimately corrected. These foundational datasets appear throughout genomic AI as training labels, evaluation benchmarks, and sometimes both simultaneously. Recognizing when the same data sources serve multiple roles is essential for interpreting model performance honestly and anticipating where generalization will fail. Part VI examines these challenges in depth: data partitioning strategies that account for shared ancestry and homology (@sec-ch11-homology-aware-splitting), population structure effects that confound genetic associations (@sec-ch22-ancestry-confounding), and ascertainment patterns that create circularity in clinical labels (@sec-ch22-label-bias).
+
+
+::: {.callout-note title="Chapter Summary"}
+
+**Key Concepts Covered:**
+
+- **Reference genomes and gene annotations** provide the coordinate system for all genomic analysis; choices embedded in these resources propagate through downstream models
+- **Population variant catalogs** (dbSNP, 1000 Genomes, gnomAD) establish frequency baselines and constraint metrics; ancestry representation biases affect all models using these data
+- **Biobanks** link genotypes to phenotypes at scale, enabling GWAS and polygenic score development; European ancestry overrepresentation limits global applicability
+- **Functional genomics datasets** (ENCODE, Roadmap, GTEx) provide training labels for regulatory models; cell type coverage determines what models can learn
+- **Clinical databases** (ClinVar, ClinGen) aggregate pathogenicity classifications; circularity between computational predictors and clinical labels complicates benchmarking
+- **Phenotype quality** varies dramatically based on definition, EHR coding practices, and ascertainment; noisy labels attenuate genetic signals
+
+**Critical Literacy Framework:**
+
+When evaluating any genomic ML model, ask:
+
+1. What data was it trained on, and what populations/cell types are represented?
+2. What are the known biases and blind spots of those training resources?
+3. Does the evaluation benchmark share data sources with training (circularity risk)?
+4. Will the model's training population match the deployment population?
+
+**Looking Ahead:**
+
+The data landscape described here flows directly into Chapter 3 (@sec-ch03-gwas), where we examine how GWAS transforms biobank data into genetic associations. The biases introduced by ancestry representation, phenotype quality, and population structure become concrete statistical challenges addressed throughout Part 2 (Learning & Evaluation) and Part 5 (Responsible Deployment).
+
+:::

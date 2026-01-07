@@ -1,7 +1,51 @@
 # Protein Language Models {#sec-ch15-protein-lm}
 
+::: {.callout-note title="Chapter Overview"}
+**Prerequisites:** Understanding of transformer architectures and self-attention (@sec-ch07-attention), masked language modeling objectives (@sec-ch08-mlm), and basic protein biochemistry (amino acids, protein folding). Familiarity with DNA language models (@sec-ch14-dna-lm) provides helpful context but is not required.
+
+**Learning Objectives:** After this chapter, you should be able to:
+
+1. Explain how masked language modeling on protein sequences yields emergent biological knowledge (structure, contacts, function)
+2. Describe the ESM model family architecture and how capabilities scale with model size
+3. Articulate why attention patterns in PLMs capture evolutionary coupling and residue contacts
+4. Apply zero-shot variant effect prediction using log-likelihood ratios from PLMs
+5. Evaluate when PLM-based approaches succeed versus when they face fundamental limitations
+
+**Key Insight:** Evolution has already solved the protein structure and function problem billions of times over. Protein language models learn to read those solutions from sequence statistics alone, extracting structural and functional knowledge that selection has encoded in surviving sequences.
+:::
+
 
 Evolution is the most thorough experiment ever conducted on protein sequences. Over billions of years, natural selection tested trillions of amino acid combinations, ruthlessly eliminating sequences that failed to fold or function while preserving those that worked. The sequences populating modern databases are not random strings but successful solutions to biological problems, each implicitly encoding information about structure, stability, and function. The central insight of protein language models is that this evolutionary record, comprising hundreds of millions of sequences in databases like UniRef, contains sufficient information to learn the fundamental principles of protein biology without ever being shown a crystal structure or a functional assay.
+
+::: {.callout-note title="Deep Dive: Protein Structure Levels"}
+**For ML readers:** Protein structure is hierarchically organized:
+
+**Primary structure:** The linear sequence of amino acids (e.g., Met-Ala-Lys-Glu...). This is the input to protein language models.
+
+**Secondary structure:** Local folding patterns:
+
+- *Alpha helix*: spiral shape stabilized by hydrogen bonds between nearby residues
+- *Beta sheet*: extended strands connected by hydrogen bonds
+- *Random coil/loops*: unstructured regions connecting helices and sheets
+
+**Tertiary structure:** The complete 3D arrangement of a single protein chain. Determined by:
+
+- Hydrophobic residues packing into the protein core
+- Disulfide bonds between cysteines
+- Salt bridges between charged residues
+
+**Quaternary structure:** Multiple protein chains assembled into a complex (e.g., hemoglobin has four subunits).
+
+**Why this matters for PLMs:**
+
+| Structure Level | What PLMs Learn | Evidence |
+|-----------------|-----------------|----------|
+| Secondary | Attention patterns follow helix/sheet boundaries | @sec-ch15-emergent-knowledge |
+| Tertiary | Residue contacts visible in attention matrices | Contact prediction accuracy |
+| Conservation | Constrained positions = high prediction confidence | Correlation with alignment-based metrics |
+
+The remarkable finding is that training only on primary structure (sequences) yields models that implicitly encode higher-level structural information.
+:::
 
 This insight transformed computational biology. Traditional approaches to understanding proteins required either expensive experimental characterization or physics-based simulations that struggled with the complexity of protein behavior. Multiple sequence alignments could extract conservation patterns, but required finding homologs for each protein of interest and could not generalize beyond specific families. Protein language models changed the equation by compressing evolutionary knowledge into neural network parameters that transfer across the entire protein universe. A model trained to predict masked amino acids learns, as a byproduct, which residues contact each other in three-dimensional space, which positions tolerate variation, and which substitutions disrupt function. The physics of protein folding, selected across evolutionary time, emerges from the statistics of surviving sequences.
 
@@ -13,6 +57,10 @@ The *ESM* family demonstrated that transformers can learn protein structure and 
 The *ESM* (Evolutionary Scale Modeling) family developed at Meta AI Research represents the most influential protein language model lineage, progressing from an initial proof-of-concept to models capable of predicting three-dimensional structure from sequence alone. The progression from *ESM-1b* through *ESM-2* illustrates how scaling transformer architectures yields systematic improvements in biological knowledge extraction, while revealing what self-supervised learning on protein sequences can and cannot achieve.
 
 ### ESM-1b: Establishing the Paradigm {#sec-ch15-esm1b}
+
+::: {.callout-tip title="Stop and Think"}
+Before reading on, consider: if you wanted to teach a neural network about protein biology without providing any labels (no structure annotations, no function labels, no conservation scores), what training objective might you use? What information is implicitly present in the sequences themselves?
+:::
 
 The Evolutionary Scale Modeling project demonstrated that transformer language models trained on protein sequences learn biologically meaningful representations without explicit supervision [@rives_esm_2021]. The approach was strikingly simple: take the BERT architecture that had revolutionized natural language processing, replace words with amino acids, and train on protein sequence databases. The resulting models learned far more than anyone expected.
 
@@ -28,20 +76,33 @@ Secondary structure emerges in the attention patterns. When researchers analyzed
 
 More remarkably, *ESM-1b* captures residue-residue contacts. Amino acids that are distant in the linear sequence but close in three-dimensional space attend to each other in the model's attention matrices. This emergent capability suggests the model learns aspects of protein folding purely from sequence statistics. When attention weights were converted to contact predictions, they achieved accuracy approaching dedicated contact prediction methods that were explicitly trained for that task.
 
+::: {.callout-important title="Key Insight"}
+The model was never told about protein structure, yet structure emerged. This is the central surprise of protein language models: the training objective (predict masked amino acids) is purely about sequence statistics, but the solution the model finds encodes structural relationships. Evolution has embedded so much physical information in sequence constraints that learning sequence patterns is, implicitly, learning structure.
+:::
+
 The model's masked token predictions correlate strongly with position-specific conservation scores derived from multiple sequence alignments. *ESM* effectively learns which positions tolerate variation and which are evolutionarily constrained, extracting this information from the statistical patterns across 33 million sequences rather than from explicit conservation annotations. Positions where the model confidently predicts specific amino acids correspond to positions that are conserved across protein families.
 
 Perhaps most striking, attention concentrates on functionally important positions. Catalytic residues, binding sites, and other sites of biological importance receive elevated attention even without explicit functional annotation in the training data. The model identifies that certain sequence positions are more informative about surrounding context, and these positions frequently correspond to sites where nature has constrained variation because they perform essential functions.
 
 ::: {#fig-plm-emergent layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](../figs/part_3/ch12/01-A-fig-plm-emergent.png)
+![Attention captures residue contacts](../figs/part_3/ch15/01-A-fig-plm-emergent.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_3/ch12/01-B-fig-plm-emergent.png)
+![Secondary structure emerges in embedding space](../figs/part_3/ch15/01-B-fig-plm-emergent.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_3/ch12/01-C-fig-plm-emergent.png)
+![Attention concentrates on functional sites](../figs/part_3/ch15/01-C-fig-plm-emergent.svg)
 
-![**FIGURE PLACEHOLDER D**](../figs/part_3/ch12/01-D-fig-plm-emergent.png)
+![Evolutionary relationships encoded in embeddings](../figs/part_3/ch15/01-D-fig-plm-emergent.svg)
 
-[Essential] Multi-panel figure. Panel A (Training Objective): Protein sequence with 15% masked; model predicting from context; "No structure, function, or evolutionary labels." Panel B (Secondary Structure in Attention): Attention heatmap with alpha helix and beta sheet regions highlighted; attention concentrating along structural patterns. Panel C (Residue Contacts from Attention): Attention weights converted to contact map; ground truth from crystal structure overlaid; strong correspondence. Panel D (Functional Site Discovery): Protein structure cartoon; positions with elevated attention highlighted; overlap with catalytic residues, binding sites.
+Emergent properties of protein language models. (A) Specific attention heads capture residue-residue contacts with high correlation to experimental structures. (B) Secondary structure emerges as distinct clusters in embedding space. (C) Attention concentrates on functionally important positions including catalytic sites and binding pockets. (D) Evolutionary relationships are encoded, with proteins clustering by taxonomic origin. All properties emerge from masked language modeling on protein sequences without explicit structural or functional supervision, demonstrating that evolutionary sequence patterns encode rich biological information.
+:::
+
+::: {.callout-tip title="Knowledge Check"}
+Without looking back, can you articulate what biological knowledge emerges from *ESM-1b* despite the model never receiving explicit labels for these properties? List at least three types of emergent knowledge.
+
+<details>
+<summary>Check your answer</summary>
+The model learns: (1) secondary structure patterns (alpha helices, beta sheets) visible in attention matrices, (2) residue-residue contacts between positions distant in sequence but close in 3D space, (3) evolutionary conservation patterns that identify constrained positions, and (4) functional site locations where catalytic residues and binding sites receive elevated attention.
+</details>
 :::
 
 ### ESM-2: Scaling Up {#sec-ch15-esm2}
@@ -64,13 +125,13 @@ Performance scales smoothly with model size across structure prediction, contact
 The scaling behavior mirrors observations in natural language processing, where larger models consistently capture more nuanced patterns. This predictable relationship between scale and capability provides a roadmap for model development: if more biological knowledge is needed, train a larger model on more data. The practical implications shaped how the field approached subsequent genomic foundation models, with the scaling law framework and its implications discussed in @sec-ch13-scaling.
 
 ::: {#fig-esm2-scaling layout-ncol=3}
-![**FIGURE PLACEHOLDER A**](../figs/part_3/ch12/02-A-fig-esm2-scaling.png)
+![Loss vs. model size](../figs/part_3/ch15/02-A-fig-esm2-scaling.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_3/ch12/02-B-fig-esm2-scaling.png)
+![Downstream performance scales consistently](../figs/part_3/ch15/02-B-fig-esm2-scaling.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_3/ch12/02-C-fig-esm2-scaling.png)
+![ESM-2 follows compute-optimal scaling](../figs/part_3/ch15/02-C-fig-esm2-scaling.svg)
 
-[Essential] Scaling analysis. Panel A (Performance vs. Parameters): Log-log plot; x-axis parameters (8M → 15B); y-axis performance on structure-related tasks; multiple curves; no sign of saturation. Panel B (Model Family Table): *ESM-2* variants stacked by size; visual encoding of layers, hidden dimension, performance; annotate where capabilities emerge (~150M useful embeddings, ~650M structural understanding, ~3B near-optimal single-sequence structure, ~15B approaches MSA methods). Panel C (Capability Thresholds): Specific capabilities as step functions; contact prediction gradual; zero-shot structure emergent at ~650M.
+Scaling laws for protein language models demonstrated by ESM-2. (A) Perplexity decreases as a power law of parameter count from 8M to 15B parameters. (B) Downstream task performance scales consistently across diverse applications including contact prediction, structure modeling, and variant effect scoring. (C) ESM-2 development followed near-optimal compute scaling, maximizing capability for given resources. These scaling relationships, mirroring observations in natural language models, suggest that continued scaling would yield further improvements in protein understanding.
 :::
 
 
@@ -84,16 +145,32 @@ The success of *ESM* raised a natural question: how much depends on the specific
 
 *ProtXLNet* explores permutation language modeling, capturing bidirectional context without the artificial [MASK] token that BERT-style models require during training [@yang_xlnet_2020]. By training on all possible token orderings, XLNet-style models learn to predict each token from any subset of context tokens, potentially capturing richer dependencies at the cost of more complex training.
 
+| Architecture | Model | Key Feature | Strengths | Best Use Cases |
+|--------------|-------|-------------|-----------|----------------|
+| Encoder-only (BERT) | *ESM*, *ProtBERT* | Bidirectional attention, MLM objective | Excellent embeddings, efficient inference | Classification, embedding extraction, variant scoring |
+| Encoder-decoder (T5) | *ProtT5* | Separate encoder/decoder, seq2seq capable | Generation tasks, flexible output | Sequence design, structure-conditioned generation |
+| Autoregressive (XLNet) | *ProtXLNet* | Permutation language modeling | Richer dependencies, no [MASK] mismatch | Tasks sensitive to pretraining objective |
+
+: Comparison of protein language model architectures. All learn meaningful representations when trained on sufficient data, but architectural differences affect downstream task suitability.
+
 These architectural variants demonstrate that the protein language modeling paradigm generalizes beyond specific design choices. All architectures learn meaningful representations when trained on sufficient data, though performance differences emerge for specific downstream tasks. Encoder-only models excel at classification and embedding tasks where the entire sequence is available. Encoder-decoder models enable generation tasks where outputs must be produced token by token.
 
 
 ## Attention and Evolutionary Coupling {#sec-ch15-attention-coupling}
+
+::: {.callout-tip title="Stop and Think"}
+Consider two amino acid positions in a protein that must physically contact each other for the protein to fold correctly. If a mutation at position A disrupts the contact, what evolutionary pressure would exist at position B? How might this leave a signature in sequence databases that a language model could detect?
+:::
 
 The emergence of contact information in *ESM's* attention patterns connects to a deeper principle: **evolutionary coupling**. When two residues must maintain physical contact for a protein to function, mutations at one position create selective pressure for compensatory mutations at the other. Over evolutionary time, these correlated mutations leave statistical signatures in protein families that can be detected through covariance analysis of multiple sequence alignments.
 
 Direct Coupling Analysis (DCA) and related methods extract these coevolutionary signals to predict residue-residue contacts [@morcos_dca_2011]. The approach requires constructing multiple sequence alignments, computing covariance matrices, and applying statistical corrections to distinguish direct from indirect correlations. The resulting contact predictions enabled the first accurate structure predictions for proteins lacking homologs in structural databases.
 
 Protein language models learn to extract similar information through a different route. Rather than computing covariance explicitly, transformers learn attention patterns that capture which positions inform predictions at other positions. When position *i* strongly attends to position *j* during masked prediction, the model has learned that knowing the amino acid at *j* helps predict the amino acid at *i*. This is precisely the signature of evolutionary coupling: positions that covary because they must maintain physical contact.
+
+::: {.callout-important title="Key Insight"}
+Traditional coevolution analysis (DCA) requires computing alignments and covariance matrices for each protein family. PLMs learn to perform this analysis implicitly during training on millions of sequences, compressing the evolutionary logic into attention patterns that apply immediately to any new sequence. The attention mechanism rediscovers coevolution as the optimal strategy for predicting masked tokens.
+:::
 
 The attention-based approach offers several advantages over traditional covariance analysis. Language models generalize across protein families, learning shared principles that transfer to proteins with sparse evolutionary sampling. They handle the statistical challenge of distinguishing direct from indirect correlations implicitly through deep architecture rather than requiring explicit correction. And they provide rich representations beyond binary contact predictions, encoding information about the strength and nature of residue relationships.
 
@@ -114,16 +191,23 @@ The computational speedup is substantial: approximately 60-fold faster than *Alp
 
 *ESMFold* achieves atomic-level accuracy for many proteins, though slightly below *AlphaFold2* for proteins that benefit strongly from MSA information. The accuracy gap is largest for proteins with sparse evolutionary sampling, where explicit alignments provide information that single-sequence analysis cannot fully recover. For well-represented protein families, *ESMFold* approaches *AlphaFold2* accuracy at a fraction of the computational cost.
 
+| Method | Input | Time per Protein | Best Accuracy Cases | Limitation Cases |
+|--------|-------|------------------|---------------------|------------------|
+| *AlphaFold2* | Sequence + MSA | Hours | Deep MSA available | Orphan proteins |
+| *ESMFold* | Sequence only | Minutes | Well-represented families | Sparse evolutionary sampling |
+
+: Comparison of structure prediction approaches. The choice depends on computational constraints and the evolutionary context of target proteins.
+
 ::: {#fig-esmfold layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](../figs/part_3/ch12/03-A-fig-esmfold.png)
+![ESMFold eliminates MSA requirement](../figs/part_3/ch15/03-A-fig-esmfold.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_3/ch12/03-B-fig-esmfold.png)
+![Speed vs. accuracy trade-off](../figs/part_3/ch15/03-B-fig-esmfold.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_3/ch12/03-C-fig-esmfold.png)
+![ESMFold fails for specific protein categories](../figs/part_3/ch15/03-C-fig-esmfold.svg)
 
-![**FIGURE PLACEHOLDER D**](../figs/part_3/ch12/03-D-fig-esmfold.png)
+![ESMFold enables proteome-scale prediction](../figs/part_3/ch15/03-D-fig-esmfold.svg)
 
-[High] Four-panel figure. Panel A (Architecture Pipeline): Single sequence → *ESM-2* (15B) embeddings → Structure module → 3D coordinates; "No MSA required." Panel B (Speed Comparison): Bar chart of *AlphaFold2* (hours) vs *ESMFold* (minutes); 60× speedup. Panel C (Accuracy Comparison): Scatter plot *ESMFold* vs *AlphaFold2* colored by MSA depth; well-represented proteins both accurate; sparse MSA proteins *ESMFold* more robust. Panel D (Metagenomic Application): Earth Microbiome Project proteins; many lack homologs; *ESMFold* enables scale.
+ESMFold structure prediction from single sequences. (A) Architecture comparison: ESMFold uses pretrained ESM-2 representations from single sequences, eliminating AlphaFold2's MSA requirement and achieving 60× speedup. (B) Speed-accuracy trade-off: ESMFold achieves ~85% of AlphaFold2's accuracy at 50× the speed. (C) Failure modes: orphan proteins, novel folds, and dynamic proteins remain challenging without evolutionary context. (D) Scale application: the ESM Metagenomic Atlas predicted structures for 617 million proteins, demonstrating capabilities impossible with MSA-based methods.
 :::
 
 ### What ESMFold Reveals About PLMs {#sec-ch15-esmfold-implications}
@@ -165,10 +249,23 @@ Enzyme classification benefits similarly from PLM representations. The Enzyme Co
 
 Binding site prediction applies attention analysis to identify which residues participate in ligand binding, protein-protein interactions, or nucleic acid recognition. Positions that the model identifies as important for contextual prediction often correspond to functionally important sites, including binding pockets and catalytic residues [@fang_deepprosite_2023]. This capability enables rapid identification of functional sites in newly sequenced proteins.
 
+::: {.callout-tip title="Knowledge Check"}
+A researcher has a novel protein sequence from an environmental sample with no detectable homologs in existing databases. Which PLM-based predictions would you expect to be most reliable, and which would be most uncertain? Consider: structure prediction, function prediction, and variant effect prediction.
+
+<details>
+<summary>Consider before revealing</summary>
+For orphan proteins, **variant effect prediction** may be most uncertain because the model has limited evolutionary context for what is "normal" at each position. **Function prediction** via GO terms will also struggle if the protein represents a truly novel functional category. **Structure prediction** via ESMFold may perform surprisingly well if the protein uses common structural motifs even without close homologs, though unusual folds will be challenging. The fundamental limitation is that all PLM capabilities ultimately derive from patterns learned across evolutionary data, making truly novel proteins inherently difficult.
+</details>
+:::
+
 
 ## Variant Effect Prediction {#sec-ch15-variant-effects}
 
 A critical clinical application of protein language models is predicting the effects of amino acid substitutions. Missense variants are the most common type of protein-coding mutation, and clinical genetics pipelines must routinely assess whether specific substitutions are likely pathogenic or benign. The traditional approach required either direct experimental characterization or computational methods trained on labeled pathogenicity data, both of which scale poorly to the millions of possible variants in each human genome (see @sec-ch04-vep-classical for discussion of classical approaches).
+
+::: {.callout-warning title="Mathematical Detail"}
+The following section uses log-likelihood ratios from the language model to score variants. If you are unfamiliar with log probabilities, the intuition is: the model assigns a probability to each possible amino acid at each position. If the model thinks the mutant amino acid is less likely than the wild-type, the variant receives a negative score (predicted deleterious). If the mutant is equally or more likely, the variant receives a zero or positive score (predicted benign).
+:::
 
 *ESM-1v* demonstrated that PLMs can predict variant effects without any training on variant labels [@meier_esm-1v_2021]. The approach exploits the masked language modeling objective directly: for a variant at position $i$ changing amino acid $a$ to amino acid $b$, compute the log-likelihood ratio:
 
@@ -180,17 +277,20 @@ If the model assigns higher probability to the mutant amino acid than the wild-t
 
 The intuition is straightforward. Evolution has shaped protein sequences such that certain positions strongly prefer certain amino acids. Substitutions that violate these preferences are more likely to disrupt function. The language model captures these preferences through training on millions of evolutionarily successful sequences. Variants that the model finds surprising are more likely to be functionally disruptive.
 
+::: {.callout-important title="Key Insight"}
+Zero-shot variant prediction inverts the typical ML workflow. Instead of training on labeled variant data (benign vs. pathogenic), the model learns what "normal" looks like from evolutionary data. Abnormal variants are detected as deviations from learned expectations, requiring no pathogenicity labels whatsoever. This explains why PLM scores generalize across proteins: they measure violation of evolutionary constraint rather than matching patterns of known pathogenic variants.
+:::
+
 ::: {#fig-plm-variant-scoring layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](../figs/part_3/ch12/04-A-fig-plm-variant-scoring.png)
+![Log-likelihood ratio scoring mechanism](../figs/part_3/ch15/04-A-fig-plm-variant-scoring.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_3/ch12/04-B-fig-plm-variant-scoring.png)
+![Evolutionary intuition behind zero-shot scoring](../figs/part_3/ch15/04-B-fig-plm-variant-scoring.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_3/ch12/04-C-fig-plm-variant-scoring.png)
+![Deep mutational scanning correlation](../figs/part_3/ch15/04-C-fig-plm-variant-scoring.svg)
 
-![**FIGURE PLACEHOLDER D**](../figs/part_3/ch12/04-D-fig-plm-variant-scoring.png)
+![ClinVar pathogenicity discrimination](../figs/part_3/ch15/04-D-fig-plm-variant-scoring.svg)
 
-[High] Four-panel figure. Panel A (The Scoring Mechanism): Protein sequence with variant position; $P(\mathrm{ref}\mid \mathrm{context})$ vs $P(\mathrm{var}\mid \mathrm{context})$; Score $= \log P(\mathrm{var}) - \log P(\mathrm{ref})$. Panel B (Intuition): Evolution tested billions of substitutions; low probability variants $=$ evolutionarily disfavored $=$ likely disruptive. Panel C (Benchmark Performance): ROC curves *ESM-1v* vs classical methods on deep mutational scanning data; competitive without variant labels. Panel D (*AlphaMissense* Enhancement): *ESM* embeddings + *AlphaFold2* structural features; combined model; $71\text{M}$ precomputed scores; performance boost from structure.
-
+Zero-shot variant effect prediction from protein language models. (A) The scoring mechanism computes log-likelihood ratio between variant and reference amino acids given sequence context. More negative scores indicate variants the model finds surprising—evolutionarily disfavored substitutions. (B) The evolutionary intuition: billions of years of natural selection have tested trillions of mutations. Low-probability variants violate learned evolutionary constraints, suggesting functional disruption. (C) Correlation with deep mutational scanning experiments validates that PLM scores capture functional effects. (D) Discrimination of ClinVar pathogenic vs. benign variants approaches methods trained with supervised labels, demonstrating that evolutionary constraint encodes pathogenicity information.
 :::
 
 
@@ -199,6 +299,15 @@ Brandes and colleagues applied *ESM-1b* to predict effects for all approximately
 *AlphaMissense* extended this approach by combining PLM representations with structural context from predicted protein structures [@cheng_alphamissense_2023]. The integration of sequence-based and structure-based signals improves accuracy, particularly for variants affecting protein stability or buried residues. *AlphaMissense* provides predictions for all approximately 71 million possible single amino acid substitutions in the human proteome.
 
 The detailed comparison of variant effect prediction methods, including how PLM-based scores integrate with clinical classification frameworks, is covered in @sec-ch17-alphamissense. The calibration of these scores to ACMG criteria appears in @sec-ch14-acmg-mapping, and integration into rare disease diagnostic workflows in @sec-ch26-fm-scoring. Here, the key point is that protein language models provide the foundational representations that make accurate zero-shot variant prediction possible.
+
+::: {.callout-tip title="Practical Guidance: Choosing a PLM for Variant Effect Prediction"}
+
+- **For quick screening:** Use precomputed scores from *ESM-1b* (450M variants) or *AlphaMissense* (71M proteome-wide). Available through databases and APIs.
+- **For novel proteins:** Run *ESM-1v* or *ESM-2* inference directly. Larger models (650M+) generally perform better.
+- **For structural context:** Consider *AlphaMissense* when protein structure is relevant to the variant mechanism (buried residues, stability effects).
+- **For integration with clinical pipelines:** PLM scores are one line of evidence among many. See @sec-ch17-vep-fm for integration with ACMG criteria and other computational evidence.
+- **Limitations to remember:** Zero-shot scores reflect evolutionary constraint, not direct pathogenicity. A constrained position is likely functionally important, but not all variants at important positions cause disease.
+:::
 
 
 ## Integration with Structure Prediction {#sec-ch15-structure-integration}
@@ -221,9 +330,9 @@ The trajectory from *ESM* to *ESMFold* to integration with design tools illustra
 Despite their success, protein language models face several limitations that inform the development of genomic models and guide appropriate application.
 
 ::: {#fig-plm-limitations}
-![**FIGURE PLACEHOLDER**](../figs/part_3/ch12/05-fig-plm-limitations.png)
+![Limitations and failure modes of protein language models](../figs/part_3/ch15/05-fig-plm-limitations.svg)
 
-[Enhancing] Grid of limitation categories with visual examples. Orphan Proteins: Phylogenetic tree with isolated lineage; no homologs = no evolutionary context; performance degradation curve. Novel Folds: Designed protein with non-natural topology; predictions unreliable outside training. Conformational Flexibility: Protein with multiple conformations; PLM produces single embedding. Epistasis: Two distant positions; individual mutations benign; combination deleterious; models assume independence. Interpretability: Attention correlates with biology but mechanism remains opaque.
+Fundamental limitations of protein language models. Orphan proteins lacking evolutionary context produce unreliable predictions. Novel folds designed computationally lie outside the training distribution. Intrinsically disordered proteins and dynamic conformations cannot be captured in single embeddings. Epistatic interactions between mutations are not modeled by independent position scoring. Post-translational modifications that alter function are invisible to sequence-only models. These limitations guide appropriate application: PLMs excel for well-characterized protein families but require caution for edge cases where evolutionary learning provides insufficient guidance.
 :::
 
 ### Orphan and Dark Proteins {#sec-ch15-orphan-proteins}
@@ -247,6 +356,10 @@ Most variant effect predictions assume independence: the effect of mutation A do
 ### Interpretability {#sec-ch15-interpretability}
 
 While attention patterns correlate with biological features, understanding exactly what PLMs learn remains challenging. The field is developing interpretation methods, including attention pattern analysis (@sec-ch24-attention) and probing studies (@sec-ch24-probing), but PLMs remain partially opaque. The distinction between plausible and faithful explanations, critical for clinical applications, is examined in @sec-ch24-interpretability. For clinical applications where explanations matter, this interpretability gap limits adoption. A prediction that a variant is pathogenic is more useful when accompanied by mechanistic insight into why the variant disrupts function.
+
+::: {.callout-tip title="Stop and Think"}
+Consider applying a PLM to predict variant effects in two scenarios: (1) a well-characterized human enzyme with thousands of known homologs, and (2) a viral protein from a newly emerged pathogen with only a few known relatives. Which PLM limitations are most relevant in each case? How might you adjust your interpretation of the predictions accordingly?
+:::
 
 
 ## Lessons for Genomic Foundation Models {#sec-ch15-lessons}
@@ -281,3 +394,35 @@ Protein language models established that transformer architectures can learn dee
 This success directly motivated genomic language models. If proteins constitute a language that transformers can learn, perhaps DNA does too. The DNA language models examined in @sec-ch14-dna-lm adapt protein language model architectures and training strategies to the distinct challenges of genomic sequences: longer contexts, different alphabets, ambiguous tokenization, and the full complexity of gene regulation beyond protein coding. RNA language models occupy an intermediate position, sharing features with both protein and DNA modeling while addressing the unique challenges of RNA structure and processing.
 
 The integration path extends beyond sequence modeling. Just as protein language model representations feed into structure prediction (*ESMFold*) and variant effect prediction (*AlphaMissense*), genomic language model embeddings integrate into regulatory models (@sec-ch16-regulatory) and clinical applications (@sec-ch28-rare-disease, @sec-ch27-clinical-risk). Protein design methods (@sec-ch30-design) demonstrate how generative modeling builds on the representations that language models provide. Throughout this progression, the principle that *ESM* established remains: self-supervised learning on biological sequences captures knowledge that transfers across diverse applications.
+
+
+::: {.callout-note title="Chapter Summary"}
+
+**Key Concepts Covered:**
+
+- **ESM model family:** Transformer-based protein language models trained on masked language modeling, from ESM-1b (650M parameters) through ESM-2 (up to 15B)
+- **Emergent knowledge:** Structure, contacts, conservation, and functional sites emerge from sequence training without explicit labels
+- **Evolutionary coupling:** Attention patterns learn coevolutionary relationships between residues that must maintain physical contact
+- **ESMFold:** Single-sequence structure prediction using PLM embeddings, 60x faster than AlphaFold2
+- **Zero-shot variant prediction:** Log-likelihood ratios from PLMs score variants without pathogenicity training data
+- **Limitations:** Orphan proteins, novel folds, conformational flexibility, epistasis, and interpretability
+
+**Main Takeaways:**
+
+1. Evolution has encoded protein structure and function in sequence statistics. PLMs learn to decode this information through self-supervised training.
+
+2. The training objective (predict masked amino acids) is simple, but what the model learns to achieve this objective is profound: structural relationships, evolutionary constraints, and functional importance.
+
+3. PLM capabilities scale predictably with model size, providing a roadmap for development.
+
+4. Zero-shot variant prediction works because the model has learned what "normal" looks like from evolutionary data. Abnormal variants are detected as deviations from expectations.
+
+5. PLMs face fundamental limitations for sequences outside evolutionary training distributions (orphan proteins, novel folds) and struggle with dynamic properties (conformational flexibility, epistasis).
+
+**Connections to Other Chapters:**
+
+- DNA language models (@sec-ch14-dna-lm) adapt this paradigm to genomic sequences
+- Variant effect prediction methods (@sec-ch17-vep-fm) integrate PLM scores with other evidence
+- Protein design (@sec-ch30-design) builds on PLM representations for generative tasks
+- Interpretability methods (@sec-ch24-interpretability) probe what PLMs have learned
+:::

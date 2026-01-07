@@ -1,5 +1,19 @@
 # Transformers and Attention {#sec-ch07-attention}
 
+::: {.callout-note title="Chapter Overview"}
+**Prerequisites:** This chapter builds on the convolutional architectures from @sec-ch06-cnn (particularly the receptive field concept) and the tokenization/embedding strategies from @sec-ch05-representations. Familiarity with matrix multiplication and basic neural network concepts (from @sec-apx-a-dl) will help with the mathematical sections.
+
+**Learning Objectives:** After completing this chapter, you should be able to:
+
+1. Explain how self-attention computes relationships between all sequence positions simultaneously
+2. Describe the query-key-value mechanism and why it separates "what to look for" from "what to send"
+3. Compare absolute versus relative positional encodings and their genomic implications
+4. Articulate why quadratic complexity limits standard transformers for genomic applications
+5. Select appropriate transformer variants (encoder-only, decoder-only, hybrid) for different genomic tasks
+
+**Key Insight:** Attention asks "what distant information matters here?" rather than "what local pattern exists here?" This shift from local to global context is what enables modeling of enhancer-promoter interactions, long-range splicing effects, and other regulatory relationships that span tens of kilobases.
+:::
+
 Where convolutional networks ask "what local pattern exists here," attention asks a different question: "what distant information matters here?" This reformulation changed what genomic models could learn. The convolutional architectures examined in @sec-ch06-cnn detect motifs, chromatin marks, and regulatory grammar with high fidelity, but they remain blind to dependencies beyond their **receptive field**. Attention computes direct interactions between all positions simultaneously, allowing a nucleotide near a gene promoter to attend to an enhancer 100 kilobases away without information passing through intermediate layers. The shift is not merely architectural; it reflects a different assumption about how sequence encodes function. Local patterns matter, but so do long-range relationships that convolutions cannot capture.
 
 The **attention mechanism**, introduced for machine translation by Vaswani et al., resolved a tension that had constrained sequence modeling for years [@vaswani_attention_2017]. Recurrent networks could maintain context across arbitrary distances but processed sequences one position at a time, creating training bottlenecks that limited practical sequence length. Convolutional networks processed sequences in parallel but could only integrate information within fixed receptive fields. Attention achieves both: parallel computation across all positions with direct modeling of arbitrary-range dependencies. For genomic sequences, where enhancer-promoter interactions span tens of kilobases and topologically associating domains organize contacts across megabases, this capacity for long-range modeling proved transformative.
@@ -12,24 +26,32 @@ Attention enables capabilities that convolutions cannot achieve. Regulatory inte
 A 28-year-old woman presents with dilated cardiomyopathy and a variant of uncertain significance in the *LMNA* gene's promoter region. Her clinician needs to determine whether this variant disrupts regulatory elements that control *LMNA* expression in cardiac tissue. The relevant information spans thousands of base pairs: transcription factor binding sites flanking the variant, enhancers that drive cardiac-specific expression, and insulators that constrain regulatory interactions. A model that can only aggregate local context (through convolutional or recurrent operations) must pass information through many intermediate layers, each adding noise and limiting what survives the journey. When this information pathway fails, the variant appears as noise rather than the pathogenic regulatory disruption it may represent. The fundamental question is how to let any position in a sequence directly access information from any other position, regardless of distance.
 
 ::: {#fig-self-attention layout-ncol=3}
-![**FIGURE PLACEHOLDER A**](../figs/part_2/ch07/01-A-fig-self-attention.png)
+![Input embeddings](../figs/part_2/ch07/01-A-fig-self-attention.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_2/ch07/01-B-fig-self-attention.png)
+![Query, Key, Value projections](../figs/part_2/ch07/01-B-fig-self-attention.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_2/ch07/01-C-fig-self-attention.png)
+![Attention score matrix](../figs/part_2/ch07/01-C-fig-self-attention.svg)
 
-![**FIGURE PLACEHOLDER D**](../figs/part_2/ch07/01-D-fig-self-attention.png)
+![Attention weight matrix](../figs/part_2/ch07/01-D-fig-self-attention.svg)
 
-![**FIGURE PLACEHOLDER E**](../figs/part_2/ch07/01-E-fig-self-attention.png)
+![Weighted value aggregation](../figs/part_2/ch07/01-E-fig-self-attention.svg)
 
-[Essential] Step-by-step visualization of self-attention on a short regulatory sequence. Panel A: Input embeddings for ~10 positions. Panel B: Query, Key, Value projections (show W^Q, W^K, W^V matrices). Panel C: Attention score matrix (query-key dot products, pre-softmax). Panel D: Attention weight matrix (post-softmax, showing which positions attend to which). Panel E: Weighted sum of values producing output. Annotate the key equation at each step.
+Step-by-step visualization of self-attention on a regulatory sequence. (A) Input embeddings represent each nucleotide position as a learned vector. (B) Linear projections produce query (what to seek), key (what to advertise), and value (what to send) vectors through learned weight matrices. (C) Attention scores are computed as scaled dot products between all query-key pairs, capturing content-based relevance. (D) Softmax normalization converts scores to attention weights forming probability distributions over positions. (E) Each output is a weighted sum of value vectors, with weights determining how much each position contributes. This mechanism enables direct communication between any two positions regardless of sequence distance.
 :::
 
 **Self-attention** answers this question by computing all pairwise interactions simultaneously, allowing the model to directly relate any position to any other regardless of distance. Where convolutions apply fixed filters uniformly across the sequence, attention performs dynamic routing: each position queries the entire sequence and aggregates information based on content-dependent relevance scores. The routing changes for every input because attention weights depend on what the sequence contains, not just where positions sit relative to each other. For the *LMNA* variant, this means the model can directly assess whether the variant position interacts with known cardiac enhancers without that signal degrading through layer after layer of local aggregation.
 
 ### Query, Key, and Value Vectors {#sec-ch07-qkv}
 
+::: {.callout-warning title="Mathematical Content Ahead"}
+The next section presents the mathematical formulation of attention. The key equations are the scaled dot-product ($\text{score}(q_i, k_j) = \frac{q_i \cdot k_j}{\sqrt{d_k}}$) and the weighted aggregation. If you find the notation challenging, focus on the intuition: queries ask questions, keys advertise content, and values carry the actual information that flows between positions.
+:::
+
 At each position in the input sequence, self-attention computes three vectors: a **query**, a **key**, and a **value**. These vectors emerge from multiplying the input embedding at that position by three learned weight matrices $W^Q$, $W^K$, and $W^V$. The query represents what information this position seeks from other positions. The key represents what information this position offers to queries from elsewhere. The value represents the actual information this position contributes when attended to. This query-key-value structure separates the question of "which positions should interact" (determined by query-key similarity) from "what information flows between them" (determined by values).
+
+::: {.callout-tip title="Key Insight: The Information Retrieval Analogy"}
+Think of attention like a search engine for sequence positions. Each position issues a **query** describing what it's looking for. Every position also publishes a **key** describing what it has to offer. The dot product between query and key measures relevance, just as a search engine ranks documents by query match. High-scoring positions then send their **value** (the actual content) to the querying position. The separation of key (what I advertise) from value (what I actually send) allows the same position to advertise relevance for one type of information while sending different information when attended to.
+:::
 
 The attention mechanism computes similarity scores between each query and all keys. For position $i$, we compute the dot product between its query $q_i$ and every key $k_j$ across all positions $j = 1, \ldots, L$, where $L$ is sequence length. These scores are scaled by $\sqrt{d_k}$ (the square root of the key dimension) to prevent the dot products from growing large in high dimensions, which would push softmax outputs toward extreme values and create vanishing gradients:
 
@@ -43,6 +65,32 @@ $$
 \alpha_{ij} = \frac{\exp(\text{score}(q_i, k_j))}{\sum_{j'=1}^L \exp(\text{score}(q_i, k_{j'}))}
 $$
 
+::: {.callout-note title="Deep Dive: The Softmax Function"}
+**For biology readers:** Softmax converts raw scores into probabilities that sum to 1:
+
+**What it does:** Given a set of scores (which could be any real numbers), softmax produces positive values that sum to 1, interpretable as probabilities or weights.
+
+**The formula intuition:**
+
+1. Exponentiate each score: $\exp(\text{score})$ makes all values positive
+2. Divide by the sum: ensures outputs sum to 1
+
+**Example:**
+If three positions have scores [2.0, 1.0, 0.5], softmax produces:
+
+- Position 1: $\exp(2.0)/(\exp(2.0)+\exp(1.0)+\exp(0.5)) \approx 0.59$
+- Position 2: $\exp(1.0)/... \approx 0.22$
+- Position 3: $\exp(0.5)/... \approx 0.13$
+
+**Key properties:**
+
+- Higher scores → higher weights (exponential amplifies differences)
+- All weights are positive and sum to 1
+- Very high scores dominate; very low scores become negligible
+
+**In attention:** Softmax turns similarity scores into "how much to pay attention to each position." High-scoring positions receive most of the attention weight; low-scoring positions are effectively ignored.
+:::
+
 These weights determine how strongly position $i$ attends to each other position. High weight means position $i$ aggregates substantial information from position $j$; low weight means position $j$ contributes little to the output at position $i$. The final output at position $i$ is a weighted sum of all value vectors:
 
 $$
@@ -51,13 +99,23 @@ $$
 
 This weighted aggregation forms the core of self-attention. Each output position receives a mixture of information from across the entire sequence, with mixture proportions learned through backpropagation. For genomic sequences, this means a position near a splice site can attend to both the upstream exon and downstream intron, integrating context that determines whether splicing occurs. A position in a promoter can attend to distant enhancers, learning which distal elements influence expression at this gene. When predicting the pathogenicity of a variant in the *SCN5A* promoter (mutations in which cause Brugada syndrome and long QT syndrome, affecting approximately 1 in 2,000 individuals), the model can simultaneously consider the core promoter elements, upstream enhancers that drive cardiac-specific expression, and downstream regulatory regions that modulate expression levels.
 
+::: {.callout-note title="Stop and Think: Query-Key-Value Separation"}
+Consider a transcription factor binding site within a promoter region.
+
+1. What kind of "query" might this position issue? (What information would help determine its regulatory function?)
+2. What "key" might it advertise? (What aspect of its identity is relevant to other positions?)
+3. What "value" might it send when attended to? (What information should flow to positions that find it relevant?)
+
+The separation of these three roles is what gives attention its flexibility. A TATA box might query for nearby transcription start sites while advertising its identity as a core promoter element.
+:::
+
 
 ### Multi-Head Attention {#sec-ch07-multihead}
 
 ::: {#fig-multihead-attention}
-![**FIGURE PLACEHOLDER**](../figs/part_2/ch07/02-fig-multihead-attention.png)
+![Multi-head attention captures diverse biological relationships](../figs/part_2/ch07/02-fig-multihead-attention.svg)
 
-[High] Panel showing 4-6 attention heads from a trained genomic transformer, each displaying different learned patterns. Head 1: Local attention (attending to nearby positions). Head 2: Periodic attention (nucleosome spacing ~200bp). Head 3: Motif-specific attention (attending to CTCF sites). Head 4: Long-range attention (enhancer-promoter). Annotate the biological interpretation of each pattern.
+Multi-head attention captures diverse biological relationships. Different heads in a trained genomic transformer learn specialized attention patterns. Head 1 attends locally to nearby positions, capturing motif context. Head 2 shows periodic attention at approximately 200 base pair intervals, potentially reflecting nucleosome spacing. Head 3 attends specifically to positions matching sequence motifs like CTCF binding sites. Head 4 exhibits long-range attention connecting distant positions, consistent with enhancer-promoter interactions. This specialization emerges from training without explicit supervision, demonstrating that the chromatin prediction objective induces biologically meaningful attention patterns.
 :::
 
 
@@ -68,15 +126,25 @@ A patient presenting with a complex arrhythmia may carry variants affecting both
 In genomic models, one head might attend to nearby positions (capturing local motif context) while another attends to positions at characteristic distances (capturing nucleosome spacing or enhancer-promoter loops). Empirical analysis of trained genomic transformers reveals diverse attention patterns: some heads attend locally regardless of content, others attend to specific sequence motifs like TATA boxes or CTCF binding sites, and still others show distance-dependent patterns suggestive of chromatin organization [@avsec_enformer_2021]. This specialization emerges from training without explicit supervision, reflecting the model's discovery that different types of interactions require different aggregation patterns. Methods for visualizing and interpreting these learned attention patterns are examined in @sec-ch24-interpretability.
 
 ::: {#fig-attention-patterns layout-ncol=3}
-![**FIGURE PLACEHOLDER A**](../figs/part_2/ch07/03-A-fig-attention-patterns.png)
+![Enhancer-promoter attention](../figs/part_2/ch07/03-A-fig-attention-patterns.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_2/ch07/03-B-fig-attention-patterns.png)
+![Genomic context overlay](../figs/part_2/ch07/03-B-fig-attention-patterns.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_2/ch07/03-C-fig-attention-patterns.png)
+![Local attention head](../figs/part_2/ch07/03-C-fig-attention-patterns.svg)
 
-[Essential] Heatmap visualization of attention weights from a trained genomic transformer (e.g., *Enformer*). Panel A: Attention pattern showing strong weights between a promoter region and a distal enhancer ~50kb away, demonstrating learned enhancer-promoter relationships. Panel B: Same attention overlaid on linear genome diagram showing the biological interpretation. Panel C: Different attention head showing local patterns (attending to nearby positions), demonstrating head specialization.
+Attention patterns in genomic transformers reveal learned regulatory relationships. (A) An attention head showing strong weights between a promoter and distal enhancer approximately 50kb apart, demonstrating learned long-range regulatory attention. (B) The same pattern overlaid on genomic context, showing how attention arcs connect the promoter to its regulatory enhancer. (C) A different head from the same model shows local attention patterns, capturing nearby sequence context. This head specialization emerges from training: some heads learn to integrate long-range regulatory signals while others focus on local motif relationships.
 :::
 
+::: {.callout-tip title="Key Insight: Head Specialization"}
+Multi-head attention is not just about capacity; it is about division of labor. Different heads learn to track different biological relationships:
+
+- **Local heads** capture motif context and nearby regulatory grammar
+- **Periodic heads** may learn nucleosome spacing (~147 bp) or helical periodicity (~10.5 bp)
+- **Long-range heads** capture enhancer-promoter interactions across tens of kilobases
+- **Motif-specific heads** attend selectively to known binding sites (CTCF, TATA)
+
+This specialization emerges without supervision. The model discovers that genomic function depends on multiple relationship types operating simultaneously.
+:::
 
 The multi-head structure also provides redundancy that aids training. If one head fails to learn useful patterns, others can compensate. Gradient flow through multiple parallel paths stabilizes optimization. For genomic applications where training data may be limited compared to natural language corpora, this redundancy helps prevent individual heads from overfitting to spurious correlations. The number of heads represents a design choice: too few heads limit the diversity of learnable patterns, while too many heads reduce the dimensionality available to each head, potentially limiting their individual expressiveness. Most genomic transformers use 8 to 16 heads, balancing diversity against per-head capacity.
 
@@ -87,19 +155,31 @@ A patient with hypertrophic cardiomyopathy carries a variant in the *MYH7* gene'
 
 Self-attention, by design, computes interactions based purely on content: the attention weight between positions depends only on their query and key vectors, not on where they sit in the sequence. The basic concepts of position encoding were introduced in @sec-ch05-position; here we examine the specific implementations that transformer architectures employ. Shuffling input token order changes nothing about how attention weights are computed. The model has no inherent notion of sequence order, a property called **permutation invariance**. For genomic data where position matters fundamentally, this blindness to order would be catastrophic. DNA has 5' to 3' directionality that determines transcription direction. Distance from transcription start sites determines promoter versus enhancer classification. Strand orientation distinguishes sense from antisense transcription. **Positional encodings** inject information about token positions into the model, breaking permutation invariance by making the model aware of where each token sits in the sequence.
 
+::: {.callout-note title="Stop and Think: Why Position Matters"}
+Before reading about specific positional encoding methods, consider these questions:
+
+1. A TATA box sequence (TATAAA) appears at two locations: 28 bp upstream of a transcription start site, and 5,000 bp upstream. Should the model treat these identically?
+2. An enhancer-promoter interaction works when the enhancer is 50 kb upstream but not when it is 500 kb upstream. What does the model need to learn about distance?
+3. If you were designing a positional encoding for genomic sequences, would you encode absolute positions (position 1, 2, 3...) or relative distances between positions? What are the tradeoffs?
+:::
+
 ::: {#fig-position-encodings layout-ncol=2}
-![**FIGURE PLACEHOLDER A**](../figs/part_2/ch07/04-A-fig-position-encodings.png)
+![Learned absolute positional embeddings](../figs/part_2/ch07/04-A-fig-position-encodings.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_2/ch07/04-B-fig-position-encodings.png)
+![Sinusoidal positional encoding](../figs/part_2/ch07/04-B-fig-position-encodings.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_2/ch07/04-C-fig-position-encodings.png)
+![ALiBi attention bias](../figs/part_2/ch07/04-C-fig-position-encodings.svg)
 
-![**FIGURE PLACEHOLDER D**](../figs/part_2/ch07/04-D-fig-position-encodings.png)
+![Rotary Position Embeddings](../figs/part_2/ch07/04-D-fig-position-encodings.svg)
 
-[High] Four-panel comparison of position encoding approaches. Panel A (Absolute/Learned): Heatmap showing learned position embeddings across dimensions, with note about fixed maximum length. Panel B (Sinusoidal): Wave patterns at different frequencies across positions, showing how different dimensions capture different scales. Panel C (ALiBi): Attention bias matrix showing linear decay with distance, highlighting the implicit local preference. Panel D (RoPE): 2D rotation visualization in embedding subspace showing how relative position is encoded through rotation angle.
+Positional encoding approaches for transformers. (A) Learned absolute embeddings assign a trained vector to each position; effective but limited to training sequence length. (B) Sinusoidal encodings use fixed sine/cosine functions at different frequencies, creating unique position fingerprints that generalize beyond training length. (C) ALiBi applies linear attention penalties based on distance, encouraging local attention while naturally extrapolating to long sequences. (D) RoPE encodes position through geometric rotation, making dot products depend on relative rather than absolute positions. Each approach encodes different assumptions about how position information should influence attention.
 :::
 
 ### Absolute Position Encodings {#sec-ch07-absolute-position}
+
+::: {.callout-warning title="Mathematical Content Ahead"}
+The sinusoidal positional encoding formulas below may appear complex. The key intuition is that different dimensions of the encoding oscillate at different frequencies, creating a unique "fingerprint" for each position. Low-frequency components indicate coarse position (beginning vs. end of sequence), while high-frequency components indicate fine position (exact nucleotide location).
+:::
 
 The original transformer used sinusoidal functions with different frequencies for each embedding dimension [@vaswani_attention_2017]. For position $pos$ and dimension $i$:
 
@@ -126,6 +206,18 @@ Extrapolation to longer sequences than seen during training poses a persistent c
 
 An alternative approach encodes position through geometric transformation rather than additive bias. Rotary Position Embeddings (*RoPE*) multiply query and key vectors by rotation matrices whose angles depend on position [@su_roformer_2024]. The dot product between rotated query and key then depends on their relative distance, combining benefits of relative encoding with efficient implementation. *RoPE* has become standard in recent large language models and appears increasingly in genomic transformers, including variants of *Nucleotide Transformer*, offering a balance between the flexibility of learned embeddings and the extrapolation capability of fixed schemes. The choice between *ALiBi* and *RoPE* often depends on whether the application prioritizes aggressive length extrapolation (favoring *ALiBi*) or compatibility with pretrained language model architectures (favoring *RoPE*).
 
+The following table summarizes the key tradeoffs among positional encoding approaches:
+
+: Comparison of positional encoding approaches for genomic transformers. Length extrapolation indicates whether the encoding generalizes to sequences longer than seen during training. {#tbl-position-encodings}
+
+| Encoding Type | How Position is Encoded | Length Extrapolation | Genomic Models Using It |
+|:--------------|:------------------------|:--------------------|:------------------------|
+| Sinusoidal (fixed) | Sine/cosine at different frequencies | Good | Original Transformer |
+| Learned absolute | Lookup table per position | Poor (hard limit) | *DNABERT*, *Nucleotide Transformer* |
+| T5-style relative | Learned bias by distance | Moderate | Some genomic variants |
+| ALiBi | Linear attention penalty by distance | Excellent | Long-context models |
+| RoPE | Query/key rotation by position | Good | *NT-v2*, recent LLMs |
+
 ### Genomic Position Considerations {#sec-ch07-genomic-position}
 
 Genomic sequences impose requirements on positional encoding beyond what natural language demands. DNA has strand directionality: ACGT on the forward strand has different regulatory meaning than the same sequence on the reverse strand. Positional encodings should enable the model to learn strand-specific patterns. Some genomic transformers encode both strands separately and combine predictions; others rely on the model learning strand orientation from sequence content alone.
@@ -142,15 +234,24 @@ The choice of positional encoding interacts with tokenization strategies (see @s
 A clinician interpreting a *BRCA1* variant needs a model that does more than identify isolated motifs or single long-range interactions. The variant's pathogenicity depends on how multiple regulatory signals integrate: local splice site grammar, enhancer contacts from 20 kilobases upstream, and transcription factor binding sites whose effects depend on chromatin context. Single attention layers identify pairwise relationships, but understanding complex regulatory logic requires building hierarchical representations where simple patterns combine into compound signals. This hierarchical integration emerges from stacking **transformer blocks**, the modular units that combine attention and nonlinear processing to build increasingly abstract representations through repeated application.
 
 ::: {#fig-transformer-block}
-![**FIGURE PLACEHOLDER**](../figs/part_2/ch07/05-fig-transformer-block.png)
+![Transformer block architecture with pre-norm configuration](../figs/part_2/ch07/05-fig-transformer-block.svg)
 
-[High] Detailed diagram of a single transformer block with pre-norm configuration. Show: Input → Layer Norm → Multi-Head Attention → Residual Add → Layer Norm → Feed-Forward Network (expand 4x, GELU, project back) → Residual Add → Output. Annotate dimension changes. Include small inset showing 2-3 stacked blocks to illustrate depth.
+Transformer block architecture with pre-norm configuration. Input embeddings (dimension d) pass through layer normalization before multi-head self-attention, which computes interactions across all positions. A residual connection adds the input directly to the attention output, creating gradient highways for stable training. A second layer normalization precedes the position-wise feed-forward network, which expands representations to 4d dimensions, applies GELU nonlinearity, and projects back to d dimensions. Another residual connection completes the block. Stacking multiple blocks (inset) enables hierarchical representation learning, with early layers capturing local patterns and later layers integrating them into complex regulatory predictions.
 :::
 
 
 ### Block Components {#sec-ch07-block-components}
 
 Each transformer block accomplishes two distinct functions: enabling positions to share information across the sequence, and transforming that aggregated information through nonlinear processing. The multi-head self-attention layer handles global communication, allowing each position to gather information from the entire sequence. The **position-wise feed-forward network** processes each position independently, applying nonlinear transformations to the aggregated information. Separating these functions into distinct components allows each to be optimized independently and provides clear computational semantics: attention determines which positions are relevant to each other (the "what to consider" question), while the feed-forward network determines how to combine that information (the "what to conclude" question).
+
+::: {.callout-tip title="Key Insight: Attention vs. Feed-Forward"}
+The transformer block's two-stage design reflects a fundamental separation of concerns:
+
+- **Attention**: "Which other positions should I consider?" (inter-position communication)
+- **Feed-forward**: "Given what I've gathered, what should I conclude?" (per-position computation)
+
+This separation explains why transformers can be so effective: attention handles the variable-length, content-dependent routing problem, while feed-forward networks handle the fixed-size, position-local computation problem. Each component can be optimized for its specific role.
+:::
 
 The feed-forward network consists of two linear transformations with a nonlinearity between them. Typically, this expands the dimension by a factor of four (from model dimension *d* to 4*d*), applies GELU or similar activation, then projects back to dimension *d*. This expansion allows processing through a high-dimensional nonlinear transformation before producing output for the next layer. The position-wise nature means each position is transformed identically but independently; cross-position information flows only through attention.
 
@@ -165,6 +266,17 @@ The flow through a pre-norm transformer block proceeds as follows. Input *X* is 
 Stacking depth determines how many times this refinement occurs. Shallow transformers (6 layers or fewer) are parameter-efficient but may lack capacity for complex hierarchical patterns. Deep transformers (12 to 24 layers) can learn sophisticated representations that capture how promoter elements, enhancer contacts, and chromatin state combine to determine expression. Most genomic transformers use 6 to 24 layers, varying by application. Models for short sequences (small RNAs, individual binding sites) might use fewer layers, while foundation models for long genomic contexts often use deeper stacks to build representations that integrate information across multiple biological scales.
 
 The choice of depth balances capacity against trainability. Deeper networks learn more complex functions but are harder to optimize, prone to overfitting without sufficient data, and more expensive at training and inference. For genomic models, depth often correlates with the complexity of patterns being modeled. Simple motif recognition tasks might benefit more from wider layers (larger *d*) than deeper stacks, while tasks requiring hierarchical integration (understanding how promoter-enhancer-insulator relationships determine expression) may benefit from additional depth that builds increasingly abstract representations layer by layer.
+
+::: {.callout-note title="Knowledge Check: Transformer Block Components"}
+Test your understanding of transformer block architecture:
+
+1. What are the two main components of a transformer block, and what does each do?
+2. Why do residual connections enable training of deep networks?
+3. If a model has 12 layers with 8 attention heads each, how many different attention patterns can it learn?
+4. What is the difference between pre-norm and post-norm layer placement?
+
+Answers: (1) Multi-head attention for inter-position communication; feed-forward network for per-position computation. (2) Residual connections create gradient highways that allow signals to flow directly through many layers without degradation. (3) 96 different attention patterns (12 layers x 8 heads). (4) Pre-norm normalizes before each sublayer (more stable training); post-norm normalizes after (potentially better final performance but harder to train).
+:::
 
 
 ## Scaling to Genomic Sequences {#sec-ch07-scaling}
@@ -185,7 +297,7 @@ Scaling laws from natural language processing suggest performance improves smoot
 
 The architectural landscape of genomic foundation models reveals distinct design philosophies. Table 7.1 compares representative models across key architectural dimensions, illustrating how different approaches balance model capacity, context length, and computational efficiency.
 
-: Architectural comparison of genomic foundation models. Width refers to model/hidden dimension; depth to number of layers. Context length is reported in base pairs (bp) where applicable. Models marked with † use non-transformer architectures. {#tbl-model-comparison}
+: Architectural comparison of genomic foundation models. Width refers to model/hidden dimension; depth to number of layers. Context length is reported in base pairs (bp) where applicable. Models marked with dagger use non-transformer architectures. {#tbl-model-comparison}
 
 | Model | Architecture | Width (*d*) | Depth (Layers) | Heads | Parameters | Context |
 |:------|:-------------|:------------|:---------------|:------|:-----------|:--------|
@@ -193,11 +305,11 @@ The architectural landscape of genomic foundation models reveals distinct design
 | *DNABERT-2* [@zhou_dnabert2_2024] | Encoder-only | 768 | 12 | 12 | 117M | Variable |
 | *Nucleotide Transformer* (500M) | Encoder-only | 1,024 | 24 | 20 | 500M | 6 kb |
 | *Nucleotide Transformer* (2.5B) | Encoder-only | 2,560 | 32 | 20 | 2.5B | 6 kb |
-| *NT-v2* (250M) | Encoder-only | — | — | — | 250M | 12 kb |
-| *HyenaDNA* † | Hyena stack | 128–256 | 2–8 | — | 0.4M–6.6M | up to 1M bp |
-| *Caduceus* † | BiMamba | 256 | 16 | — | ~7M | 131 kb |
-| *Evo 2* (7B) † | StripedHyena 2 | — | — | — | 7B | 1M bp |
-| *Evo 2* (40B) † | StripedHyena 2 | — | — | — | 40B | 1M bp |
+| *NT-v2* (250M) | Encoder-only | --- | --- | --- | 250M | 12 kb |
+| *HyenaDNA* | Hyena stack | 128--256 | 2--8 | --- | 0.4M--6.6M | up to 1M bp |
+| *Caduceus* | BiMamba | 256 | 16 | --- | ~7M | 131 kb |
+| *Evo 2* (7B) | StripedHyena 2 | --- | --- | --- | 7B | 1M bp |
+| *Evo 2* (40B) | StripedHyena 2 | --- | --- | --- | 40B | 1M bp |
 
 Several patterns emerge from this comparison. First, traditional transformer-based models like *DNABERT* and *Nucleotide Transformer* inherit architectures closely resembling their NLP counterparts, with *DNABERT* using the same 12-layer, 768-dimension configuration as BERT-base [@ji_dnabert_2021]. The *Nucleotide Transformer* family scales this approach, with the 500M variant using 24 layers and 20 attention heads, and the 2.5B variant expanding to 32 layers while maintaining the same head count [@dalla-torre_nucleotide_2023]. This scaling primarily increases width (hidden dimension grows from 1,024 to 2,560) rather than dramatically increasing depth, following conventional transformer scaling practices.
 
@@ -217,11 +329,30 @@ Hierarchical approaches recover some long-range capability while maintaining eff
 
 Mathematical approximations offer yet another path, preserving dense connectivity while reducing computational cost. *Linformer* approximates the attention matrix through low-rank decomposition, reducing complexity to linear in sequence length [@wang_linformer_2020]. *Performer* uses random feature methods to approximate attention scores without explicitly computing the full $L\timesL$ matrix [@choromanski_rethinking_2022]. These approximations trade some expressiveness for efficiency and may miss certain long-range dependencies that low-rank structure cannot capture. The choice among sparse patterns, hierarchical designs, and mathematical approximations depends on whether the target biology demands single-nucleotide resolution, long-range connectivity, or both.
 
+::: {.callout-note title="Practical Guidance: Choosing Context Length Strategies"}
+When selecting a context length strategy for a genomic application, consider:
+
+**Use local/windowed attention when:**
+- The biological signal is primarily local (splice sites, TF binding sites)
+- Single-nucleotide resolution is critical
+- Training data is limited
+
+**Use hierarchical/hybrid approaches when:**
+- You need both local detail and long-range context
+- The regulatory architecture involves enhancer-promoter interactions
+- You can tolerate some loss of fine-grained resolution
+
+**Use subquadratic architectures (Hyena, Mamba) when:**
+- Context length is the primary constraint (>100 kb)
+- You need single-nucleotide resolution over long ranges
+- You're willing to adopt newer, less mature architectures
+:::
+
 ### Memory and Precision {#sec-ch07-memory}
 
 Memory requirements compound computational challenges for genomic transformers. Training requires storing activations for backpropagation, and attention matrices are particularly memory-intensive. A $100$-kilobase sequence with $16$ attention heads and $12$ layers requires storing $16 \times 12 \times 100{,}000 \times 100{,}000$ attention weights, approximately $2$ terabytes at $32$-bit precision before considering other activations.
 
-Memory constraints often limit model size and sequence length more than computational budget. Recomputing activations during the backward pass rather than storing them (a technique called **gradient checkpointing**) trades additional computation for reduced memory footprint, enabling training of larger models or longer sequences on fixed hardware at the cost of 20 to 30 percent additional training time. Further memory savings come from reducing numerical precision: using 16-bit floating point for most computations while maintaining 32-bit precision for critical operations like loss computation and optimizer updates. Modern GPUs accelerate 16-bit arithmetic substantially, providing near 2× speedup with minimal precision loss. *Flash Attention* implements memory-efficient attention computation that avoids materializing the full attention matrix, enabling longer contexts within fixed memory budgets [@dao_flashattention_2022]. Together, these optimizations determine the practical limits of what can be trained on available hardware.
+Memory constraints often limit model size and sequence length more than computational budget. Recomputing activations during the backward pass rather than storing them (a technique called **gradient checkpointing**) trades additional computation for reduced memory footprint, enabling training of larger models or longer sequences on fixed hardware at the cost of 20 to 30 percent additional training time. Further memory savings come from reducing numerical precision: using 16-bit floating point for most computations while maintaining 32-bit precision for critical operations like loss computation and optimizer updates. Modern GPUs accelerate 16-bit arithmetic substantially, providing near 2x speedup with minimal precision loss. *Flash Attention* implements memory-efficient attention computation that avoids materializing the full attention matrix, enabling longer contexts within fixed memory budgets [@dao_flashattention_2022]. Together, these optimizations determine the practical limits of what can be trained on available hardware.
 
 
 ## Architectural Variants for Genomics {#sec-ch07-variants}
@@ -229,13 +360,13 @@ Memory constraints often limit model size and sequence length more than computat
 Foundation model architectures encode assumptions about what matters. A model optimized for scoring existing variants differs fundamentally from one designed to generate novel sequences, which differs again from one predicting molecular interactions. The choice of architecture shapes what questions can be asked.
 
 ::: {#fig-encoder-decoder layout-ncol=3}
-![**FIGURE PLACEHOLDER A**](../figs/part_2/ch07/06-A-fig-encoder-decoder.png)
+![Encoder-only architecture](../figs/part_2/ch07/06-A-fig-encoder-decoder.svg)
 
-![**FIGURE PLACEHOLDER B**](../figs/part_2/ch07/06-B-fig-encoder-decoder.png)
+![Decoder-only architecture](../figs/part_2/ch07/06-B-fig-encoder-decoder.svg)
 
-![**FIGURE PLACEHOLDER C**](../figs/part_2/ch07/06-C-fig-encoder-decoder.png)
+![Hybrid CNN-Transformer architecture](../figs/part_2/ch07/06-C-fig-encoder-decoder.svg)
 
-[Enhancing] Three-panel comparison. Panel A (Encoder-only, e.g., *BERT*/*DNABERT*): Bidirectional attention pattern (full matrix), typical use for classification/embedding. Panel B (Decoder-only, e.g., GPT/*Evo*): Causal attention pattern (lower triangular), typical use for generation. Panel C (Hybrid CNN-Transformer, e.g., *Enformer*): CNN downsampling followed by transformer, showing how hybrid reduces sequence length before attention.
+Transformer architectural variants for genomic applications. (A) Encoder-only models use bidirectional attention where every position attends to every other, providing rich representations for classification and understanding tasks. (B) Decoder-only models use causal attention where each position sees only preceding context, enabling autoregressive sequence generation. (C) Hybrid CNN-Transformer architectures use convolutions to compress long sequences before applying attention, balancing long-range context with computational tractability. The choice of architecture should match the downstream task: understanding requires bidirectional context, generation requires causal structure, and long-range prediction benefits from hybrid designs.
 :::
 
 ### Encoder-Only Transformers {#sec-ch07-encoder-only}
@@ -261,6 +392,17 @@ Some genomic tasks require transforming one sequence into another of different l
 The encoder processes an input sequence with full bidirectional attention, producing contextualized representations. The decoder then generates output tokens autoregressively, attending both to its own previous outputs (through causal self-attention) and to encoder representations (through **cross-attention**). This cross-attention allows each decoder position to query the full encoded input when generating output, combining the benefits of bidirectional understanding with autoregressive generation.
 
 Encoder-decoder models are less common in genomic applications than encoder-only or decoder-only variants because most genomic tasks either need representations (favoring encoders) or generation (favoring decoders), not both simultaneously. Machine translation exemplifies the encoder-decoder use case: encode a sentence in one language, decode into another. Genomic analogs might include predicting protein sequences from codon-optimized DNA or generating clinical variant reports from sequence features, but these applications remain less developed than pure representation or generation tasks.
+
+The following table summarizes when to use each architectural variant:
+
+: Architectural variants for genomic transformers and their optimal use cases. The attention pattern determines what context each position can access during computation. {#tbl-architecture-comparison}
+
+| Architecture | Attention Pattern | Optimal Use Cases | Example Models |
+|:-------------|:------------------|:------------------|:---------------|
+| Encoder-only | Bidirectional (full) | Variant effect prediction, sequence classification, embedding extraction | *DNABERT*, *Nucleotide Transformer*, *ESM-2* |
+| Decoder-only | Causal (triangular) | Sequence generation, design, sampling from learned distributions | *GenSLM*, *Evo*, GPT-style models |
+| Encoder-decoder | Bidirectional + causal | Sequence-to-sequence tasks, translation, structured output | Machine translation models |
+| Hybrid (CNN + transformer) | Hierarchical | Long-context regulatory prediction with downsampling | *Enformer*, *Borzoi* |
 
 ### Hybrid CNN-Transformer Models {#sec-ch07-hybrid}
 
@@ -309,9 +451,9 @@ Batch size selection involves competing considerations. Larger batches provide m
 A 48-year-old patient presents with a suspected Lynch syndrome diagnosis, and genetic testing reveals a structural variant spanning 3 megabases on chromosome 2 that may disrupt the *MSH2* gene and its upstream regulatory region. The clinical team needs to determine whether this variant explains the patient's early-onset colorectal cancer and guides surveillance recommendations for family members. Standard transformers cannot address this question: the quadratic complexity of self-attention makes 3-megabase contexts computationally intractable. Current models can span 200 kilobases with hybrid architectures, yet the structural variants and chromosomal rearrangements that cause many inherited cancer syndromes remain beyond reach. This gap between clinical need and computational capability defines the frontier of genomic AI.
 
 ::: {#fig-quadratic-ceiling}
-![**FIGURE PLACEHOLDER**](../figs/part_2/ch07/07-fig-quadratic-ceiling.png)
+![The quadratic complexity ceiling limits transformer context length](../figs/part_2/ch07/07-fig-quadratic-ceiling.svg)
 
-[High] Log-log plot showing computational cost (FLOPs or memory) vs. sequence length for different architectures. Show: Standard attention (quadratic curve, $O(L^2)$), sparse/local attention (sub-quadratic), state space models like *Hyena*/*Mamba* (linear). Annotate biologically relevant context lengths: promoter ($\sim 1\ \mathrm{kb}$), gene ($\sim 10\ \mathrm{kb}$), enhancer-promoter ($\sim 100\ \mathrm{kb}$), TAD ($\sim 1\ \mathrm{Mb}$), chromosome arm ($\sim 100\ \mathrm{Mb}$). Draw vertical lines at each scale showing which architectures are tractable.
+The quadratic complexity ceiling limits transformer context length. Computational cost versus sequence length on log-log axes reveals the scaling challenge. Standard self-attention (O(L²)) becomes intractable beyond ~10-50 kilobases depending on hardware. Sparse attention variants reduce cost but still scale superlinearly. State space models like Hyena and Mamba achieve linear O(L) scaling, enabling million-base contexts. Vertical lines mark biologically relevant scales: most enhancer-promoter interactions (50-100 kb) exceed standard transformer capacity, while TAD-scale analysis (~1 Mb) requires sub-quadratic architectures. This scaling constraint, not data availability, motivates architectural innovations beyond standard attention.
 :::
 
 ### Quadratic Ceiling {#sec-ch07-quadratic-ceiling}
@@ -341,6 +483,20 @@ Hybrid approaches often achieve the best practical results for intermediate-scal
 
 The transition toward sub-quadratic architectures continues. Early results suggest SSMs match or exceed transformers on some genomic benchmarks while scaling to longer contexts. The question is no longer whether alternatives to quadratic attention exist, but which tasks benefit most from linear-complexity architectures and which retain advantages from explicit pairwise attention computation.
 
+::: {.callout-note title="Stop and Think: Architecture Selection"}
+You are developing a model for a specific genomic task. For each scenario below, which architecture would you choose and why?
+
+1. **Predicting pathogenicity of missense variants in a 300-amino-acid protein domain.** Context is ~900 bp, and you need rich bidirectional representations.
+
+2. **Generating novel regulatory sequences that drive tissue-specific expression.** You need to sample from a learned distribution of functional sequences.
+
+3. **Predicting the effects of a 2 Mb structural variant on nearby gene expression.** The variant spans multiple genes and regulatory elements.
+
+4. **Real-time variant annotation in a clinical setting** where inference speed matters and context is limited to the immediate gene region.
+
+Consider the tradeoffs between context length, computational cost, generation vs. representation, and interpretability for each case.
+:::
+
 
 ## Capacity Without Direction {#sec-ch07-conclusion}
 
@@ -349,3 +505,26 @@ The transformer architecture provides the computational substrate for modern gen
 Self-supervised pretraining transforms architectural capacity into biological knowledge. Masked language modeling teaches models to predict held-out tokens from context, implicitly learning the sequence patterns and evolutionary constraints that determine biological function. Next-token prediction in autoregressive models captures sequential dependencies required for sequence generation. Applied to massive genomic datasets, these objectives enable transformers to learn representations that transfer across diverse downstream tasks without task-specific supervision. Foundation models like *DNABERT* for regulatory sequence, *ESM-2* for proteins, and *Enformer* for expression prediction each demonstrate that transformers trained on biological sequence capture patterns that generalize beyond their training objectives. The pretraining objectives that shape these learned representations are examined in @sec-ch08-pretraining.
 
 Attention introduced a paradigm shift in how genomic models access context. Where convolutional networks aggregate local information through hierarchical composition, attention enables direct communication between any two positions regardless of distance. The computational challenge shifts from extending receptive fields to managing the quadratic complexity of pairwise attention. State space models and linear attention variants address this bottleneck while maintaining long-range capability, and whether these alternatives ultimately complement or displace standard transformers remains an open question. What is clear is that attention-based architectures have become the default substrate for genomic foundation models, with the pretraining objectives examined in @sec-ch08-pretraining determining what biological knowledge they acquire.
+
+::: {.callout-note title="Chapter Summary"}
+**Core Concepts:**
+
+- **Self-attention** computes pairwise interactions between all sequence positions, enabling direct modeling of long-range dependencies that convolutions cannot capture
+- The **query-key-value** mechanism separates "what to look for" (query-key matching) from "what to send" (values), providing flexible information routing
+- **Multi-head attention** allows parallel specialization: different heads learn to track local motifs, periodic spacing, long-range interactions, and motif-specific patterns
+- **Positional encodings** break permutation invariance; relative encodings (ALiBi, RoPE) often outperform absolute encodings for length generalization
+
+**Architectural Variants:**
+
+- **Encoder-only** (bidirectional): Best for variant effect prediction, classification, embeddings
+- **Decoder-only** (causal): Required for sequence generation and design
+- **Hybrid CNN-Transformer**: Combines local pattern detection with long-range integration
+
+**Key Limitations:**
+
+- **Quadratic complexity** ($O(L^2)$) limits practical context to ~10-50 kb for standard transformers
+- **State space models** (HyenaDNA, Mamba, Evo) achieve linear complexity for megabase-scale contexts
+- The choice of architecture encodes assumptions about what biological relationships matter
+
+**Looking Ahead:** @sec-ch08-pretraining examines how self-supervised objectives (masked language modeling, next-token prediction, contrastive learning) transform architectural capacity into biological knowledge. The specific pretraining strategy determines what patterns the model learns and what downstream tasks it can address.
+:::

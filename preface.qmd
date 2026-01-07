@@ -27,7 +27,7 @@ The structure of the book reflects the way these ideas evolved in my own work.
 
 Early sections grew out of teaching and mentoring conversations: explaining next-generation sequencing, variant calling, and pre-deep-learning interpretation methods to new team members who were strong in statistics or ML but new to genomics (and vice versa).
 
-The middle sections emerged from a series of “journal club + experiments” cycles, where we:
+The middle sections emerged from a series of "journal club + experiments" cycles, where we:
 
 - read papers on sequence-to-function CNNs, protein language models, and genomic transformers,
 - tried to reproduce key results or adapt them to key datasets,
@@ -41,11 +41,22 @@ Because of that origin, the book has a particular bias: it is written from the p
 
 ## How to Read This Book
 
+::: {.callout-note}
+## Reader Pathways
+
 This is **not** a genomics textbook, a complete review of every DNA or protein model, or a deep-learning-from-scratch course. Instead, it is meant to be:
 
 - a **roadmap** to the main kinds of data, models, and objectives that matter for genomic foundation models today
 - a **bridge** between classical statistical genetics and modern representation learning
-- a **practical guide** to the kinds of failure modes and design choices that matter in real applications.
+- a **practical guide** to the kinds of failure modes and design choices that matter in real applications
+
+| If you are... | Suggested path |
+|---------------|----------------|
+| **New to genomics** | Start with Part I, use Appendix A for deep learning background, then proceed sequentially |
+| **New to deep learning** | Use Appendix A first, then Part II for sequence architectures, Part I as needed for genomic context |
+| **Experienced in both** | Use the book as reference; Chapter Overviews help you find specific topics |
+| **Focused on clinical applications** | Part I → Part V → Part VI, with model chapters as needed |
+:::
 
 You do **not** need to read the book cover-to-cover in order.
 
@@ -56,11 +67,11 @@ You do **not** need to read the book cover-to-cover in order.
 The book is organized into six parts:
 
 - **Part I** introduces genomic data and pre-deep-learning interpretation methods, from sequencing and variant calling to early pathogenicity scores and polygenic models.
-- **Part II** focuses on supervised sequence-to-function models, with an emphasis on convolutional architectures, regulatory prediction, and splicing.
-- **Part III** turns to transformer-based models and self-supervision, covering protein and DNA language models and hybrid architectures that combine CNNs and transformers.
-- **Part IV** discusses what makes a model a *foundation model* in genomics, including multi-omic architectures, variant effect modeling, and emergent capabilities.
-- **Part V** examines reliability, evaluation, confounding, and interpretability—how we know whether a model is learning what we think it is, and how to detect when it is not.
-- **Part VI** looks at applications: clinical and risk prediction, variant interpretation workflows, and early steps toward drug discovery and biotech use cases.
+- **Part II** focuses on sequence architectures and learning principles, with emphasis on convolutional architectures, attention mechanisms, pretraining objectives, and transfer learning.
+- **Part III** turns to foundation model families, covering protein and DNA language models and hybrid architectures.
+- **Part IV** extends to systems-level modeling: RNA, single-cell, 3D genome, networks, and multi-omics integration.
+- **Part V** examines evaluation, reliability, uncertainty, interpretability, causality, and ethical considerations.
+- **Part VI** looks at applications: clinical risk prediction, rare disease, drug discovery, and biological design.
 
 Within each part, the goal is not to catalogue every paper, but to highlight representative examples and the design principles they illustrate. References are there to give you starting points, not to serve as a comprehensive literature review.
 
@@ -101,24 +112,24 @@ You should treat the book as one opinionated map of the landscape, not the lands
 
 This book exists because of many generous people who shared their time, ideas, and encouragement.
 
-First, I owe a deep debt of gratitude to my colleagues in the **Mayo Clinic GenAI** and broader data science community. The day-to-day conversations, whiteboard sessions, and “what went wrong here?” post-mortems with this group shaped much of the perspective and many of the examples in the chapters.
+First, I owe a deep debt of gratitude to my colleagues in the **Mayo Clinic GenAI** and broader data science community. The day-to-day conversations, whiteboard sessions, and "what went wrong here?" post-mortems with this group shaped much of the perspective and many of the examples in the chapters.
 
-I am especially grateful to the **principal investigators and clinicians** whose questions kept the focus on real patients and real decisions:  
+I am especially grateful to the **principal investigators and clinicians** whose questions kept the focus on real patients and real decisions:
 **Dr. Shant Ayanian**, **Dr. Elena Myasoedova**, and **Dr. Alexander Ryu**.
 
-To **leadership at Mayo Clinic** who supported the time, computing resources, and institutional patience needed for both the models and this book:  
+To **leadership at Mayo Clinic** who supported the time, computing resources, and institutional patience needed for both the models and this book:
 **Dr. Matthew Callstrom**, **Dr. Panos Korfiatis**, and **Matt Redlon**.
 
-To my **data science and machine learning engineering colleagues**, whose work and feedback directly shaped many of the workflows and case studies:  
+To my **data science and machine learning engineering colleagues**, whose work and feedback directly shaped many of the workflows and case studies:
 **Bridget Toomey**, **Carl Molnar**, **Zach Jensen**, and **Marc Blasi**.
 
-I am also grateful for the architectural creativity, hardware insight, and willingness to experiment from our **collaborators at Cerebras**:  
+I am also grateful for the architectural creativity, hardware insight, and willingness to experiment from our **collaborators at Cerebras**:
 **Natalia Vassilieva**, **Jason Wolfe**, **Omid Shams Solari**, **Vinay Pondenkandath**, **Bhargav Kanakiya**, and **Faisal Al-khateeb**.
 
-And to our **collaborators at GoodFire**, whose partnership helped push these ideas toward interpretable and deployable systems:  
+And to our **collaborators at GoodFire**, whose partnership helped push these ideas toward interpretable and deployable systems:
 **Daniel Balsam**, **Nicholas Wang**, **Michael Pearce**, and **Mark Bissell**.
 
-I would also like to thank my former colleagues at **LGC** for foundational work and conversations around protein language models and large-scale representation learning:  
+I would also like to thank my former colleagues at **LGC** for foundational work and conversations around protein language models and large-scale representation learning:
 **Prasad Siddavatam** and **Robin Butler**.
 
 Beyond these named groups, I owe a broader debt to the geneticists, molecular biologists, statisticians, clinicians, and engineers whose work this book draws on. The field moves forward because people share code, publish honest benchmarks, and insist that models be connected back to biologically meaningful questions. Thank you for setting that standard.
