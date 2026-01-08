@@ -108,6 +108,7 @@ More complex review tools in `.claude/agents/`:
 | `figure-design` | Figure opportunities, design, captions, AI image prompts |
 | `fact-checker` | Citation validation, claim verification, retraction/preprint audit |
 | `lean-out` | Identify content with diminishing pedagogical returns for removal |
+| `course-designer` | Convert book into course materials: lectures, slides, exams, assignments, projects |
 
 ### Figure Design Agent
 
@@ -181,6 +182,51 @@ Key patterns detected:
 - **Appendix candidates**: Reference material better suited to appendices
 
 **Realistic expectations:** Well-edited prose with cross-references yields 0.5-2% cuts, not 15-20%. The agent validates estimates by checking for existing cross-references and drafting replacement text before reporting savings.
+
+### Course Designer Agent
+
+The `course-designer` agent converts book content into comprehensive course materials:
+
+```bash
+# Full course materials for a chapter
+/course-design p3-ch14-dna-lm
+
+# Generate semester syllabus for the whole book
+/course-design book --mode syllabus --format semester
+
+# Create lecture notes for a chapter
+/course-design p3-ch14-dna-lm --mode lecture
+
+# Generate slide deck outline
+/course-design p2-ch07-attention --mode slides
+
+# Design exam/assessment
+/course-design part_2 --mode exam
+
+# Create homework assignments
+/course-design p3-ch15-protein-lm --mode assignment --level graduate
+
+# Design hands-on projects
+/course-design part_3 --mode project
+
+# Generate lab exercises
+/course-design p2-ch10-adaptation --mode lab
+```
+
+**Modes available:**
+- `full` - Complete course package (default)
+- `syllabus` - Course schedule, objectives, policies
+- `lecture` - Detailed teaching notes with timing
+- `slides` - Slide deck structure with speaker notes
+- `exam` - Quizzes, exams with rubrics and solutions
+- `assignment` - Problem sets with scaffolded tasks
+- `project` - Multi-week projects with milestones
+- `discussion` - Seminar discussion questions
+- `lab` - Guided coding tutorials
+
+**Format options** (for syllabus): `semester`, `quarter`, `intensive`, `module`
+
+**Level options**: `undergraduate`, `graduate`, `professional`, `mixed`
 
 ## Key Reference Files
 
