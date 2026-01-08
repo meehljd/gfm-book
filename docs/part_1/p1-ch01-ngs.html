@@ -754,6 +754,46 @@ Practical Guidance: Choosing a Sequencing Strategy
 </ul>
 </div>
 </div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check: Which Sequencing Strategy?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check: Which Sequencing Strategy?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each clinical scenario, which sequencing approach would you recommend and why?</p>
+<ol type="1">
+<li><p>A 35-year-old patient presents with sudden cardiac arrest. Family history reveals a father who died suddenly at age 42. The cardiologist suspects long QT syndrome or hypertrophic cardiomyopathy.</p></li>
+<li><p>A research team is building a training dataset for a polygenic risk score model across 50 complex traits, requiring genome-wide coverage in 100,000 participants.</p></li>
+<li><p>A child with spinal muscular atrophy-like symptoms tests negative on standard <em>SMN1</em> gene panels. The neurologist suspects a structural variant affecting the <em>SMN1/SMN2</em> locus.</p></li>
+<li><p>A rare disease patient remains undiagnosed after standard exome sequencing. Phenotyping suggests a syndromic condition, but no coding variants explain the presentation.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answers
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>Targeted cardiac gene panel</strong>—Known disease genes, need for high coverage (&gt;500×) to detect mosaicism, rapid turnaround for clinical decision-making, and cost-effectiveness make panels ideal for suspected Mendelian cardiac conditions.</p></li>
+<li><p><strong>Whole-genome sequencing (WGS)</strong>—Polygenic scores require genome-wide common variant coverage without capture biases; WGS provides uniform depth across coding and noncoding regions, enabling GWAS across all 50 traits from a single sequencing run.</p></li>
+<li><p><strong>Long-read sequencing (PacBio or ONT)</strong>—The <em>SMN1/SMN2</em> locus is a known repetitive region where short reads fail due to the genes’ near-identical sequences; long reads spanning both genes can resolve copy number and structural variants invisible to short-read approaches.</p></li>
+<li><p><strong>Whole-genome sequencing</strong>—Exome-negative cases often harbor noncoding regulatory variants, deep intronic splice variants, or structural variants outside exonic targets; WGS captures the full genomic landscape missed by exome enrichment.</p></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="sec-ch01-classical" class="level2" data-number="1.3">
@@ -771,7 +811,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>Before continuing, can you articulate the three sources of signal that manifest as mismatches between reads and reference? (Answer: sequencing errors, alignment artifacts, and genuine biological variation)</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -780,7 +820,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The three sources are: (1) sequencing errors from instrument noise and library preparation artifacts, (2) alignment artifacts when reads map to incorrect genomic locations, and (3) genuine biological variation including germline variants, somatic mutations, and mosaicism. All three produce identical-looking mismatches in the data, making it impossible to distinguish them without sophisticated probabilistic models.</p>
 </div>
@@ -929,7 +969,7 @@ Try This: Transfer Practice
 <div class="callout-body-container callout-body">
 <p>Extend the genotype likelihood calculation to a more complex scenario: You have a site with 25 reads, 10 supporting reference allele A, 8 supporting alternate allele G, and 7 supporting a second alternate allele T. How would you modify the likelihood calculation to handle this tri-allelic site? Which diploid genotypes would you need to consider?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -938,7 +978,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>With three alleles (A/G/T), you must consider <strong>six</strong> diploid genotypes: AA, AG, AT, GG, GT, TT. The 1/2 (GT) genotype best explains the 8:7 split between G and T alleles, though the 10 reference-supporting reads suggest possible sequencing errors or alignment artifacts.</p>
 <p><strong>Key insight:</strong> The number of possible genotypes grows combinatorially with the number of alleles: <span class="math inline">\(\binom{n+1}{2}\)</span> genotypes for <span class="math inline">\(n\)</span> alternate alleles. This makes multi-allelic sites computationally expensive and more prone to calling errors.</p>
@@ -1005,7 +1045,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>How would inaccurate phasing in reference panels affect genotype imputation accuracy? Consider both common and rare variants.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1014,7 +1054,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Inaccurate phasing in reference panels degrades imputation through two mechanisms:</p>
 <p><strong>For common variants:</strong> Phasing errors break up true haplotype blocks, creating chimeric haplotypes that don’t actually exist in the population. When the imputation algorithm tries to match a target individual’s genotypes to reference haplotypes, it may select the wrong haplotype block, leading to incorrect imputation of nearby variants. The impact is moderate because multiple reference haplotypes may carry similar common variant patterns.</p>
@@ -1081,7 +1121,7 @@ Stop and Recall
 <div class="callout-body-container callout-body">
 <p>Before reading about family-based phasing, can you think of how parent-offspring genotype data could be used to determine phase? Consider a child who is heterozygous (0/1) at two nearby sites, with one parent homozygous 0/0 and the other heterozygous 0/1 at both sites.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1090,7 +1130,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div id="callout-20" class="callout-20-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The child must have inherited the 0 allele at both sites from the homozygous parent. Therefore, at both sites, the child’s alternate (1) allele must have come from the heterozygous parent. This means both alternate alleles are on the same chromosome (inherited together), allowing us to phase the child’s genotype as 0|1, 0|1 (both alts on the same haplotype) rather than 1|0, 0|1 (alts on different haplotypes).</p>
 <p>More generally, any allele present in the child but absent in one parent must have come from the other parent. By comparing genotypes across the trio, we can determine which alleles were co-inherited on the same parental chromosome without requiring reads that physically span the variants.</p>
@@ -1181,7 +1221,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>Before reading about error sources, list at least three ways that a variant call might be wrong. What could cause a false positive (calling a variant that isn’t really there)? What could cause a false negative (missing a true variant)?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1190,7 +1230,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-20" class="callout-20-contents callout-collapse collapse">
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>False positives can arise from sequencing errors (particularly in homopolymers), PCR duplicates amplifying early errors, and reads misaligned to paralogous regions. False negatives occur when coverage is insufficient to detect a heterozygous allele, when variants fall in difficult-to-map repetitive regions, or when reference bias causes reads carrying alternate alleles to be discarded during alignment.</p>
 </div>
@@ -1508,7 +1548,7 @@ Test Yourself
 <li>Why do variant calling errors in difficult genomic regions create systematic blind spots for downstream machine learning models?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-27-contents" aria-controls="callout-27" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-29-contents" aria-controls="callout-29" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1517,7 +1557,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-27" class="callout-27-contents callout-collapse collapse">
+<div id="callout-29" class="callout-29-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Three signal sources:</strong> (1) sequencing errors from instrument noise and library preparation, (2) alignment artifacts when reads map to incorrect genomic locations, and (3) genuine biological variation including germline variants, somatic mutations, and mosaicism. All three produce identical-looking mismatches in the data.</p></li>

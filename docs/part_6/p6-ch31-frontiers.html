@@ -521,6 +521,7 @@ Chapter Overview
 <li>Synthesize the themes from preceding chapters into a framework for evaluating future developments</li>
 </ol>
 <p><strong>Key Insight:</strong> The gap between a model that predicts well on benchmarks and a patient who benefits from better care encompasses not just technical challenges but the full complexity of clinical translation—validation, workflow integration, equitable access, and ongoing governance.</p>
+<p><strong>Your Role:</strong> Whether you’re developing new models, deploying existing ones in clinical settings, or evaluating claims from the research literature, you will shape how this field evolves. The frameworks in this chapter equip you to distinguish genuine advances from hype, identify which technical bottlenecks matter for your application, and contribute to responsible translation. The field needs practitioners who can bridge technical capability and clinical impact—and that’s precisely what this book has prepared you to become.</p>
 </div>
 </div>
 <p>In 2019, predicting protein structure from sequence alone seemed decades away. By 2024, AlphaFold had rendered it essentially solved. In 2020, generating coherent paragraphs of text required specialized tuning; by 2025, language models could write, code, and reason across domains with minimal prompting. These discontinuous advances suggest that the genomic foundation models surveyed in this book may be on the cusp of capabilities we cannot fully anticipate—capabilities that could reshape clinical genetics, drug discovery, and our understanding of human biology within the careers of current trainees.</p>
@@ -746,6 +747,25 @@ Key Insight: Scaling Laws Are Not Universal
 <p>The scaling laws that govern language models may not directly transfer to genomic applications. Genomic sequences have different statistical properties (lower entropy, stronger long-range dependencies, reverse-complement symmetry), and biological function imposes constraints absent in natural language. A model that memorizes more of the genome is not necessarily better at predicting variant effects or gene regulation. The key question is not “how big?” but “what capabilities emerge at what scale for which tasks?”</p>
 </div>
 </div>
+<div class="callout callout-style-default callout-important callout-titled" title="Checkpoint: Scaling Bottlenecks">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Checkpoint: Scaling Bottlenecks
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before proceeding to multi-scale integration, ensure you understand:</p>
+<ol type="1">
+<li>The four major bottlenecks to scaling genomic foundation models (data, compute, context, evaluation)</li>
+<li>Why scaling laws from language models may not transfer to genomic applications</li>
+<li>Efficiency approaches (sparse attention, state space models, distillation) and their tradeoffs</li>
+</ol>
+<p>If these concepts are unclear, review the preceding sections before continuing.</p>
+</div>
+</div>
 </section>
 <section id="sec-ch31-multiscale" class="level3" data-number="31.1.2">
 <h3 data-number="31.1.2" class="anchored" data-anchor-id="sec-ch31-multiscale"><span class="header-section-number">31.1.2</span> Context and Multi-Scale Integration</h3>
@@ -763,7 +783,7 @@ Recall and Connect
 <div class="callout-body-container callout-body">
 <p>Before reading further about multi-scale integration, retrieve what you learned earlier about scaling. From the discussion ~20 lines above, what were the four major bottlenecks to scaling genomic foundation models? Can you explain in your own words why “bigger” is not automatically “better” for genomic applications?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -772,7 +792,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The four bottlenecks are: (1) training data (finite unique genomes), (2) compute cost (prohibitive for trillion-parameter models), (3) context length (quadratic attention limits practical windows), and (4) evaluation (benchmarks can saturate). “Bigger” is not automatically better because genomic sequences have fundamentally different properties than language (lower entropy, stronger long-range dependencies, reverse-complement symmetry), and biological function imposes constraints absent in natural language. Simply memorizing more genome sequence does not guarantee better variant effect prediction or regulatory understanding—the key question is what capabilities emerge at what scale for which specific tasks.</p>
 </div>
@@ -793,7 +813,7 @@ Knowledge Check
 <p>Can you map each of the following model types to the scale(s) they primarily operate at? (1) ESM-2, (2) Enformer, (3) scGPT, (4) Akita, (5) AlphaMissense</p>
 <p><em>Hint: Review the model taxonomy from <a href="../part_3/p3-ch13-fm-principles.html#sec-ch13-taxonomy" class="quarto-xref"><span>Section 13.4</span></a> and the specific model chapters if needed.</em></p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -802,7 +822,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><strong>ESM-2</strong>: Protein sequence/structure scale (amino acid level). (2) <strong>Enformer</strong>: Regulatory element scale (kilobase DNA sequences predicting gene expression). (3) <strong>scGPT</strong>: Single-cell scale (cellular gene expression states). (4) <strong>Akita</strong>: Chromosome-scale (3D genome organization and chromatin contacts). (5) <strong>AlphaMissense</strong>: Protein variant scale (missense mutation effects on protein function). Each excels at its primary scale but does not explicitly integrate across scales.</li>
@@ -917,7 +937,7 @@ Recall and Connect
 <div class="callout-body-container callout-body">
 <p>Chapter 25 covered causal inference in depth. Before examining the table below, retrieve from memory: What are the three main approaches to causal inference in genomics discussed in <a href="../part_5/p5-ch25-causal.html" class="quarto-xref"><span>Chapter 25</span></a>, and what is the fundamental limitation of each? How do these limitations affect foundation model training?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -926,7 +946,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The three main approaches are: (1) <strong>Mendelian randomization</strong> - uses genetic variants as instruments but requires valid instruments and can be confounded by pleiotropy; (2) <strong>Perturbation screens</strong> (CRISPR, drug treatments) - provide direct interventional data but are expensive, context-specific, and may have off-target effects; (3) <strong>Structural causal models</strong> - provide formal causal frameworks but require prior knowledge of causal structure and are difficult to scale. For foundation models, these limitations mean that training data is predominantly observational (correlational) rather than interventional (causal), making it difficult to learn mechanistic relationships. Models trained on correlational data can predict well on similar distributions but fail when linkage structure changes or when predicting intervention effects.</p>
 </div>
@@ -947,7 +967,7 @@ Predict Before You Look
 <div class="callout-body-container callout-body">
 <p>Before examining <a href="#tbl-causal-approaches" class="quarto-xref">Table&nbsp;<span>31.2</span></a>, predict: What are four distinct approaches to incorporating causal reasoning into genomic AI? For each, what would be the primary limitation or challenge? Write down your predictions.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -956,7 +976,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The four approaches are: (1) <strong>Mendelian randomization</strong> - limited by requirement for valid instruments and confounding by pleiotropy; (2) <strong>Perturbation screens</strong> - limited by expense, context-specificity, and off-target effects; (3) <strong>Structural causal models</strong> - limited by need for prior knowledge and difficulty scaling; (4) <strong>Counterfactual prediction</strong> - limited by observational training data and extrapolation risk when predicting interventions. No single approach resolves the correlation-causation gap; integration across methods provides strongest evidence.</p>
 </div>
@@ -1285,7 +1305,7 @@ Knowledge Check
 <p>A learning health system is deployed at three hospitals. After six months, Hospital A (large academic center) shows improved outcomes while Hospital B (community hospital) and Hospital C (rural clinic) show no change. What are three possible explanations, and what would you do to investigate?</p>
 <p><em>This scenario illustrates why deployment alone is insufficient without careful monitoring and equity analysis.</em></p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-25-contents" aria-controls="callout-25" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1294,7 +1314,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-24" class="callout-24-contents callout-collapse collapse">
+<div id="callout-25" class="callout-25-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Possible explanations: (1) <strong>Population differences</strong>: Hospital A patients resemble training data better; investigate ancestry and phenotype distributions. (2) <strong>Workflow integration</strong>: Hospital A integrated the system into clinical workflows effectively while B and C did not; assess actual usage patterns and clinician adoption. (3) <strong>Infrastructure and expertise</strong>: Hospital A has resources for proper implementation; investigate technical support, training, and data quality. Investigation should include stratified performance analysis, qualitative interviews with clinicians, and equity audits across hospital characteristics.</p>
 </div>
@@ -1358,6 +1378,73 @@ Stop and Think
 <p>As you finish this book, consider: What is the most important problem in your domain that genomic foundation models could help solve? What would success look like? What are the barriers—technical, regulatory, social, or economic—between current capabilities and that success? This reflection can guide your next steps, whether in research, clinical application, or policy.</p>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Graduated Synthesis: Integrating Open Problems">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Graduated Synthesis: Integrating Open Problems
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This final exercise challenges you to synthesize concepts across chapters. Each level adds complexity; attempt them in order.</p>
+<p><strong>Level 1 (Single problem):</strong> A variant classifier trained on ClinVar achieves 0.89 AUC but performs at 0.72 for African-ancestry patients. Which open problem from this chapter does this illustrate, and what chapter provides specific mitigation strategies?</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Level 1">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-29-contents" aria-controls="callout-29" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Level 1
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-29" class="callout-29-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>This illustrates <strong>domain shift</strong> within the scaling/efficiency challenge (training data bias) and the <strong>translation gap</strong> (equity failures). Mitigation: <a href="../part_2/p2-ch10-adaptation.html#sec-ch10-domain-shift" class="quarto-xref"><span>Section 10.5</span></a> for domain-adaptive fine-tuning; <a href="../part_2/p2-ch12-confounding.html" class="quarto-xref"><span>Chapter 12</span></a> for detecting ancestry confounding; <span class="quarto-unresolved-ref">?sec-ch22-ancestry-confounding</span> for multi-ancestry approaches.</p>
+</div>
+</div>
+</div>
+<p><strong>Level 2 (Intersecting problems):</strong> Your lab develops a model predicting drug response from tumor transcriptomics (AUC 0.85). A pharma partner wants to deploy it for patient stratification, but FDA requires understanding <em>why</em> certain patients respond. The model uses attention over 5,000 genes. Which TWO open problems intersect here, and what approaches from earlier chapters might address both?</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Level 2">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-30-contents" aria-controls="callout-30" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Level 2
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-30" class="callout-30-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Two intersecting problems: (1) <strong>Causality</strong> - FDA wants mechanistic understanding, but the model captures correlation between expression patterns and response, not causal mechanisms. (2) <strong>Multi-scale integration</strong> - attention over genes does not explain how genetic variants → expression changes → drug metabolism → response. Approaches: <a href="../part_5/p5-ch24-interpretability.html" class="quarto-xref"><span>Chapter 24</span></a> for attention visualization and ISM; <a href="../part_5/p5-ch25-causal.html#sec-ch25-mendelian-randomization" class="quarto-xref"><span>Section 25.2.1</span></a> for causal gene identification; structured integration with known drug metabolism pathways might satisfy regulatory requirements.</p>
+</div>
+</div>
+</div>
+<p><strong>Level 3 (System-level synthesis):</strong> Design a learning health system for pediatric rare disease diagnosis. You have access to a DNA language model, protein structure predictor, and phenotype embeddings. The system must: (a) improve over time, (b) work across 15 hospitals with different populations, (c) handle the translation gap. Identify which components from Parts II-VI you would integrate, which open problems pose the greatest barriers, and what governance structures (from <a href="../part_5/p5-ch26-regulatory.html#sec-ch26-regulatory" class="quarto-xref"><span>Section 26.1</span></a>) you would need.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Level 3">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-31-contents" aria-controls="callout-31" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Level 3
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-31" class="callout-31-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Components needed:</strong> - DNA-LM + protein predictor for variant scoring (<a href="../part_3/p3-ch15-protein-lm.html" class="quarto-xref"><span>Chapter 15</span></a>, <a href="../part_3/p3-ch17-vep-fm.html" class="quarto-xref"><span>Chapter 17</span></a>) - Phenotype embeddings for HPO matching (<span class="quarto-unresolved-ref">?sec-ch28-phenotype-matching</span>) - Uncertainty quantification for VUS flagging (<a href="../part_5/p5-ch23-uncertainty.html#sec-ch23-selective-prediction" class="quarto-xref"><span>Section 23.7</span></a>) - Federated learning for multi-site training (<a href="../part_2/p2-ch10-adaptation.html#sec-ch10-emerging-approaches" class="quarto-xref"><span>Section 10.6.3</span></a>)</p>
+<p><strong>Greatest barriers (open problems):</strong> - <strong>Multi-scale integration</strong>: Phenotype ↔︎ gene ↔︎ variant links require explicit causal structure - <strong>Domain shift</strong>: Pediatric populations differ from adult-dominated training data; rare disease by definition has minimal training examples per condition - <strong>Causality</strong>: Parents need to understand <em>why</em> a variant is pathogenic, not just a score</p>
+<p><strong>Governance structures:</strong> - Tiered consent for learning loop (<a href="../part_5/p5-ch26-regulatory.html#sec-ch26-consent" class="quarto-xref"><span>Section 26.2.1</span></a>) - Equity monitoring across hospital populations (<span class="quarto-unresolved-ref">?sec-ch26-fairness-governance</span>) - FDA breakthrough device pathway for evolving system (<span class="quarto-unresolved-ref">?sec-ch26-regulatory-pathways</span>) - Data governance committee with patient/family representation</p>
+<p>This synthesis requires integrating 8+ chapters—the hallmark of systems-level thinking for genomic foundation model deployment.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
 <p>Genomic foundation models will achieve their potential only through sustained collaboration among technologists, clinicians, patients, policymakers, and communities working together to build systems that are both capable and trustworthy. Capability without trustworthiness is dangerous: models that predict accurately but fail silently for certain populations cause harm even as they help others. Trustworthiness without capability is insufficient: systems that are transparent and fair but do not improve on existing practice offer nothing worth adopting. Technical achievements in genomic deep learning enable new capabilities; the human systems that govern their development and deployment will determine whether those capabilities translate into genuine benefit for the patients and populations that genomic medicine aims to serve.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1387,7 +1474,7 @@ Test Yourself
 <li>What is the translation gap between benchmark performance and clinical impact? Give three specific barriers that a high-performing model might face in deployment.</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-28-contents" aria-controls="callout-28" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-33-contents" aria-controls="callout-33" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1396,7 +1483,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-28" class="callout-28-contents callout-collapse collapse">
+<div id="callout-33" class="callout-33-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Three major technical challenges</strong>: (1) <strong>Scaling and efficiency</strong> - genomic models remain smaller than language models due to limited training data (only ~100k species with assemblies), prohibitive compute costs ($10M+ for trillion-parameter models), and quadratic attention costs that limit context windows needed for regulatory elements spanning hundreds of kilobases. (2) <strong>Multi-scale integration</strong> - biological phenomena span nucleotides to organisms, but current models focus on single scales and lack architectures that explicitly integrate across qualitatively different rules at each level (motif detection requires different structures than cell-state modeling). (3) <strong>Causality and mechanism</strong> - foundation models learn statistical associations rather than causal relationships, but training data is predominantly observational rather than interventional, making it difficult to distinguish true causal variants from those merely in linkage disequilibrium.</p></li>

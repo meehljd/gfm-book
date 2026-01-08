@@ -543,6 +543,7 @@ Chapter Overview
 <li>Apply principles of responsible AI development to genomic foundation model projects</li>
 </ol>
 <p><strong>Why This Matters:</strong> A variant classifier achieving 0.95 auROC on benchmarks means nothing if regulatory barriers prevent its clinical use, if patients cannot trust how their data is used, or if the same capabilities enable biosecurity threats. This chapter bridges the gap between technical achievement and responsible deployment.</p>
+<p><strong>Your Opportunity:</strong> Regulatory knowledge isn’t just compliance—it’s competitive advantage. Researchers who understand what evidence FDA requires can design validation studies that satisfy regulators from the start, rather than scrambling to retrofit approval-ready documentation onto a mature model. If you’re building genomic AI tools, this chapter teaches you how to get your model to patients—and how to do so responsibly.</p>
 </div>
 </div>
 <p>The first genomic foundation model to receive U.S. Food and Drug Administration (FDA) clearance as a medical device will face a peculiar regulatory challenge: demonstrating that a system trained on millions of sequences from research biobanks, academic databases, and public repositories can safely inform clinical decisions for individual patients who never consented to such use. Clinical-grade variant interpretation tools already incorporate deep learning predictions, yet the regulatory frameworks governing their deployment were designed for deterministic software with traceable decision logic, not for neural networks whose internal representations resist simple explanation. As of 2024, more than 500 AI-enabled medical devices have received FDA authorization, but fewer than a dozen involve genomic interpretation, and none yet deploys a foundation model at scale <span class="citation" data-cites="fda_aiml_devices_2025">(<a href="../bib/references.html#ref-fda_aiml_devices_2025" role="doc-biblioref">Health 2025</a>)</span>. The gap between technical capability and regulatory readiness defines one of the central tensions facing the field.</p>
@@ -769,6 +770,19 @@ Worked Example: Regulatory Submission for AlphaMissense
 <p>This example illustrates the gap between research publication (which reports benchmark performance) and regulatory submission (which requires prospective validation, subgroup analysis, explicit comparison to existing tools, and ongoing monitoring commitments).</p>
 </div>
 </div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Recall and Connect: From Regulation to Deployment">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Recall and Connect: From Regulation to Deployment
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The validation requirements you see here—prospective evaluation, ancestry stratification, comparison to existing tools—directly shape the clinical deployment workflows covered in <a href="../part_6/p6-ch27-clinical-risk.html" class="quarto-xref"><span>Chapter 27</span></a> and <a href="../part_6/p6-ch28-rare-disease.html" class="quarto-xref"><span>Chapter 28</span></a>. A model that clears regulatory hurdles with aggregate metrics but lacks ancestry-stratified validation will fail the equity requirements discussed in <a href="../part_2/p2-ch12-confounding.html" class="quarto-xref"><span>Chapter 12</span></a>. The evidence pyramid you’ll encounter in <span class="quarto-unresolved-ref">?sec-ch28-acmg-evidence</span> depends on regulatory-grade validation to assign computational evidence strength.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="sec-ch26-governance" class="level2" data-number="26.2">
@@ -855,6 +869,46 @@ Table&nbsp;26.2: Comparison of consent models for genomic data use
 </table>
 </div>
 </figure>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check: Which Consent Model?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check: Which Consent Model?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each scenario below, which consent model would be most appropriate and why?</p>
+<ol type="1">
+<li><p>A large pharmaceutical company wants to build a foundation model using existing biobank data from 500,000 participants who enrolled 15 years ago for “future health research.”</p></li>
+<li><p>An indigenous community biobank is approached by researchers wanting to include their genetic data in a pan-ancestry reference panel.</p></li>
+<li><p>A hospital wants to use patient genomic data for ongoing quality improvement studies, with the ability to incorporate new research questions as they arise.</p></li>
+<li><p>A rare disease foundation wants participants to control exactly which studies can access their data, potentially revoking access if concerns arise.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answers
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>Broad consent</strong> is appropriate here—the original consent documents likely authorized future unspecified health research, which includes foundation model training. However, ethical questions remain about whether participants could have anticipated AI applications.</p></li>
+<li><p><strong>Community consent</strong> is essential—indigenous communities have legitimate collective interests in how their genetic data is used, and historical exploitation requires governance structures that respect community sovereignty alongside individual consent.</p></li>
+<li><p><strong>Tiered consent</strong> balances utility and autonomy—patients can authorize categories of acceptable research use (quality improvement, drug discovery, commercial partnerships) while declining others.</p></li>
+<li><p><strong>Dynamic consent</strong> matches this requirement—digital engagement platforms allow ongoing preference updates, enabling participants to respond to new research contexts or revoke access based on evolving concerns.</p></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="fig-consent-models" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1066,7 +1120,7 @@ Knowledge Check
 </ol>
 <p>These questions remain unsettled, but thinking through them helps clarify the IP landscape.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1075,7 +1129,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>A truly novel, non-naturally-occurring protein sequence can potentially be patented if it meets utility, novelty, and non-obviousness requirements. (2) Current law does not recognize AI as an inventor (see Thaler v. USPTO); inventorship would likely be assigned to the human who directed the generation (user or developer), though this remains contested. (3) A sequence 95% identical to a natural protein likely fails the novelty requirement and would not be patentable, while a truly novel sequence could be—but determining what constitutes sufficient novelty in sequence space remains legally unclear.</li>
@@ -1230,6 +1284,27 @@ Difficulty Warning
 <p>Foundation model developers must decide how to release models in ways that enable beneficial use while limiting potential for harm. Complete openness maximizes beneficial applications but foregoes control over misuse. Complete restriction limits misuse but also limits beneficial applications and may prove impossible to maintain as model capabilities become reproducible. Graduated access models attempt to balance these considerations by providing broader access to less capable models while restricting access to more capable systems.</p>
 <p>Access controls can operate at multiple levels: restricting weight access while providing API availability, limiting API capabilities through output filtering, requiring applications and use agreements for access, or monitoring usage patterns for indicators of concerning applications. Each control imposes costs on legitimate users and may prove circumventable by determined malicious actors. The effectiveness of controls depends on the specific model, the capability of concern, and the technical sophistication of potential misusers.</p>
 <p>For genomic foundation models specifically, the biosecurity risks are generally lower than for models capable of synthesizing pathogen sequences from scratch, but concerns about privacy violations, discriminatory applications, and scientific misconduct remain. A model capable of inferring sensitive traits from genomic data might be misused for unauthorized health prediction. A model capable of generating realistic synthetic genomic data might be used to fabricate research results. Responsible release strategies must consider these diverse risk profiles.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Looking Forward: Regulatory Concepts in Applications">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Looking Forward: Regulatory Concepts in Applications
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The governance principles in this chapter recur throughout the application chapters ahead:</p>
+<ul>
+<li><strong>Clinical risk prediction</strong> (<span class="quarto-unresolved-ref">?sec-ch27-clinical</span>): Polygenic risk scores face equity challenges when derived from ancestry-biased training data, and clinical deployment requires navigating the SaMD framework</li>
+<li><strong>Rare disease diagnosis</strong> (<a href="../part_6/p6-ch28-rare-disease.html" class="quarto-xref"><span>Chapter 28</span></a>): Consent challenges arise when patient data contributes to models that benefit future patients; the liability chain from model developer to clinician affects diagnostic workflows</li>
+<li><strong>Drug discovery</strong> (<span class="quarto-unresolved-ref">?sec-ch29-drug</span>): Dual-use concerns intensify when generative models design novel therapeutic candidates that could theoretically be misused</li>
+<li><strong>Sequence design</strong> (<a href="../part_6/p6-ch30-design.html" class="quarto-xref"><span>Chapter 30</span></a>): Regulatory requirements for synthetic biology products intersect with AI governance when foundation models guide design</li>
+<li><strong>Frontiers</strong> (<a href="../part_6/p6-ch31-frontiers.html" class="quarto-xref"><span>Chapter 31</span></a>): Translation barriers include not just technical challenges but regulatory bottlenecks that slow clinical deployment</li>
+</ul>
+<p>As you read these chapters, notice how governance considerations shape what is technically possible versus what is deployable in practice.</p>
+</div>
+</div>
 <div class="callout callout-style-default callout-tip callout-titled" title="Test Yourself">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1298,6 +1373,11 @@ Chapter Summary
 <li>Generative models raise biosecurity concerns that predictive models do not</li>
 <li>The gap between computational generation and biological realization provides some protection</li>
 <li>Responsible release strategies must balance openness against misuse potential</li>
+</ul>
+<p><strong>Key connections:</strong></p>
+<ul>
+<li><strong>Backward:</strong> Builds on confounding (<a href="../part_2/p2-ch12-confounding.html" class="quarto-xref"><span>Chapter 12</span></a>), uncertainty (<a href="p5-ch23-uncertainty.html" class="quarto-xref"><span>Chapter 23</span></a>), and interpretability (<a href="p5-ch24-interpretability.html#sec-ch24-attribution" class="quarto-xref"><span>Section 24.1</span></a>) as technical foundations for responsible deployment</li>
+<li><strong>Forward:</strong> Regulatory principles recur in clinical risk (<span class="quarto-unresolved-ref">?sec-ch27-clinical</span>), rare disease (<a href="../part_6/p6-ch28-rare-disease.html" class="quarto-xref"><span>Chapter 28</span></a>), drug discovery (<span class="quarto-unresolved-ref">?sec-ch29-drug</span>), and sequence design (<a href="../part_6/p6-ch30-design.html" class="quarto-xref"><span>Chapter 30</span></a>); translation barriers in <a href="../part_6/p6-ch31-frontiers.html" class="quarto-xref"><span>Chapter 31</span></a> include regulatory bottlenecks</li>
 </ul>
 <p>These challenges are not barriers to be overcome once but ongoing tensions to be managed as capabilities advance and governance frameworks evolve.</p>
 </div>

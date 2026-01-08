@@ -993,6 +993,46 @@ Table&nbsp;21.2: Comparison of canonical GNN architectures. The choice depends o
 </div>
 </figure>
 </div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check: Which GNN Architecture?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check: Which GNN Architecture?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each biological scenario, which GNN architecture would you choose?</p>
+<ol type="1">
+<li><p>Predicting function for newly characterized proteins not seen during training, using a PPI network with 2 million edges.</p></li>
+<li><p>A small regulatory network (500 nodes) where you suspect certain transcription factor interactions are more important than others.</p></li>
+<li><p>Propagating GWAS signals through pathways where causal genes may be 5+ hops from the nearest significant association.</p></li>
+<li><p>Real-time drug-target interaction prediction in a clinical setting requiring fast inference on patient-specific networks.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answers
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>GraphSAGE</strong> - Inductive capability is essential for new proteins, and sampling-based aggregation scales to large graphs. GCN’s transductive nature cannot handle unseen nodes.</p></li>
+<li><p><strong>GAT</strong> - When certain edges matter more than others, attention weights learn which interactions are most informative. For small networks, GAT’s computational overhead is manageable.</p></li>
+<li><p><strong>Graph Transformer</strong> - Long-range dependencies spanning 5+ hops are difficult for standard message passing (over-smoothing). Graph transformers with global attention or positional encodings can capture distant relationships directly.</p></li>
+<li><p><strong>GCN</strong> - Simplest and fastest inference. For real-time clinical applications, the efficiency of normalized mean aggregation outweighs the benefits of more sophisticated architectures.</p></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
 <p>The expressiveness of GNNs is bounded by their ability to distinguish different graph structures. Theoretical analysis connects standard message passing to the Weisfeiler-Lehman graph isomorphism test, revealing that certain graph structures remain indistinguishable regardless of the number of layers <span class="citation" data-cites="xu2019how morris2019weisfeiler">(<a href="../bib/references.html#ref-xu2019how" role="doc-biblioref"><strong>xu2019how?</strong></a>; <a href="../bib/references.html#ref-morris2019weisfeiler" role="doc-biblioref"><strong>morris2019weisfeiler?</strong></a>)</span>. For most biological applications, this theoretical limitation is less constraining than practical issues of data quality, training efficiency, and <strong>interpretability</strong> (<a href="../part_5/p5-ch24-interpretability.html" class="quarto-xref"><span>Chapter 24</span></a>).</p>
 </section>
 </section>
@@ -1254,6 +1294,19 @@ Figure&nbsp;21.5: Knowledge graph reasoning for drug repurposing. (A) Heterogene
 </section>
 <section id="sec-ch21-practical" class="level2" data-number="21.5">
 <h2 data-number="21.5" class="anchored" data-anchor-id="sec-ch21-practical"><span class="header-section-number">21.5</span> Practical Considerations</h2>
+<div class="callout callout-style-default callout-tip callout-titled" title="Recall and Connect: Networks in Clinical Applications">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Recall and Connect: Networks in Clinical Applications
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The network modeling principles you learn here power clinical applications in later chapters. In <a href="../part_6/p6-ch28-rare-disease.html" class="quarto-xref"><span>Chapter 28</span></a>, network propagation prioritizes disease genes from GWAS loci—the same message passing mechanics you’ve learned enable identifying which genes in a locus are most likely causal. In <a href="../part_6/p6-ch29-drug-discovery.html" class="quarto-xref"><span>Chapter 29</span></a>, drug-target interaction prediction combines PLM embeddings (<a href="../part_3/p3-ch15-protein-lm.html" class="quarto-xref"><span>Chapter 15</span></a>) with network proximity to disease genes. The ascertainment bias discussed above directly affects these applications: understudied genes appear less connected than they truly are, potentially causing prioritization methods to miss important candidates.</p>
+</div>
+</div>
 <p>Deploying graph neural networks on biological data requires navigating choices that profoundly affect model behavior. Graph construction determines what relationships the model can exploit. Scalability strategies determine whether training is feasible on large networks. Robustness techniques determine whether predictions generalize beyond well-characterized network regions. Interpretation methods determine whether outputs provide actionable biological insight. The following subsections address each consideration in turn.</p>
 <section id="sec-ch21-graph-construction" class="level3" data-number="21.5.1">
 <h3 data-number="21.5.1" class="anchored" data-anchor-id="sec-ch21-graph-construction"><span class="header-section-number">21.5.1</span> Graph Construction Quality</h3>
@@ -1324,7 +1377,7 @@ Knowledge Check
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1333,7 +1386,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Compare performance to degree-only baseline</strong> - Train a simple model using only node degree as a feature. If your GNN performs only marginally better, it may be learning degree rather than biological mechanism. Additionally, stratify test performance by degree quartiles to check if accuracy is uniform across hub and peripheral genes.</p></li>
@@ -1433,7 +1486,7 @@ Test Yourself
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-25-contents" aria-controls="callout-25" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1442,7 +1495,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-22" class="callout-22-contents callout-collapse collapse">
+<div id="callout-25" class="callout-25-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>GNNs complement foundation models, not replace them</strong> - Foundation models extract rich representations from sequence (what a protein <em>can</em> do), while GNNs add relational reasoning (what it <em>does</em> in network context). The division of labor: FMs provide node features, GNNs perform message passing to integrate neighborhood information.</p></li>

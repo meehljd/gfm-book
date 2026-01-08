@@ -597,6 +597,7 @@ Chapter Overview
 <li>Apply strategies for handling extreme class imbalance in variant classification</li>
 <li>Validate transfer learning claims and detect common pitfalls</li>
 </ol>
+<p><strong>Why This Matters:</strong> When you deploy a foundation model to a new clinical population, tissue type, or prediction task, “frozen features” may underperform while “full fine-tuning” may catastrophically overfit. Knowing how to adapt models efficiently is the difference between deploying a useful tool and wasting months on failed experiments. The skills in this chapter apply to every clinical genomics project that builds on pretrained models—which, increasingly, means every project.</p>
 </div>
 </div>
 <p>A research hospital developing tissue-specific expression predictors faces an impossible choice. Frozen features from <em>Enformer</em> provide reasonable baselines, but full fine-tuning for each of fifty tissue types would require months of GPU time and risk overfitting the thousands of tissue-specific training examples. The team needs an intermediate approach: enough flexibility to improve over frozen features, enough constraint to prevent overfitting, enough efficiency to iterate across dozens of tissues.</p>
@@ -1033,6 +1034,57 @@ Table&nbsp;10.2: Adaptation Strategy Selection Guide
 </figure>
 </div>
 <p>These heuristics indicate which strategies merit trying first, but empirical validation supersedes any rule. No formula reliably predicts which approach will succeed for a specific combination of model, task, and data. The conservative path is to establish frozen feature baselines first, escalate to PEFT when frozen features prove insufficient, and reserve full fine-tuning for cases where simpler methods demonstrably fail and sufficient data exists to justify the risk.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Graduated Practice: Adaptation Strategy Selection">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Graduated Practice: Adaptation Strategy Selection
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Work through these scenarios in order. Each builds on the previous, with progressively less scaffolding.</p>
+<p><strong>Scenario 1 (Guided):</strong> You have 200 labeled splice site variants and access to <em>Nucleotide Transformer</em> (encoder, 500M parameters). The pretraining objective was masked language modeling on genomic sequences.</p>
+<p><em>Scaffolding:</em> Apply the decision framework: (1) Data quantity → 200 &lt; 500, so linear probing. (2) Verify task alignment → splice sites involve local motifs similar to MLM patterns, good alignment. (3) Confirm: linear probing is appropriate.</p>
+<p><strong>Scenario 2 (Partial guidance):</strong> You have 3,000 labeled examples for predicting enhancer-promoter interactions spanning 50kb windows. You have access to <em>HyenaDNA</em> (decoder, 1.4B parameters).</p>
+<p><em>Hint:</em> Consider data quantity threshold, but also: What does “decoder model” imply for layer selection? What does “50kb windows” suggest about context requirements?</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Scenario 2">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Scenario 2
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Data quantity (3,000) puts you in LoRA range (500-5,000). However, two complications: (1) <em>HyenaDNA</em> is a decoder, so you face the layer hunting problem—budget for systematic layer probing before committing to adaptation layers. (2) Long-range interactions (50kb) may stress even long-context architectures. Strategy: LoRA with rank 16-32, applied across middle layers, with explicit layer probing experiment first. Compare against frozen features from multiple layers.</p>
+</div>
+</div>
+</div>
+<p><strong>Scenario 3 (Minimal guidance):</strong> A hospital has 50,000 pathogenicity labels for <em>BRCA1/BRCA2</em> variants. They want to deploy a classifier trained on <em>ESM-2</em> embeddings. But the hospital primarily serves an African-ancestry population, while ClinVar training data is 78% European.</p>
+<p><em>Your task:</em> Identify the appropriate adaptation strategy AND the additional considerations that data quantity alone does not capture.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Scenario 3">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Scenario 3
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Data quantity (50,000) supports full fine-tuning. However, three complications demand attention: (1) <strong>Domain shift</strong>: Population mismatch between training (European-dominated) and deployment (African-ancestry) means even high training accuracy may not transfer. Strategy: fine-tune with domain-adaptive techniques, not just standard fine-tuning. (2) <strong>Validation</strong>: Must evaluate on African-ancestry holdout specifically, not just aggregate metrics. (3) <strong>Class imbalance</strong>: Pathogenic variants in BRCA1/2 are rare; 50,000 labels likely means ~47,000 benign and ~3,000 pathogenic. Strategy: weighted loss, threshold calibration for deployment prevalence. The “right” answer requires addressing all three, not just selecting an adaptation strategy from the table.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div id="fig-adaptation-decision-tree" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-adaptation-decision-tree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1191,7 +1243,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>Consider a variant classifier trained on 10,000 benign variants and 100 pathogenic variants. The model achieves 99% accuracy on the test set. Is this model performing well? What additional information would you need to assess its clinical utility?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1200,7 +1252,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>No, 99% accuracy does not indicate good performance in this imbalanced scenario. A trivial baseline that predicts “benign” for every variant would achieve 99% accuracy (10,000/10,100 correct). You would need to see: (1) sensitivity and specificity separately to know if the model actually detects pathogenic variants, (2) auPRC (not just auROC) which is sensitive to class imbalance, (3) confusion matrix showing true/false positives and negatives, and (4) performance at clinically relevant decision thresholds. The model might be achieving high accuracy by simply predicting benign for everything, making it clinically useless.</p>
 </div>
@@ -1367,7 +1419,7 @@ Test Yourself
 <li>When should you use linear probing versus LoRA versus full fine-tuning? What data quantity thresholds guide this decision?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1376,7 +1428,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Low-Rank Adaptation</strong>: LoRA introduces two smaller matrices <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> whose product approximates the desired weight change: <span class="math inline">\(W' = W + BA\)</span>. During fine-tuning, only <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> receive gradient updates while <span class="math inline">\(W\)</span> remains frozen. This reduces trainable parameters from hundreds of millions to just 2-5 million, achieving a 500-fold reduction in parameter count. The low-rank constraint provides implicit regularization because task-specific adaptations empirically lie in low-dimensional subspaces; forcing adaptation through limited dimensions prevents overfitting while capturing most required changes.</p></li>

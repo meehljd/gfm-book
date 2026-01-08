@@ -647,6 +647,7 @@ Table&nbsp;18.1: Two perspectives on RNA modeling, distinguished by input modali
 </div>
 </figure>
 </div>
+<p>The transcriptomic perspective becomes particularly important when RNA expression serves as the primary readout of cellular state. Single-cell foundation models (<a href="p4-ch19-single-cell.html" class="quarto-xref"><span>Chapter 19</span></a>) use gene expression vectors—fundamentally RNA measurements—as their input representation, learning to embed cells based on transcriptomic profiles. RNA-level regulation also intersects with chromatin architecture: 3D genome organization influences which enhancers contact which promoters, thereby determining which RNAs are transcribed and at what levels (<a href="p4-ch20-3d-genome.html" class="quarto-xref"><span>Chapter 20</span></a>).</p>
 </section>
 <section id="sec-ch18-structure-challenge" class="level2" data-number="18.2">
 <h2 data-number="18.2" class="anchored" data-anchor-id="sec-ch18-structure-challenge"><span class="header-section-number">18.2</span> Why Secondary Structure Creates a Distinct Modeling Challenge</h2>
@@ -661,6 +662,22 @@ Stop and Think
 </div>
 <div class="callout-body-container callout-body">
 <p>Proteins fold into stable three-dimensional structures, and protein language models have learned to predict these folds with remarkable accuracy. Before reading on, consider: why might RNA structure prediction be fundamentally harder than protein structure prediction, despite RNA having only 4 bases compared to 20 amino acids?</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>RNA structure prediction is harder than protein structure prediction for three key reasons: (1) <strong>Flat energy landscapes</strong>: While proteins fold into a single deep energy minimum, RNA sequences often have multiple competing structures with similar free energies—the sequence-to-structure mapping is many-to-many rather than one-to-one. (2) <strong>Dynamic conformations</strong>: RNA can switch between alternative structures in response to cellular conditions, whereas most proteins maintain stable folds. (3) <strong>Long-range base pairing</strong>: RNA secondary structure involves pairs spanning hundreds of nucleotides, creating dependencies that standard algorithms struggle to capture efficiently, especially when pseudoknots violate the nested structure assumption required for efficient dynamic programming. The apparent “simplicity” of 4 bases versus 20 amino acids is misleading—the real complexity lies in conformational dynamics, not alphabet size.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 <p>RNA secondary structure prediction differs fundamentally from protein structure prediction in ways that shape every modeling choice. Where DNA language models learn from linear sequence patterns (<a href="../part_3/p3-ch14-dna-lm.html" class="quarto-xref"><span>Chapter 14</span></a>) and protein models exploit evolutionary constraints across homologs (<a href="../part_3/p3-ch15-protein-lm.html" class="quarto-xref"><span>Chapter 15</span></a>), RNA models must contend with conformational dynamics that neither domain faces at comparable scale. Three interrelated challenges define the problem: thermodynamic landscapes with multiple competing minima, base-pairing interactions that span hundreds of nucleotides, and <strong>pseudoknot</strong> structures (configurations where bases in a loop pair with bases outside that loop, creating interleaved patterns that standard algorithms cannot efficiently handle) that violate the assumptions of efficient algorithms. Understanding these challenges clarifies why RNA structure remains harder to predict than protein structure despite the apparent simplicity of four bases versus twenty amino acids.</p>
@@ -812,7 +829,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>Thermodynamic folding methods find the minimum free energy structure. Given what you’ve learned about RNA’s flat energy landscape, what is the main limitation of this approach? (Hint: think about alternative conformations.)</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -821,7 +838,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The main limitation is that MFE methods predict only the single lowest-energy structure, missing functionally relevant alternative conformations that may have similar free energies. RNA’s flat energy landscape means multiple structures can coexist with comparable stability, so the global minimum may not be the only biologically important state.</p>
 </div>
@@ -900,6 +917,19 @@ Table&nbsp;18.2: Comparison of RNA structure prediction approaches. Each has com
 <h3 data-number="18.4.2" class="anchored" data-anchor-id="sec-ch18-structure-probing"><span class="header-section-number">18.4.2</span> Structure Probing as Supervision</h3>
 <p>High-throughput structure probing experiments provide an alternative source of supervision. SHAPE (selective 2’-hydroxyl acylation analyzed by primer extension), DMS-seq, and icSHAPE measure nucleotide accessibility or flexibility across entire transcriptomes. Positions that are base-paired or buried in tertiary structure show lower reactivity than exposed positions. <em>[Citation Needed]</em></p>
 <p>These data offer several advantages for model training. They cover far more RNAs than crystal structures, extending beyond well-characterized families to regulatory elements and novel transcripts. They capture structure in cellular context, reflecting the influence of proteins, modifications, and physiological conditions. And they provide soft constraints rather than binary pairing assignments, potentially better matching the conformational heterogeneity of real RNA populations.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Looking Forward: RNA Structure in Variant Interpretation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Looking Forward: RNA Structure in Variant Interpretation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>RNA secondary structure predictions feed directly into clinical variant interpretation. Variants that disrupt splice sites or create aberrant RNA structures can cause disease even when amino acid sequence is unchanged. These structural effects are integrated into foundation model-based variant interpretation pipelines (<a href="../part_3/p3-ch17-vep-fm.html" class="quarto-xref"><span>Chapter 17</span></a>) and are particularly important in rare disease diagnosis (<span class="quarto-unresolved-ref">?sec-ch28-splicing</span>), where splice-altering variants explain a substantial fraction of previously undiagnosed cases.</p>
+</div>
+</div>
 <p>Models trained on structure probing data learn to predict accessibility profiles from sequence. These predictions can be integrated with thermodynamic models (using predicted accessibility as constraints) or used directly for downstream tasks like predicting RNA-protein binding or designing stable constructs.</p>
 </section>
 </section>
@@ -1163,6 +1193,46 @@ Table&nbsp;18.3: Comparison of model types for coding sequences. Codon models fi
 </div>
 </figure>
 </div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check: Which Model for This Coding Sequence Task?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check: Which Model for This Coding Sequence Task?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each scenario, which model type (Protein LM, DNA LM, or Codon LM) would you choose?</p>
+<ol type="1">
+<li><p>Predicting whether a missense mutation (Val→Ile) disrupts protein function.</p></li>
+<li><p>Optimizing codon usage for a therapeutic mRNA vaccine while keeping the amino acid sequence identical.</p></li>
+<li><p>Assessing whether a synonymous SNP in a coding region affects a nearby splice enhancer motif.</p></li>
+<li><p>Predicting translation speed and ribosome stalling patterns across a transcript.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answers
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>Protein LM (ESM-2, AlphaMissense)</strong> - Missense effects depend on amino acid properties and protein structure, not codon choice. Protein LMs capture evolutionary constraints and structural context that determine functional impact.</p></li>
+<li><p><strong>Codon LM (CodonBERT, cdsFM)</strong> - This is precisely what codon models are designed for: exploring the ~3^300 synonymous sequence space while predicting expression and stability. Protein LMs cannot distinguish synonymous alternatives.</p></li>
+<li><p><strong>DNA LM (DNABERT, Nucleotide Transformer)</strong> - Splice enhancer motifs operate at the nucleotide level across exon-intron boundaries. DNA LMs see the nucleotide context; codon LMs would miss the splice signal since it spans codon boundaries.</p></li>
+<li><p><strong>Codon LM</strong> - Translation dynamics depend on codon-level features: tRNA availability, codon pair effects, and ribosome decoding speed. DNA LMs lack codon boundary information; protein LMs lose synonymous codon information entirely.</p></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="sec-ch18-utr" class="level2" data-number="18.7">
@@ -1375,7 +1445,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>miRNA target prediction relies heavily on “seed complementarity”—perfect base pairing between nucleotides 2-7 of the miRNA and the target site. Why might focusing only on seed matches miss many functional targets? What other factors could influence whether a site is actually regulated?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1384,7 +1454,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Seed-only approaches miss functional targets because actual regulation depends on additional context: local RNA secondary structure may occlude seed matches, competing RNA-binding proteins may block access, miRNA and target abundance vary across cell types, and non-canonical binding modes exist without perfect seed pairing. The cellular context determines whether a seed match produces functional regulation.</p>
 </div>
@@ -1463,7 +1533,7 @@ Test Yourself
 <li>What is the primary data limitation preventing RNA foundation models from achieving breakthroughs comparable to protein language models like ESM-2?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1472,7 +1542,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-20" class="callout-20-contents callout-collapse collapse">
+<div id="callout-24" class="callout-24-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>RNA structure is harder because:</strong> RNA has flat energy landscapes where multiple conformations have similar free energies (creating many-to-many sequence-structure relationships), long-range base pairing that creates global dependencies, and pseudoknots that violate the nested structure assumptions enabling efficient algorithms. Proteins typically fold to a single stable structure with a deep energy minimum.</p></li>

@@ -1223,6 +1223,19 @@ Practical Guidance: Choosing a PLM for Variant Effect Prediction
 <section id="sec-ch15-limitations" class="level2" data-number="15.8">
 <h2 data-number="15.8" class="anchored" data-anchor-id="sec-ch15-limitations"><span class="header-section-number">15.8</span> Limitations</h2>
 <p>Despite their success, protein language models face several limitations that inform the development of genomic models and guide appropriate application.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Recall and Connect: Limitations Propagate to Applications">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Recall and Connect: Limitations Propagate to Applications
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The limitations described in this section—orphan proteins, novel folds, epistasis—recur throughout clinical applications. In <a href="p3-ch17-vep-fm.html" class="quarto-xref"><span>Chapter 17</span></a>, you’ll see how these limitations affect variant pathogenicity prediction: missense variants in poorly characterized proteins receive unreliable scores. In <a href="../part_6/p6-ch28-rare-disease.html" class="quarto-xref"><span>Chapter 28</span></a>, rare disease diagnosis must account for these gaps when prioritizing candidate variants. The population-specific performance disparities discussed in <a href="../part_2/p2-ch12-confounding.html" class="quarto-xref"><span>Chapter 12</span></a> apply equally here: PLMs trained predominantly on sequences from well-studied organisms may underperform on human variants in understudied gene families.</p>
+</div>
+</div>
 <div id="fig-plm-limitations" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-plm-limitations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1356,25 +1369,6 @@ Test Yourself
 <li>How does masked language modeling on protein sequences lead to emergent knowledge about protein structure and function? What specific types of biological information emerge without explicit supervision?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Check Your Answer
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-18" class="callout-18-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>Masked language modeling requires the model to predict hidden amino acids from surrounding context. To succeed, the model must learn what makes sequences “protein-like”—the constraints imposed by evolution. <strong>Emergent knowledge</strong> includes: (1) <strong>secondary structure</strong> (alpha helices, beta sheets visible in attention patterns), (2) <strong>residue-residue contacts</strong> (spatially close amino acids attend to each other), (3) <strong>evolutionary conservation</strong> (constrained positions receive confident predictions), and (4) <strong>functional sites</strong> (catalytic residues, binding sites receive elevated attention). These properties emerge because evolutionary and physical constraints shape which amino acid combinations survive, embedding structural and functional information in sequence statistics.</p>
-</div>
-</div>
-</div>
-<ol start="2" type="1">
-<li>Explain the connection between attention patterns in protein language models and evolutionary coupling. Why do attention weights correlate with residue-residue contacts in 3D structure?</li>
-</ol>
-<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -1386,12 +1380,12 @@ Check Your Answer
 </div>
 <div id="callout-19" class="callout-19-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><strong>Evolutionary coupling</strong> occurs when two residues must maintain physical contact for protein function. If mutation at position A disrupts the contact, selection favors compensatory mutations at position B. This creates <strong>correlated mutations</strong> across evolutionary time. Protein language models learn that knowing the amino acid at position B helps predict the amino acid at position A—precisely the signature of evolutionary coupling. The model learns to attend to positions that provide predictive information, and these often correspond to spatially proximate residues that coevolve. The attention mechanism thus rediscovers coevolution as the optimal strategy for masked token prediction.</p>
+<p>Masked language modeling requires the model to predict hidden amino acids from surrounding context. To succeed, the model must learn what makes sequences “protein-like”—the constraints imposed by evolution. <strong>Emergent knowledge</strong> includes: (1) <strong>secondary structure</strong> (alpha helices, beta sheets visible in attention patterns), (2) <strong>residue-residue contacts</strong> (spatially close amino acids attend to each other), (3) <strong>evolutionary conservation</strong> (constrained positions receive confident predictions), and (4) <strong>functional sites</strong> (catalytic residues, binding sites receive elevated attention). These properties emerge because evolutionary and physical constraints shape which amino acid combinations survive, embedding structural and functional information in sequence statistics.</p>
 </div>
 </div>
 </div>
-<ol start="3" type="1">
-<li>How does ESMFold predict protein structure without multiple sequence alignments? What enables this, and what are the performance tradeoffs compared to AlphaFold2?</li>
+<ol start="2" type="1">
+<li>Explain the connection between attention patterns in protein language models and evolutionary coupling. Why do attention weights correlate with residue-residue contacts in 3D structure?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
@@ -1405,12 +1399,12 @@ Check Your Answer
 </div>
 <div id="callout-20" class="callout-20-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>ESMFold uses <strong>ESM-2 embeddings</strong> as input to a structure prediction module adapted from AlphaFold2’s architecture. The language model embeddings, learned from masked token prediction on millions of sequences, encode evolutionary information that replaces explicit MSA-derived features. This works because the model has compressed evolutionary patterns into its parameters during pretraining. <strong>Tradeoffs</strong>: ESMFold is ~60× faster (minutes vs.&nbsp;hours) and handles orphan proteins better, but achieves slightly lower accuracy for proteins where deep MSAs provide information that single-sequence analysis cannot fully recover. The gap is largest for proteins with sparse evolutionary sampling.</p>
+<p><strong>Evolutionary coupling</strong> occurs when two residues must maintain physical contact for protein function. If mutation at position A disrupts the contact, selection favors compensatory mutations at position B. This creates <strong>correlated mutations</strong> across evolutionary time. Protein language models learn that knowing the amino acid at position B helps predict the amino acid at position A—precisely the signature of evolutionary coupling. The model learns to attend to positions that provide predictive information, and these often correspond to spatially proximate residues that coevolve. The attention mechanism thus rediscovers coevolution as the optimal strategy for masked token prediction.</p>
 </div>
 </div>
 </div>
-<ol start="4" type="1">
-<li>Describe how protein language models perform zero-shot variant effect prediction using log-likelihood ratios. Why does this approach work for distinguishing pathogenic from benign variants?</li>
+<ol start="3" type="1">
+<li>How does ESMFold predict protein structure without multiple sequence alignments? What enables this, and what are the performance tradeoffs compared to AlphaFold2?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
@@ -1424,12 +1418,12 @@ Check Your Answer
 </div>
 <div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><strong>Zero-shot scoring</strong> computes: Δscore = log P(mutant | context) - log P(wild-type | context). If the model assigns lower probability to the mutant amino acid than the wild-type, the variant is predicted deleterious. This works because the model learned evolutionary preferences from millions of successful sequences. Evolution eliminates functionally disruptive variants, leaving statistical signatures that the model captures. Variants the model finds “surprising” (low probability) often violate evolutionary constraints, indicating likely functional disruption. The approach requires <strong>no pathogenicity labels</strong>—it measures deviation from learned evolutionary expectations rather than matching patterns of known pathogenic variants.</p>
+<p>ESMFold uses <strong>ESM-2 embeddings</strong> as input to a structure prediction module adapted from AlphaFold2’s architecture. The language model embeddings, learned from masked token prediction on millions of sequences, encode evolutionary information that replaces explicit MSA-derived features. This works because the model has compressed evolutionary patterns into its parameters during pretraining. <strong>Tradeoffs</strong>: ESMFold is ~60× faster (minutes vs.&nbsp;hours) and handles orphan proteins better, but achieves slightly lower accuracy for proteins where deep MSAs provide information that single-sequence analysis cannot fully recover. The gap is largest for proteins with sparse evolutionary sampling.</p>
 </div>
 </div>
 </div>
-<ol start="5" type="1">
-<li>What are three fundamental limitations of protein language models? For each limitation, explain what type of information the model lacks and why self-supervised sequence training cannot provide it.</li>
+<ol start="4" type="1">
+<li>Describe how protein language models perform zero-shot variant effect prediction using log-likelihood ratios. Why does this approach work for distinguishing pathogenic from benign variants?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
@@ -1442,6 +1436,25 @@ Check Your Answer
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-22" class="callout-22-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Zero-shot scoring</strong> computes: Δscore = log P(mutant | context) - log P(wild-type | context). If the model assigns lower probability to the mutant amino acid than the wild-type, the variant is predicted deleterious. This works because the model learned evolutionary preferences from millions of successful sequences. Evolution eliminates functionally disruptive variants, leaving statistical signatures that the model captures. Variants the model finds “surprising” (low probability) often violate evolutionary constraints, indicating likely functional disruption. The approach requires <strong>no pathogenicity labels</strong>—it measures deviation from learned evolutionary expectations rather than matching patterns of known pathogenic variants.</p>
+</div>
+</div>
+</div>
+<ol start="5" type="1">
+<li>What are three fundamental limitations of protein language models? For each limitation, explain what type of information the model lacks and why self-supervised sequence training cannot provide it.</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-23-contents" aria-controls="callout-23" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-23" class="callout-23-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p><strong>(1) Orphan proteins:</strong> Proteins without homologs lack evolutionary context. PLMs learn from statistical patterns across families, but orphan proteins provide no family data to learn from. <strong>(2) Novel folds:</strong> Designed proteins with topologies not found in nature lie outside the training distribution. The model learned sequence-structure relationships from natural proteins; completely novel folds represent patterns never encountered. <strong>(3) Epistatic interactions:</strong> Standard scoring assumes variant effects are independent, but real proteins show epistasis where effects depend on sequence context. The combinatorial explosion makes explicit modeling intractable, and training data rarely includes systematic multi-mutant measurements to learn higher-order interactions.</p>
 </div>

@@ -892,6 +892,46 @@ Table&nbsp;19.2: Comparison of major single-cell foundation models. All use tran
 </div>
 </figure>
 </div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check: Which Single-Cell FM?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check: Which Single-Cell FM?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each scenario, which single-cell foundation model would be most appropriate?</p>
+<ol type="1">
+<li><p>You need to annotate cell types in a zebrafish developmental atlas, but your training data is entirely from human and mouse.</p></li>
+<li><p>A drug discovery team wants to predict how knocking out gene X will change expression of genes Y and Z in hepatocytes.</p></li>
+<li><p>A clinical study has 500 labeled cells from a rare immune disorder and needs to classify 50,000 unlabeled patient cells.</p></li>
+<li><p>You’re investigating whether a regulatory network identified in mouse immune cells is conserved in human.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answers
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>TranscriptFormer</strong> - Its cross-species pretraining (spanning 1.5 billion years of evolution) enables zero-shot annotation across species without requiring labeled training data from the target species.</p></li>
+<li><p><strong>scGPT</strong> - Its multi-objective training includes perturbation prediction capabilities. scGPT was specifically designed for perturbation response prediction, learning to predict expression changes after genetic perturbations.</p></li>
+<li><p><strong>Geneformer</strong> - Excels at few-shot cell annotation, leveraging pretrained regulatory knowledge to classify with limited labeled examples. Its network-aware representations transfer well to rare cell types.</p></li>
+<li><p><strong>TranscriptFormer</strong> - Cross-species training specifically enables comparison of regulatory programs across evolutionary distances. Conserved attention patterns indicate conserved regulatory relationships.</p></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
 <p>Why do these innovations matter biologically? <em>Geneformer’s</em> rank-based encoding discards absolute counts (which vary with technical artifacts) while preserving the relative expression patterns that define cell state. <em>scGPT’s</em> multi-objective training forces the model to simultaneously predict masked genes (learning co-expression), predict expression from sequence (learning regulatory logic), and align cells across batches (learning biological identity distinct from technical variation). <em>TranscriptFormer’s</em> cross-species training exploits 1.5 billion years of evolutionary divergence: regulatory programs conserved across such distances must be fundamental, while species-specific patterns reveal how cell types diversify. Each innovation addresses a specific challenge of single-cell data: technical noise, batch effects, or the need to generalize beyond training cell types.</p>
 <section id="sec-ch19-geneformer" class="level3" data-number="19.2.1">
 <h3 data-number="19.2.1" class="anchored" data-anchor-id="sec-ch19-geneformer"><span class="header-section-number">19.2.1</span> <em>Geneformer</em>: Learning Network Biology</h3>
@@ -972,7 +1012,7 @@ Stop and Think
 <li>What biological knowledge emerges in attention weights without explicit supervision?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -981,7 +1021,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>Rank-based encoding captures relative expression (which genes are unusually high/low compared to baseline) rather than absolute counts that vary with sequencing depth, capture efficiency, and other technical factors. This preserves biological signal while discarding technical noise.</li>
@@ -1225,7 +1265,7 @@ Stop and Think
 <li>How does <em>CpGPT’s</em> architecture differ from cellular language models like <em>Geneformer</em>?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1234,7 +1274,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>Methylation integrates: (a) genetic influences—sequence context affects which CpG sites can be methylated; (b) developmental programs—methylation landscapes are remodeled during differentiation and establish cell-type identity; (c) environmental exposures—diet, smoking, and stress leave lasting methylation signatures that persist after exposure ends.</li>
@@ -1271,7 +1311,7 @@ Knowledge Check: Epigenomic Data Types
 <li>What makes scATAC-seq integration across datasets particularly challenging?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1280,10 +1320,13 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li>DNA methylation encodes developmental history, environmental exposure signatures, and epigenetic age—stable regulatory states that persist independently of current expression levels. 2. Chromatin accessibility determines which regulatory elements are available for transcription factor binding, establishing regulatory potential before any transcription occurs. 3. <em>CpGPT</em> tokenizes CpG sites with their methylation values and genomic positions, while <em>Geneformer</em> tokenizes cells as rank-ordered sequences of genes by expression level. 4. scATAC-seq peak sets vary across datasets depending on peak calling procedures, creating mismatched feature spaces that complicate integration—unlike scRNA-seq where genes provide a common coordinate system.</li>
+<li><p><strong>Methylation encodes regulatory memory.</strong> DNA methylation captures developmental history, environmental exposure signatures, and epigenetic age—stable regulatory states that persist independently of current expression levels. This matters because expression reflects what a cell is doing <em>now</em>, while methylation reveals where it came from developmentally and what regulatory programs are permanently silenced or primed for activation.</p></li>
+<li><p><strong>Accessibility precedes expression causally.</strong> Chromatin accessibility determines which regulatory elements are available for transcription factor binding, establishing regulatory potential before any transcription occurs. A gene cannot be expressed if its promoter is inaccessible, making accessibility a prerequisite rather than a consequence of expression.</p></li>
+<li><p><strong>Different biological units require different tokenization.</strong> <em>CpGPT</em> tokenizes CpG sites with their methylation values and genomic positions because methylation is measured at specific genomic loci. <em>Geneformer</em> tokenizes cells as rank-ordered sequences of genes because it treats each cell as a “document” where genes are “words.” The tokenization strategy must match the biological unit being modeled.</p></li>
+<li><p><strong>Peaks lack a universal coordinate system.</strong> scATAC-seq peak sets vary across datasets depending on peak calling procedures, creating mismatched feature spaces. Gene A in one RNA-seq dataset is the same as Gene A in another, but Peak #12345 from one ATAC dataset may have no correspondence to peaks in another dataset—forcing integration methods to learn mappings between arbitrary feature spaces rather than simply aligning common features.</p></li>
 </ol>
 </div>
 </div>
@@ -1472,7 +1515,7 @@ Test Yourself
 <li>How does cross-modality integration (like GLUE) use biological prior knowledge to align cells profiled with different assays?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1481,7 +1524,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Rank-based encoding</strong>: Rank-based encoding emphasizes relative expression (which genes are unusually high or low compared to their typical baseline) rather than absolute counts that vary with technical factors like sequencing depth, capture efficiency, and amplification bias. This preserves biological signal (what is distinctive about this cell’s state) while discarding technical noise that would confound count-based representations.</p></li>

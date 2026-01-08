@@ -1105,6 +1105,44 @@ Table&nbsp;16.2: Comparison of regulatory model outputs and their appropriate us
 </div>
 </figure>
 </div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check: Which Regulatory Model?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check: Which Regulatory Model?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each scenario below, which regulatory model would you choose and why?</p>
+<ol type="1">
+<li><p>A clinical geneticist wants to explain to a patient why their intronic variant likely disrupts a liver enhancer. They need output the patient can understand.</p></li>
+<li><p>A researcher suspects a variant affects alternative splicing of a transcript but has no experimental data. They need quantitative predictions of exon inclusion changes.</p></li>
+<li><p>A diagnostic lab needs to score 50,000 variants from a biobank cohort. They require locally-runnable predictions with version control for reproducibility.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answers
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>Sei</strong> - The discrete regulatory vocabulary (“strong enhancer” → “weak enhancer”) is more interpretable for non-specialists than continuous track predictions. The clinician can say “this variant shifts the sequence from acting like an enhancer to acting like background.”</p></li>
+<li><p><strong>Borzoi</strong> - Unlike Enformer which predicts transcription initiation, Borzoi predicts RNA-seq coverage including splicing effects. For splicing-specific questions, Borzoi provides quantitative exon inclusion predictions that complement SpliceAI.</p></li>
+<li><p><strong>Enformer</strong> - For high-throughput clinical applications requiring reproducibility, Enformer’s open weights enable local deployment without sending patient data externally. Version-controlled predictions are essential for diagnostic validation.</p></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="sec-ch16-alphagenome" class="level2" data-number="16.5">
@@ -1212,7 +1250,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>Before reading about limitations, reflect: based on what you know about how these models are trained, what categories of failure would you expect? Consider training data, model architecture, and the biology of gene regulation.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1221,7 +1259,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div id="callout-19" class="callout-19-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Expected failure categories include: training data bias (poor performance on underrepresented cell types and populations), finite context windows missing trans-acting factors and distant regulatory elements, inability to model 3D chromatin structure from linear sequence, and correlation-based learning that may not capture true causal mechanisms. The models learn associations between sequence and functional readouts but cannot distinguish which patterns are causally important versus merely correlated.</p>
 </div>
@@ -1375,7 +1413,7 @@ Test Yourself
 <li><p>Identify three critical limitations of current regulatory models that prevent them from capturing the full complexity of gene regulation. For each, explain what biological information is missing.</p></li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1384,7 +1422,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-22" class="callout-22-contents callout-collapse collapse">
+<div id="callout-24" class="callout-24-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Scale mismatch</strong>: Short-context models have receptive fields of 1-2 kb or at most tens of kb through dilated convolutions, but mammalian enhancers are typically 20-50 kb from their target promoters, with substantial fractions exceeding 100 kb. Topologically associating domains (TADs) range from hundreds of kb to several megabases. A model with a 2kb window can see only 1% of a 200kb regulatory neighborhood, treating distant enhancers as if they don’t exist.</p></li>

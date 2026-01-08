@@ -1032,6 +1032,25 @@ Table&nbsp;11.2: Comparison of variant effect prediction benchmark types. Each p
 </div>
 </figure>
 </div>
+<div class="callout callout-style-default callout-important callout-titled" title="Checkpoint: Benchmark Selection">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Checkpoint: Benchmark Selection
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before proceeding, ensure you can explain:</p>
+<ol type="1">
+<li>Why ClinVar benchmarks alone cannot validate a model for clinical deployment</li>
+<li>What makes CAGI the “gold standard” for benchmark validity</li>
+<li>The distinction between DMS fitness scores and clinical pathogenicity</li>
+</ol>
+<p>If you cannot articulate these differences, revisit the benchmark type descriptions above.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="sec-ch11-trait-benchmarks" class="level2" data-number="11.4">
@@ -1422,6 +1441,24 @@ Stop and Think
 <div class="callout-body-container callout-body">
 <p>You’re building a variant pathogenicity predictor for clinical use. You could split your data by: (A) random 80/20, (B) by chromosome, (C) by gene family, or (D) by patient ancestry. Each tests different generalization. Which splitting strategy would best simulate real clinical deployment? Why might you want to try multiple strategies?</p>
 <p><em>Consider: In the clinic, which of these splits most closely resembles encountering a truly novel variant?</em></p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Best for clinical deployment simulation: (C) Gene family split</strong>, because clinical variants often occur in genes for which you have no training data. A new disease gene identified next year won’t share sequence with your training genes, so testing generalization across gene families reveals whether your model learns transferable principles rather than gene-specific patterns.</p>
+<p><strong>Why multiple strategies?</strong> Each split tests a different failure mode: - <strong>(A) Random</strong> overestimates performance by allowing related variants to leak across splits - <strong>(B) Chromosome</strong> tests genomic region transfer but doesn’t address gene homology - <strong>(C) Gene family</strong> tests whether learned features transfer to novel genes - <strong>(D) Ancestry</strong> reveals whether your model works equitably across populations</p>
+<p>A model that passes all four strategies is more likely to succeed in deployment than one that only passes random splits. The stricter the split, the lower but more realistic the performance estimate.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div id="fig-splitting-strategies" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1696,7 +1733,7 @@ Knowledge Check
 <li>A foundation model claims that pretraining improves downstream performance. What comparison demonstrates the value of pretraining specifically?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1705,7 +1742,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-20" class="callout-20-contents callout-collapse collapse">
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>It should beat: PWM/k-mer baselines, the best current deep learning model (like Enformer or DNABERT-2), and a randomly initialized model of the same architecture to show pretraining value. (2) A straw man would compare only to outdated methods or use different data; rigorous comparison includes current best tools (CADD, REVEL, AlphaMissense), simple baselines (conservation scores, allele frequency), and ablations testing each component’s contribution. (3) Compare against a randomly initialized model with identical architecture trained from scratch on the same downstream task data - this isolates whether gains come from pretraining rather than just model size or architecture.</li>
@@ -2000,7 +2037,7 @@ Test Yourself
 <li>How does label circularity in ClinVar (where computational predictions influence annotations) compromise benchmark validity for new variant effect predictors?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-26-contents" aria-controls="callout-26" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2009,7 +2046,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-24" class="callout-24-contents callout-collapse collapse">
+<div id="callout-26" class="callout-26-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Homology leakage</strong> occurs when evolutionarily related sequences appear in both training and test sets, allowing models to succeed through memorization of family-specific patterns rather than learning general biological principles. Random splits fail because they ignore sequence similarity—a test protein at 80% identity to a training protein provides minimal generalization evidence, yet random splits routinely create such pairs. Homology-aware splitting (using tools like CD-HIT at 30-40% identity thresholds) ensures test sequences are evolutionarily distant from training sequences.</p></li>

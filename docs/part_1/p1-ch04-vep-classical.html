@@ -578,6 +578,19 @@ Chapter Overview
 <p><strong>Key insight:</strong> Every classical predictor measures a proxy for clinical pathogenicity, not pathogenicity itself. Conservation scores measure evolutionary fitness, not disease relevance. Protein predictors measure structural disruption, not clinical consequence. Understanding these gaps is essential for appropriate interpretation.</p>
 </div>
 </div>
+<div class="callout callout-style-default callout-important callout-titled" title="Why This Matters to You">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Why This Matters to You
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Whether you’re interpreting variants for clinical diagnosis, training foundation models for VEP, or evaluating new prediction tools, you will encounter classical predictors constantly—<em>SIFT</em>, <em>PolyPhen-2</em>, and <em>CADD</em> appear in nearly every clinical variant report. Understanding what these tools actually measure (and what they miss) protects you from over-trusting their outputs and helps you recognize when foundation models genuinely improve over classical baselines versus when they merely inherit the same biases. After this chapter, you’ll be able to critically evaluate any variant predictor by asking: <em>What proxy does it measure, and where does that proxy fail?</em></p>
+</div>
+</div>
 <p><strong>Conservation scores</strong> measure evolutionary constraint, not disease relevance. Protein-level predictors estimate structural disruption, not clinical pathogenicity. Splice site algorithms identify sequence motifs, not functional consequences. Every classical variant effect predictor measures something <em>correlated</em> with what clinicians actually need to know, not the thing itself: will this variant cause disease in this patient?</p>
 <p>The gap between measurable signal and clinical question is irreducible. Evolutionary conservation reflects reproductive fitness, not human health; protein structure does not determine disease penetrance; and splice motifs do not guarantee splicing outcomes. Classical methods achieve what they achieve by combining multiple imperfect proxies, hoping that their convergence approximates clinical truth.</p>
 <p>The conceptual foundations and practical methods that dominated variant interpretation before the foundation model era reveal both genuine insights and systematic blind spots. The trajectory from single-signal predictors through increasingly sophisticated ensemble methods traces a persistent gap: what we can measure differs from what clinicians need to know. Conservation scores like PhyloP and <strong>Genomic Evolutionary Rate Profiling (GERP)</strong> quantify purifying selection across evolutionary time, identifying positions where variation is depleted relative to neutral expectations. Protein-level tools like <em>SIFT</em> and <em>PolyPhen-2</em> assess amino acid substitutions through sequence conservation and structural features. Splice predictors identify the sequence motifs that mark intron-exon boundaries. Each approach captures genuine biological signal, but each also fails in characteristic ways: conservation misses recently evolved human-specific functions, protein predictors cannot assess non-coding variants, splice algorithms miss cryptic sites and tissue-specific regulation.</p>
@@ -791,7 +804,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>A patient has a variant at a position with phyloP = 0.5 (weak conservation) in <em>BRCA1</em>, a well-established breast cancer gene. Another patient has a variant with phyloP = 4.0 (strong conservation) in a gene with no known disease associations. Which variant is more likely to be clinically actionable? What additional information would you need?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -800,7 +813,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The <em>BRCA1</em> variant is more likely to be clinically actionable despite weak conservation, because gene-disease association trumps position-level constraint when making clinical decisions. Additional information needed includes: variant type (missense vs.&nbsp;nonsense), population frequency, other computational predictions, family history, and whether the variant has been reported in clinical databases like ClinVar.</p>
 </div>
@@ -1295,7 +1308,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>A clinical laboratory is evaluating tools for a rare disease diagnostic pipeline. They need high specificity (few false positives) because false pathogenic calls lead to unnecessary interventions. Which of <em>CADD</em>, <em>REVEL</em>, or <em>M-CAP</em> would you recommend for their primary filter, and why?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1304,7 +1317,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div id="callout-19" class="callout-19-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p><em>M-CAP</em> is the best choice for this use case because it was explicitly designed to minimize false positives (high specificity) at the cost of some sensitivity. <em>REVEL</em> offers high accuracy for missense variants but balances sensitivity and specificity equally, while <em>CADD</em> provides genome-wide coverage but may have more false positives within specific variant classes.</p>
 </div>
@@ -1488,7 +1501,7 @@ Test Yourself
 <li>Why do classical variant effect predictors struggle with rare variants and novel mechanisms?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1497,7 +1510,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-21" class="callout-21-contents callout-collapse collapse">
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Conservation scores measure evolutionary constraint, not disease relevance</strong>: phyloP quantifies deviation from neutral evolution rates, while GERP estimates rejected substitutions across evolutionary time. These scores measure whether positions have been important for reproductive fitness across species, which differs from clinical pathogenicity because evolution cannot detect late-onset diseases, tissue-specific effects, or recently evolved human-specific functions.</p></li>

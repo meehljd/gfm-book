@@ -1031,6 +1031,25 @@ Table&nbsp;8.2: Comparison of MLM and autoregressive pretraining objectives for 
 </div>
 </figure>
 </div>
+<div class="callout callout-style-default callout-important callout-titled" title="Checkpoint: Core Pretraining Concepts">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Checkpoint: Core Pretraining Concepts
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before proceeding, ensure you can explain:</p>
+<ol type="1">
+<li>Why MLM provides bidirectional context while autoregressive models only see preceding tokens</li>
+<li>How task alignment (understanding vs.&nbsp;generation) should guide objective choice</li>
+<li>Why variant effect prediction benefits from MLM’s bidirectional attention</li>
+</ol>
+<p>If any of these are unclear, re-read the sections above before continuing.</p>
+</div>
+</div>
 <p>This alignment extends beyond task type to affect how practitioners extract and use model representations. Encoder models trained with MLM produce final-layer embeddings that work reliably across diverse downstream tasks because the pretraining objective shaped representations for general utility. Decoder models trained with next-token prediction specialize their final layers for vocabulary prediction, often making intermediate layers superior for classification and regression tasks. This <strong>layer hunting problem</strong> adds hyperparameter search burden when using decoder models for non-generative applications, sometimes requiring evaluation across all layers to identify where task-relevant information concentrates. The practical implications for model deployment are examined in <span class="quarto-unresolved-ref">?sec-ch09-layer-selection</span>.</p>
 <section id="sec-ch08-hybrid" class="level3" data-number="8.3.1">
 <h3 data-number="8.3.1" class="anchored" data-anchor-id="sec-ch08-hybrid"><span class="header-section-number">8.3.1</span> Hybrid Architectures</h3>
@@ -1406,7 +1425,7 @@ Knowledge Check
 <li>Predicting splice-altering variants in rare disease patients</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1415,7 +1434,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>MLM - predicting binding disruption requires bidirectional context to assess how the variant affects the motif and flanking regions. (2) Autoregressive/next-token prediction - designing new sequences requires generation capabilities that sample coherent proteins respecting learned sequence grammar. (3) Contrastive learning - robustness across populations benefits from pretraining that learns invariance to genetic variation through contrastive objectives on variant pairs. (4) MLM - splice site prediction needs to assess how variants affect both donor and acceptor sites with full bidirectional context around the junction.</li>
@@ -1574,7 +1593,7 @@ Test Yourself
 <li>Why does context length curriculum (training first on short sequences, then progressively extending) improve optimization stability compared to training directly on long contexts?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1583,7 +1602,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-20" class="callout-20-contents callout-collapse collapse">
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p>MLM uses bidirectional attention, allowing each position to integrate information from the entire sequence. During prediction of a masked token, the model sees both upstream and downstream context. For variant effect prediction, pathogenicity often depends on how a variant disrupts interactions with residues or motifs on both sides, making bidirectional context essential. Autoregressive models only see preceding tokens, missing critical downstream information.</p></li>

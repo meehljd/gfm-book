@@ -974,6 +974,25 @@ Check Your Answer
 <p>The <em>EEPRS</em> framework operates on GWAS summary statistics and phenotype embeddings, both derived from classical statistical approaches. Foundation models offer an alternative integration strategy where learned sequence representations replace or augment summary statistics. Rather than weighting variants by GWAS effect sizes, foundation model approaches can score variants by their predicted functional impact, regulatory consequence, or embedding similarity to known pathogenic variants (<a href="../part_3/p3-ch17-vep-fm.html" class="quarto-xref"><span>Chapter 17</span></a>).</p>
 <p>Attention-based integration, graph neural networks for pathway aggregation (<a href="../part_4/p4-ch21-networks.html" class="quarto-xref"><span>Chapter 21</span></a>), and transformer encoders for sequence context can all incorporate EHR embeddings as additional input features. A patient’s clinical embedding provides context that may modify interpretation of their genetic variants: a <strong>variant of uncertain significance (VUS)</strong> in a cardiovascular gene carries different implications for a patient whose clinical embedding places them in the cardiovascular risk cluster versus one with an unremarkable clinical profile. This contextualization moves beyond additive combination toward models that learn interactions between genetic and clinical risk.</p>
 <p>The combination of phenotype embeddings and foundation model features remains largely unexplored. <em>EEPRS</em> demonstrated that phenotype embeddings capture heritable variation beyond single-trait GWAS; foundation models demonstrate that sequence context improves variant effect prediction beyond simple annotations (<span class="quarto-unresolved-ref">?sec-ch14-fm-gains</span>). Whether these approaches provide complementary signal, and whether their combination improves clinical prediction beyond either alone, represents an open research question with substantial clinical implications.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Checkpoint: PGS Enhancement Approaches">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Checkpoint: PGS Enhancement Approaches
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before proceeding to temporal modeling, ensure you understand:</p>
+<ol type="1">
+<li>Why embedding-based approaches improve some conditions (cardiovascular cluster) but not others (breast cancer)</li>
+<li>How PRS-PheWAS provides interpretability for enhanced polygenic scores</li>
+<li>What population representativeness challenges affect EHR-based embedding methods</li>
+</ol>
+<p>If these concepts are unclear, review the preceding sections before continuing.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="sec-ch27-temporal-modeling" class="level2" data-number="27.5">
@@ -1206,7 +1225,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>A foundation model-based risk tool provides a prediction of 35% 10-year cardiovascular risk for a patient of Nigerian ancestry, along with a wide confidence interval of 15-55%. The model was trained primarily on European-ancestry data. Is this wide interval more likely reflecting aleatoric or epistemic uncertainty? What would you recommend the clinician do with this prediction?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1215,7 +1234,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>This wide interval primarily reflects epistemic uncertainty due to distributional shift: the model has limited training data from African-ancestry populations and thus low confidence in its predictions. The clinician should interpret this prediction with caution, consider it alongside other risk factors, and potentially order additional testing rather than making treatment decisions based solely on this uncertain estimate.</p>
 </div>
@@ -1442,7 +1461,7 @@ Test Yourself
 <li>What is the difference between analytical validity, clinical validity, and clinical utility? Give an example where a model has one but not the others.</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1451,7 +1470,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>PRS Limitations</strong>: Traditional polygenic scores have three main limitations: (1) they lack mechanistic insight by reducing genomes to single numbers without indicating which biological pathways drive risk, (2) they show poor cross-ancestry portability because they are derived from European-dominated GWAS data and depend on population-specific linkage disequilibrium patterns, and (3) they remain disconnected from clinical workflows by existing outside electronic health records where decisions actually happen. Foundation model embeddings address these by preserving information about which genomic regions contribute to risk, leveraging sequence-based functional priors that transfer across ancestries, and enabling integration architectures that combine genomic and clinical data within EHR systems.</p></li>

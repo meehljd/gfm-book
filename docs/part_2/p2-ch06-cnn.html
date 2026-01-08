@@ -1404,6 +1404,46 @@ Table&nbsp;6.4: Comparison of sequence modeling architectures for learning long-
 </div>
 </figure>
 </div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check: Which Architecture for This Task?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check: Which Architecture for This Task?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each genomic modeling scenario, which architecture would you choose and why?</p>
+<ol type="1">
+<li><p>Predicting transcription factor binding sites within a 1 kb promoter region, where binding depends on local sequence motifs (6-12 bp).</p></li>
+<li><p>Predicting whether a variant 50 kb upstream of a gene disrupts an enhancer-promoter interaction and affects expression.</p></li>
+<li><p>Predicting whether a synonymous coding variant creates a cryptic splice site, requiring integration of branch point, donor, and acceptor signals across several hundred bases.</p></li>
+<li><p>Building a general-purpose sequence encoder for multiple downstream tasks including both local motif detection and long-range chromatin contact prediction.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answers
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>CNN (DeepSEA/Basset-style)</strong>—Local motif detection within 1 kb is well within CNN receptive fields; convolutional filters directly learn position weight matrix-like patterns without needing long-range context. CNNs are also more computationally efficient for this task.</p></li>
+<li><p><strong>Attention-based (Enformer/transformer)</strong>—The 50 kb distance between the variant and gene far exceeds CNN receptive fields; only attention mechanisms can compute direct dependencies across such distances. This task requires the long-range integration that transformers provide.</p></li>
+<li><p><strong>Dilated CNN (SpliceAI-style)</strong>—Splice prediction requires ~10 kb context (branch point, donor, acceptor), which dilated convolutions reach efficiently. SpliceAI achieves clinical-grade performance; attention adds computational cost without clear benefit for this specific, well-defined task.</p></li>
+<li><p><strong>Hybrid (Enformer-style: CNN + attention)</strong>—Local motif detection benefits from CNN inductive biases, while long-range tasks require attention. Hybrid architectures use convolutional layers for initial motif extraction, then attention layers to integrate across the full context, combining the strengths of both approaches.</p></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="sec-ch06-danq" class="level3" data-number="6.7.2">
 <h3 data-number="6.7.2" class="anchored" data-anchor-id="sec-ch06-danq"><span class="header-section-number">6.7.2</span> <em>DanQ</em>: Combining Convolutions and Recurrence</h3>

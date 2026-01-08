@@ -735,6 +735,19 @@ Check Your Answer
 <p>Individual genes do not operate in isolation. Proteins interact in complexes, genes participate in pathways, and regulatory networks coordinate cellular responses. Even with excellent variant-to-gene mapping, the biological context of a target shapes its therapeutic potential. Network-aware approaches propagate genetic signals through these relational structures to identify modules, bottleneck nodes, and repurposing opportunities.</p>
 <section id="sec-ch29-network-propagation" class="level3" data-number="29.2.1">
 <h3 data-number="29.2.1" class="anchored" data-anchor-id="sec-ch29-network-propagation"><span class="header-section-number">29.2.1</span> Propagating Genetic Signals Through Networks</h3>
+<div class="callout callout-style-default callout-tip callout-titled" title="Recall and Connect">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Recall and Connect
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>From <a href="../part_4/p4-ch21-networks.html" class="quarto-xref"><span>Chapter 21</span></a>, recall the message passing paradigm in graph neural networks: how do nodes aggregate information from their neighbors? How might this same principle apply when propagating GWAS evidence through protein-protein interaction networks?</p>
+</div>
+</div>
 <p>The basic intuition is that GWAS signals concentrated in a pathway or protein interaction module provide stronger evidence than isolated hits. A single gene with modest genetic support but tight functional connections to several strongly implicated genes may be a more attractive target than an isolated hit with stronger statistics but unclear biology.</p>
 <p>Network-based methods integrate noncoding GWAS loci, regulatory annotations, and protein-protein interactomes to identify disease genes and evaluate drug repurposing opportunities in complex diseases. <strong>Graph neural network</strong> architectures (<span class="quarto-unresolved-ref">?sec-ch18-canonical-architectures</span>) can learn to propagate genetic evidence through interaction networks, scoring each gene not just by its direct genetic association but by its network context. The key methodological insight is that genes can be embedded jointly with their network neighbors, allowing the model to capture how genetic perturbations in one gene might affect functionally related genes. This propagation reflects biological reality: proteins function in complexes and pathways, so disrupting one component often affects the entire module. A mutation in a kinase may have minimal direct phenotypic effect if compensatory kinases exist, but that same mutation becomes consequential if the compensatory kinases are also compromised elsewhere in the pathway. Network propagation captures these dependencies that single-gene analysis misses.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -784,6 +797,46 @@ Case Study: Metformin and Network-Based Repurposing
 <p>Metformin, a first-line type 2 diabetes treatment, illustrates network-based repurposing in action. Network analyses identified that metformin’s targets (primarily mitochondrial complex I and AMPK) have high proximity to genes implicated in cancer susceptibility, including STK11/LKB1 and TP53-related pathways.</p>
 <p>Retrospective epidemiological analyses across multiple cohorts found that diabetic patients taking metformin had 10-40% reduced cancer incidence compared to patients on other diabetes medications, with particularly strong signals for colorectal and liver cancer. The network proximity score (mean shortest path from metformin targets to cancer genes: 1.8 hops) was in the top 5% of all approved drugs.</p>
 <p>This hypothesis-generating finding led to prospective clinical trials testing metformin in cancer prevention and treatment. Results have been mixed: some trials show benefit in specific populations, others show no effect. The example illustrates both the promise of network-based repurposing (generating testable hypotheses from computational analysis) and its limitations (retrospective associations do not guarantee prospective efficacy).</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check: Single-Gene vs. Network Approach?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check: Single-Gene vs.&nbsp;Network Approach?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each scenario, would you prioritize a single-gene approach or a network-aware approach, and why?</p>
+<ol type="1">
+<li><p>A rare Mendelian disease with clear loss-of-function mutations in one gene, strong statistical evidence (p &lt; 10⁻⁵⁰), and a known protein structure suitable for drug design.</p></li>
+<li><p>A common complex disease where GWAS identifies 100+ loci, each with small effect sizes (OR &lt; 1.1), and many signals fall in noncoding regions with unclear target genes.</p></li>
+<li><p>A drug repurposing initiative seeking new indications for approved drugs, starting from observational data linking drug use to reduced disease incidence.</p></li>
+<li><p>A target validation study where a single gene shows borderline GWAS significance (p = 10⁻⁶) but sits at a hub position connecting multiple confirmed disease genes.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answers
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>Single-gene approach</strong>—Strong genetic evidence for a single causal gene, clear mechanism, and structural data make this ideal for direct targeting without network propagation.</p></li>
+<li><p><strong>Network-aware approach</strong>—Polygenicity, small effects, and noncoding signals mean individual genes have weak evidence alone; network propagation can identify convergent pathways and prioritize targets at pathway bottlenecks.</p></li>
+<li><p><strong>Network-aware approach</strong>—Repurposing relies on connecting drug targets to disease biology through functional relationships; network proximity scoring identifies whether drug targets are biologically proximal to disease genes.</p></li>
+<li><p><strong>Network-aware approach</strong>—The borderline statistical significance would fail single-gene prioritization, but network context (hub connecting confirmed disease genes) provides biological evidence that the gene is functionally relevant despite modest direct association.</p></li>
+</ol>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="callout callout-style-default callout-warning callout-titled">
@@ -869,6 +922,19 @@ Worked Example: DTI Prediction for a Novel Kinase Target
 <p>Safety failures represent a major cause of drug attrition, particularly in late-stage development where failures are most expensive. Genomic information provides several routes to earlier toxicity prediction.</p>
 <section id="sec-ch29-genetic-liabilities" class="level3" data-number="29.4.1">
 <h3 data-number="29.4.1" class="anchored" data-anchor-id="sec-ch29-genetic-liabilities"><span class="header-section-number">29.4.1</span> Genetic Evidence of Target Liabilities</h3>
+<div class="callout callout-style-default callout-tip callout-titled" title="Recall and Connect">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Recall and Connect
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>From <a href="../part_1/p1-ch03-gwas.html#sec-ch03-phewas" class="quarto-xref"><span>Section 3.8</span></a>, recall how phenome-wide association studies link genetic variants to thousands of traits simultaneously. How does this “phenome scanning” approach help identify potential safety liabilities for drug targets before clinical trials begin?</p>
+</div>
+</div>
 <p>Human genetic data offers direct evidence of target-related toxicity. If loss-of-function variants in a target gene associate with adverse phenotypes in biobank populations, those phenotypes may emerge as on-target toxicities during therapeutic inhibition. Phenome-wide association studies across biobanks link genes to thousands of traits, from laboratory values to disease diagnoses to imaging features (see <a href="../part_1/p1-ch03-gwas.html#sec-ch03-phewas" class="quarto-xref"><span>Section 3.8</span></a>). A target strongly associated with QT prolongation, hepatotoxicity markers, or nephrotoxicity phenotypes warrants careful safety evaluation.</p>
 <p>Foundation models enhance this analysis by providing more accurate variant effect predictions (distinguishing true loss-of-function from benign variants) and by integrating across evidence types (see <a href="../part_3/p3-ch17-vep-fm.html" class="quarto-xref"><span>Chapter 17</span></a>). A gene might show modest individual associations with several safety-relevant traits that, when aggregated using foundation model representations, reveal a concerning pattern.</p>
 <div class="callout callout-style-default callout-important callout-titled">
@@ -957,7 +1023,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>A foundation model predicts that positions 45-60 in a protein domain are highly constrained, while positions 120-135 have high uncertainty in their functional predictions. Which region should receive more variants in a saturation mutagenesis library, and why?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -966,7 +1032,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The high-uncertainty region (positions 120-135) should receive more variants. Active learning principles suggest testing where the model is uncertain provides the most information to improve predictions. The highly constrained region (45-60) will likely show most mutations are deleterious, which confirms existing predictions but teaches us little new. The uncertain region may reveal unexpected functional tolerance or sensitivity that refines the model for future predictions.</p>
 </div>
@@ -1113,6 +1179,19 @@ Worked Example: FM-Enhanced Stratification for Cardiovascular Risk
 </section>
 <section id="sec-ch29-trial-design" class="level3" data-number="29.6.3">
 <h3 data-number="29.6.3" class="anchored" data-anchor-id="sec-ch29-trial-design"><span class="header-section-number">29.6.3</span> Trial Design and Endpoint Selection</h3>
+<div class="callout callout-style-default callout-tip callout-titled" title="Recall and Connect">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Recall and Connect
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>From <a href="../part_5/p5-ch23-uncertainty.html#sec-ch23-calibration" class="quarto-xref"><span>Section 23.2</span></a>, recall that well-calibrated models produce confidence scores that match actual accuracy rates. Why is calibration particularly important when foundation model predictions inform clinical trial enrollment decisions? What could go wrong with overconfident stratification biomarkers?</p>
+</div>
+</div>
 <p>Foundation model predictions inform trial design at multiple stages. Patient enrichment uses genetic risk scores or molecular subtypes to select patients most likely to respond, increasing statistical power and reducing required sample sizes. Adaptive designs use intermediate biomarker responses to modify randomization or dosing during the trial. Endpoint selection uses molecular signatures to define pharmacodynamic biomarkers that indicate target engagement, supporting dose selection and early efficacy signals.</p>
 <p>Regulatory agencies increasingly accept genomic biomarkers for patient selection in oncology and are developing frameworks for other therapeutic areas <em>[Citation Needed]</em>. The challenge is validation: demonstrating that foundation model predictions actually stratify patient outcomes requires prospective trials or well-designed retrospective analyses with appropriate controls for confounding (see <a href="../part_2/p2-ch12-confounding.html" class="quarto-xref"><span>Chapter 12</span></a>).</p>
 </section>
@@ -1242,6 +1321,19 @@ Practical Guidance: Aligning FM Work with Drug Development Gates
 </section>
 <section id="sec-ch29-ip-data" class="level3" data-number="29.7.4">
 <h3 data-number="29.7.4" class="anchored" data-anchor-id="sec-ch29-ip-data"><span class="header-section-number">29.7.4</span> Intellectual Property and Data Considerations</h3>
+<div class="callout callout-style-default callout-tip callout-titled" title="Recall and Connect">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Recall and Connect
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>From <a href="../part_5/p5-ch26-regulatory.html#sec-ch26-regulatory" class="quarto-xref"><span>Section 26.1</span></a>, recall the challenges of model documentation for regulatory submissions and the liability chain from model developer to clinician. How do these governance considerations affect industry decisions about whether to build, buy, or fine-tune foundation models for drug discovery?</p>
+</div>
+</div>
 <p>Foundation models raise new questions around intellectual property, data sharing, and regulatory expectations that organizations must navigate.</p>
 <p>Models trained on proprietary data can be valuable assets but are difficult to patent directly. The model architecture is typically based on published methods; the weights reflect training data that may include public and proprietary components. Downstream discoveries, including specific targets, biomarkers, and therapeutic hypotheses derived from foundation model analyses, are more clearly protectable but require careful documentation of inventive contribution.</p>
 <p>Collaborative model development across institutions may require federated learning or model-to-data paradigms, especially for patient-level data. Genomic data carries re-identification risk (see <a href="../part_5/p5-ch26-regulatory.html#sec-ch26-privacy" class="quarto-xref"><span>Section 26.3</span></a>); sharing raw data, even for model training, requires appropriate consent and data use agreements. Federated approaches that train on local data without centralizing raw information can enable multi-institutional collaboration while respecting privacy constraints.</p>
@@ -1302,7 +1394,7 @@ Test Yourself
 <li>What is the difference between exploiting model predictions (choosing high-scoring designs) versus exploring uncertain regions in active learning? When should you prioritize each strategy?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-27-contents" aria-controls="callout-27" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1311,7 +1403,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-21" class="callout-21-contents callout-collapse collapse">
+<div id="callout-27" class="callout-27-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Genetic validation advantage</strong>: Genetically validated targets succeed at approximately twice the rate of non-validated targets because human genetics provides causal evidence of target-disease relationships through lifelong modulation in real populations. Unlike correlational evidence from expression studies or pathway membership, genetic associations reflect actual consequences of gene function changes, including protective variants that indicate direction of effect and human knockouts that demonstrate the physiological consequences of complete gene inactivation.</p></li>

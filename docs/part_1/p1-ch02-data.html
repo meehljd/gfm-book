@@ -923,6 +923,46 @@ Table&nbsp;2.2: Comparison of gnomAD constraint metrics and their appropriate ap
 </div>
 </figure>
 </div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check: Which Database?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check: Which Database?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each scenario, which database or resource would be most appropriate to query, and why?</p>
+<ol type="1">
+<li><p>A clinical geneticist needs to determine whether a novel missense variant in <em>BRCA2</em> has been previously classified as pathogenic or benign by expert review.</p></li>
+<li><p>A researcher building a variant effect predictor needs allele frequencies stratified by genetic ancestry to filter training data for rare variants.</p></li>
+<li><p>A bioinformatician is annotating variants and needs stable identifiers that can be referenced across publications and tools.</p></li>
+<li><p>A computational biologist training a chromatin accessibility model needs experimental data on DNase-seq and transcription factor binding across multiple cell types.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answers
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>ClinVar</strong>—Aggregates expert variant classifications from clinical laboratories and expert panels, providing pathogenicity assertions with supporting evidence summaries.</p></li>
+<li><p><strong>gnomAD</strong>—Provides population-stratified allele frequencies from &gt;140,000 exomes and &gt;76,000 genomes, enabling ancestry-aware filtering that avoids misclassifying population-specific variants as ultra-rare.</p></li>
+<li><p><strong>dbSNP</strong>—Assigns stable rsID identifiers to known variants, serving as the common vocabulary for referencing variants across databases, publications, and bioinformatics tools.</p></li>
+<li><p><strong>ENCODE/Roadmap Epigenomics</strong>—Provides experimental functional genomics data including DNase-seq, ChIP-seq for transcription factors and histone marks, and chromatin state annotations across hundreds of cell types and tissues.</p></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
 <p>These resources are indispensable for filtering common variants in Mendelian disease diagnostics, distinguishing ultra-rare variants from recurrent ones, and providing population genetics priors for deleteriousness scores like <em>CADD</em> <span class="citation" data-cites="rentzsch_cadd_2019 schubach_cadd_2024">(<a href="../bib/references.html#ref-rentzsch_cadd_2019" role="doc-biblioref">Rentzsch et al. 2019</a>; <a href="../bib/references.html#ref-schubach_cadd_2024" role="doc-biblioref">Schubach et al. 2024</a>)</span>. At the same time, they reflect the composition of the cohorts they aggregate: ancestry representation remains uneven despite ongoing efforts, structural variants and repeat expansions are less completely cataloged than SNVs and short indels, and individuals with severe early-onset disease are underrepresented by design. These biases propagate into every model that uses gnomAD frequencies or constraint scores as features.</p>
 </section>
 </section>
@@ -1099,7 +1139,7 @@ Knowledge Check: Functional Genomics Coverage
 <div class="callout-body-container callout-body">
 <p>A model trained to predict chromatin accessibility performs excellently on K562 cells (a leukemia cell line) but poorly on primary pancreatic beta cells. Without looking back, can you explain why this might occur?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1108,7 +1148,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>K562 is one of the most heavily profiled cell types in ENCODE with extensive training data. Pancreatic beta cells, despite their importance in diabetes, have sparse representation in training compendia. The model learned patterns specific to well-represented cell types and cannot generalize to cell types absent from training.</p>
 </div>
@@ -1622,7 +1662,7 @@ Test Yourself
 <li>Why do GWAS summary statistics represent a compromise between scientific value and data sharing restrictions?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-23-contents" aria-controls="callout-23" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-25-contents" aria-controls="callout-25" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1631,7 +1671,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-23" class="callout-23-contents callout-collapse collapse">
+<div id="callout-25" class="callout-25-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Four layers of the genomic data ecosystem:</strong></p>
