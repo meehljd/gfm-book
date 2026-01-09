@@ -119,7 +119,7 @@ You are designing a multi-omics model that must work even when patients are miss
 
 Intermediate fusion learns modality-specific encoders that map each data type into a shared latent space, then operates on the aligned representations for downstream tasks. This approach combines the flexibility of early fusion with the robustness of late fusion.
 
-Each modality has its own encoder architecture tailored to its characteristics. A variational autoencoder might encode single-cell expression data, handling sparsity and dropout noise. A convolutional network might process methylation profiles along chromosomal coordinates. A **graph neural network** might encode protein interaction data (see @sec-ch19-gnn-fundamentals). These diverse architectures share nothing except their output dimensionality: all encoders produce **embeddings** in a common latent space.
+Each modality has its own encoder architecture tailored to its characteristics. A variational autoencoder might encode single-cell expression data, handling sparsity and dropout noise. A convolutional network might process methylation profiles along chromosomal coordinates. A **graph neural network** might encode protein interaction data (see @sec-ch22-gnn-fundamentals). These diverse architectures share nothing except their output dimensionality: all encoders produce **embeddings** in a common latent space.
 
 Alignment between modalities is encouraged through multiple mechanisms. Reconstruction losses require each encoder's latent representation to support decoding back to the original features, ensuring that the embeddings retain modality-specific information. Contrastive terms pull together representations of the same biological entity across modalities: the expression embedding for a cell should be similar to the ATAC-seq embedding for the same cell. Graph constraints enforce consistency with known biological relationships: genes connected in interaction networks should have similar embeddings.
 
@@ -133,7 +133,7 @@ The shared latent space enables cross-modal reasoning. A classifier operating on
 
 Missing modalities no longer require imputation or exclusion. If a sample lacks proteomics, only the available encoders fire, producing a partial representation in the shared space. The downstream model operates on whatever representation is available, degrading gracefully as modalities are missing rather than failing entirely.
 
-*GLUE*, introduced in @sec-ch17-glue for single-cell multi-omics integration, exemplifies this approach. Separate variational autoencoders encode RNA-seq and ATAC-seq data into a shared cell embedding space. A feature graph links ATAC-seq peaks to genes based on genomic proximity and transcription factor binding, providing biological constraints on the alignment. The result enables integration of measurements from different cells, not just different modalities in the same cell.
+*GLUE*, introduced in @sec-ch20-glue for single-cell multi-omics integration, exemplifies this approach. Separate variational autoencoders encode RNA-seq and ATAC-seq data into a shared cell embedding space. A feature graph links ATAC-seq peaks to genes based on genomic proximity and transcription factor binding, providing biological constraints on the alignment. The result enables integration of measurements from different cells, not just different modalities in the same cell.
 
 Intermediate fusion dominates modern multi-omics deep learning because it balances flexibility with robustness. The modality-specific encoders can be pretrained on large single-modality datasets, then fine-tuned for alignment (see @sec-ch09-transfer for transfer learning strategies). New modalities can be added by training new encoders without retraining existing components. The shared space provides a natural target for interpretation and visualization.
 
@@ -233,7 +233,7 @@ Molecular measurements capture mechanism; clinical records capture manifestation
 
 Electronic health records contain decades of longitudinal observations for millions of patients: diagnoses, procedures, medications, laboratory values, vital signs, clinical notes. This wealth of phenotypic information complements molecular data by capturing disease manifestation rather than molecular mechanism.
 
-Integrating EHR with genomics poses distinct challenges. The data types differ fundamentally: structured codes, continuous lab values, free-text notes, and time-stamped events versus static or slowly-changing molecular measurements. Temporal structure matters: the sequence of diagnoses and treatments contains prognostic information that static snapshots miss. Missingness is informative: the absence of a laboratory test may indicate that a clinician deemed it unnecessary, which itself conveys information about patient state (@sec-ch02-ehr). The phenotype quality challenges introduced there cascade through multi-omics integration, where EHR-derived labels may introduce systematic biases that @sec-ch24-label-bias examines in detail.
+Integrating EHR with genomics poses distinct challenges. The data types differ fundamentally: structured codes, continuous lab values, free-text notes, and time-stamped events versus static or slowly-changing molecular measurements. Temporal structure matters: the sequence of diagnoses and treatments contains prognostic information that static snapshots miss. Missingness is informative: the absence of a laboratory test may indicate that a clinician deemed it unnecessary, which itself conveys information about patient state (@sec-ch02-ehr). The phenotype quality challenges introduced there cascade through multi-omics integration, where EHR-derived labels may introduce systematic biases that @sec-ch13-label-bias examines in detail.
 
 Foundation models for EHR data learn representations from the longitudinal event sequences. These models, often based on transformer architectures that process sequences of medical codes (see @sec-ch07-attention), capture temporal dependencies and co-occurrence patterns in clinical trajectories. The resulting patient embeddings encode disease state and prognosis in a form amenable to integration with molecular data.
 
@@ -360,7 +360,7 @@ The distinction matters for interpretation and intervention. A predictive model 
 ::: {.callout-warning}
 ## Challenging Section
 
-Handling missing modalities requires understanding both the mathematical framework of intermediate fusion and the biological assumptions underlying cross-modal imputation. If the shared latent space concepts from @sec-ch24-intermediate-fusion are not yet clear, review that section before proceeding.
+Handling missing modalities requires understanding both the mathematical framework of intermediate fusion and the biological assumptions underlying cross-modal imputation. If the shared latent space concepts from @sec-ch23-intermediate-fusion are not yet clear, review that section before proceeding.
 :::
 
 Real-world multi-omics data are incomplete. Different studies measure different modalities. Within studies, technical failures, sample limitations, and cost constraints create missing data. Clinical deployment must handle patients with incomplete molecular profiles. Robust multi-omics methods must address missingness directly.
@@ -392,7 +392,7 @@ The most ambitious application of multi-omics integration is zero-shot predictio
 
 This transfer relies on the shared latent space capturing biological state independently of measurement modality. If the space truly represents cell state, then a classifier trained on expression-derived embeddings should work on ATAC-seq-derived embeddings, since both encoders map to the same biological meaning. The alignment training enables this transfer by ensuring that the same biological entity maps to the same latent location regardless of which modality was measured.
 
-Zero-shot transfer is rarely perfect. The modalities may capture somewhat different aspects of biology, and the alignment may be imprecise. But partial transfer can still be valuable: a model achieving 80% of supervised performance without any labeled examples in the new modality saves substantial annotation effort (see @sec-ch09-zero-shot for zero-shot transfer in other contexts).
+Zero-shot transfer is rarely perfect. The modalities may capture somewhat different aspects of biology, and the alignment may be imprecise. But partial transfer can still be valuable: a model achieving 80% of supervised performance without any labeled examples in the new modality saves substantial annotation effort (see @sec-ch10-zero-shot for zero-shot transfer in other contexts).
 
 
 ## Practical Challenges {#sec-ch23-practical-challenges}
@@ -406,7 +406,7 @@ Batch effects, systematic technical variation between experimental batches, are 
 
 Consider a study where expression data were generated at three sequencing centers and proteomics data were generated at two mass spectrometry facilities. The batch effects in each modality are independent. Samples from expression batch 1 are spread across proteomics batches. Correcting expression batch effects does not address proteomics batch effects, and vice versa.
 
-Integration must either correct batch effects within each modality before combining (risking removal of real biology that correlates with batch) or incorporate batch as a covariate in the integrated model (requiring that batch structure be known and modeled correctly). Domain adaptation techniques treat batches as domains and learn representations invariant to domain while retaining biological signal. The systematic strategies for detecting batch-driven confounding appear in @sec-ch24-detection, while mitigation approaches including adversarial domain adaptation are detailed in @sec-ch24-mitigation.
+Integration must either correct batch effects within each modality before combining (risking removal of real biology that correlates with batch) or incorporate batch as a covariate in the integrated model (requiring that batch structure be known and modeled correctly). Domain adaptation techniques treat batches as domains and learn representations invariant to domain while retaining biological signal. The systematic strategies for detecting batch-driven confounding appear in @sec-ch13-detection, while mitigation approaches including adversarial domain adaptation are detailed in @sec-ch13-mitigation.
 
 
 ### Sample Size and Power {#sec-ch23-sample-size}

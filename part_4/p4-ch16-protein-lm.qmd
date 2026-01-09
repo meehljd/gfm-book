@@ -43,7 +43,7 @@ Over billions of years, natural selection tested trillions of amino acid combina
 
 | Structure Level | What PLMs Learn | Evidence |
 |-----------------|-----------------|----------|
-| Secondary | Attention patterns follow helix/sheet boundaries | @sec-ch17-emergent-knowledge |
+| Secondary | Attention patterns follow helix/sheet boundaries | @sec-ch16-emergent-knowledge |
 | Tertiary | Residue contacts visible in attention matrices | Contact prediction accuracy |
 | Conservation | Constrained positions = high prediction confidence | Correlation with alignment-based metrics |
 
@@ -258,7 +258,7 @@ Beyond structure, protein language models enable prediction of protein function 
 
 Traditional function prediction relied on homology: proteins similar in sequence are assumed to share function. This approach fails for orphan proteins lacking characterized homologs and cannot distinguish functional differences between closely related sequences. PLM-based approaches address both limitations by learning representations that capture functional signatures beyond simple sequence similarity.
 
-For Gene Ontology term prediction, PLM embeddings serve as input features to classification models that predict which GO terms apply to each protein. The embeddings capture evolutionary and structural information relevant to function, enabling accurate predictions even for proteins with limited homology to characterized sequences [@kulmanov_deepgo-se_2024]. Performance improves with embedding quality, suggesting that larger language models capture more functionally relevant information. These embeddings can also serve as node features in biological network analyses (@sec-ch19-fm-embeddings), and the function predictions inform drug target identification workflows (@sec-ch28-variant-to-gene).
+For Gene Ontology term prediction, PLM embeddings serve as input features to classification models that predict which GO terms apply to each protein. The embeddings capture evolutionary and structural information relevant to function, enabling accurate predictions even for proteins with limited homology to characterized sequences [@kulmanov_deepgo-se_2024]. Performance improves with embedding quality, suggesting that larger language models capture more functionally relevant information. These embeddings can also serve as node features in biological network analyses (@sec-ch22-fm-embeddings), and the function predictions inform drug target identification workflows (@sec-ch30-variant-to-gene).
 
 Enzyme classification benefits similarly from PLM representations. The Enzyme Commission hierarchy categorizes enzymes by the reactions they catalyze, from broad classes (oxidoreductases, transferases) to specific substrate preferences. PLM embeddings distinguish these categories effectively, capturing the sequence features that determine catalytic activity without requiring explicit structural analysis [@sanderson_deepectransformer_2023].
 
@@ -420,7 +420,7 @@ Performance improves predictably with model size through the range currently exp
 
 ### Effective Transfer Learning {#sec-ch16-transfer}
 
-Representations learned for one task (masked token prediction) transfer to other tasks (structure prediction, variant effects, function annotation). This suggests that self-supervised pretraining captures fundamental biological knowledge rather than task-specific shortcuts. A model trained to predict masked amino acids simultaneously learns about protein structure, function, evolutionary constraint, and disease relevance. The same principle motivates genomic language models: models trained to predict masked nucleotides may simultaneously learn about regulatory elements, evolutionary conservation, and variant effects. Transfer learning strategies, including fine-tuning approaches and parameter-efficient adaptation, are discussed in detail in @sec-ch09-transfer, with specific guidance on choosing between these strategies in @sec-ch09-choosing-strategy.
+Representations learned for one task (masked token prediction) transfer to other tasks (structure prediction, variant effects, function annotation). This suggests that self-supervised pretraining captures fundamental biological knowledge rather than task-specific shortcuts. A model trained to predict masked amino acids simultaneously learns about protein structure, function, evolutionary constraint, and disease relevance. The same principle motivates genomic language models: models trained to predict masked nucleotides may simultaneously learn about regulatory elements, evolutionary conservation, and variant effects. Transfer learning strategies, including fine-tuning approaches and parameter-efficient adaptation, are discussed in detail in @sec-ch09-transfer, with specific guidance on choosing between these strategies in @sec-ch10-choosing-strategy.
 
 ### Architecture-Sequence Matching {#sec-ch16-architecture-matching}
 

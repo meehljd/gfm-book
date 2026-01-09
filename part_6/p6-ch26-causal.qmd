@@ -60,7 +60,7 @@ A model can achieve excellent predictive accuracy while learning entirely non-ca
 - **Reverse causation**: B regulates A, and the model uses A as a proxy
 - **Common cause**: Both A and B are regulated by an unmeasured factor C
 - **Selection bias**: The training population was selected in a way that induces correlation
-- **Confounding**: Population structure or batch effects create spurious associations (@sec-ch12-population-structure)
+- **Confounding**: Population structure or batch effects create spurious associations (@sec-ch03-population-structure)
 
 The distinction matters for intervention. If A directly causes B, then editing A will change B. If the correlation reflects a common cause, editing A will have no effect on B. A model that achieves 95% accuracy predicting B from A provides no information about which causal structure generated the correlation.
 
@@ -137,7 +137,7 @@ Model-X knockoffs construct synthetic "knockoff" variables that preserve the cor
 
 Applied to Crohn's disease GWAS data (~400,000 SNPs), knockoffs identified twice as many discoveries as marginal association testing while maintaining FDR control. Several discoveries were subsequently validated in larger meta-analyses, demonstrating that the method identifies true positives that marginal testing misses due to conservative thresholding across correlated variants.
 
-For foundation model applications, knockoffs offer several advantages. First, they provide principled feature selection for high-dimensional embeddings where standard regularization may be insufficient—selecting which embedding dimensions carry genuine predictive signal versus which reflect noise that degrades performance through the dimensionality trap (@sec-ch22-noise-accumulation). Second, they can distinguish true epistasis from "phantom epistasis" created by LD confounding: apparent variant interactions that actually reflect joint tagging of single causal variants. Third, the framework extends naturally to testing whether foundation model attention patterns identify conditionally important positions rather than merely correlated ones.
+For foundation model applications, knockoffs offer several advantages. First, they provide principled feature selection for high-dimensional embeddings where standard regularization may be insufficient—selecting which embedding dimensions carry genuine predictive signal versus which reflect noise that degrades performance through the dimensionality trap (@sec-ch23-limits). Second, they can distinguish true epistasis from "phantom epistasis" created by LD confounding: apparent variant interactions that actually reflect joint tagging of single causal variants. Third, the framework extends naturally to testing whether foundation model attention patterns identify conditionally important positions rather than merely correlated ones.
 
 The practical limitation is computational: knockoff construction requires estimating or specifying the joint distribution of variants, which scales poorly with variant count. Approximate methods using block-diagonal LD structure make genome-scale application tractable, but the approach is most powerful for targeted analysis of fine-mapped regions or selected feature sets rather than whole-genome screening.
 
