@@ -579,7 +579,7 @@
 ## Chapter Summary
 
 ### part_3/p3-ch11-benchmarks.qmd
-# The Benchmark Landscape {#sec-ch11-benchmarks}
+# Benchmark Landscape {#sec-ch11-benchmarks}
 ## Chapter Overview
 ## Protein Language Model Benchmarks {#sec-ch11-protein-benchmarks}
 ### TAPE: Tasks Assessing Protein Embeddings {#sec-ch11-tape}

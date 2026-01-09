@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -52,21 +52,17 @@ div.csl-indent {
 <meta name="quarto:offset" content="../">
 <link href="../part_4/p4-ch17-regulatory.html" rel="next">
 <link href="../part_4/p4-ch15-dna-lm.html" rel="prev">
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-a1553387a0f784068632030e9fbb8a3c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-d1e9b63c6b6094879b9f94a7628e3370.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-a1553387a0f784068632030e9fbb8a3c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -109,7 +105,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+      if (mathElements[i].tagName == "SPAN") {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -128,169 +124,7 @@ window.Quarto = {
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
-    const toggleBodyColorMode = (bsSheetEl) => {
-      const mode = bsSheetEl.getAttribute("data-mode");
-      const bodyEl = window.document.querySelector("body");
-      if (mode === "dark") {
-        bodyEl.classList.add("quarto-dark");
-        bodyEl.classList.remove("quarto-light");
-      } else {
-        bodyEl.classList.add("quarto-light");
-        bodyEl.classList.remove("quarto-dark");
-      }
-    }
-    const toggleBodyColorPrimary = () => {
-      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
-      if (bsSheetEl) {
-        toggleBodyColorMode(bsSheetEl);
-      }
-    }
-    const setColorSchemeToggle = (alternate) => {
-      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
-      for (let i=0; i < toggles.length; i++) {
-        const toggle = toggles[i];
-        if (toggle) {
-          if (alternate) {
-            toggle.classList.add("alternate");
-          } else {
-            toggle.classList.remove("alternate");
-          }
-        }
-      }
-    };
-    const toggleColorMode = (alternate) => {
-      // Switch the stylesheets
-      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
-      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
-      manageTransitions('#quarto-margin-sidebar .nav-link', false);
-      if (alternate) {
-        // note: dark is layered on light, we don't disable primary!
-        enableStylesheet(alternateStylesheets);
-        for (const sheetNode of alternateStylesheets) {
-          if (sheetNode.id === "quarto-bootstrap") {
-            toggleBodyColorMode(sheetNode);
-          }
-        }
-      } else {
-        disableStylesheet(alternateStylesheets);
-        enableStylesheet(primaryStylesheets)
-        toggleBodyColorPrimary();
-      }
-      manageTransitions('#quarto-margin-sidebar .nav-link', true);
-      // Switch the toggles
-      setColorSchemeToggle(alternate)
-      // Hack to workaround the fact that safari doesn't
-      // properly recolor the scrollbar when toggling (#1455)
-      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
-        manageTransitions("body", false);
-        window.scrollTo(0, 1);
-        setTimeout(() => {
-          window.scrollTo(0, 0);
-          manageTransitions("body", true);
-        }, 40);
-      }
-    }
-    const disableStylesheet = (stylesheets) => {
-      for (let i=0; i < stylesheets.length; i++) {
-        const stylesheet = stylesheets[i];
-        stylesheet.rel = 'disabled-stylesheet';
-      }
-    }
-    const enableStylesheet = (stylesheets) => {
-      for (let i=0; i < stylesheets.length; i++) {
-        const stylesheet = stylesheets[i];
-        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
-          stylesheet.rel = 'stylesheet';
-        }
-      }
-    }
-    const manageTransitions = (selector, allowTransitions) => {
-      const els = window.document.querySelectorAll(selector);
-      for (let i=0; i < els.length; i++) {
-        const el = els[i];
-        if (allowTransitions) {
-          el.classList.remove('notransition');
-        } else {
-          el.classList.add('notransition');
-        }
-      }
-    }
-    const isFileUrl = () => {
-      return window.location.protocol === 'file:';
-    }
-    const hasAlternateSentinel = () => {
-      let styleSentinel = getColorSchemeSentinel();
-      if (styleSentinel !== null) {
-        return styleSentinel === "alternate";
-      } else {
-        return false;
-      }
-    }
-    const setStyleSentinel = (alternate) => {
-      const value = alternate ? "alternate" : "default";
-      if (!isFileUrl()) {
-        window.localStorage.setItem("quarto-color-scheme", value);
-      } else {
-        localAlternateSentinel = value;
-      }
-    }
-    const getColorSchemeSentinel = () => {
-      if (!isFileUrl()) {
-        const storageValue = window.localStorage.getItem("quarto-color-scheme");
-        return storageValue != null ? storageValue : localAlternateSentinel;
-      } else {
-        return localAlternateSentinel;
-      }
-    }
-    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
-      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
-      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
-      let newTheme = '';
-      if(authorPrefersDark) {
-        newTheme = isAlternate ? baseTheme : alternateTheme;
-      } else {
-        newTheme = isAlternate ? alternateTheme : baseTheme;
-      }
-      const changeGiscusTheme = () => {
-        // From: https://github.com/giscus/giscus/issues/336
-        const sendMessage = (message) => {
-          const iframe = document.querySelector('iframe.giscus-frame');
-          if (!iframe) return;
-          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
-        }
-        sendMessage({
-          setConfig: {
-            theme: newTheme
-          }
-        });
-      }
-      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
-      if (isGiscussLoaded) {
-        changeGiscusTheme();
-      }
-    };
-    const authorPrefersDark = false;
-    const darkModeDefault = authorPrefersDark;
-      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
-      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
-    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
-    // Dark / light mode switch
-    window.quartoToggleColorScheme = () => {
-      // Read the current dark / light value
-      let toAlternate = !hasAlternateSentinel();
-      toggleColorMode(toAlternate);
-      setStyleSentinel(toAlternate);
-      toggleGiscusIfUsed(toAlternate, darkModeDefault);
-      window.dispatchEvent(new Event('resize'));
-    };
-    // Switch to dark mode if need be
-    if (hasAlternateSentinel()) {
-      toggleColorMode(true);
-    } else {
-      toggleColorMode(false);
-    }
-  </script>
+<body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -433,7 +267,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../part_3/p3-ch11-benchmarks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">The Benchmark Landscape</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Benchmark Landscape</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -535,7 +369,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="../part_6/p6--responsible-deployment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Part VI: Evaluation and Trust</span></a>
+ <span class="menu-text">Part VI: Responsible Deployment</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -570,7 +404,7 @@ window.Quarto = {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a href="../part_7/p7--applications.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Part VII: Clinical Translation</span></a>
+ <span class="menu-text">Part VII: Applications &amp; Frontiers</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -710,7 +544,6 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part_4/p4--fm-families.html">Part IV: Foundation Model Families</a></li><li class="breadcrumb-item"><a href="../part_4/p4-ch16-protein-lm.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Protein Language Models</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span id="sec-ch16-protein-lm" class="quarto-section-identifier"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Protein Language Models</span></span></h1>
@@ -739,7 +572,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Chapter Overview
+Chapter Overview
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -763,7 +596,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Deep Dive: Protein Structure Levels
+Deep Dive: Protein Structure Levels
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -830,14 +663,14 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Stop and Think
+Stop and Think
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <p>Before reading on, consider: if you wanted to teach a neural network about protein biology without providing any labels (no structure annotations, no function labels, no conservation scores), what training objective might you use? What information is implicitly present in the sequences themselves?</p>
 </div>
 </div>
-<p>The Evolutionary Scale Modeling project demonstrated that transformer language models trained on protein sequences learn biologically meaningful representations without explicit supervision <span class="citation" data-cites="rives_esm_2021">(<a href="../bib/references.html#ref-rives_esm_2021" role="doc-biblioref"><strong>rives_esm_2021?</strong></a>)</span>. The approach was strikingly simple: take the BERT architecture that had revolutionized natural language processing, replace words with amino acids, and train on protein sequence databases. The resulting models learned far more than anyone expected.</p>
+<p>The Evolutionary Scale Modeling project demonstrated that transformer language models trained on protein sequences learn biologically meaningful representations without explicit supervision <span class="citation" data-cites="rives_esm-1b_2021">(<a href="../bib/references.html#ref-rives_esm-1b_2021" role="doc-biblioref">Rives et al. 2021</a>)</span>. The approach was strikingly simple: take the BERT architecture that had revolutionized natural language processing, replace words with amino acids, and train on protein sequence databases. The resulting models learned far more than anyone expected.</p>
 <p><em>ESM-1b</em> was trained on UniRef50, a clustered database of approximately 33 million protein sequences covering the known diversity of protein families. The construction and characteristics of protein sequence databases are detailed in <a href="../part_1/p1-ch02-data.html#sec-ch02-protein-databases" class="quarto-xref"><span>Section 2.6</span></a>, with implications for training data curation in <a href="../part_1/p1-ch02-data.html" class="quarto-xref"><span>Chapter 2</span></a>. UniRef50 clusters sequences at 50% identity, providing broad coverage while reducing redundancy that would otherwise bias the model toward overrepresented families <span class="citation" data-cites="suzek_uniref_2007">(<a href="../bib/references.html#ref-suzek_uniref_2007" role="doc-biblioref">Suzek et al. 2007</a>)</span>. Why 50% specifically? This threshold represents a structural inflection point: proteins sharing &gt;50% sequence identity almost always share the same fold, while proteins below 30% identity may have completely different structures despite some sequence similarity. Clustering at 50% thus preserves one representative per structural family while collapsing near-identical orthologs that would otherwise dominate training. This curation strategy ensures the model encounters diverse evolutionary solutions to protein function rather than memorizing common motifs.</p>
 <p>The architecture follows the BERT-style bidirectional transformer design with 650 million parameters distributed across 33 layers, a hidden dimension of 1,280, and 20 attention heads. The maximum sequence length of 1,024 amino acids accommodates most individual protein domains and many complete proteins. The training objective is <strong>masked language modeling</strong>, the self-supervised strategy introduced in <a href="../part_3/p3-ch08-pretraining.html#sec-ch08-mlm" class="quarto-xref"><span>Section 8.1</span></a>: randomly mask 15% of amino acids in each sequence, and train the model to predict the masked positions given surrounding context. This objective contains no information about structure, function, or evolution beyond what is implicit in the sequences themselves.</p>
 <p>Why does masked language modeling teach the model about protein biology? The key is that proteins are not random sequences—they are products of evolution, shaped by physical and functional constraints. To accurately predict a masked amino acid, the model must learn what makes a sequence “protein-like.” At a buried core position, hydrophobic amino acids are overwhelmingly favored because charged residues would destabilize the fold. At an active site, specific catalytic residues are nearly invariant because alternatives abolish function. At the interface between two domains, co-evolved residues must fit together geometrically. The model cannot distinguish these cases without learning the underlying principles. Predicting masked tokens thus becomes a proxy for understanding protein constraints.</p>
@@ -853,7 +686,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Key Insight
+Key Insight
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -913,7 +746,7 @@ Figure&nbsp;16.1: Emergent properties of protein language models. (A) Specific a
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Knowledge Check
+Knowledge Check
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -936,7 +769,7 @@ The model learns: (1) secondary structure patterns (alpha helices, beta sheets) 
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Predict Before You Look
+Predict Before You Look
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1043,7 +876,7 @@ Figure&nbsp;16.2: Scaling laws for protein language models demonstrated by ESM-2
 <h2 data-number="16.2" class="anchored" data-anchor-id="sec-ch16-alternative-architectures"><span class="header-section-number">16.2</span> Alternative Architectures</h2>
 <p>The success of <em>ESM</em> raised a natural question: how much depends on the specific BERT architecture versus the general approach of self-supervised learning on protein sequences? The <em>ProtTrans</em> family explored this question by applying multiple transformer architectures to protein modeling <span class="citation" data-cites="elnaggar_prottrans_2021">(<a href="../bib/references.html#ref-elnaggar_prottrans_2021" role="doc-biblioref">Elnaggar et al. 2021</a>)</span>.</p>
 <p><em>ProtBERT</em> applies the bidirectional encoder to protein sequences, trained on the Big Fantastic Database (BFD) comprising approximately 2.1 billion protein sequences. This training corpus, substantially larger than UniRef50, provides broader coverage at the cost of including more redundant and potentially lower-quality sequences. The architectural choices match <em>ESM</em> closely, enabling direct comparison of training data effects.</p>
-<p><em>ProtT5</em> adapts the encoder-decoder architecture from <em>T5</em>, enabling both understanding and generation tasks <span class="citation" data-cites="raffel_t5_2019">(<a href="../bib/references.html#ref-raffel_t5_2019" role="doc-biblioref"><strong>raffel_t5_2019?</strong></a>)</span>. The encoder processes input sequences to produce contextual representations, while the decoder can generate output sequences conditioned on those representations. This architecture proved valuable for tasks requiring sequence generation, such as structure-conditioned design or sequence completion, though the encoder-only architecture remains dominant for <strong>embedding</strong> and classification tasks.</p>
+<p><em>ProtT5</em> adapts the encoder-decoder architecture from <em>T5</em>, enabling both understanding and generation tasks <span class="citation" data-cites="raffel_exploring_2023">(<a href="../bib/references.html#ref-raffel_exploring_2023" role="doc-biblioref">Raffel et al. 2023</a>)</span>. The encoder processes input sequences to produce contextual representations, while the decoder can generate output sequences conditioned on those representations. This architecture proved valuable for tasks requiring sequence generation, such as structure-conditioned design or sequence completion, though the encoder-only architecture remains dominant for <strong>embedding</strong> and classification tasks.</p>
 <p><em>ProtXLNet</em> explores permutation language modeling, capturing bidirectional context without the artificial [MASK] token that BERT-style models require during training <span class="citation" data-cites="yang_xlnet_2020">(<a href="../bib/references.html#ref-yang_xlnet_2020" role="doc-biblioref">Yang et al. 2020</a>)</span>. By training on all possible token orderings, XLNet-style models learn to predict each token from any subset of context tokens, potentially capturing richer dependencies at the cost of more complex training.</p>
 <table class="caption-top table">
 <caption>Comparison of protein language model architectures. All learn meaningful representations when trained on sufficient data, but architectural differences affect downstream task suitability.</caption>
@@ -1097,7 +930,7 @@ Figure&nbsp;16.2: Scaling laws for protein language models demonstrated by ESM-2
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Stop and Think
+Stop and Think
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1105,7 +938,7 @@ Figure&nbsp;16.2: Scaling laws for protein language models demonstrated by ESM-2
 </div>
 </div>
 <p>The emergence of contact information in <em>ESM’s</em> attention patterns connects to a deeper principle: <strong>evolutionary coupling</strong>. When two residues must maintain physical contact for a protein to function, mutations at one position create selective pressure for compensatory mutations at the other. Over evolutionary time, these correlated mutations leave statistical signatures in protein families that can be detected through covariance analysis of multiple sequence alignments.</p>
-<p>Direct Coupling Analysis (DCA) and related methods extract these coevolutionary signals to predict residue-residue contacts <span class="citation" data-cites="morcos_dca_2011">(<a href="../bib/references.html#ref-morcos_dca_2011" role="doc-biblioref"><strong>morcos_dca_2011?</strong></a>)</span>. The approach requires constructing multiple sequence alignments, computing covariance matrices, and applying statistical corrections to distinguish direct from indirect correlations. The resulting contact predictions enabled the first accurate structure predictions for proteins lacking homologs in structural databases.</p>
+<p>Direct Coupling Analysis (DCA) and related methods extract these coevolutionary signals to predict residue-residue contacts <span class="citation" data-cites="morcos_direct-coupling_2011">(<a href="../bib/references.html#ref-morcos_direct-coupling_2011" role="doc-biblioref">Morcos et al. 2011</a>)</span>. The approach requires constructing multiple sequence alignments, computing covariance matrices, and applying statistical corrections to distinguish direct from indirect correlations. The resulting contact predictions enabled the first accurate structure predictions for proteins lacking homologs in structural databases.</p>
 <p>Protein language models learn to extract similar information through a different route. Rather than computing covariance explicitly, transformers learn attention patterns that capture which positions inform predictions at other positions. When position <em>i</em> strongly attends to position <em>j</em> during masked prediction, the model has learned that knowing the amino acid at <em>j</em> helps predict the amino acid at <em>i</em>. This is precisely the signature of evolutionary coupling: positions that covary because they must maintain physical contact.</p>
 <div class="callout callout-style-default callout-important callout-titled" title="Key Insight">
 <div class="callout-header d-flex align-content-center">
@@ -1113,7 +946,7 @@ Figure&nbsp;16.2: Scaling laws for protein language models demonstrated by ESM-2
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Key Insight
+Key Insight
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1173,7 +1006,7 @@ Figure&nbsp;16.2: Scaling laws for protein language models demonstrated by ESM-2
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Stop and Think
+Stop and Think
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1237,7 +1070,7 @@ Figure&nbsp;16.3: ESMFold structure prediction from single sequences. (A) Archit
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>AlphaFold: Structure Prediction Without Foundation Models
+AlphaFold: Structure Prediction Without Foundation Models
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1256,7 +1089,7 @@ Figure&nbsp;16.3: ESMFold structure prediction from single sequences. (A) Archit
 <h2 data-number="16.5" class="anchored" data-anchor-id="sec-ch16-function-prediction"><span class="header-section-number">16.5</span> Function Prediction</h2>
 <p>Beyond structure, protein language models enable prediction of protein function directly from sequence. Function prediction encompasses multiple tasks: predicting Gene Ontology terms that describe molecular function, biological process, and cellular component; classifying enzyme activity; identifying binding sites and interaction partners; and predicting subcellular localization.</p>
 <p>Traditional function prediction relied on homology: proteins similar in sequence are assumed to share function. This approach fails for orphan proteins lacking characterized homologs and cannot distinguish functional differences between closely related sequences. PLM-based approaches address both limitations by learning representations that capture functional signatures beyond simple sequence similarity.</p>
-<p>For Gene Ontology term prediction, PLM embeddings serve as input features to classification models that predict which GO terms apply to each protein. The embeddings capture evolutionary and structural information relevant to function, enabling accurate predictions even for proteins with limited homology to characterized sequences <span class="citation" data-cites="kulmanov_deepgo-se_2024">(<a href="../bib/references.html#ref-kulmanov_deepgo-se_2024" role="doc-biblioref"><strong>kulmanov_deepgo-se_2024?</strong></a>)</span>. Performance improves with embedding quality, suggesting that larger language models capture more functionally relevant information. These embeddings can also serve as node features in biological network analyses (<a href="../part_5/p5-ch22-networks.html#sec-ch22-fm-embeddings" class="quarto-xref"><span>Section 22.3</span></a>), and the function predictions inform drug target identification workflows (<a href="../part_7/p7-ch30-drug-discovery.html#sec-ch30-variant-to-gene" class="quarto-xref"><span>Section 30.1.1</span></a>).</p>
+<p>For Gene Ontology term prediction, PLM embeddings serve as input features to classification models that predict which GO terms apply to each protein. The embeddings capture evolutionary and structural information relevant to function, enabling accurate predictions even for proteins with limited homology to characterized sequences <span class="citation" data-cites="kulmanov_protein_2024">(<a href="../bib/references.html#ref-kulmanov_protein_2024" role="doc-biblioref">Kulmanov et al. 2024</a>)</span>. Performance improves with embedding quality, suggesting that larger language models capture more functionally relevant information. These embeddings can also serve as node features in biological network analyses (<a href="../part_5/p5-ch22-networks.html#sec-ch22-fm-embeddings" class="quarto-xref"><span>Section 22.3</span></a>), and the function predictions inform drug target identification workflows (<a href="../part_7/p7-ch30-drug-discovery.html#sec-ch30-variant-to-gene" class="quarto-xref"><span>Section 30.1.1</span></a>).</p>
 <p>Enzyme classification benefits similarly from PLM representations. The Enzyme Commission hierarchy categorizes enzymes by the reactions they catalyze, from broad classes (oxidoreductases, transferases) to specific substrate preferences. PLM embeddings distinguish these categories effectively, capturing the sequence features that determine catalytic activity without requiring explicit structural analysis <span class="citation" data-cites="sanderson_deepectransformer_2023">(<a href="../bib/references.html#ref-sanderson_deepectransformer_2023" role="doc-biblioref"><strong>sanderson_deepectransformer_2023?</strong></a>)</span>.</p>
 <p>Binding site prediction applies attention analysis to identify which residues participate in ligand binding, protein-protein interactions, or nucleic acid recognition. Positions that the model identifies as important for contextual prediction often correspond to functionally important sites, including binding pockets and catalytic residues <span class="citation" data-cites="fang_deepprosite_2023">(<a href="../bib/references.html#ref-fang_deepprosite_2023" role="doc-biblioref">Fang et al. 2023</a>)</span>. This capability enables rapid identification of functional sites in newly sequenced proteins.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check">
@@ -1265,7 +1098,7 @@ Figure&nbsp;16.3: ESMFold structure prediction from single sequences. (A) Archit
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Knowledge Check
+Knowledge Check
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1288,7 +1121,7 @@ For orphan proteins, <strong>variant effect prediction</strong> may be most unce
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>Mathematical Detail
+Mathematical Detail
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1307,7 +1140,7 @@ For orphan proteins, <strong>variant effect prediction</strong> may be most unce
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Stop and Think
+Stop and Think
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1320,7 +1153,7 @@ For orphan proteins, <strong>variant effect prediction</strong> may be most unce
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Key Insight
+Key Insight
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1381,7 +1214,7 @@ Figure&nbsp;16.4: Zero-shot variant effect prediction from protein language mode
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Practical Guidance: Choosing a PLM for Variant Effect Prediction
+Practical Guidance: Choosing a PLM for Variant Effect Prediction
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1401,7 +1234,7 @@ Figure&nbsp;16.4: Zero-shot variant effect prediction from protein language mode
 <p><em>AlphaFold2</em> achieved breakthrough accuracy in structure prediction by combining learned representations with explicit geometric modeling <span class="citation" data-cites="jumper_alphafold2_2021">(<a href="../bib/references.html#ref-jumper_alphafold2_2021" role="doc-biblioref">Jumper et al. 2021</a>)</span>. The architecture processes both sequence information through embeddings and evolutionary information through multiple sequence alignments, using an attention-based module (Evoformer) to integrate these signals before predicting atomic coordinates. <em>AlphaFold2’s</em> success depended critically on MSA quality: proteins with many homologs could be predicted accurately, while orphan proteins remained challenging.</p>
 <p><em>ESMFold</em> demonstrated that PLM embeddings can replace MSA-derived features, achieving competitive accuracy without the alignment bottleneck. This finding clarified the relationship between language models and structure prediction: PLMs learn to compress evolutionary information into representations that are functionally equivalent to explicit alignments, at least for proteins with sufficient representation in training databases.</p>
 <p><em>AlphaFold3</em> extended structure prediction to protein complexes, nucleic acids, and small molecules <span class="citation" data-cites="abramson_alphafold3_2024">(<a href="../bib/references.html#ref-abramson_alphafold3_2024" role="doc-biblioref">Abramson et al. 2024</a>)</span>. The architecture incorporates diffusion-based generation, enabling prediction of binding poses and complex assemblies. These capabilities complement PLM-based function prediction by providing structural context for interpreting functional predictions.</p>
-<p>Generative protein design methods including <em>RFDiffusion</em> and <em>ProteinMPNN</em> leverage both structural and sequence information <span class="citation" data-cites="watson_rfdiffusion_2023 dauparas_proteinmpnn_2022">(<a href="../bib/references.html#ref-watson_rfdiffusion_2023" role="doc-biblioref"><strong>watson_rfdiffusion_2023?</strong></a>; <a href="../bib/references.html#ref-dauparas_proteinmpnn_2022" role="doc-biblioref"><strong>dauparas_proteinmpnn_2022?</strong></a>)</span>. <em>RFDiffusion</em> generates novel protein backbones through diffusion processes conditioned on design objectives. <em>ProteinMPNN</em> designs sequences likely to fold into specified structures. Both methods benefit from PLM representations when designing sequences with desired functional properties, demonstrating how language models integrate into the broader protein engineering pipeline (see <a href="../part_7/p7-ch31-design.html" class="quarto-xref"><span>Chapter 31</span></a> for detailed treatment of sequence design methods).</p>
+<p>Generative protein design methods including <em>RFDiffusion</em> and <em>ProteinMPNN</em> leverage both structural and sequence information <span class="citation" data-cites="watson_novo_2023 dauparas_robust_2022">(<a href="../bib/references.html#ref-watson_novo_2023" role="doc-biblioref">Watson et al. 2023</a>; <a href="../bib/references.html#ref-dauparas_robust_2022" role="doc-biblioref">Dauparas et al. 2022</a>)</span>. <em>RFDiffusion</em> generates novel protein backbones through diffusion processes conditioned on design objectives. <em>ProteinMPNN</em> designs sequences likely to fold into specified structures. Both methods benefit from PLM representations when designing sequences with desired functional properties, demonstrating how language models integrate into the broader protein engineering pipeline (see <a href="../part_7/p7-ch31-design.html" class="quarto-xref"><span>Chapter 31</span></a> for detailed treatment of sequence design methods).</p>
 <p>The trajectory from <em>ESM</em> to <em>ESMFold</em> to integration with design tools illustrates how PLMs serve as a foundation for diverse downstream applications. The representations learned through self-supervised training transfer across tasks, providing a common language for structure prediction, function annotation, variant interpretation, and protein engineering. This pattern of foundation models enabling diverse applications recurs throughout genomic AI, as discussed in <a href="p4-ch14-fm-principles.html" class="quarto-xref"><span>Chapter 14</span></a>.</p>
 </section>
 <section id="sec-ch16-limitations" class="level2" data-number="16.8">
@@ -1413,7 +1246,7 @@ Figure&nbsp;16.4: Zero-shot variant effect prediction from protein language mode
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Recall and Connect: Limitations Propagate to Applications
+Recall and Connect: Limitations Propagate to Applications
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1462,7 +1295,7 @@ Figure&nbsp;16.5: Fundamental limitations of protein language models. Orphan pro
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Stop and Think
+Stop and Think
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1475,7 +1308,7 @@ Figure&nbsp;16.5: Fundamental limitations of protein language models. Orphan pro
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Knowledge Check
+Knowledge Check
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1534,7 +1367,7 @@ Check your understanding
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Chapter Summary
+Chapter Summary
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1544,7 +1377,7 @@ Check your understanding
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Test Yourself
+Test Yourself
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1553,12 +1386,12 @@ Check your understanding
 <li>How does masked language modeling on protein sequences lead to emergent knowledge about protein structure and function? What specific types of biological information emerge without explicit supervision?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Check Your Answer
+Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
@@ -1572,12 +1405,12 @@ Check your understanding
 <li>Explain the connection between attention patterns in protein language models and evolutionary coupling. Why do attention weights correlate with residue-residue contacts in 3D structure?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Check Your Answer
+Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
@@ -1591,12 +1424,12 @@ Check your understanding
 <li>How does ESMFold predict protein structure without multiple sequence alignments? What enables this, and what are the performance tradeoffs compared to AlphaFold2?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Check Your Answer
+Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
@@ -1610,12 +1443,12 @@ Check your understanding
 <li>Describe how protein language models perform zero-shot variant effect prediction using log-likelihood ratios. Why does this approach work for distinguishing pathogenic from benign variants?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Check Your Answer
+Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
@@ -1629,12 +1462,12 @@ Check your understanding
 <li>What are three fundamental limitations of protein language models? For each limitation, explain what type of information the model lacks and why self-supervised sequence training cannot provide it.</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-23-contents" aria-controls="callout-23" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-23-contents" aria-controls="callout-23" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Check Your Answer
+Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
@@ -1684,6 +1517,9 @@ Brandes, Nadav, Grant Goldman, Charlotte H. Wang, Chun Jimmie Ye, and Vasilis Nt
 <div id="ref-cheng_alphamissense_2023" class="csl-entry" role="listitem">
 Cheng, Jun, Guido Novati, Joshua Pan, Clare Bycroft, Akvilė Žemgulytė, Taylor Applebaum, Alexander Pritzel, et al. 2023. <span>“[<span>AlphaMissense</span>] <span>Accurate</span> Proteome-Wide Missense Variant Effect Prediction with <span>AlphaMissense</span>.”</span> <em>Science</em> 381 (6664): eadg7492. <a href="https://doi.org/10.1126/science.adg7492">https://doi.org/10.1126/science.adg7492</a>.
 </div>
+<div id="ref-dauparas_robust_2022" class="csl-entry" role="listitem">
+Dauparas, J., I. Anishchenko, N. Bennett, H. Bai, R. J. Ragotte, L. F. Milles, B. I. M. Wicky, et al. 2022. <span>“Robust Deep Learning–Based Protein Sequence Design Using <span>ProteinMPNN</span>.”</span> <em>Science</em> 378 (6615): 49–56. <a href="https://doi.org/10.1126/science.add2187">https://doi.org/10.1126/science.add2187</a>.
+</div>
 <div id="ref-elnaggar_prottrans_2021" class="csl-entry" role="listitem">
 Elnaggar, Ahmed, Michael Heinzinger, Christian Dallago, Ghalia Rihawi, Yu Wang, Llion Jones, Tom Gibbs, et al. 2021. <span>“<span>ProtTrans</span>: <span>Towards</span> <span>Cracking</span> the <span>Language</span> of <span>Life</span>’s <span>Code</span> <span>Through</span> <span>Self</span>-<span>Supervised</span> <span>Deep</span> <span>Learning</span> and <span>High</span> <span>Performance</span> <span>Computing</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2007.06225">https://doi.org/10.48550/arXiv.2007.06225</a>.
 </div>
@@ -1693,17 +1529,32 @@ Fang, Yitian, Yi Jiang, Leyi Wei, Qin Ma, Zhixiang Ren, Qianmu Yuan, and Dong-Qi
 <div id="ref-jumper_alphafold2_2021" class="csl-entry" role="listitem">
 Jumper, John, Richard Evans, Alexander Pritzel, Tim Green, Michael Figurnov, Olaf Ronneberger, Kathryn Tunyasuvunakool, et al. 2021. <span>“[<span>AlphaFold2</span>] <span>Highly</span> Accurate Protein Structure Prediction with <span>AlphaFold</span>.”</span> <em>Nature</em> 596 (7873): 583–89. <a href="https://doi.org/10.1038/s41586-021-03819-2">https://doi.org/10.1038/s41586-021-03819-2</a>.
 </div>
+<div id="ref-kulmanov_protein_2024" class="csl-entry" role="listitem">
+Kulmanov, Maxat, Francisco J. Guzmán-Vega, Paula Duek Roggli, Lydie Lane, Stefan T. Arold, and Robert Hoehndorf. 2024. <span>“Protein Function Prediction as Approximate Semantic Entailment.”</span> <em>Nature Machine Intelligence</em> 6 (2): 220–28. <a href="https://doi.org/10.1038/s42256-024-00795-w">https://doi.org/10.1038/s42256-024-00795-w</a>.
+</div>
 <div id="ref-lin_esm-2_2022" class="csl-entry" role="listitem">
 Lin, Zeming, Halil Akin, Roshan Rao, Brian Hie, Zhongkai Zhu, Wenting Lu, Allan dos Santos Costa, et al. 2022. <span>“[<span>ESM</span>-2] <span>Language</span> Models of Protein Sequences at the Scale of Evolution Enable Accurate Structure Prediction.”</span> bioRxiv. <a href="https://doi.org/10.1101/2022.07.20.500902">https://doi.org/10.1101/2022.07.20.500902</a>.
 </div>
 <div id="ref-meier_esm-1v_2021" class="csl-entry" role="listitem">
 Meier, Joshua, Roshan Rao, Robert Verkuil, Jason Liu, Tom Sercu, and Alexander Rives. 2021. <span>“[<span>ESM</span>-1v] <span>Language</span> Models Enable Zero-Shot Prediction of the Effects of Mutations on Protein Function.”</span> bioRxiv. <a href="https://doi.org/10.1101/2021.07.09.450648">https://doi.org/10.1101/2021.07.09.450648</a>.
 </div>
+<div id="ref-morcos_direct-coupling_2011" class="csl-entry" role="listitem">
+Morcos, Faruck, Andrea Pagnani, Bryan Lunt, Arianna Bertolino, Debora S. Marks, Chris Sander, Riccardo Zecchina, José N. Onuchic, Terence Hwa, and Martin Weigt. 2011. <span>“Direct-Coupling Analysis of Residue Coevolution Captures Native Contacts Across Many Protein Families.”</span> <em>Proceedings of the National Academy of Sciences</em> 108 (49): E1293–1301. <a href="https://doi.org/10.1073/pnas.1111471108">https://doi.org/10.1073/pnas.1111471108</a>.
+</div>
+<div id="ref-raffel_exploring_2023" class="csl-entry" role="listitem">
+Raffel, Colin, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J. Liu. 2023. <span>“Exploring the <span>Limits</span> of <span>Transfer</span> <span>Learning</span> with a <span>Unified</span> <span>Text</span>-to-<span>Text</span> <span>Transformer</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.1910.10683">https://doi.org/10.48550/arXiv.1910.10683</a>.
+</div>
 <div id="ref-rao_transformer_2020" class="csl-entry" role="listitem">
 Rao, Roshan, Joshua Meier, Tom Sercu, Sergey Ovchinnikov, and Alexander Rives. 2020. <span>“Transformer Protein Language Models Are Unsupervised Structure Learners.”</span> bioRxiv. <a href="https://doi.org/10.1101/2020.12.15.422761">https://doi.org/10.1101/2020.12.15.422761</a>.
 </div>
+<div id="ref-rives_esm-1b_2021" class="csl-entry" role="listitem">
+Rives, Alexander, Joshua Meier, Tom Sercu, Siddharth Goyal, Zeming Lin, Jason Liu, Demi Guo, et al. 2021. <span>“[<span>ESM</span>-1b] <span>Biological</span> Structure and Function Emerge from Scaling Unsupervised Learning to 250 Million Protein Sequences.”</span> <em>Proceedings of the National Academy of Sciences of the United States of America</em> 118 (15): e2016239118. <a href="https://doi.org/10.1073/pnas.2016239118">https://doi.org/10.1073/pnas.2016239118</a>.
+</div>
 <div id="ref-suzek_uniref_2007" class="csl-entry" role="listitem">
 Suzek, Baris E., Hongzhan Huang, Peter McGarvey, Raja Mazumder, and Cathy H. Wu. 2007. <span>“<span>UniRef</span>: Comprehensive and Non-Redundant <span>UniProt</span> Reference Clusters.”</span> <em>Bioinformatics</em> 23 (10): 1282–88. <a href="https://doi.org/10.1093/bioinformatics/btm098">https://doi.org/10.1093/bioinformatics/btm098</a>.
+</div>
+<div id="ref-watson_novo_2023" class="csl-entry" role="listitem">
+Watson, Joseph L., David Juergens, Nathaniel R. Bennett, Brian L. Trippe, Jason Yim, Helen E. Eisenach, Woody Ahern, et al. 2023. <span>“De Novo Design of Protein Structure and Function with <span>RFdiffusion</span>.”</span> <em>Nature</em> 620 (7976): 1089–1100. <a href="https://doi.org/10.1038/s41586-023-06415-8">https://doi.org/10.1038/s41586-023-06415-8</a>.
 </div>
 <div id="ref-yang_xlnet_2020" class="csl-entry" role="listitem">
 Yang, Zhilin, Zihang Dai, Yiming Yang, Jaime Carbonell, Ruslan Salakhutdinov, and Quoc V. Le. 2020. <span>“<span>XLNet</span>: <span>Generalized</span> <span>Autoregressive</span> <span>Pretraining</span> for <span>Language</span> <span>Understanding</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.1906.08237">https://doi.org/10.48550/arXiv.1906.08237</a>.
@@ -1713,256 +1564,383 @@ Yang, Zhilin, Zihang Dai, Yiming Yang, Jaime Carbonell, Ruslan Salakhutdinov, an
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-  window.document.addEventListener("DOMContentLoaded", function (event) {
-    // Ensure there is a toggle, if there isn't float one in the top right
-    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
-      const a = window.document.createElement('a');
-      a.classList.add('top-right');
-      a.classList.add('quarto-color-scheme-toggle');
-      a.href = "";
-      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
-      const i = window.document.createElement("i");
-      i.classList.add('bi');
-      a.appendChild(i);
-      window.document.body.appendChild(a);
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
     }
-    setColorSchemeToggle(hasAlternateSentinel())
-    const icon = "";
-    const anchorJS = new window.AnchorJS();
-    anchorJS.options = {
-      placement: 'right',
-      icon: icon
-    };
-    anchorJS.add('.anchored');
-    const isCodeAnnotation = (el) => {
-      for (const clz of el.classList) {
-        if (clz.startsWith('code-annotation-')) {                     
-          return true;
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
         }
       }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
       return false;
     }
-    const onCopySuccess = function(e) {
-      // button target
-      const button = e.trigger;
-      // don't keep focus
-      button.blur();
-      // flash "checked"
-      button.classList.add('code-copy-button-checked');
-      var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Copied!");
-      let tooltip;
-      if (window.bootstrap) {
-        button.setAttribute("data-bs-toggle", "tooltip");
-        button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Copied!");
-        tooltip = new bootstrap.Tooltip(button, 
-          { trigger: "manual", 
-            customClass: "code-copy-button-tooltip",
-            offset: [0, -8]});
-        tooltip.show();    
-      }
-      setTimeout(function() {
-        if (tooltip) {
-          tooltip.hide();
-          button.removeAttribute("data-bs-title");
-          button.removeAttribute("data-bs-toggle");
-          button.removeAttribute("data-bs-placement");
-        }
-        button.setAttribute("title", currentTitle);
-        button.classList.remove('code-copy-button-checked');
-      }, 1000);
-      // clear code selection
-      e.clearSelection();
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
     }
-    const getTextToCopy = function(trigger) {
-      const outerScaffold = trigger.parentElement.cloneNode(true);
-      const codeEl = outerScaffold.querySelector('code');
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
         }
       }
       return codeEl.innerText;
-    }
-    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-      text: getTextToCopy
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
     });
-    clipboard.on('success', onCopySuccess);
-    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-        text: getTextToCopy,
-        container: window.document.getElementById('quarto-embedded-source-code-modal')
-      });
-      clipboardModal.on('success', onCopySuccess);
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
-      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-      var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
-      var isInternal = (href) => {
-          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-      }
-      // Inspect non-navigation links and adorn them if external
-     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-      for (var i=0; i<links.length; i++) {
-        const link = links[i];
-        if (!isInternal(link.href)) {
-          // undo the damage that might have been done by quarto-nav.js in the case of
-          // links that we want to consider external
-          if (link.dataset.originalHref !== undefined) {
-            link.href = link.dataset.originalHref;
-          }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
         }
       }
-    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-      const config = {
-        allowHTML: true,
-        maxWidth: 500,
-        delay: 100,
-        arrow: false,
-        appendTo: function(el) {
-            return el.parentElement;
-        },
-        interactive: true,
-        interactiveBorder: 10,
-        theme: 'quarto',
-        placement: 'bottom-start',
-      };
-      if (contentFn) {
-        config.content = contentFn;
-      }
-      if (onTriggerFn) {
-        config.onTrigger = onTriggerFn;
-      }
-      if (onUntriggerFn) {
-        config.onUntrigger = onUntriggerFn;
-      }
-      window.tippy(el, config); 
     }
-    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-    for (var i=0; i<noterefs.length; i++) {
-      const ref = noterefs[i];
-      tippyHover(ref, function() {
-        // use id or data attribute instead here
-        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-        try { href = new URL(href).hash; } catch {}
-        const id = href.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note) {
-          return note.innerHTML;
-        } else {
-          return "";
-        }
-      });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
     }
-    const xrefs = window.document.querySelectorAll('a.quarto-xref');
-    const processXRef = (id, note) => {
-      // Strip column container classes
-      const stripColumnClz = (el) => {
-        el.classList.remove("page-full", "page-columns");
-        if (el.children) {
-          for (const child of el.children) {
-            stripColumnClz(child);
-          }
-        }
-      }
-      stripColumnClz(note)
-      if (id === null || id.startsWith('sec-')) {
-        // Special case sections, only their first couple elements
-        const container = document.createElement("div");
-        if (note.children && note.children.length > 2) {
-          container.appendChild(note.children[0].cloneNode(true));
-          for (let i = 1; i < note.children.length; i++) {
-            const child = note.children[i];
-            if (child.tagName === "P" && child.innerText === "") {
-              continue;
-            } else {
-              container.appendChild(child.cloneNode(true));
-              break;
-            }
-          }
-          if (window.Quarto?.typesetMath) {
-            window.Quarto.typesetMath(container);
-          }
-          return container.innerHTML
-        } else {
-          if (window.Quarto?.typesetMath) {
-            window.Quarto.typesetMath(note);
-          }
-          return note.innerHTML;
-        }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
       } else {
-        // Remove any anchor links if they are present
-        const anchorLink = note.querySelector('a.anchorjs-link');
-        if (anchorLink) {
-          anchorLink.remove();
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
         }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        if (note.classList.contains("callout")) {
-          return note.outerHTML;
-        } else {
-          return note.innerHTML;
-        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
       }
     }
-    for (var i=0; i<xrefs.length; i++) {
-      const xref = xrefs[i];
-      tippyHover(xref, undefined, function(instance) {
-        instance.disable();
-        let url = xref.getAttribute('href');
-        let hash = undefined; 
-        if (url.startsWith('#')) {
-          hash = url;
-        } else {
-          try { hash = new URL(url).hash; } catch {}
-        }
-        if (hash) {
-          const id = hash.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note !== null) {
-            try {
-              const html = processXRef(id, note.cloneNode(true));
-              instance.setContent(html);
-            } finally {
-              instance.enable();
-              instance.show();
-            }
-          } else {
-            // See if we can fetch this
-            fetch(url.split('#')[0])
-            .then(res => res.text())
-            .then(html => {
-              const parser = new DOMParser();
-              const htmlDoc = parser.parseFromString(html, "text/html");
-              const note = htmlDoc.getElementById(id);
-              if (note !== null) {
-                const html = processXRef(id, note);
-                instance.setContent(html);
-              } 
-            }).finally(() => {
-              instance.enable();
-              instance.show();
-            });
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
           }
         } else {
-          // See if we can fetch a full url (with no hash to target)
-          // This is a special case and we should probably do some content thinning / targeting
-          fetch(url)
+          // See if we can fetch this
+          fetch(url.split('#')[0])
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.querySelector('main.content');
+            const note = htmlDoc.getElementById(id);
             if (note !== null) {
-              // This should only happen for chapter cross references
-              // (since there is no id in the URL)
-              // remove the first header
-              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-                note.children[0].remove();
-              }
-              const html = processXRef(null, note);
+              const html = processXRef(id, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -1970,161 +1948,185 @@ Yang, Zhilin, Zihang Dai, Yiming Yang, Jaime Carbonell, Ruslan Salakhutdinov, an
             instance.show();
           });
         }
-      }, function(instance) {
-      });
-    }
-        let selectedAnnoteEl;
-        const selectorForAnnotation = ( cell, annotation) => {
-          let cellAttr = 'data-code-cell="' + cell + '"';
-          let lineAttr = 'data-code-annotation="' +  annotation + '"';
-          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-          return selector;
-        }
-        const selectCodeLines = (annoteEl) => {
-          const doc = window.document;
-          const targetCell = annoteEl.getAttribute("data-target-cell");
-          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-          const lineIds = lines.map((line) => {
-            return targetCell + "-" + line;
-          })
-          let top = null;
-          let height = null;
-          let parent = null;
-          if (lineIds.length > 0) {
-              //compute the position of the single el (top and bottom and make a div)
-              const el = window.document.getElementById(lineIds[0]);
-              top = el.offsetTop;
-              height = el.offsetHeight;
-              parent = el.parentElement.parentElement;
-            if (lineIds.length > 1) {
-              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-              height = bottom - top;
-            }
-            if (top !== null && height !== null && parent !== null) {
-              // cook up a div (if necessary) and position it 
-              let div = window.document.getElementById("code-annotation-line-highlight");
-              if (div === null) {
-                div = window.document.createElement("div");
-                div.setAttribute("id", "code-annotation-line-highlight");
-                div.style.position = 'absolute';
-                parent.appendChild(div);
-              }
-              div.style.top = top - 2 + "px";
-              div.style.height = height + 4 + "px";
-              div.style.left = 0;
-              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-              if (gutterDiv === null) {
-                gutterDiv = window.document.createElement("div");
-                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-                gutterDiv.style.position = 'absolute';
-                const codeCell = window.document.getElementById(targetCell);
-                const gutter = codeCell.querySelector('.code-annotation-gutter');
-                gutter.appendChild(gutterDiv);
-              }
-              gutterDiv.style.top = top - 2 + "px";
-              gutterDiv.style.height = height + 4 + "px";
-            }
-            selectedAnnoteEl = annoteEl;
-          }
-        };
-        const unselectCodeLines = () => {
-          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-          elementsIds.forEach((elId) => {
-            const div = window.document.getElementById(elId);
-            if (div) {
-              div.remove();
-            }
-          });
-          selectedAnnoteEl = undefined;
-        };
-          // Handle positioning of the toggle
-      window.addEventListener(
-        "resize",
-        throttle(() => {
-          elRect = undefined;
-          if (selectedAnnoteEl) {
-            selectCodeLines(selectedAnnoteEl);
-          }
-        }, 10)
-      );
-      function throttle(fn, ms) {
-      let throttle = false;
-      let timer;
-        return (...args) => {
-          if(!throttle) { // first call gets through
-              fn.apply(this, args);
-              throttle = true;
-          } else { // all the others get throttled
-              if(timer) clearTimeout(timer); // cancel #2
-              timer = setTimeout(() => {
-                fn.apply(this, args);
-                timer = throttle = false;
-              }, ms);
-          }
-        };
-      }
-        // Attach click handler to the DT
-        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-        for (const annoteDlNode of annoteDls) {
-          annoteDlNode.addEventListener('click', (event) => {
-            const clickedEl = event.target;
-            if (clickedEl !== selectedAnnoteEl) {
-              unselectCodeLines();
-              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-              if (activeEl) {
-                activeEl.classList.remove('code-annotation-active');
-              }
-              selectCodeLines(clickedEl);
-              clickedEl.classList.add('code-annotation-active');
-            } else {
-              // Unselect the line
-              unselectCodeLines();
-              clickedEl.classList.remove('code-annotation-active');
-            }
-          });
-        }
-    const findCites = (el) => {
-      const parentEl = el.parentElement;
-      if (parentEl) {
-        const cites = parentEl.dataset.cites;
-        if (cites) {
-          return {
-            el,
-            cites: cites.split(' ')
-          };
-        } else {
-          return findCites(el.parentElement)
-        }
       } else {
-        return undefined;
-      }
-    };
-    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-    for (var i=0; i<bibliorefs.length; i++) {
-      const ref = bibliorefs[i];
-      const citeInfo = findCites(ref);
-      if (citeInfo) {
-        tippyHover(citeInfo.el, function() {
-          var popup = window.document.createElement('div');
-          citeInfo.cites.forEach(function(cite) {
-            var citeDiv = window.document.createElement('div');
-            citeDiv.classList.add('hanging-indent');
-            citeDiv.classList.add('csl-entry');
-            var biblioDiv = window.document.getElementById('ref-' + cite);
-            if (biblioDiv) {
-              citeDiv.innerHTML = biblioDiv.innerHTML;
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
             }
-            popup.appendChild(citeDiv);
-          });
-          return popup.innerHTML;
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
         });
       }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
     }
-  });
-  </script>
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../part_4/p4-ch15-dna-lm.html" class="pagination-link" aria-label="DNA Language Models">
