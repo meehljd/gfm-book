@@ -67,53 +67,53 @@ This document tracks papers that need to be added to Zotero and exported to the 
 
 ---
 
-## Chapter 08: Pretraining Strategies
+## Chapter 08: Pretraining Strategies (Part 3)
 
 ### Missing Citations (identified from [Citation Needed] markers)
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `liu-wei_sequencing_2024` | Liu-Wei W, Kafkas S, Chen J, et al. **Sequencing accuracy and systematic errors of nanopore direct RNA sequencing.** *BMC Genomics.* 2024;25:528. doi:10.1186/s12864-024-10440-w | `bib/p2/p2-ch08.bib` |
-| [ ] | `mak_lost_2014` | Mak IW, Evaniew N, Ghert M. **Lost in translation: animal models and clinical trials in cancer treatment.** *Am J Transl Res.* 2014;6(2):114-118. PMCID:PMC3902221 | `bib/p2/p2-ch08.bib` |
-| [ ] | `herman_truncations_2012` | Herman DS, Lam L, Taylor MRG, et al. **Truncations of titin causing dilated cardiomyopathy.** *N Engl J Med.* 2012;366(7):619-628. doi:10.1056/NEJMoa1110186 | `bib/p2/p2-ch08.bib` |
-| [ ] | `tishkoff_genetic_2009` | Tishkoff SA, Reed FA, Friedlaender FR, et al. **The genetic structure and history of Africans and African Americans.** *Science.* 2009;324(5930):1035-1044. doi:10.1126/science.1172257 | `bib/p2/p2-ch08.bib` |
-| [ ] | `nurk_complete_2022` | Nurk S, Koren S, Rhie A, et al. **The complete sequence of a human genome.** *Science.* 2022;376(6588):44-53. doi:10.1126/science.abj6987 | `bib/p2/p2-ch08.bib` |
-| [ ] | `lander_initial_2001` | Lander ES, Linton LM, Birren B, et al. **Initial sequencing and analysis of the human genome.** *Nature.* 2001;409(6822):860-921. doi:10.1038/35057062 | `bib/p2/p2-ch08.bib` |
-| [ ] | `wei_emergent_2022` | Wei J, Tay Y, Bommasani R, et al. **Emergent abilities of large language models.** *Transactions on Machine Learning Research.* 2022. arXiv:2206.07682 | `bib/p2/p2-ch08.bib` |
+| [ ] | `liu-wei_sequencing_2024` | Liu-Wei W, Kafkas S, Chen J, et al. **Sequencing accuracy and systematic errors of nanopore direct RNA sequencing.** *BMC Genomics.* 2024;25:528. doi:10.1186/s12864-024-10440-w | `bib/p3/p3-ch08.bib` |
+| [ ] | `mak_lost_2014` | Mak IW, Evaniew N, Ghert M. **Lost in translation: animal models and clinical trials in cancer treatment.** *Am J Transl Res.* 2014;6(2):114-118. PMCID:PMC3902221 | `bib/p3/p3-ch08.bib` |
+| [ ] | `herman_truncations_2012` | Herman DS, Lam L, Taylor MRG, et al. **Truncations of titin causing dilated cardiomyopathy.** *N Engl J Med.* 2012;366(7):619-628. doi:10.1056/NEJMoa1110186 | `bib/p3/p3-ch08.bib` |
+| [ ] | `tishkoff_genetic_2009` | Tishkoff SA, Reed FA, Friedlaender FR, et al. **The genetic structure and history of Africans and African Americans.** *Science.* 2009;324(5930):1035-1044. doi:10.1126/science.1172257 | `bib/p3/p3-ch08.bib` |
+| [ ] | `nurk_complete_2022` | Nurk S, Koren S, Rhie A, et al. **The complete sequence of a human genome.** *Science.* 2022;376(6588):44-53. doi:10.1126/science.abj6987 | `bib/p3/p3-ch08.bib` |
+| [ ] | `lander_initial_2001` | Lander ES, Linton LM, Birren B, et al. **Initial sequencing and analysis of the human genome.** *Nature.* 2001;409(6822):860-921. doi:10.1038/35057062 | `bib/p3/p3-ch08.bib` |
+| [ ] | `wei_emergent_2022` | Wei J, Tay Y, Bommasani R, et al. **Emergent abilities of large language models.** *Transactions on Machine Learning Research.* 2022. arXiv:2206.07682 | `bib/p3/p3-ch08.bib` |
 
 ### Additional citations (placeholder entries needing DOIs)
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `gene42_2024` | Gene42 Team. **Gene42: A foundation model for DNA sequences.** *Preprint.* 2024. | `bib/p2/p2-ch08.bib` |
-| [ ] | `zhou_dnabert-s_2024` | Zhou Z, et al. **DNABERT-S: Learning Species-Aware DNA Embedding with Genome Foundation Models.** *arXiv.* 2024. arXiv:2402.08777 | `bib/p2/p2-ch08.bib` |
-| [ ] | `nijkamp_progen2_2023` | Nijkamp E, Ruffolo JA, Weinstein EN, et al. **ProGen2: Exploring the boundaries of protein language models.** *Cell Systems.* 2023;14(11):968-978. doi:10.1016/j.cels.2023.10.002 | `bib/p2/p2-ch08.bib` |
-| [ ] | `yang_xlnet_2019` | Yang Z, Dai Z, Yang Y, et al. **XLNet: Generalized autoregressive pretraining for language understanding.** *NeurIPS.* 2019. arXiv:1906.08237 | `bib/p2/p2-ch08.bib` |
-| [ ] | `lee_biobert_2020` | Lee J, Yoon W, Kim S, et al. **BioBERT: a pre-trained biomedical language representation model for biomedical text mining.** *Bioinformatics.* 2020;36(4):1234-1240. doi:10.1093/bioinformatics/btz682 | `bib/p2/p2-ch08.bib` |
-| [ ] | `gu_pubmedbert_2021` | Gu Y, Tinn R, Cheng H, et al. **Domain-specific language model pretraining for biomedical natural language processing.** *ACM Trans Comput Healthcare.* 2021;3(1):1-23. doi:10.1145/3458754 | `bib/p2/p2-ch08.bib` |
-| [ ] | `mccloskey_catastrophic_1989` | McCloskey M, Cohen NJ. **Catastrophic interference in connectionist networks: The sequential learning problem.** *Psychology of Learning and Motivation.* 1989;24:109-165. doi:10.1016/S0079-7421(08)60536-8 | `bib/p2/p2-ch08.bib` |
-| [ ] | `vapnik_statistical_1998` | Vapnik VN. **Statistical Learning Theory.** *Wiley.* 1998. ISBN:978-0471030034 | `bib/p2/p2-ch08.bib` |
-| [ ] | `zhang_understanding_2017` | Zhang C, Bengio S, Hardt M, Recht B, Vinyals O. **Understanding deep learning requires rethinking generalization.** *ICLR.* 2017. arXiv:1611.03530 | `bib/p2/p2-ch08.bib` |
-| [ ] | `belkin_reconciling_2019` | Belkin M, Hsu D, Ma S, Mandal S. **Reconciling modern machine-learning practice and the classical bias–variance trade-off.** *PNAS.* 2019;116(32):15849-15854. doi:10.1073/pnas.1903070116 | `bib/p2/p2-ch08.bib` |
+| [ ] | `gene42_2024` | Gene42 Team. **Gene42: A foundation model for DNA sequences.** *Preprint.* 2024. | `bib/p3/p3-ch08.bib` |
+| [ ] | `zhou_dnabert-s_2024` | Zhou Z, et al. **DNABERT-S: Learning Species-Aware DNA Embedding with Genome Foundation Models.** *arXiv.* 2024. arXiv:2402.08777 | `bib/p3/p3-ch08.bib` |
+| [ ] | `nijkamp_progen2_2023` | Nijkamp E, Ruffolo JA, Weinstein EN, et al. **ProGen2: Exploring the boundaries of protein language models.** *Cell Systems.* 2023;14(11):968-978. doi:10.1016/j.cels.2023.10.002 | `bib/p3/p3-ch08.bib` |
+| [ ] | `yang_xlnet_2019` | Yang Z, Dai Z, Yang Y, et al. **XLNet: Generalized autoregressive pretraining for language understanding.** *NeurIPS.* 2019. arXiv:1906.08237 | `bib/p3/p3-ch08.bib` |
+| [ ] | `lee_biobert_2020` | Lee J, Yoon W, Kim S, et al. **BioBERT: a pre-trained biomedical language representation model for biomedical text mining.** *Bioinformatics.* 2020;36(4):1234-1240. doi:10.1093/bioinformatics/btz682 | `bib/p3/p3-ch08.bib` |
+| [ ] | `gu_pubmedbert_2021` | Gu Y, Tinn R, Cheng H, et al. **Domain-specific language model pretraining for biomedical natural language processing.** *ACM Trans Comput Healthcare.* 2021;3(1):1-23. doi:10.1145/3458754 | `bib/p3/p3-ch08.bib` |
+| [ ] | `mccloskey_catastrophic_1989` | McCloskey M, Cohen NJ. **Catastrophic interference in connectionist networks: The sequential learning problem.** *Psychology of Learning and Motivation.* 1989;24:109-165. doi:10.1016/S0079-7421(08)60536-8 | `bib/p3/p3-ch08.bib` |
+| [ ] | `vapnik_statistical_1998` | Vapnik VN. **Statistical Learning Theory.** *Wiley.* 1998. ISBN:978-0471030034 | `bib/p3/p3-ch08.bib` |
+| [ ] | `zhang_understanding_2017` | Zhang C, Bengio S, Hardt M, Recht B, Vinyals O. **Understanding deep learning requires rethinking generalization.** *ICLR.* 2017. arXiv:1611.03530 | `bib/p3/p3-ch08.bib` |
+| [ ] | `belkin_reconciling_2019` | Belkin M, Hsu D, Ma S, Mandal S. **Reconciling modern machine-learning practice and the classical bias–variance trade-off.** *PNAS.* 2019;116(32):15849-15854. doi:10.1073/pnas.1903070116 | `bib/p3/p3-ch08.bib` |
 
 ---
 
-## Chapter 09: Transfer and Adaptation
+## Chapter 09: Transfer Learning (Part 3)
 
 ### Missing Citations (not in bib file)
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `chawla_smote_2002` | Chawla NV, Bowyer KW, Hall LO, Kegelmeyer WP. **SMOTE: Synthetic Minority Over-sampling Technique.** *Journal of Artificial Intelligence Research.* 2002;16:321-357. doi:10.1613/jair.953 | `bib/p2/p2-ch09.bib` |
-| [ ] | `cui_class-balanced_2019` | Cui Y, Jia M, Lin T-Y, Song Y, Belongie S. **Class-Balanced Loss Based on Effective Number of Samples.** *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR).* 2019:9268-9277. doi:10.1109/CVPR.2019.00949 | `bib/p2/p2-ch09.bib` |
-| [ ] | `devlin_bert_2019` | Devlin J, Chang M-W, Lee K, Toutanova K. **BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding.** *Proceedings of NAACL-HLT.* 2019:4171-4186. doi:10.18653/v1/N19-1423 | `bib/p2/p2-ch09.bib` |
-| [ ] | `hoang_locality-aware_2025` | Hoang M, Singh M. **Locality-aware pooling enhances protein language model performance across varied applications.** *Bioinformatics.* 2025;41(Suppl 1):i217-i226. doi:10.1093/bioinformatics/btaf178 | `bib/p2/p2-ch09.bib` |
-| [ ] | `lin_focal_2017` | Lin T-Y, Goyal P, Girshick R, He K, Dollár P. **Focal Loss for Dense Object Detection.** *Proceedings of the IEEE International Conference on Computer Vision (ICCV).* 2017:2980-2988. arXiv:1708.02002 | `bib/p2/p2-ch09.bib` |
-| [ ] | `martin_clinical_2019` | Martin AR, Kanai M, Kamatani Y, Okada Y, Neale BM, Daly MJ. **Clinical use of current polygenic risk scores may exacerbate health disparities.** *Nature Genetics.* 2019;51(4):584-591. doi:10.1038/s41588-019-0379-x | `bib/p2/p2-ch09.bib` |
-| [ ] | `naderializadeh_aggregating_2025` | NaderiAlizadeh N, Singh R. **Aggregating residue-level protein language model embeddings with optimal transport.** *Bioinformatics Advances.* 2025;5(1):vbaf060. doi:10.1093/bioadv/vbaf060 | `bib/p2/p2-ch09.bib` |
-| [ ] | `peters_deep_2018` | Peters ME, Neumann M, Iyyer M, Gardner M, Clark C, Lee K, Zettlemoyer L. **Deep Contextualized Word Representations.** *Proceedings of NAACL-HLT.* 2018:2227-2237. doi:10.18653/v1/N18-1202 | `bib/p2/p2-ch09.bib` |
-| [ ] | `varoquaux_preventing_2021` | Dockès J, Varoquaux G, Poline J-B. **Preventing dataset shift from breaking machine-learning biomarkers.** *GigaScience.* 2021;10(9):giab055. doi:10.1093/gigascience/giab055 | `bib/p2/p2-ch09.bib` |
-| [ ] | `yu_assessing_2024` | Yu Y, Mai Y, Zheng Y, Shi L. **Assessing and mitigating batch effects in large-scale omics studies.** *Genome Biology.* 2024;25:254. doi:10.1186/s13059-024-03401-9 | `bib/p2/p2-ch09.bib` |
+| [ ] | `chawla_smote_2002` | Chawla NV, Bowyer KW, Hall LO, Kegelmeyer WP. **SMOTE: Synthetic Minority Over-sampling Technique.** *Journal of Artificial Intelligence Research.* 2002;16:321-357. doi:10.1613/jair.953 | `bib/p3/p3-ch09.bib` |
+| [ ] | `cui_class-balanced_2019` | Cui Y, Jia M, Lin T-Y, Song Y, Belongie S. **Class-Balanced Loss Based on Effective Number of Samples.** *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR).* 2019:9268-9277. doi:10.1109/CVPR.2019.00949 | `bib/p3/p3-ch09.bib` |
+| [ ] | `devlin_bert_2019` | Devlin J, Chang M-W, Lee K, Toutanova K. **BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding.** *Proceedings of NAACL-HLT.* 2019:4171-4186. doi:10.18653/v1/N19-1423 | `bib/p3/p3-ch09.bib` |
+| [ ] | `hoang_locality-aware_2025` | Hoang M, Singh M. **Locality-aware pooling enhances protein language model performance across varied applications.** *Bioinformatics.* 2025;41(Suppl 1):i217-i226. doi:10.1093/bioinformatics/btaf178 | `bib/p3/p3-ch09.bib` |
+| [ ] | `lin_focal_2017` | Lin T-Y, Goyal P, Girshick R, He K, Dollár P. **Focal Loss for Dense Object Detection.** *Proceedings of the IEEE International Conference on Computer Vision (ICCV).* 2017:2980-2988. arXiv:1708.02002 | `bib/p3/p3-ch09.bib` |
+| [ ] | `martin_clinical_2019` | Martin AR, Kanai M, Kamatani Y, Okada Y, Neale BM, Daly MJ. **Clinical use of current polygenic risk scores may exacerbate health disparities.** *Nature Genetics.* 2019;51(4):584-591. doi:10.1038/s41588-019-0379-x | `bib/p3/p3-ch09.bib` |
+| [ ] | `naderializadeh_aggregating_2025` | NaderiAlizadeh N, Singh R. **Aggregating residue-level protein language model embeddings with optimal transport.** *Bioinformatics Advances.* 2025;5(1):vbaf060. doi:10.1093/bioadv/vbaf060 | `bib/p3/p3-ch09.bib` |
+| [ ] | `peters_deep_2018` | Peters ME, Neumann M, Iyyer M, Gardner M, Clark C, Lee K, Zettlemoyer L. **Deep Contextualized Word Representations.** *Proceedings of NAACL-HLT.* 2018:2227-2237. doi:10.18653/v1/N18-1202 | `bib/p3/p3-ch09.bib` |
+| [ ] | `varoquaux_preventing_2021` | Dockès J, Varoquaux G, Poline J-B. **Preventing dataset shift from breaking machine-learning biomarkers.** *GigaScience.* 2021;10(9):giab055. doi:10.1093/gigascience/giab055 | `bib/p3/p3-ch09.bib` |
+| [ ] | `yu_assessing_2024` | Yu Y, Mai Y, Zheng Y, Shi L. **Assessing and mitigating batch effects in large-scale omics studies.** *Genome Biology.* 2024;25:254. doi:10.1186/s13059-024-03401-9 | `bib/p3/p3-ch09.bib` |
 
 ---
 
@@ -168,13 +168,13 @@ This document tracks papers that need to be added to Zotero and exported to the 
 
 ---
 
-## Chapter 10: Foundation Model Paradigm
+## Chapter 14: Foundation Model Principles (Part 4)
 
 ### Missing Citations
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `wei_emergent_2022` | Wei J, Tay Y, Bommasani R, Raffel C, Zoph B, Borgeaud S, Yogatama D, Bosma M, Zhou D, Metzler D, Chi EH, Hashimoto T, Vinyals O, Liang P, Dean J, Fedus W. **Emergent Abilities of Large Language Models.** *Transactions on Machine Learning Research (TMLR).* 2022. arXiv:2206.07682 | `bib/p3/p3-ch10.bib` |
+| [ ] | `wei_emergent_2022` | Wei J, Tay Y, Bommasani R, Raffel C, Zoph B, Borgeaud S, Yogatama D, Bosma M, Zhou D, Metzler D, Chi EH, Hashimoto T, Vinyals O, Liang P, Dean J, Fedus W. **Emergent Abilities of Large Language Models.** *Transactions on Machine Learning Research (TMLR).* 2022. arXiv:2206.07682 | `bib/p4/p4-ch14.bib` |
 
 ### Citation Key Fixes Required (chapter uses wrong key)
 
@@ -185,136 +185,136 @@ This document tracks papers that need to be added to Zotero and exported to the 
 
 ---
 
-## Chapter 11: Benchmarks and Evaluation
+## Chapter 11: Benchmarks (Part 3)
 
 ### Two Cultures Sidebar (newly added)
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [x] | `breiman_statistical_2001` | Breiman L. **Statistical Modeling: The Two Cultures.** *Statistical Science.* 2001;16(3):199-231. doi:10.1214/ss/1009213726 | `bib/p2/p2-ch11.bib` |
+| [x] | `breiman_statistical_2001` | Breiman L. **Statistical Modeling: The Two Cultures.** *Statistical Science.* 2001;16(3):199-231. doi:10.1214/ss/1009213726 | `bib/p3/p3-ch11.bib` |
 
 ---
 
-## Chapter 14: DNA Language Models
+## Chapter 15: DNA Language Models (Part 4)
 
 ### Missing Citations
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `gresova_genomic-benchmarks_2023` | Grešová K, Martinek V, Čechák D, Šimeček P, Alexiou P. **Genomic benchmarks: a collection of datasets for genomic sequence classification.** *BMC Genomic Data.* 2023;24:25. doi:10.1186/s12863-023-01123-8 | `bib/p3/p3-ch14.bib` |
+| [ ] | `gresova_genomic-benchmarks_2023` | Grešová K, Martinek V, Čechák D, Šimeček P, Alexiou P. **Genomic benchmarks: a collection of datasets for genomic sequence classification.** *BMC Genomic Data.* 2023;24:25. doi:10.1186/s12863-023-01123-8 | `bib/p4/p4-ch15.bib` |
 
 ### Notes on Cross-Bib Citations
 
-The following citations are used in Chapter 11 but exist in other chapter bib files (no action needed if Quarto resolves them):
-- `hu_lora_2021` - exists in `bib/p2/p2-ch09.bib` and `bib/p3/p3-ch10.bib`
-- `nguyen_sequence_2024` (Evo 1) - exists in `bib/p2/p2-ch08.bib`
+The following citations are used in Chapter 15 but exist in other chapter bib files (no action needed if Quarto resolves them):
+- `hu_lora_2021` - exists in `bib/p3/p3-ch09.bib` and `bib/p4/p4-ch14.bib`
+- `nguyen_sequence_2024` (Evo 1) - exists in `bib/p3/p3-ch08.bib`
 
 ---
 
-## Chapter 12: Protein Language Models
+## Chapter 16: Protein Language Models (Part 4)
 
 ### Missing Citations (identified from [Citation Needed] markers)
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `kulmanov_deepgo-se_2024` | Kulmanov M, Hoehndorf R. **Protein function prediction as approximate semantic entailment.** *Nature Machine Intelligence.* 2024;6:220-228. doi:10.1038/s42256-024-00795-w | `bib/p3/p3-ch12.bib` |
-| [ ] | `sanderson_deepectransformer_2023` | Sanderson T, Bileschi ML, Belber D, et al. **Functional annotation of enzyme-encoding genes using deep learning with transformer layers.** *Nature Communications.* 2023;14:7370. doi:10.1038/s41467-023-43216-z | `bib/p3/p3-ch12.bib` |
-| [ ] | `fang_deepprosite_2023` | Fang Y, Jiang Y, Wei L, et al. **DeepProSite: structure-aware protein binding site prediction using ESMFold and pretrained language model.** *Bioinformatics.* 2023;39(12):btad718. doi:10.1093/bioinformatics/btad718 | `bib/p3/p3-ch12.bib` |
+| [ ] | `kulmanov_deepgo-se_2024` | Kulmanov M, Hoehndorf R. **Protein function prediction as approximate semantic entailment.** *Nature Machine Intelligence.* 2024;6:220-228. doi:10.1038/s42256-024-00795-w | `bib/p4/p4-ch16.bib` |
+| [ ] | `sanderson_deepectransformer_2023` | Sanderson T, Bileschi ML, Belber D, et al. **Functional annotation of enzyme-encoding genes using deep learning with transformer layers.** *Nature Communications.* 2023;14:7370. doi:10.1038/s41467-023-43216-z | `bib/p4/p4-ch16.bib` |
+| [ ] | `fang_deepprosite_2023` | Fang Y, Jiang Y, Wei L, et al. **DeepProSite: structure-aware protein binding site prediction using ESMFold and pretrained language model.** *Bioinformatics.* 2023;39(12):btad718. doi:10.1093/bioinformatics/btad718 | `bib/p4/p4-ch16.bib` |
 
 ### Mentioned in callout note (line 3-5)
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `nijkamp_progen2_2023` | Nijkamp E, Ruffolo JA, Weinstein EN, et al. **ProGen2: Exploring the boundaries of protein language models.** *Cell Systems.* 2023;14(11):968-978.e3. doi:10.1016/j.cels.2023.10.002 | `bib/p3/p3-ch12.bib` |
+| [ ] | `nijkamp_progen2_2023` | Nijkamp E, Ruffolo JA, Weinstein EN, et al. **ProGen2: Exploring the boundaries of protein language models.** *Cell Systems.* 2023;14(11):968-978.e3. doi:10.1016/j.cels.2023.10.002 | `bib/p4/p4-ch16.bib` |
 
 ### Novel Folds / Limitations Section
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `verkuil_language_2022` | Verkuil R, Kabeli O, Du Y, et al. **Language models generalize beyond natural proteins.** *bioRxiv.* 2022. doi:10.1101/2022.12.21.521521 | `bib/p3/p3-ch12.bib` |
+| [ ] | `verkuil_language_2022` | Verkuil R, Kabeli O, Du Y, et al. **Language models generalize beyond natural proteins.** *bioRxiv.* 2022. doi:10.1101/2022.12.21.521521 | `bib/p4/p4-ch16.bib` |
 
 ---
 
-## Chapter 25: Causal Inference with Foundation Models
+## Chapter 26: Causal Inference (Part 6)
 
 ### Core Causal Framework
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `pearl_book_2018` | Pearl J, Mackenzie D. **The Book of Why: The New Science of Cause and Effect.** *Basic Books.* 2018. ISBN:978-0465097616 | `bib/p5/p5-ch25.bib` |
+| [ ] | `pearl_book_2018` | Pearl J, Mackenzie D. **The Book of Why: The New Science of Cause and Effect.** *Basic Books.* 2018. ISBN:978-0465097616 | `bib/p6/p6-ch26.bib` |
 
 ### Mendelian Randomization
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `davey_smith_mendelian_2003` | Davey Smith G, Ebrahim S. **'Mendelian randomization': can genetic epidemiology contribute to understanding environmental determinants of disease?** *Int J Epidemiol.* 2003;32(1):1-22. doi:10.1093/ije/dyg070 | `bib/p5/p5-ch25.bib` |
-| [ ] | `lawlor_mendelian_2008` | Lawlor DA, Harbord RM, Sterne JAC, Timpson N, Davey Smith G. **Mendelian randomization: Using genes as instruments for making causal inferences in epidemiology.** *Stat Med.* 2008;27(8):1133-1163. doi:10.1002/sim.3034 | `bib/p5/p5-ch25.bib` |
-| [ ] | `bowden_mendelian_2015` | Bowden J, Davey Smith G, Burgess S. **Mendelian randomization with invalid instruments: effect estimation and bias detection through Egger regression.** *Int J Epidemiol.* 2015;44(2):512-525. doi:10.1093/ije/dyv080 | `bib/p5/p5-ch25.bib` |
-| [ ] | `hartwig_robust_2017` | Hartwig FP, Davey Smith G, Bowden J. **Robust inference in summary data Mendelian randomization via the zero modal pleiotropy assumption.** *Int J Epidemiol.* 2017;46(6):1985-1998. doi:10.1093/ije/dyx102 | `bib/p5/p5-ch25.bib` |
+| [ ] | `davey_smith_mendelian_2003` | Davey Smith G, Ebrahim S. **'Mendelian randomization': can genetic epidemiology contribute to understanding environmental determinants of disease?** *Int J Epidemiol.* 2003;32(1):1-22. doi:10.1093/ije/dyg070 | `bib/p6/p6-ch26.bib` |
+| [ ] | `lawlor_mendelian_2008` | Lawlor DA, Harbord RM, Sterne JAC, Timpson N, Davey Smith G. **Mendelian randomization: Using genes as instruments for making causal inferences in epidemiology.** *Stat Med.* 2008;27(8):1133-1163. doi:10.1002/sim.3034 | `bib/p6/p6-ch26.bib` |
+| [ ] | `bowden_mendelian_2015` | Bowden J, Davey Smith G, Burgess S. **Mendelian randomization with invalid instruments: effect estimation and bias detection through Egger regression.** *Int J Epidemiol.* 2015;44(2):512-525. doi:10.1093/ije/dyv080 | `bib/p6/p6-ch26.bib` |
+| [ ] | `hartwig_robust_2017` | Hartwig FP, Davey Smith G, Bowden J. **Robust inference in summary data Mendelian randomization via the zero modal pleiotropy assumption.** *Int J Epidemiol.* 2017;46(6):1985-1998. doi:10.1093/ije/dyx102 | `bib/p6/p6-ch26.bib` |
 
 ### Fine-Mapping and Colocalization
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `maller_bayesian_2012` | Maller JB, McVean G, Byrnes J, et al. **Bayesian refinement of association signals for 14 loci in 3 common diseases.** *Nat Genet.* 2012;44(12):1294-1301. doi:10.1038/ng.2435 | `bib/p5/p5-ch25.bib` |
-| [ ] | `benner_finemap_2016` | Benner C, Spencer CCA, Havulinna AS, et al. **FINEMAP: efficient variable selection using summary data from genome-wide association studies.** *Bioinformatics.* 2016;32(10):1493-1501. doi:10.1093/bioinformatics/btw018 | `bib/p5/p5-ch25.bib` |
-| [ ] | `giambartolomei_bayesian_2014` | Giambartolomei C, Vukcevic D, Schadt EE, et al. **Bayesian test for colocalisation between pairs of genetic association studies using summary statistics.** *PLoS Genet.* 2014;10(5):e1004383. doi:10.1371/journal.pgen.1004383 | `bib/p5/p5-ch25.bib` |
+| [ ] | `maller_bayesian_2012` | Maller JB, McVean G, Byrnes J, et al. **Bayesian refinement of association signals for 14 loci in 3 common diseases.** *Nat Genet.* 2012;44(12):1294-1301. doi:10.1038/ng.2435 | `bib/p6/p6-ch26.bib` |
+| [ ] | `benner_finemap_2016` | Benner C, Spencer CCA, Havulinna AS, et al. **FINEMAP: efficient variable selection using summary data from genome-wide association studies.** *Bioinformatics.* 2016;32(10):1493-1501. doi:10.1093/bioinformatics/btw018 | `bib/p6/p6-ch26.bib` |
+| [ ] | `giambartolomei_bayesian_2014` | Giambartolomei C, Vukcevic D, Schadt EE, et al. **Bayesian test for colocalisation between pairs of genetic association studies using summary statistics.** *PLoS Genet.* 2014;10(5):e1004383. doi:10.1371/journal.pgen.1004383 | `bib/p6/p6-ch26.bib` |
 
 ### Foundation Models and Causality
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `kiciman_causal_2023` | Kiciman E, Ness R, Sharma A, Tan C. **Causal Reasoning and Large Language Models: Opening a New Frontier for Causality.** *arXiv.* 2023. arXiv:2305.00050 | `bib/p5/p5-ch25.bib` |
-| [ ] | `theodoris_transfer_2023` | Theodoris CV, Xiao L, Chopra A, et al. **Transfer learning enables predictions in network biology.** *Nature.* 2023;618(7965):616-624. doi:10.1038/s41586-023-06139-9 | `bib/p5/p5-ch25.bib` |
+| [ ] | `kiciman_causal_2023` | Kiciman E, Ness R, Sharma A, Tan C. **Causal Reasoning and Large Language Models: Opening a New Frontier for Causality.** *arXiv.* 2023. arXiv:2305.00050 | `bib/p6/p6-ch26.bib` |
+| [ ] | `theodoris_transfer_2023` | Theodoris CV, Xiao L, Chopra A, et al. **Transfer learning enables predictions in network biology.** *Nature.* 2023;618(7965):616-624. doi:10.1038/s41586-023-06139-9 | `bib/p6/p6-ch26.bib` |
 
 ### Perturbation Screens
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `shalem_genome-scale_2014` | Shalem O, Sanjana NE, Hartenian E, et al. **Genome-scale CRISPR-Cas9 knockout screening in human cells.** *Science.* 2014;343(6166):84-87. doi:10.1126/science.1247005 | `bib/p5/p5-ch25.bib` |
-| [ ] | `adamson_multiplexed_2016` | Adamson B, Norman TM, Jost M, et al. **A multiplexed single-cell CRISPR screening platform enables systematic dissection of the unfolded protein response.** *Cell.* 2016;167(7):1867-1882.e21. doi:10.1016/j.cell.2016.11.048 | `bib/p5/p5-ch25.bib` |
+| [ ] | `shalem_genome-scale_2014` | Shalem O, Sanjana NE, Hartenian E, et al. **Genome-scale CRISPR-Cas9 knockout screening in human cells.** *Science.* 2014;343(6166):84-87. doi:10.1126/science.1247005 | `bib/p6/p6-ch26.bib` |
+| [ ] | `adamson_multiplexed_2016` | Adamson B, Norman TM, Jost M, et al. **A multiplexed single-cell CRISPR screening platform enables systematic dissection of the unfolded protein response.** *Cell.* 2016;167(7):1867-1882.e21. doi:10.1016/j.cell.2016.11.048 | `bib/p6/p6-ch26.bib` |
 
 ### Drug Response and Network Analysis
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `zitnik_modeling_2018` | Zitnik M, Agrawal M, Leskovec J. **Modeling polypharmacy side effects with graph convolutional networks.** *Bioinformatics.* 2018;34(13):i457-i466. doi:10.1093/bioinformatics/bty294 | `bib/p5/p5-ch25.bib` |
-| [ ] | `huynh-thu_inferring_2010` | Huynh-Thu VA, Irrthum A, Wehenkel L, Geurts P. **Inferring regulatory networks from expression data using tree-based methods.** *PLoS ONE.* 2010;5(9):e12776. doi:10.1371/journal.pone.0012776 | `bib/p5/p5-ch25.bib` |
+| [ ] | `zitnik_modeling_2018` | Zitnik M, Agrawal M, Leskovec J. **Modeling polypharmacy side effects with graph convolutional networks.** *Bioinformatics.* 2018;34(13):i457-i466. doi:10.1093/bioinformatics/bty294 | `bib/p6/p6-ch26.bib` |
+| [ ] | `huynh-thu_inferring_2010` | Huynh-Thu VA, Irrthum A, Wehenkel L, Geurts P. **Inferring regulatory networks from expression data using tree-based methods.** *PLoS ONE.* 2010;5(9):e12776. doi:10.1371/journal.pone.0012776 | `bib/p6/p6-ch26.bib` |
 
 ### Attention and Interpretability
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `jain_attention_2019` | Jain S, Wallace BC. **Attention is not Explanation.** *Proceedings of NAACL-HLT.* 2019:3543-3556. doi:10.18653/v1/N19-1357 | `bib/p5/p5-ch25.bib` |
+| [ ] | `jain_attention_2019` | Jain S, Wallace BC. **Attention is not Explanation.** *Proceedings of NAACL-HLT.* 2019:3543-3556. doi:10.18653/v1/N19-1357 | `bib/p6/p6-ch26.bib` |
 
 ### Temporal Causality
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `granger_investigating_1969` | Granger CWJ. **Investigating causal relations by econometric models and cross-spectral methods.** *Econometrica.* 1969;37(3):424-438. doi:10.2307/1912791 | `bib/p5/p5-ch25.bib` |
-| [ ] | `la_manno_rna_2018` | La Manno G, Soldatov R, Zeisel A, et al. **RNA velocity of single cells.** *Nature.* 2018;560(7719):494-498. doi:10.1038/s41586-018-0414-6 | `bib/p5/p5-ch25.bib` |
+| [ ] | `granger_investigating_1969` | Granger CWJ. **Investigating causal relations by econometric models and cross-spectral methods.** *Econometrica.* 1969;37(3):424-438. doi:10.2307/1912791 | `bib/p6/p6-ch26.bib` |
+| [ ] | `la_manno_rna_2018` | La Manno G, Soldatov R, Zeisel A, et al. **RNA velocity of single cells.** *Nature.* 2018;560(7719):494-498. doi:10.1038/s41586-018-0414-6 | `bib/p6/p6-ch26.bib` |
 
 ---
 
-## Chapter 17: Variant Effect Prediction with Foundation Models
+## Chapter 18: VEP with Foundation Models (Part 4)
 
 ### Long-Read Sequencing Section (new)
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `logsdon_long-read_2020` | Logsdon GA, Vollger MR, Eichler EE. **Long-read human genome sequencing and its applications.** *Nat Rev Genet.* 2020;21(10):597-614. doi:10.1038/s41576-020-0236-x | `bib/p3/p3-ch17.bib` |
-| [ ] | `smolka_detection_2024` | Smolka M, Paulin LF, Grochowski CM, et al. **Detection of mosaic and population-level structural variants with Sniffles2.** *Nat Biotechnol.* 2024;42:1571-1580. doi:10.1038/s41587-023-02024-y | `bib/p3/p3-ch17.bib` |
-| [ ] | `zheng_symphonizing_2022` | Zheng Z, Li S, Su J, et al. **Symphonizing pileup and full-alignment for deep learning-based long-read variant calling.** *Nat Comput Sci.* 2022;2:797-803. doi:10.1038/s43588-022-00387-x | `bib/p3/p3-ch17.bib` |
+| [ ] | `logsdon_long-read_2020` | Logsdon GA, Vollger MR, Eichler EE. **Long-read human genome sequencing and its applications.** *Nat Rev Genet.* 2020;21(10):597-614. doi:10.1038/s41576-020-0236-x | `bib/p4/p4-ch18.bib` |
+| [ ] | `smolka_detection_2024` | Smolka M, Paulin LF, Grochowski CM, et al. **Detection of mosaic and population-level structural variants with Sniffles2.** *Nat Biotechnol.* 2024;42:1571-1580. doi:10.1038/s41587-023-02024-y | `bib/p4/p4-ch18.bib` |
+| [ ] | `zheng_symphonizing_2022` | Zheng Z, Li S, Su J, et al. **Symphonizing pileup and full-alignment for deep learning-based long-read variant calling.** *Nat Comput Sci.* 2022;2:797-803. doi:10.1038/s43588-022-00387-x | `bib/p4/p4-ch18.bib` |
 
 ---
 
-## Chapter 30: Sequence Design
+## Chapter 31: Sequence Design (Part 7)
 
 ### Generative Evaluation Section (new)
 
 | Status | Expected Citation Key | Full Reference | Target Bib |
 |--------|----------------------|----------------|------------|
-| [ ] | `huang_coming_2016` | Huang PS, Boyken SE, Baker D. **The coming of age of de novo protein design.** *Nature.* 2016;537(7620):320-327. doi:10.1038/nature19946 | `bib/p6/p6-ch30.bib` |
+| [ ] | `huang_coming_2016` | Huang PS, Boyken SE, Baker D. **The coming of age of de novo protein design.** *Nature.* 2016;537(7620):320-327. doi:10.1038/nature19946 | `bib/p7/p7-ch31.bib` |
 
 ---
 

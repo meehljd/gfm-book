@@ -22,7 +22,6 @@ The book has **32 chapters** organized into **7 parts** plus appendices:
 part_N/pN-chXX-topic.qmd     # Chapter files (e.g., part_4/p4-ch15-dna-lm.qmd)
 part_N/pN--partname.qmd      # Part intro files (double dash)
 appendix/app-X-topic.qmd     # Appendix files
-bib/pN/pN-chXX.bib           # Per-chapter bibliography files
 ```
 
 **Cross-reference IDs** follow `sec-chXX-topic` pattern (see `_quarto.yml` comments).
@@ -33,9 +32,8 @@ bib/pN/pN-chXX.bib           # Per-chapter bibliography files
 /
 ├── part_1/ through part_7/  # Chapter content (.qmd files)
 ├── appendix/                # Appendices A-F
-├── bib/                     # Bibliography files organized by part
-│   ├── p1/ through p7/      # Per-chapter .bib files
-│   ├── apx/                 # Appendix bibliographies
+├── bib/                     # Bibliography
+│   ├── references.bib       # Consolidated bibliography (sorted by key)
 │   └── references.qmd       # References page
 ├── figs/                    # Figures organized by part/chapter
 ├── docs/                    # Rendered HTML output (git-tracked for GitHub Pages)
@@ -352,7 +350,7 @@ quarto render     # Full render to docs/
 
 ## Style Notes
 
-- Use `@citation-key` for citations (keys defined in per-chapter .bib files)
+- Use `@citation-key` for citations (keys defined in `bib/references.bib`)
 - Cross-references: `@sec-chXX-topic` for sections, `@fig-name` for figures
 - Math: Use `$...$` for inline, `$$...$$` for display
 - Callouts: `:::{.callout-note}`, `:::{.callout-warning}`, etc.
@@ -361,6 +359,6 @@ quarto render     # Full render to docs/
 ## Important Notes
 
 - The `docs/` directory is the rendered output for GitHub Pages - avoid editing directly
-- Each chapter has its own `.bib` file in `bib/pN/`
+- All citations are in a single `bib/references.bib` file, sorted alphabetically by key
 - Reports from slash commands go to `meta/reports/` with date stamps
-- When adding new chapters, update `_quarto.yml` and create corresponding `.bib` file
+- When adding new chapters, update `_quarto.yml` and add citations to `bib/references.bib`
