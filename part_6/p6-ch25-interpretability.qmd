@@ -1,0 +1,515 @@
+# Interpretability {#sec-ch25-interpretability}
+
+> The model found something. But did it find what we think it found?
+
+::: {.callout-note}
+## Chapter Overview
+
+**Prerequisites:** This chapter builds on convolutional neural network architectures (@sec-ch06-cnn), attention mechanisms (@sec-ch07-attention), DNA language models (@sec-ch15-dna-lm), and protein language models (@sec-ch16-protein-lm). Familiarity with gradient-based optimization and basic linear algebra will help with the mathematical sections.
+
+**Learning Objectives:** After completing this chapter, you should be able to:
+
+1. Distinguish between **plausible** and **faithful** model explanations, and explain why this distinction is critical for scientific discovery
+2. Apply and compare attribution methods (ISM, gradient-based, integrated gradients) to identify important input positions
+3. Explain how *TF-MoDISco* discovers motifs from attribution scores and why this approach is superior to traditional motif finding for model interpretation
+4. Critically evaluate attention weight visualizations, recognizing when they accurately reflect model computation versus when they mislead
+5. Design validation experiments that test whether interpretability-derived hypotheses are necessary and sufficient for model predictions
+6. Articulate how interpretability enables (or limits) the use of computational evidence in clinical variant assessment
+
+**Estimated Time:** 45-60 minutes
+:::
+
+An attribution method highlights a GATA motif when explaining why a model predicts enhancer activity. The explanation is biologically plausible: GATA transcription factors bind this motif and drive tissue-specific expression. But plausibility is not faithfulness. The model may have learned a completely different pattern (perhaps GC content correlating with enhancer labels in the training data) and the attribution method may be highlighting the GATA motif because human-interpretable explanations tend to find human-interpretable patterns. The explanation matches biological intuition without accurately reflecting model computation. This distinction between plausible and faithful interpretation structures the entire field of model interpretability, and failing to respect it produces explanations that provide false comfort rather than genuine insight.
+
+The stakes extend beyond scientific curiosity. Variant interpretation guidelines from the American College of Medical Genetics require that computational evidence be weighed alongside functional assays, segregation data, and population frequency (see @sec-ch29-rare-disease for detailed discussion of the ACMG-AMP framework). A pathogenicity score alone satisfies only weak evidence criteria; knowing that a variant disrupts a specific CTCF binding site in a cardiac enhancer provides interpretable mechanistic evidence that can be combined with clinical presentation and family history. When models cannot explain their predictions faithfully, clinicians cannot integrate computational evidence with biological reasoning. The same limitation affects research: a model that predicts enhancer activity cannot generate testable hypotheses about regulatory grammar unless its internal computations can be translated into statements about motifs, spacing constraints, and combinatorial logic that can be experimentally validated.
+
+**Attribution methods** identify important input positions. Motif discovery algorithms translate attributions into regulatory vocabularies. **Probing classifiers** diagnose what representations encode. **Mechanistic interpretability** traces computational circuits within transformer architectures. Throughout, the plausible-versus-faithful distinction guides interpretation. We examine how to validate interpretability claims experimentally, distinguishing explanations that accurately reflect model computation from those that merely satisfy human intuition. Understanding when these diverge determines whether model explanations accelerate discovery or mislead researchers pursuing patterns the model never actually learned.
+
+
+## Attribution Methods and Input Importance {#sec-ch25-attribution}
+
+When a model predicts that a 200-kilobase genomic region will show high chromatin accessibility in hepatocytes, a natural question arises: which bases within that region drive the prediction? Attribution methods answer this question by assigning importance scores to input positions, identifying where the model focuses its computational attention. These scores can reveal candidate regulatory elements, highlight the sequence features underlying variant effects, and provide the raw material for downstream motif discovery.
+
+::: {#fig-attribution-comparison}
+![Attribution methods comparison on the same genomic sequence](../figs/part_6/ch25/01-fig-attribution-comparison.svg)
+
+Attribution methods comparison on a single genomic sequence. From top: Gradient × Input (fast but noisy), Integrated Gradients (principled with theoretical guarantees), DeepLIFT (reference-based attributions), attention weights (model attention ≠ importance), and in silico mutagenesis (ground truth but 3L forward passes). Regions where methods agree provide high-confidence importance; disagreement flags positions for closer investigation.
+:::
+
+### *In Silico* Mutagenesis {#sec-ch25-ism}
+
+The most direct approach to measuring input importance is simply to change each base and observe what happens to the prediction. *In silico* mutagenesis (ISM) systematically introduces mutations at every position, computing the difference between mutant and reference predictions. For a sequence of length *L*, ISM creates three mutant sequences at each position (substituting each non-reference nucleotide), yielding 3*L* forward passes through the model. The resulting mutation effect matrix captures how sensitive the prediction is to changes at each position and to each alternative base.
+
+::: {#fig-in-silico-mutagenesis layout-ncol=2}
+![Procedure: substitute each position to all alternatives](../figs/part_6/ch25/02-A-fig-in-silico-mutagenesis.svg)
+
+![Visualization: position × mutation heatmap](../figs/part_6/ch25/02-B-fig-in-silico-mutagenesis.svg)
+
+![Validation against deep mutational scanning](../figs/part_6/ch25/02-C-fig-in-silico-mutagenesis.svg)
+
+![Mechanistic insights from ISM profiles](../figs/part_6/ch25/02-D-fig-in-silico-mutagenesis.svg)
+
+In silico mutagenesis (ISM). (A) Procedure: substitute each position to all alternatives, compute prediction difference. (B) Visualization: position × mutation heatmap with functional regions showing large effects. (C) Validation: ISM predictions correlate with experimental deep mutational scanning (r ≈ 0.6-0.8). (D) Mechanistic insights: ISM reveals binding site boundaries, position-specific tolerance, and allele-specific effects.
+:::
+
+ISM provides true **counterfactual** information rather than approximations. When ISM shows that mutating position 47 from A to G reduces the predicted accessibility by 0.3 log-fold, that is a direct observation about model behavior, not an estimate derived from gradients or attention weights. This directness makes ISM the gold standard for faithfulness: if ISM identifies a position as important, perturbing that position genuinely changes the output.
+
+The limitation is computational cost. Scoring all single-nucleotide substitutions in a 200-kilobase input requires 600,000 forward passes, which becomes prohibitive for large models or genome-wide analysis. Practical applications often restrict ISM to targeted windows around variants of interest, using faster methods to identify candidate regions for detailed analysis. For variant effect prediction specifically, ISM reduces to comparing reference and alternative allele predictions, requiring only two forward passes per variant. This forms the computational basis for zero-shot variant scoring in foundation models (@sec-ch15-zeroshot-supervised), where the difference between wild-type and mutant log-likelihoods directly measures predicted effect.
+
+::: {.callout-tip}
+## Stop and Think: Attribution Method Tradeoffs
+
+Before reading the next section on gradient-based methods, consider: if ISM provides the most faithful importance scores, why would we ever use anything else? What properties would an alternative method need to be useful in practice?
+
+*Hint: Think about computational cost, but also about what types of patterns each method can and cannot detect.*
+:::
+
+
+### Gradient-Based Attribution {#sec-ch25-gradient}
+
+Gradient-based methods approximate the counterfactual information from ISM using backpropagation. The gradient of the output with respect to each input position measures how much an infinitesimal change at that position would affect the prediction. With one-hot encoded sequence, the gradient at each base indicates the sensitivity to substituting that nucleotide.
+
+The simplest approach, often called **saliency mapping**, computes raw gradients and visualizes their magnitudes across the sequence. A common variant multiplies gradients by inputs (gradient $\times$ input), focusing on positions where the current nucleotide is both important and present. These methods require only a single backward pass, making them orders of magnitude faster than ISM.
+
+Gradient-based methods suffer from saturation in regions where the model is already confident. If a strong motif drives the prediction into a saturated region of the output nonlinearity, small perturbations produce near-zero gradients even though the motif is functionally critical. *DeepLIFT* addresses this limitation by comparing activations between an input sequence and a reference, propagating differences through the network using custom rules that avoid gradient saturation. The resulting attributions satisfy a completeness property: contributions sum to the difference between input and reference predictions [@shrikumar_learning_2017].
+
+::: {.callout-important}
+## Key Insight: The Saturation Problem
+
+A critical limitation of gradient-based methods is saturation: when a model is highly confident in its prediction, gradients become very small even for positions that are functionally essential. This happens because gradients measure sensitivity to *infinitesimal* changes, but a saturated sigmoid or softmax barely changes regardless of the perturbation size. A GATA motif that drives 95% of the prediction might show near-zero gradients because the model is already "certain." This is why ISM (which measures finite perturbation effects) often reveals importance that gradients miss.
+:::
+
+**Integrated gradients** provide theoretical grounding through the path integral of gradients along a linear interpolation from reference to input [@sundararajan_axiomatic_2017]:
+
+$$\text{IG}_i(x) = (x_i - x'_i) \int_{\alpha=0}^{1} \frac{\partial f(x' + \alpha(x - x'))}{\partial x_i} \, d\alpha$$
+
+This integral, approximated by summing gradients at discrete interpolation steps, satisfies sensitivity (any input that affects the output receives nonzero attribution) and implementation invariance (functionally equivalent networks produce identical attributions). Integrated gradients have become a standard choice for genomic models, balancing computational efficiency with theoretical guarantees.
+
+All gradient-based methods require choosing a reference sequence, which substantially affects the resulting attributions. Common choices include dinucleotide-shuffled versions of the input (preserving local composition while disrupting motifs), average non-functional sequence, or simply zeros. The reference defines what counts as informative: attributions highlight features that differ from the reference and contribute to the prediction difference. A shuffled reference emphasizes motif content; a zero reference treats any sequence information as potentially important.
+
+The following table summarizes the key properties of attribution methods to help guide method selection:
+
+| Method | Forward Passes | Faithfulness | Limitations | Best Use Case |
+|--------|---------------|--------------|-------------|---------------|
+| ISM | 3*L* per sequence | High (direct measurement) | Computationally expensive | Validating importance in targeted regions |
+| Gradient $\times$ Input | 1 backward pass | Low-Medium | Saturation, local approximation | Fast initial screening |
+| DeepLIFT | 1 pass (custom) | Medium | Reference-dependent | Attribution with completeness guarantees |
+| Integrated Gradients | 10-50 passes | Medium-High | Reference-dependent, slower | Principled attribution with efficiency |
+
+: Comparison of attribution methods for genomic sequence models. Faithfulness indicates how accurately the method reflects true model behavior; computational cost scales with sequence length *L*. {#tbl-attribution-comparison}
+
+
+### Reconciling Attribution Methods {#sec-ch25-reconciling}
+
+Different attribution methods can produce strikingly different importance maps for the same sequence and prediction. A position might show high importance under ISM but near-zero gradients due to saturation, or high gradient magnitude but minimal effect when actually mutated due to redundancy with nearby positions. This disagreement reflects genuine differences in what each method measures: gradients capture local sensitivity, ISM captures counterfactual effects, and *DeepLIFT* captures contribution relative to a reference.
+
+Practical workflows often combine multiple methods. Gradient-based approaches efficiently scan long sequences to identify candidate regions, ISM validates importance in targeted windows, and agreement across methods increases confidence that identified features genuinely drive predictions. Disagreement flags positions for closer investigation, potentially revealing saturation effects, redundancy, or artifacts in individual methods.
+
+
+## Interpreting Convolutional Filters {#sec-ch25-cnn-filters}
+
+Convolutional neural networks remain central to genomic sequence modeling, as discussed in @sec-ch06-cnn, and their first-layer filters offer a particularly tractable interpretability target. Each filter slides along the sequence computing dot products with local windows, and high activation indicates that the local sequence matches the filter's learned pattern. This architecture creates a natural correspondence between filters and sequence motifs.
+
+
+### From Filters to Position Weight Matrices {#sec-ch25-filter-pwm}
+
+Converting learned filters to interpretable motifs follows a standard workflow. The trained model processes a large sequence set, typically training data or genome-wide tiles, recording positions where each filter's activation exceeds a threshold. The fixed-length windows around high-activation positions are extracted and aligned, and nucleotide frequencies at each position are computed to build a **position weight matrix (PWM)**. This PWM can be visualized as a sequence logo and compared to databases like JASPAR or HOCOMOCO.
+
+When this procedure is applied to models trained on chromatin accessibility or transcription factor binding, first-layer filters frequently match known transcription factor motifs. *DeepSEA* filters include recognizable matches to CTCF, AP-1, and cell-type-specific factors *[Citation Needed: Zhou & Troyanskaya, DeepSEA paper]*. This correspondence validates that models discover biologically meaningful patterns rather than arbitrary correlations, and it provides a direct link between model weights and decades of experimental characterization of transcription factor binding preferences.
+
+Several complications affect filter interpretation. DNA is double-stranded, and models may learn forward and reverse-complement versions of the same motif as separate filters. Some filters capture general sequence composition (GC-rich regions, homopolymer runs) rather than specific binding sites. These patterns can be biologically meaningful in contexts like nucleosome positioning or purely artifactual depending on the training task. Distinguishing informative filters from compositional shortcuts requires cross-referencing with known biology and testing whether filter-derived motifs predict binding in held-out data.
+
+::: {.callout-tip}
+## Knowledge Check: CNN Filter Interpretation
+
+Consider a CNN trained to predict CTCF binding from DNA sequence. You extract the top-activated sequences for one filter and find they all contain the pattern CCGCGNGGNGGCAG.
+
+1. How would you determine if this filter is recognizing the forward or reverse-complement CTCF motif?
+2. If another filter shows high activation for poly-G stretches, what follow-up analysis would distinguish whether this reflects true CTCF biology versus a training data artifact?
+3. Why might the model learn separate filters for the same motif in different orientations, even though CTCF binding is largely orientation-independent at the ChIP-seq level?
+
+:::{.callout-note collapse="true" title="Check Your Answer"}
+(1) Check the reverse complement of the discovered pattern against known CTCF motifs in JASPAR. (2) Test whether removing poly-G sequences reduces prediction accuracy for CTCF binding in held-out data, and check whether poly-G enrichment correlates with GC content or mappability artifacts in the training set. (3) CNNs without explicit reverse-complement architecture learn separate filters because the convolution operation treats forward and reverse strands as independent patterns, even when biology treats them equivalently.
+:::
+:::
+
+
+### Deeper Layers and Combinatorial Patterns {#sec-ch25-deeper-layers}
+
+Beyond the first layer, convolutional filters combine lower-level patterns into complex representations. Deeper layers can encode motif pairs that co-occur at characteristic spacing, orientation preferences between binding sites, and contextual dependencies where a motif's importance varies with surrounding sequence. These combinatorial patterns capture aspects of regulatory grammar that individual motifs cannot represent.
+
+Direct interpretation of deeper filters becomes increasingly difficult as receptive fields expand and nonlinearities accumulate. The activation of a layer-5 filter depends on intricate combinations of earlier patterns, resisting simple biological annotation. Indirect approaches prove more tractable: analyzing which input regions drive high activation at deeper layers, clustering high-activation sequences to find common themes, or probing whether deeper representations encode specific biological properties.
+
+
+## Motif Discovery from Attributions {#sec-ch25-motif-discovery}
+
+Attribution maps highlight important positions but do not directly reveal motifs. A *DeepLIFT* track might show scattered high-importance bases throughout a sequence without indicating that those bases collectively form instances of the same transcription factor binding site. *TF-MoDISco* (Transcription Factor Motif Discovery from Importance Scores) bridges this gap by discovering motifs from attribution scores rather than raw sequences [@shrikumar_technical_2018].
+
+::: {.callout-important}
+## Key Insight: Why TF-MoDISco Works Better Than Traditional Motif Finding
+
+Traditional motif discovery algorithms (like MEME) scan raw sequences and must contend with a fundamental problem: most positions in regulatory sequences do not participate in functional motifs. The algorithm wastes effort on irrelevant positions and may find patterns that happen to be overrepresented but have no functional significance. *TF-MoDISco* solves this by using attribution scores to weight the search: positions the model actually uses for prediction get prioritized, while unimportant positions contribute minimally. This importance-weighted approach discovers the motifs that drive model predictions, not just patterns that occur frequently.
+:::
+
+The insight underlying *TF-MoDISco* is that importance-weighted sequences focus motif discovery on positions the model actually uses. Traditional motif finders must contend with the fact that most positions in regulatory sequences do not participate in functional motifs. By extracting seqlets (short windows where total importance exceeds a threshold) and clustering them based on both sequence content and importance profiles, *TF-MoDISco* identifies patterns that drive model predictions.
+
+The workflow proceeds through several stages. Base-level importance scores are computed for many sequences using *DeepLIFT*, ISM, or integrated gradients. Windows where total importance exceeds a threshold are extracted as seqlets, each representing a candidate motif instance. These seqlets are compared using metrics that consider both sequence content and importance profiles, then clustered into groups corresponding to putative motifs. Within each cluster, seqlets are aligned and consolidated into PWMs and importance-weighted logos. The resulting motifs can be matched to known transcription factors or flagged as novel patterns.
+
+Beyond individual motifs, *TF-MoDISco* enables grammar inference by analyzing motif co-occurrence. Mapping discovered motif instances back to genomic coordinates reveals characteristic spacing between motif pairs, orientation preferences, and cell-type-specific usage patterns. These grammatical rules can be validated through *in silico* experiments: inserting or removing motifs in synthetic sequences and checking whether predictions change as expected.
+
+Applications to models like *BPNet* trained on ChIP-seq data have recovered known transcription factor motifs, discovered novel sequence variants, and revealed spacing constraints validated through synthetic reporter assays *[Citation Needed: BPNet paper]*. The same workflow applies to foundation model analysis: use the model to produce base-level attributions for a downstream task, run *TF-MoDISco* to extract a task-specific motif vocabulary, and analyze how motif usage varies across conditions.
+
+::: {.callout-note title="Worked Example: TF-MoDISco Workflow"}
+**Scenario:** You have trained a model to predict liver enhancer activity and want to understand what sequence features it uses.
+
+**Step 1: Compute attributions**
+Run integrated gradients on 10,000 predicted enhancer sequences (selecting sequences with high prediction scores). This produces a 4 × L attribution matrix for each sequence, where L is sequence length.
+
+**Step 2: Extract seqlets**
+Scan each attribution profile for windows where summed importance exceeds a threshold (e.g., top 5% of all windows). A typical 500bp enhancer might yield 3-5 seqlets of 15-25bp each.
+
+**Step 3: Cluster seqlets**
+Using both sequence similarity and attribution profile similarity, cluster the ~40,000 extracted seqlets. Suppose this produces 12 distinct clusters.
+
+**Step 4: Generate motifs**
+For each cluster, align seqlets and compute position weight matrices. Results might include:
+
+| Cluster | # Seqlets | Top JASPAR Match | Match Score |
+|---------|-----------|------------------|-------------|
+| 1 | 8,200 | HNF4A | 0.92 |
+| 2 | 5,100 | CEBPA | 0.89 |
+| 3 | 3,400 | FOXA1 | 0.85 |
+| 4 | 2,800 | Novel (no match > 0.7) | — |
+
+**Step 5: Validate**
+The HNF4A and CEBPA motifs are known liver-specific transcription factors, confirming the model learned biologically relevant features. Cluster 4 represents a potential novel regulatory element requiring experimental validation.
+
+**Interpretation:** The model relies heavily on canonical liver transcription factor binding sites, consistent with known liver enhancer biology. The novel motif warrants ChIP-seq or MPRA follow-up.
+:::
+
+::: {#fig-tfmodisco}
+![TF-MoDISco motif discovery from attribution scores](../figs/part_6/ch25/03-fig-tfmodisco.svg)
+
+TF-MoDISco motif discovery from attribution scores. Starting from attribution maps for many sequences, the method extracts high-importance windows (seqlets), clusters similar seqlets, consolidates into position weight matrices, and matches to known motif databases. Discovered motifs represent what the model learned—known transcription factors validate biological relevance while novel patterns may indicate previously unknown regulatory features.
+:::
+
+
+## Probing Learned Representations {#sec-ch25-probing}
+
+Attribution methods ask which input positions matter; probing asks what information the model's internal representations encode. The approach resembles asking a student to "show their work" on an exam: if they can correctly answer follow-up questions about intermediate steps, they likely understood the underlying concepts rather than memorizing answers. A probing classifier is a simple supervised model (typically linear) trained to predict some property of interest from the hidden representations of a pretrained model. If a linear probe can accurately predict a property, that property is encoded in an accessible form within the representation---the model "knows" this information in a way that can be easily extracted.
+
+
+### Probing Methodology {#sec-ch25-probing-methods}
+
+The standard probing workflow extracts hidden states from a pretrained model for a set of inputs where the property of interest is known. These hidden states, without further transformation, serve as features for training a simple classifier to predict the property. The classifier's accuracy indicates how well the representation encodes the probed property, while its simplicity (linearity, minimal parameters) ensures that the probe identifies information present in the representation rather than information the probe itself computes.
+
+For protein language models like *ESM-2*, probing has revealed that representations encode secondary structure, solvent accessibility, contact maps, and even 3D coordinates to a surprising degree, as discussed in @sec-ch16-protein-lm. These properties emerge despite training on sequence alone, demonstrating that masked language modeling on evolutionary sequences induces representations that capture structural information. For DNA language models (see @sec-ch15-dna-lm), probing can assess whether representations encode chromatin state, gene boundaries, promoter versus enhancer identity, or species-specific regulatory signatures.
+
+Probing provides diagnostic information distinct from downstream task performance. A model might achieve high accuracy on a regulatory prediction task by learning shortcuts (correlations with GC content, distance to annotated genes) rather than encoding genuine regulatory grammar. Probing can detect such shortcuts: if representations strongly encode GC content but weakly encode transcription factor binding site presence, the model may be exploiting composition rather than sequence logic. This diagnostic function complements the confounder analysis discussed in @sec-ch13-confounding.
+
+::: {.callout-tip}
+## Stop and Think: Probing and Confounding
+
+You train a DNA language model on human genome sequences, then probe its representations to understand what it has learned. You find:
+
+- Linear probe for GC content: 95% accuracy
+- Linear probe for promoter vs. enhancer: 78% accuracy
+- Linear probe for tissue-specific enhancer activity: 52% accuracy
+
+What do these results suggest about the model's representations? Before reading further, consider:
+
+1. Which result is most concerning for downstream variant effect prediction?
+2. How would you distinguish whether the promoter/enhancer probe reflects genuine regulatory learning versus correlation with GC content?
+3. What additional probing experiments would you design?
+:::
+
+
+### Limitations of Probing {#sec-ch25-probing-limits}
+
+Probing results require careful interpretation. A probe's failure to predict some property might indicate that the representation does not encode it, or might reflect limitations of the probe architecture, insufficient training data, or mismatch between the probe's capacity and the complexity of the encoding. Linear probes may miss nonlinearly encoded information; more complex probes risk learning the property themselves rather than reading it from the representation.
+
+::: {.callout-warning}
+## Challenge Alert: The Selectivity-Accessibility Tradeoff
+
+This concept is subtle but important. A representation can encode information in two fundamentally different ways:
+
+- **Accessible encoding**: A simple (linear) probe can extract the information. The representation makes the property easy to read.
+- **Selective encoding**: The information is present but requires nonlinear decoding. The property is represented but not prominently exposed.
+
+The challenge: if you use a more powerful (nonlinear) probe to detect selective encoding, how do you know the probe is reading information from the representation versus computing it from scratch? This is an active area of methodological research with no perfect solution. Best practice: compare probe performance to a control where the same probe is trained on random representations. If performance drops substantially, the original representation genuinely encoded the property.
+:::
+
+The selectivity-accessibility tradeoff complicates interpretation. A representation might encode a property accessibly (recoverable by a linear probe) or selectively (encoded but requiring nonlinear decoding). Properties encoded selectively might be present but not easily extracted, while properties encoded accessibly might be incidentally correlated with the training objective rather than causally important. Combining probing with causal interventions (ablating representation components and measuring effects on downstream predictions) provides stronger evidence about which encoded properties actually matter.
+
+
+## Attention Patterns in Transformer Models {#sec-ch25-attention}
+
+Transformer-based genomic models use self-attention to aggregate information across long sequence contexts (see @sec-ch07-attention for architectural details), potentially capturing distal regulatory interactions invisible to models with narrow receptive fields. Attention weights indicate which positions each position attends to, creating natural candidates for interpretability: perhaps high attention weights identify functionally related sequence elements.
+
+::: {#fig-attention-visualization layout-ncol=3}
+![Attention heatmap showing position-position weights](../figs/part_6/ch25/04-A-fig-attention-visualization.svg)
+
+![Biological overlay: attention sometimes aligns with regulatory elements](../figs/part_6/ch25/04-B-fig-attention-visualization.svg)
+
+![Multi-head specialization: different heads capture different patterns](../figs/part_6/ch25/04-C-fig-attention-visualization.svg)
+
+Attention patterns in genomic transformers. (A) Attention heatmap showing position-position weights with local and long-range patterns. (B) Biological overlay: attention sometimes aligns with regulatory elements—but correlation does not prove the model learned these relationships causally. (C) Multi-head specialization: different heads capture local context, long-range interactions, or specific motifs. **Caution**: attention weights describe information routing, not importance—always validate with perturbation experiments.
+:::
+
+
+### What Attention Patterns Reveal {#sec-ch25-attention-patterns}
+
+When attention weights are analyzed in genomic language models, certain heads exhibit strikingly structured patterns. Some heads preferentially connect positions within the same predicted gene or operon, suggesting the model has learned gene boundaries from sequence alone. Other heads show long-range connections that align with known enhancer-promoter relationships or chromatin loop anchors. Still others cluster positions by functional annotation, connecting genes with similar Gene Ontology terms despite lacking explicit functional labels during training.
+
+In models like *Enformer* that predict regulatory outputs from long genomic windows (see @sec-ch17-enformer), attention can reveal which distal regions influence predictions at a target gene. Contribution scores aggregated across attention heads often peak at known enhancers, insulators, and chromatin domain boundaries. These patterns suggest that the model has learned aspects of regulatory architecture from the correlation between sequence and chromatin output labels.
+
+
+### Why Attention Weights Mislead {#sec-ch25-attention-caution}
+
+Raw attention weights require skeptical interpretation. High attention between two positions indicates information flow in the model's computation but does not necessarily indicate causal influence on predictions. Attention serves multiple computational roles beyond identifying important features: routing information for intermediate computations, implementing positional reasoning, and satisfying architectural constraints. A position receiving high attention might be used for bookkeeping rather than contributing to the final output.
+
+::: {.callout-important}
+## Key Insight: Attention Is Not Explanation
+
+The most common interpretability mistake with transformers is treating attention weights as importance scores. This is seductive because attention weights are easy to extract and visualize, and high-attention patterns often look biologically plausible. But attention describes *information routing*, not *causal contribution*. Consider this analogy: in a complex recipe, you might frequently consult the measurements section (high "attention") while the actual flavor comes from the spice section (low "attention" but high importance). To know if an attention pattern matters, you must perturb it and measure the prediction change. Attention without perturbation is correlation without causation.
+:::
+
+Several specific issues undermine naive attention interpretation. Attention weights describe information movement before value vectors are applied; positions with high attention but small value vector magnitudes contribute little to the output. Multi-head attention averages across heads with different functions; examining average attention obscures specialized head behavior. Cross-layer effects mean that the importance of early-layer attention depends on what later layers do with the routed information.
+
+More robust approaches combine attention analysis with perturbation experiments. If deleting a position that receives high attention changes the prediction substantially, the attention is functionally meaningful. If deletion has minimal effect, the attention may serve computational purposes unrelated to the target output. Attention rollout and attention flow methods propagate attention through layers to better capture information movement across the full network, though these too provide correlational rather than causal evidence.
+
+
+## Regulatory Vocabularies and Global Interpretability {#sec-ch25-global}
+
+Local interpretability methods explain individual predictions; global interpretability characterizes what a model has learned across its entire training distribution. For genomic models trained to predict thousands of chromatin features, global interpretability asks whether the model has learned a coherent vocabulary of regulatory sequence classes and how those classes map to biological programs.
+
+
+### Sequence Classes from *Sei* {#sec-ch25-sei}
+
+*Sei* exemplifies the global interpretability approach by learning a vocabulary of regulatory sequence classes that summarize chromatin profile diversity across the genome (see @sec-ch17-sei for architectural details). The model predicts tens of thousands of chromatin outputs (transcription factor binding, histone modifications, accessibility across cell types), then compresses this high-dimensional prediction space into approximately 40 sequence classes through dimensionality reduction and clustering.
+
+Each sequence class corresponds to a characteristic regulatory activity pattern. Some classes show promoter-like signatures (H3K4me3, TSS proximity, broad expression). Others exhibit enhancer patterns (H3K27ac, H3K4me1, cell-type-restricted activity). Repressive classes display H3K27me3 or H3K9me3 enrichment. Cell-type-specific classes capture lineage-restricted regulatory programs (neuronal, immune, hepatic). This vocabulary transforms thousands of raw chromatin predictions into a compact, interpretable representation.
+
+Variants can be characterized by their effects on sequence class scores, yielding functional descriptions more informative than raw pathogenicity predictions. A variant that shifts a region from enhancer-like to promoter-like class, or from active to repressive, provides mechanistic hypotheses about its functional consequences. **Genome-wide association study (GWAS)** enrichment analysis can identify which sequence classes are overrepresented among disease-associated variants, revealing the regulatory programs most relevant to specific phenotypes (see @sec-ch03-gwas for GWAS foundations).
+
+::: {.callout-tip}
+## Knowledge Check: Local vs. Global Interpretability
+
+Consider a foundation model that predicts tissue-specific enhancer activity across 100 cell types.
+
+1. What would a *local* interpretability analysis tell you about a specific variant in a cardiac enhancer?
+2. What would a *global* interpretability analysis (like Sei's sequence classes) tell you about the same variant?
+3. In what clinical scenario would you prefer local interpretability? In what research scenario would global interpretability be more valuable?
+
+*Think about the difference between explaining one prediction versus characterizing the model's overall regulatory vocabulary.*
+
+:::{.callout-note collapse="true" title="Check Your Answer"}
+(1) Local analysis (attribution methods) would identify which specific nucleotides the variant disrupts and what motifs are affected—for example, "variant disrupts a GATA4 binding site at position 142." (2) Global analysis would show how the variant shifts regulatory program membership—for example, "variant shifts sequence class from cardiac-specific enhancer to generic promoter-like." (3) Prefer local for clinical variant interpretation where you need mechanistic detail for a specific case; prefer global for GWAS follow-up where you want to understand which regulatory programs are disease-relevant across many variants.
+:::
+:::
+
+
+### Embedding Geometry and Regulatory Programs {#sec-ch25-embedding-geometry}
+
+Beyond discrete sequence classes, the continuous geometry of learned representations encodes regulatory relationships. Sequences with similar regulatory functions cluster in embedding space; directions in this space correspond to biological axes of variation. Dimensionality reduction techniques (UMAP, t-SNE, principal component analysis) visualize these relationships, revealing how the model organizes regulatory diversity.
+
+For foundation models trained on diverse genomic tasks, embedding geometry can capture cross-task relationships. Sequences that function as enhancers in one cell type might cluster near sequences with enhancer function in related cell types, even if trained independently. Variants that disrupt shared regulatory logic should produce similar embedding perturbations. These geometric properties enable transfer of interpretability insights across tasks and provide compact summaries of model knowledge.
+
+
+## Mechanistic Interpretability {#sec-ch25-mechanistic}
+
+Classical interpretability methods treat models as input-output functions, probing what they compute without examining how they compute it. Mechanistic interpretability takes a different approach, attempting to reverse-engineer the algorithms implemented by neural network weights. Think of it like the difference between knowing that a car gets you from A to B versus opening the hood to understand how the engine, transmission, and fuel system work together. Classical interpretability tells you the car runs; mechanistic interpretability identifies which piston fires when and how the carburetor mixes fuel. This emerging field, most developed for language models, offers tools increasingly applicable to genomic foundation models.
+
+::: {.callout-warning}
+## Challenge Alert: Frontier Research Area
+
+Mechanistic interpretability represents the frontier of interpretability research. The concepts in this section are powerful but the techniques are still maturing. Current methods require substantial manual analysis, work best for small models, and have been validated primarily in language models rather than genomic models. As you read, focus on understanding the conceptual framework (circuits, features, superposition) rather than expecting turnkey tools. The field is evolving rapidly, and today's research prototypes may become tomorrow's standard practices.
+:::
+
+
+### Circuits and Features {#sec-ch25-circuits}
+
+The central hypothesis of mechanistic interpretability is that neural networks implement interpretable computations through identifiable circuits: connected subnetworks that perform specific functions. A circuit might detect whether a motif is present, compute the distance between two motifs, or integrate evidence across regulatory elements. Identifying circuits requires tracing information flow through the network and characterizing what each component contributes.
+
+Features are the atomic units of this analysis: directions in activation space that correspond to interpretable concepts. In language models, features have been found that activate for specific topics, syntactic structures, or semantic properties. Analogous features in genomic models might activate for transcription factor binding sites, coding versus non-coding sequence, or regulatory element types. **Sparse autoencoders** trained on model activations can extract interpretable features by encouraging representations where most features are inactive for any given input.
+
+**Superposition** complicates feature identification. Neural networks can represent more features than they have dimensions by using overlapping, nearly orthogonal directions. Why would networks do this? The answer lies in the statistics of natural data: most features are sparse (active for only a small fraction of inputs), so they rarely need to be represented simultaneously. By packing many sparse features into a lower-dimensional space using nearly orthogonal directions, networks can represent far more concepts than their dimensionality would naively suggest. Features active for different inputs can share parameters, enabling high-capacity representations but complicating interpretation---when we observe an activation pattern, multiple overlapping features may contribute. Techniques from compressed sensing and dictionary learning help decompose superposed representations into constituent features.
+
+
+### Applications to Genomic Models {#sec-ch25-mechanistic-genomics}
+
+Mechanistic interpretability remains nascent for genomic foundation models, but initial applications show promise. Attention head analysis in DNA language models has identified heads specialized for different genomic functions: some attend within genes, others across regulatory regions, still others implement positional computations *[Citation Needed]*. Probing activations at different layers reveals hierarchical feature construction, from local sequence patterns in early layers to long-range regulatory relationships in later layers.
+
+Circuit analysis can explain specific model behaviors. If a model predicts that a variant disrupts regulation, mechanistic analysis can trace which features activate differently for reference versus variant sequence, which attention heads route information about the variant to the prediction, and which intermediate computations change. This mechanistic trace provides far richer explanation than attribution scores alone, potentially identifying the regulatory logic the model has learned.
+
+The challenge is scalability. Current mechanistic interpretability techniques require substantial manual analysis and work best for small models or specific behaviors. Foundation models with billions of parameters resist exhaustive circuit enumeration. Developing automated tools for circuit discovery and scaling mechanistic analysis to large genomic models represents an active research frontier.
+
+
+## Validation: From Explanations to Experiments {#sec-ch25-validation}
+
+Interpretability methods produce explanations, but explanations are only valuable if they accurately reflect model behavior and connect to biological reality. Validation closes the loop by testing whether interpretability-derived hypotheses hold when subjected to experimental scrutiny.
+
+
+### Faithfulness Testing {#sec-ch25-faithfulness}
+
+An interpretation is faithful if it accurately describes what the model does. Testing faithfulness requires interventions: changing the features identified as important and verifying that predictions change accordingly. If an attribution method highlights certain positions as driving a prediction, deleting or scrambling those positions should reduce the prediction. If discovered motifs are claimed to be necessary for regulatory activity, removing them from sequences should impair predicted and measured function.
+
+Sanity checks provide baseline validation. When model weights are randomized, attributions should degrade to uninformative noise. When training labels are scrambled, discovered motifs should disappear or lose predictive power. These checks identify methods that produce plausible-looking outputs regardless of model content, revealing explanations that reflect method biases rather than genuine model features.
+
+Counterfactual experiments go further by testing whether identified features are sufficient as well as necessary. Inserting discovered motifs into neutral sequences should increase predicted regulatory activity if the motifs genuinely encode functional elements. Constructing synthetic sequences that combine motifs according to discovered grammatical rules should produce predictions consistent with those rules. Discrepancies between expected and observed effects indicate gaps in the interpretation.
+
+The following table summarizes the hierarchy of validation tests, from weakest to strongest evidence:
+
+| Validation Level | Test | What It Proves | What It Cannot Prove |
+|-----------------|------|----------------|---------------------|
+| Sanity Check | Random weights produce random attributions | Method is not trivially broken | Method accurately reflects model |
+| Computational Necessity | Ablating feature reduces prediction | Feature is used by model | Feature is the only cause |
+| Computational Sufficiency | Inserting feature increases prediction | Feature is sufficient in isolation | Feature is necessary or biologically meaningful |
+| Biological Necessity | Experimental deletion (CRISPR) abolishes activity | Feature is biologically required | Model learned it correctly |
+| Biological Sufficiency | Synthetic construct with feature is active | Feature is biologically sufficient | Model captured all relevant features |
+
+: Validation hierarchy for interpretability claims. Stronger evidence requires more experimental investment but provides greater confidence that model explanations reflect biological reality. {#tbl-validation-hierarchy}
+
+::: {#fig-plausible-vs-faithful}
+![Plausible versus faithful explanations: validation distinguishes them](../figs/part_6/ch25/05-fig-plausible-vs-faithful.svg)
+
+Plausible versus faithful explanations. Both paths start with attributions highlighting a GATA motif. Left: plausible but unfaithful—the explanation matches intuition, but the model learned GC content; validation tests fail. Right: faithful—the model actually uses the GATA motif; validation tests pass. The distinction determines whether interpretability generates genuine insight or false comfort. Always validate: does ablating the feature change prediction? Does inserting it increase prediction?
+:::
+
+
+### Experimental Validation {#sec-ch25-experimental}
+
+The ultimate test of interpretability connects model-derived hypotheses to biological experiments. Motifs discovered through *TF-MoDISco* can be tested through electrophoretic mobility shift assays, ChIP-qPCR, or reporter constructs. Predicted spacing constraints can be validated by varying distances between motifs in synthetic constructs and measuring activity. Hypothesized enhancer-promoter connections can be tested through CRISPR deletion of predicted enhancers and measurement of target gene expression.
+
+This experimental validation distinguishes genuine mechanistic discovery from pattern matching that happens to produce plausible-looking results. A model might learn that certain k-mers correlate with regulatory activity for confounded reasons (batch effects, mappability artifacts) yet produce motif logos resembling real transcription factors. Only experimental testing can determine whether model-derived hypotheses reflect causal regulatory logic.
+
+High-throughput functional assays enable systematic validation at scale. **Massively parallel reporter assays (MPRAs)** can test thousands of model-predicted regulatory elements simultaneously. Perturb-seq combines CRISPR perturbations with single-cell RNA-seq to measure effects of knocking out predicted regulatory factors (see @sec-ch17-perturbation). These technologies create opportunities for iterative model improvement: interpretability generates hypotheses, experiments test them, and results refine both model architecture and training.
+
+::: {.callout-tip}
+## Stop and Think: Designing Validation Experiments
+
+You have used integrated gradients and TF-MoDISco to analyze a model that predicts liver-specific enhancer activity. The analysis reveals that the model relies heavily on HNF4A and CEBP motifs, often appearing within 50bp of each other.
+
+Before reading further, design a validation strategy:
+
+1. What computational experiments would test whether these motifs are necessary for the model's predictions?
+2. What computational experiments would test sufficiency?
+3. What biological experiments would test whether the model's reliance on these motifs reflects genuine liver regulatory logic?
+4. If the biological experiments fail to validate the model's predictions, what are the possible explanations?
+:::
+
+::: {#fig-validation-pipeline}
+![Closed-loop interpretability validation workflow](../figs/part_6/ch25/06-fig-validation-pipeline.svg)
+
+Closed-loop interpretability validation. Starting from model predictions, interpretability analysis generates hypotheses about important features. Experimental validation tests necessity (CRISPR deletion) and sufficiency (reporter assays). Validated hypotheses advance biological understanding; failures identify model limitations. This cycle progressively improves both mechanistic understanding and model reliability.
+:::
+
+
+## Interpretability in Clinical Variant Assessment {#sec-ch25-clinical}
+
+Variant interpretation guidelines require that computational predictions be weighed alongside experimental and clinical evidence, as discussed further in @sec-ch29-rare-disease. Interpretability determines whether model predictions can contribute meaningful evidence beyond raw pathogenicity scores.
+
+Current ACMG-AMP criteria allow computational evidence as supporting (*PP3*) or opposing (*BP4*) pathogenicity, but the evidence strength depends on understanding what the prediction reflects [@richards_standards_2015]. The full ACMG-AMP framework and its integration with computational evidence is examined in @sec-ch29-acmg-amp. A splice site disruption score from *SpliceAI* provides interpretable mechanistic evidence: the variant is predicted to alter splicing because it changes the consensus splice site sequence (@sec-ch06-spliceai) [@jaganathan_spliceai_2019]. This prediction can be evaluated against splice site models, tested with minigene assays, and combined with observations of aberrant transcripts in patient samples. The interpretation enables evidence integration.
+
+::: {.callout-note}
+## Practical Guidance: Communicating Interpretability in Clinical Reports
+
+When preparing computational evidence for clinical variant interpretation:
+
+1. **Always include the mechanism, not just the score.** "Pathogenicity score: 0.92" is less useful than "Predicted to disrupt CTCF binding site (attribution score -0.8), shifting sequence class from insulator to neutral."
+
+2. **Specify what was tested.** Did you run ISM to validate the attribution? Did the motif match a known transcription factor? Is the affected sequence class enriched in relevant GWAS?
+
+3. **Acknowledge limitations explicitly.** If the model was not trained on the relevant tissue type, or if the variant type (structural, repeat) was underrepresented in training, say so.
+
+4. **Suggest validation experiments.** "This prediction could be validated by EMSA for CTCF binding or minigene assay for splicing effects."
+
+5. **Cross-reference related evidence.** Does the computational mechanism explain the patient's phenotype? Is there functional data in ClinVar for nearby variants?
+:::
+
+Foundation model predictions are less immediately interpretable but potentially more informative. A pathogenicity score from *ESM-1v* (@sec-ch16-esm-family) reflects evolutionary constraint inferred from protein language modeling, but the specific sequence features driving the prediction require attribution analysis to identify. The protein VEP paradigm is examined in @sec-ch18-protein-vep. An expression effect predicted by *Enformer* (@sec-ch17-enformer) might result from disrupted transcription factor binding, altered chromatin accessibility, or changed 3D regulatory contacts; interpretability analysis distinguishes these mechanisms and guides experimental validation. The DNA-based VEP approaches are detailed in @sec-ch18-dna-vep.
+
+For clinical utility, interpretability must be communicated effectively. Genome browsers displaying attribution tracks alongside variant calls help clinicians identify mechanistic hypotheses. Reports that accompany pathogenicity scores with regulatory vocabulary classifications (this variant shifts an enhancer toward a repressive state) provide actionable context. These communication challenges extend interpretability beyond algorithm development to user interface design and clinical workflow integration.
+
+::: {#fig-clinical-interpretability}
+![Interpretability for clinical variant assessment](../figs/part_6/ch25/07-fig-clinical-interpretability.svg)
+
+Interpretability for clinical variant assessment. ACMG evidence strength depends on interpretability: a pathogenicity score alone (PP3/BP4 supporting) provides weak evidence; a score with mechanistic explanation (splice site disruption) is moderate; a score with experimentally validated mechanism (ChIP-confirmed binding loss, functional assay) is strong. Clinical reports should communicate the mechanism, not just the score, to enable evidence integration.
+:::
+
+
+## Practical Approaches for Foundation Model Analysis {#sec-ch25-practical}
+
+Working with genomic foundation models requires matching interpretability methods to specific questions. Several complementary strategies address different aspects of model behavior.
+
+For understanding variant effects, the primary goal is explaining why a specific variant receives a particular prediction. Attribution methods (ISM for validation, integrated gradients for efficiency) identify which input positions drive the difference between reference and alternative predictions. If the variant falls within a discovered motif, the interpretation is straightforward. If attributions spread across the sequence, the effect may operate through long-range regulatory changes requiring attention analysis or contribution scores from models like *Enformer*.
+
+For characterizing model representations, probing classifiers diagnose what information is encoded and at which layers. Probing for known regulatory features (promoter versus enhancer, tissue specificity, evolutionary conservation) establishes which biological properties the model captures. Probing for potential confounders (GC content, distance to annotated genes, technical artifacts) identifies shortcuts that might inflate benchmark performance without reflecting genuine regulatory understanding (see @sec-ch11-systematic-gaps for benchmark limitations and @sec-ch13-detection for confounder detection methods).
+
+For discovering regulatory logic, *TF-MoDISco* applied to high-confidence predictions extracts motif vocabularies specific to prediction tasks or cell types. Grammar analysis of motif co-occurrence reveals combinatorial rules. *Sei*-style sequence class analysis situates local motifs within global regulatory programs. Comparing discovered vocabularies across models or training conditions reveals shared versus idiosyncratic features.
+
+For debugging and auditing, interpretability methods identify what features drive predictions in held-out distributions. If a model fails on a new cell type, attribution analysis can reveal whether it relies on cell-type-specific versus generalizable features. If performance degrades on specific genomic regions, local interpretability can identify confounding patterns or training data gaps.
+
+For generating experimental hypotheses, interpretability produces testable predictions. Discovered motifs can be synthesized and tested. Predicted regulatory elements can be perturbed. Hypothesized transcription factor binding can be validated by ChIP. Model-derived predictions that survive experimental testing represent genuine mechanistic insights; predictions that fail point toward model limitations or confounding.
+
+The following table provides a decision framework for selecting interpretability methods based on your analysis goal:
+
+| Goal | Primary Method | Supporting Methods | Validation Required |
+|------|---------------|-------------------|-------------------|
+| Explain single variant | Integrated gradients | ISM for verification | Motif match, literature |
+| Find regulatory motifs | TF-MoDISco | Filter visualization | JASPAR match, MPRA |
+| Diagnose model shortcuts | Probing classifiers | Attribution for confounders | Held-out distribution |
+| Understand long-range effects | Attention analysis | Contribution scores | Perturbation experiment |
+| Characterize model vocabulary | Sei-style clustering | Embedding geometry | GWAS enrichment |
+| Generate hypotheses for experiments | TF-MoDISco + grammar | Circuit analysis | EMSA, reporter, CRISPR |
+
+: Decision framework for interpretability analysis of genomic foundation models. Validation requirements increase with the strength of claims being made. {#tbl-interpretability-decision}
+
+
+## Plausibility Is Not Faithfulness {#sec-ch25-conclusion}
+
+The distinction between plausibility and faithfulness remains central to interpretability for genomic foundation models. Models can produce compelling motifs, structured attention patterns, and interpretable probing results while operating through mechanisms that do not correspond to biological reality. A model that correctly predicts splice site strength may do so by recognizing confounded sequence features rather than learning splice site grammar. A model that attributes importance to a transcription factor binding site may be exploiting correlation with GC content rather than modeling regulatory mechanism. Plausible explanations that match biological intuition are not the same as faithful explanations that accurately reflect model computation.
+
+Only interventional experiments can distinguish genuine regulatory insight from sophisticated pattern matching. Computational interventions (deletion tests, counterfactual sequence generation, circuit analysis) probe whether identified features are necessary and sufficient for model predictions. Biological interventions (reporter assays, CRISPR perturbations, massively parallel experiments) test whether model-derived hypotheses hold in living systems. The sequence design applications in @sec-ch31-design operationalize this validation loop, using interpretability-derived hypotheses to guide experimental libraries. The conjunction of computational and experimental validation transforms interpretability from rationalization into discovery, generating testable hypotheses that advance biological understanding rather than merely explaining model behavior.
+
+As foundation models grow in scale and capability, interpretability becomes simultaneously more important and more challenging. Larger models implement more complex computations, potentially capturing subtler regulatory logic but resisting simple interpretation. Mechanistic interpretability offers a path forward by characterizing model internals directly, though scaling these techniques to billion-parameter genomic models remains an open problem. The evaluation challenges this creates are examined in @sec-ch12-evaluating-fm, while the confounding risks of scale are addressed in @sec-ch13-confounding. The integration of interpretability with model development points toward a future where understanding and prediction advance together: motifs discovered through interpretation inform architecture design, experimentally validated hypotheses become supervision signals, and interpretability failures that reveal confounding drive improvements in training data and evaluation. In this vision, interpretability is not merely a tool for explaining existing models but a methodology for building models whose predictions we trust because we understand the mechanisms they have learned.
+
+:::{.callout-tip title="Test Yourself"}
+Before reviewing the summary, test your recall:
+
+1. What is the difference between a plausible and a faithful explanation? Why might a model produce attributions that highlight a biologically plausible motif even when that motif doesn't drive the prediction?
+2. Why is in silico mutagenesis (ISM) considered the "gold standard" for attribution faithfulness, and what is its main practical limitation?
+3. What problem does the saturation issue create for gradient-based attribution methods, and how do integrated gradients address this?
+4. Explain why attention weights are not reliable indicators of input importance. What do they actually measure?
+5. Describe the validation hierarchy from sanity checks to biological sufficiency. What distinguishes computational necessity from biological necessity?
+:::
+
+::: {.callout-note}
+## Chapter Summary
+
+**Core Concepts:**
+
+- **Plausibility vs. Faithfulness:** Plausible explanations match human intuition; faithful explanations accurately reflect model computation. Interpretability methods can produce plausible but unfaithful explanations, providing false comfort rather than genuine insight.
+
+- **Attribution Methods:** Assign importance scores to input positions. ISM provides faithful counterfactual information but is computationally expensive. Gradient-based methods (saliency, DeepLIFT, integrated gradients) are efficient but can miss important features due to saturation.
+
+- **TF-MoDISco:** Discovers motifs from attribution scores rather than raw sequences, focusing on patterns the model actually uses for prediction. Enables grammar inference through co-occurrence analysis.
+
+- **Probing Classifiers:** Diagnose what information model representations encode. Simple (linear) probes identify accessible information; probe failure may indicate absence or inaccessible encoding.
+
+- **Attention Interpretation:** Attention weights describe information routing, not causal importance. High attention does not imply the attended position drives the prediction. Perturbation experiments are required to establish functional relevance.
+
+- **Global Interpretability:** Methods like *Sei* sequence classes characterize what a model has learned across its training distribution, providing regulatory vocabularies more informative than individual predictions.
+
+- **Mechanistic Interpretability:** Reverse-engineers the algorithms implemented by model weights, identifying circuits and features. Promising but nascent for genomic models.
+
+- **Validation Hierarchy:** Sanity checks → computational necessity → computational sufficiency → biological necessity → biological sufficiency. Each level provides stronger evidence but requires more experimental investment.
+
+**Key Connections:**
+
+- Interpretability enables clinical utility by providing mechanistic evidence that satisfies ACMG-AMP criteria (@sec-ch29-acmg-amp, @sec-ch29-rare-disease)
+- Confounder detection (@sec-ch13-confounding) relies on interpretability to identify shortcuts
+- Sequence design (@sec-ch31-design) uses interpretability-derived hypotheses to guide experimental validation
+
+**Looking Ahead:** @sec-ch26-causal extends interpretability to causal inference, examining how to distinguish correlation from causation in model predictions and when interpretable features reflect genuine regulatory mechanisms.
+:::

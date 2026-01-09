@@ -1,0 +1,2196 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>31&nbsp; Sequence Design – Genomic Foundation Models</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../part_7/p7-ch32-frontiers.html" rel="next">
+<link href="../part_7/p7-ch30-drug-discovery.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part_7/p7--applications.html">Part VII: Clinical Translation</a></li><li class="breadcrumb-item"><a href="../part_7/p7-ch31-design.html"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Sequence Design</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Genomic Foundation Models</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_1/p1--foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part I: Data Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_1/p1-ch01-ngs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Reads to Variants</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_1/p1-ch02-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Landscape</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_1/p1-ch03-gwas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">GWAS and Polygenic Scores</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_1/p1-ch04-vep-classical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Classical Variant Prediction</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_2/p2--architectures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part II: Architectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_2/p2-ch05-representations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Tokens and Embeddings</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_2/p2-ch06-cnn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Convolutional Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_2/p2-ch07-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Transformers and Attention</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_3/p3--learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part III: Learning &amp; Evaluation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_3/p3-ch08-pretraining.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Pretraining Strategies</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_3/p3-ch09-transfer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Transfer Learning Foundations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_3/p3-ch10-adaptation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Adaptation Strategies</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_3/p3-ch11-benchmarks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">The Benchmark Landscape</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_3/p3-ch12-evaluation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Evaluation Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_3/p3-ch13-confounding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Confounding and Data Leakage</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_4/p4--fm-families.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part IV: Foundation Model Families</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_4/p4-ch14-fm-principles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Foundation Model Paradigm</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_4/p4-ch15-dna-lm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">DNA Language Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_4/p4-ch16-protein-lm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Protein Language Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_4/p4-ch17-regulatory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Regulatory Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_4/p4-ch18-vep-fm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Variant Effect Prediction</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_5/p5--cellular-context.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part V: Cellular Context</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_5/p5-ch19-rna.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">RNA Structure and Function</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_5/p5-ch20-single-cell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Single-Cell Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_5/p5-ch21-3d-genome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">3D Genome Organization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_5/p5-ch22-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Graph and Network Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_5/p5-ch23-multi-omics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Multi-Omics Integration</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_6/p6--responsible-deployment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part VI: Evaluation and Trust</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_6/p6-ch24-uncertainty.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Uncertainty Quantification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_6/p6-ch25-interpretability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Interpretability</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_6/p6-ch26-causal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Causality</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_6/p6-ch27-regulatory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Regulatory and Governance</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_7/p7--applications.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part VII: Clinical Translation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_7/p7-ch28-clinical-risk.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Clinical Risk Prediction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_7/p7-ch29-rare-disease.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Rare Disease Diagnosis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_7/p7-ch30-drug-discovery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Drug Discovery</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_7/p7-ch31-design.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Sequence Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_7/p7-ch32-frontiers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Frontiers and Synthesis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../bib/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/app-a-dl.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Deep Learning Primer</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/app-b-compute.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Deployment and Compute</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/app-c-data-curation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Data Curation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/app-d-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Model Reference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/app-e-resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">Resources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/app-f-glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-ch31-formalism" id="toc-sec-ch31-formalism" class="nav-link active" data-scroll-target="#sec-ch31-formalism"><span class="header-section-number">31.1</span> Design Formalism</a></li>
+  <li><a href="#sec-ch31-protein-design" id="toc-sec-ch31-protein-design" class="nav-link" data-scroll-target="#sec-ch31-protein-design"><span class="header-section-number">31.2</span> Protein Design with Language Models</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch31-plm-generation" id="toc-sec-ch31-plm-generation" class="nav-link" data-scroll-target="#sec-ch31-plm-generation"><span class="header-section-number">31.2.1</span> Sequence Generation from Language Model Priors</a></li>
+  <li><a href="#sec-ch31-structure-diffusion" id="toc-sec-ch31-structure-diffusion" class="nav-link" data-scroll-target="#sec-ch31-structure-diffusion"><span class="header-section-number">31.2.2</span> Structure-Aware Design with Diffusion Models</a></li>
+  <li><a href="#sec-ch31-multi-objective" id="toc-sec-ch31-multi-objective" class="nav-link" data-scroll-target="#sec-ch31-multi-objective"><span class="header-section-number">31.2.3</span> Functional Conditioning and Multi-Objective Optimization</a></li>
+  </ul></li>
+  <li><a href="#sec-ch31-regulatory-design" id="toc-sec-ch31-regulatory-design" class="nav-link" data-scroll-target="#sec-ch31-regulatory-design"><span class="header-section-number">31.3</span> Regulatory Sequence Design</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch31-promoter-enhancer" id="toc-sec-ch31-promoter-enhancer" class="nav-link" data-scroll-target="#sec-ch31-promoter-enhancer"><span class="header-section-number">31.3.1</span> Promoter and Enhancer Engineering</a></li>
+  <li><a href="#sec-ch31-splicing-design" id="toc-sec-ch31-splicing-design" class="nav-link" data-scroll-target="#sec-ch31-splicing-design"><span class="header-section-number">31.3.2</span> Splicing and RNA Processing Elements</a></li>
+  </ul></li>
+  <li><a href="#sec-ch31-mrna-design" id="toc-sec-ch31-mrna-design" class="nav-link" data-scroll-target="#sec-ch31-mrna-design"><span class="header-section-number">31.4</span> mRNA Design and Optimization</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch31-codon-optimization" id="toc-sec-ch31-codon-optimization" class="nav-link" data-scroll-target="#sec-ch31-codon-optimization"><span class="header-section-number">31.4.1</span> Codon Optimization Principles</a></li>
+  <li><a href="#sec-ch31-utr-design" id="toc-sec-ch31-utr-design" class="nav-link" data-scroll-target="#sec-ch31-utr-design"><span class="header-section-number">31.4.2</span> Stability Engineering and UTR Design</a></li>
+  <li><a href="#sec-ch31-mrna-immunogenicity" id="toc-sec-ch31-mrna-immunogenicity" class="nav-link" data-scroll-target="#sec-ch31-mrna-immunogenicity"><span class="header-section-number">31.4.3</span> Immunogenicity Considerations</a></li>
+  </ul></li>
+  <li><a href="#sec-ch31-antibody-vaccine" id="toc-sec-ch31-antibody-vaccine" class="nav-link" data-scroll-target="#sec-ch31-antibody-vaccine"><span class="header-section-number">31.5</span> Antibody and Vaccine Design</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch31-cdr-optimization" id="toc-sec-ch31-cdr-optimization" class="nav-link" data-scroll-target="#sec-ch31-cdr-optimization"><span class="header-section-number">31.5.1</span> CDR Optimization and Humanization</a></li>
+  <li><a href="#sec-ch31-vaccine-design" id="toc-sec-ch31-vaccine-design" class="nav-link" data-scroll-target="#sec-ch31-vaccine-design"><span class="header-section-number">31.5.2</span> Vaccine Antigen Design</a></li>
+  </ul></li>
+  <li><a href="#sec-ch31-dbtl" id="toc-sec-ch31-dbtl" class="nav-link" data-scroll-target="#sec-ch31-dbtl"><span class="header-section-number">31.6</span> Closed-Loop Design-Build-Test-Learn Cycles</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch31-active-learning" id="toc-sec-ch31-active-learning" class="nav-link" data-scroll-target="#sec-ch31-active-learning"><span class="header-section-number">31.6.1</span> Active Learning for Efficient Exploration</a></li>
+  <li><a href="#sec-ch31-high-throughput" id="toc-sec-ch31-high-throughput" class="nav-link" data-scroll-target="#sec-ch31-high-throughput"><span class="header-section-number">31.6.2</span> High-Throughput Experimentation Integration</a></li>
+  </ul></li>
+  <li><a href="#sec-ch31-validation" id="toc-sec-ch31-validation" class="nav-link" data-scroll-target="#sec-ch31-validation"><span class="header-section-number">31.7</span> Validation Requirements and Failure Modes</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch31-validation-hierarchy" id="toc-sec-ch31-validation-hierarchy" class="nav-link" data-scroll-target="#sec-ch31-validation-hierarchy"><span class="header-section-number">31.7.1</span> Validation Hierarchy</a></li>
+  <li><a href="#sec-ch31-failure-patterns" id="toc-sec-ch31-failure-patterns" class="nav-link" data-scroll-target="#sec-ch31-failure-patterns"><span class="header-section-number">31.7.2</span> Characteristic Failure Patterns</a></li>
+  </ul></li>
+  <li><a href="#sec-ch31-practical-constraints" id="toc-sec-ch31-practical-constraints" class="nav-link" data-scroll-target="#sec-ch31-practical-constraints"><span class="header-section-number">31.8</span> Practical Design Constraints</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch31-manufacturing" id="toc-sec-ch31-manufacturing" class="nav-link" data-scroll-target="#sec-ch31-manufacturing"><span class="header-section-number">31.8.1</span> Manufacturing and Developability</a></li>
+  <li><a href="#sec-ch31-biosecurity" id="toc-sec-ch31-biosecurity" class="nav-link" data-scroll-target="#sec-ch31-biosecurity"><span class="header-section-number">31.8.2</span> Safety and Biosecurity Considerations</a></li>
+  </ul></li>
+  <li><a href="#sec-ch31-algorithms" id="toc-sec-ch31-algorithms" class="nav-link" data-scroll-target="#sec-ch31-algorithms"><span class="header-section-number">31.9</span> Algorithmic Search and Optimization</a></li>
+  <li><a href="#sec-ch31-generative-evaluation" id="toc-sec-ch31-generative-evaluation" class="nav-link" data-scroll-target="#sec-ch31-generative-evaluation"><span class="header-section-number">31.10</span> Evaluating Generative Design</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch31-computational-metrics" id="toc-sec-ch31-computational-metrics" class="nav-link" data-scroll-target="#sec-ch31-computational-metrics"><span class="header-section-number">31.10.1</span> Computational Quality Metrics</a></li>
+  <li><a href="#sec-ch31-functional-assessment" id="toc-sec-ch31-functional-assessment" class="nav-link" data-scroll-target="#sec-ch31-functional-assessment"><span class="header-section-number">31.10.2</span> Functional Assessment</a></li>
+  <li><a href="#sec-ch31-generative-benchmarks" id="toc-sec-ch31-generative-benchmarks" class="nav-link" data-scroll-target="#sec-ch31-generative-benchmarks"><span class="header-section-number">31.10.3</span> Benchmarking Generative Models</a></li>
+  </ul></li>
+  <li><a href="#sec-ch31-conclusion" id="toc-sec-ch31-conclusion" class="nav-link" data-scroll-target="#sec-ch31-conclusion"><span class="header-section-number">31.11</span> From Understanding to Creating</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part_7/p7--applications.html">Part VII: Clinical Translation</a></li><li class="breadcrumb-item"><a href="../part_7/p7-ch31-design.html"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Sequence Design</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-ch31-design" class="quarto-section-identifier"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Sequence Design</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<blockquote class="blockquote">
+<p>Reading genomes is hard. Writing them is harder.</p>
+</blockquote>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Chapter Overview
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Estimated reading time:</strong> 35-45 minutes</p>
+<p><strong>Prerequisites:</strong> Before reading this chapter, you should be familiar with:</p>
+<ul>
+<li>Sequence representations and embedding spaces (<a href="../part_2/p2-ch05-representations.html" class="quarto-xref"><span>Chapter 5</span></a>)</li>
+<li>Masked language modeling and pretraining objectives (<a href="../part_3/p3-ch08-pretraining.html" class="quarto-xref"><span>Chapter 8</span></a>)</li>
+<li>Protein language models and structure prediction (<a href="../part_4/p4-ch16-protein-lm.html" class="quarto-xref"><span>Chapter 16</span></a>)</li>
+<li>Uncertainty quantification and out-of-distribution detection (<a href="../part_6/p6-ch24-uncertainty.html" class="quarto-xref"><span>Chapter 24</span></a>)</li>
+<li>Benchmark evaluation principles (<a href="../part_3/p3-ch11-benchmarks.html" class="quarto-xref"><span>Chapter 11</span></a>)</li>
+</ul>
+<p><strong>Learning Objectives:</strong> After completing this chapter, you will be able to:</p>
+<ol type="1">
+<li>Explain why sequence design inverts the prediction problem and the mathematical frameworks that formalize design objectives</li>
+<li>Compare sequence-based and structure-aware approaches to protein design</li>
+<li>Apply design principles to regulatory elements, mRNA therapeutics, and antibodies</li>
+<li>Evaluate generative models using novelty, validity, diversity, and functionality metrics</li>
+<li>Design closed-loop experimental workflows that integrate foundation model predictions with high-throughput validation</li>
+<li>Identify characteristic failure modes of model-guided design and mitigation strategies</li>
+</ol>
+<p><strong>Key Insight:</strong> The transition from <em>prediction</em> to <em>design</em> fundamentally changes the role of foundation models. Prediction asks “what does this sequence do?” while design asks “what sequence achieves this function?” This inversion exposes limitations invisible during prediction: models must remain accurate in regions of sequence space far from their training data.</p>
+</div>
+</div>
+<p>Genomic foundation models predict the consequences of sequence variation with increasing accuracy. A protein language model estimates whether a missense variant disrupts function. A regulatory model forecasts how a promoter mutation alters expression across cell types. These predictive capabilities represent genuine advances. Yet prediction alone cannot create a therapeutic protein that nature never evolved, design a promoter that drives expression only in diseased tissue, or engineer an mRNA vaccine against a novel pathogen. The gap between reading genomes and writing them defines one of the central challenges in translational biology: we can characterize biological sequences with unprecedented resolution, but translating that understanding into designed molecules remains largely empirical, expensive, and slow.</p>
+<p>This asymmetry reflects a fundamental mismatch between what evolution produced and what therapeutics require. Evolution optimizes for reproductive fitness over geological timescales, producing sequences that satisfied survival constraints under ancestral conditions. Therapeutic applications demand sequences optimized for entirely different objectives: binding a specific epitope with high affinity, expressing at therapeutic levels in a particular tissue, or evading immune recognition while retaining function. The sequences we need often lie far from natural evolutionary trajectories, in regions of sequence space that foundation models have never observed during training. Navigating this <em>terra incognita</em> requires not just accurate oracles that score candidate sequences, but principled strategies for proposing, testing, and refining designs where model reliability is uncertain.</p>
+<p>Foundation models have begun to address this challenge by providing both generative priors over plausible sequences and differentiable oracles that guide optimization. Protein language models sample novel sequences respecting the statistical patterns of natural proteins. Structure-aware diffusion models generate backbones and sequences simultaneously, enabling design of proteins with specified geometries. Regulatory sequence models predict expression outcomes across thousands of candidate promoters, enabling gradient-based optimization toward desired activity profiles. When coupled with high-throughput experimental assays in closed-loop design cycles, these capabilities are transforming biological engineering.</p>
+<section id="sec-ch31-formalism" class="level2" data-number="31.1">
+<h2 data-number="31.1" class="anchored" data-anchor-id="sec-ch31-formalism"><span class="header-section-number">31.1</span> Design Formalism</h2>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stop and Think
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before reading about the design formalism, consider: if you wanted to find a protein sequence with a specific binding property, why couldn’t you simply enumerate all possible sequences and pick the best one? What makes this approach impractical, and what alternative strategies might you consider?</p>
+</div>
+</div>
+<p><strong>Sequence design</strong> inverts the standard prediction problem. Where prediction maps from sequence to function (given sequence <span class="math inline">\(x\)</span>, estimate property <span class="math inline">\(f(x)\)</span>), design maps from desired function to sequence (given target property <span class="math inline">\(y^\star\)</span>, find sequence <span class="math inline">\(x^\star\)</span> such that <span class="math inline">\(f(x^\star) \approx y^\star\)</span>). This inversion is computationally challenging because biological sequence spaces are astronomically large. A 200-residue protein admits <span class="math inline">\(20^{200}\)</span> possible sequences, vastly exceeding the number of atoms in the observable universe. Even a modest 500-base-pair regulatory element spans <span class="math inline">\(4^{500}\)</span> possibilities. Exhaustive enumeration is impossible; intelligent search strategies are essential.</p>
+<div id="fig-design-formalism" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-design-formalism-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_7/ch31/01-A-fig-design-formalism.svg" class="img-fluid figure-img"></p>
+<figcaption>Forward prediction: sequence to function</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_7/ch31/01-B-fig-design-formalism.svg" class="img-fluid figure-img"></p>
+<figcaption>Inverse design: function to sequence through vast fitness landscape</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-design-formalism-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.1: Sequence design problem formulation. (A) Forward versus inverse problems: foundation models excel at forward prediction (sequence → function) but inverse design (function → sequence) requires search through vast combinatorial spaces. (B) Design space landscape: sequence fitness varies across 4^N (DNA) or 20^N (protein) possibilities. Optimization must navigate between local optima traps toward global optimum—a fundamentally harder problem than prediction.
+</figcaption>
+</figure>
+</div>
+<p>The design objective can take several mathematical forms depending on the application. <strong>Optimization problems</strong> seek sequences that maximize (or minimize) a scalar objective, such as finding <span class="math inline">\(x^\star = \arg\max_x f_\theta(x)\)</span> where <span class="math inline">\(f_\theta\)</span> might represent predicted binding affinity, expression level, or stability. <strong>Conditional generation</strong> problems sample sequences from a distribution conditioned on desired properties, drawing <span class="math inline">\(x \sim p_\theta(x \mid y)\)</span> where <span class="math inline">\(y\)</span> specifies structural constraints, functional requirements, or context. <strong>Constrained optimization</strong> problems combine objective maximization with explicit constraints, seeking <span class="math inline">\(x^\star = \arg\max_x f_\theta(x)\)</span> subject to <span class="math inline">\(c(x) \leq 0\)</span>, where constraints <span class="math inline">\(c\)</span> might enforce GC content limits, avoid restriction sites, or maintain similarity to natural sequences.</p>
+<p>The table below summarizes how these different formulations apply to common design scenarios.</p>
+<div id="tbl-design-formulations" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-design-formulations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;31.1: Design problem formulations and their applications.
+</figcaption>
+<div aria-describedby="tbl-design-formulations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Design Formulation</th>
+<th>Mathematical Form</th>
+<th>Typical Applications</th>
+<th>Key Challenge</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Optimization</strong></td>
+<td><span class="math inline">\(x^\star = \arg\max_x f_\theta(x)\)</span></td>
+<td>Maximize binding affinity, expression level</td>
+<td>May find adversarial sequences</td>
+</tr>
+<tr class="even">
+<td><strong>Conditional generation</strong></td>
+<td><span class="math inline">\(x \sim p_\theta(x \mid y)\)</span></td>
+<td>Generate sequences with specified structure</td>
+<td>Requires well-calibrated conditional models</td>
+</tr>
+<tr class="odd">
+<td><strong>Constrained optimization</strong></td>
+<td><span class="math inline">\(\max_x f_\theta(x)\)</span> s.t. <span class="math inline">\(c(x) \leq 0\)</span></td>
+<td>Optimize function while avoiding restriction sites</td>
+<td>Constraint satisfaction adds complexity</td>
+</tr>
+<tr class="even">
+<td><strong>Multi-objective</strong></td>
+<td>Pareto frontier of <span class="math inline">\((f_1, f_2, \ldots)\)</span></td>
+<td>Balance affinity, stability, immunogenicity</td>
+<td>No single optimal solution exists</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Foundation models contribute to design through multiple mechanisms. As <strong>generative priors</strong>, they assign higher probability to sequences resembling natural biology, regularizing optimization toward plausible regions of sequence space. As <strong>differentiable oracles</strong>, they enable gradient-based optimization where sequence modifications are guided by gradients of predicted properties. As <strong>embedding functions</strong>, they map discrete sequences into continuous spaces where interpolation and optimization become tractable (<a href="../part_2/p2-ch05-representations.html#sec-ch05-embeddings" class="quarto-xref"><span>Section 5.6</span></a> for representation fundamentals; <a href="../part_3/p3-ch08-pretraining.html#sec-ch08-mlm-learning" class="quarto-xref"><span>Section 8.1.2</span></a> for how pretraining shapes these spaces). The challenge lies in searching enormous combinatorial spaces while remaining within regimes where these model-based estimates remain reliable.</p>
+</section>
+<section id="sec-ch31-protein-design" class="level2" data-number="31.2">
+<h2 data-number="31.2" class="anchored" data-anchor-id="sec-ch31-protein-design"><span class="header-section-number">31.2</span> Protein Design with Language Models</h2>
+<p>Protein language models trained on evolutionary sequence databases (<a href="../part_4/p4-ch16-protein-lm.html" class="quarto-xref"><span>Chapter 16</span></a>) have emerged as effective tools for protein design, providing both generative sampling capabilities and fitness estimation for candidate sequences. The masked language modeling objectives that enable fitness estimation are detailed in <a href="../part_3/p3-ch08-pretraining.html#sec-ch08-mlm" class="quarto-xref"><span>Section 8.1</span></a>. The success of these approaches stems from a key insight: evolution has conducted billions of years of experiments on protein sequence space, and models trained on the surviving sequences implicitly encode constraints on what works.</p>
+<div id="fig-protein-design" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-protein-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_7/ch31/02-A-fig-protein-design.svg" class="img-fluid figure-img"></p>
+<figcaption>Directed evolution in silico: mutate, score with FM, select, iterate</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_7/ch31/02-B-fig-protein-design.svg" class="img-fluid figure-img"></p>
+<figcaption>Generative design: sample from FM-learned priors conditioned on properties</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-protein-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.2: Protein design approaches. (A) Directed evolution in silico: generate variants through mutation, score with foundation models, select top performers, iterate. Achieves in seconds what lab evolution requires weeks for. (B) Generative design: sample from generative models (ProGen, ProteinMPNN, RFdiffusion) trained on evolutionary data, conditioning on desired properties. Foundation models contribute as fitness predictors (A) or as generative priors (B)—both leverage representations learned from millions of natural sequences.
+</figcaption>
+</figure>
+</div>
+<section id="sec-ch31-plm-generation" class="level3" data-number="31.2.1">
+<h3 data-number="31.2.1" class="anchored" data-anchor-id="sec-ch31-plm-generation"><span class="header-section-number">31.2.1</span> Sequence Generation from Language Model Priors</h3>
+<div class="callout callout-style-default callout-note callout-titled" title="Stop and Think">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stop and Think
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before reading about protein language model generation, recall from <a href="../part_3/p3-ch08-pretraining.html" class="quarto-xref"><span>Chapter 8</span></a>: What is the difference between autoregressive and masked language modeling objectives? How would each approach support sequence generation differently?</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Autoregressive models (like GPT-style) predict each token given all previous tokens, making them naturally suited for sequential generation. Masked models (like BERT-style) predict masked tokens given surrounding context bidirectionally, supporting iterative refinement by masking and resampling positions. For protein design, autoregressive models generate sequences left-to-right, while masked models enable position-specific refinement of existing sequences.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Autoregressive protein language models such as <em>ProGen</em> and <em>ProtGPT2</em> generate novel protein sequences by sampling tokens sequentially from learned distributions <span class="citation" data-cites="madani_progen_2023 ferruz_protgpt2_2022">(<a href="../bib/references.html#ref-madani_progen_2023" role="doc-biblioref">Madani et al. 2023</a>; <a href="../bib/references.html#ref-ferruz_protgpt2_2022" role="doc-biblioref">Ferruz, Schmidt, and Höcker 2022</a>)</span>. Given a partial sequence, the model predicts probability distributions over the next amino acid, enabling iterative extension until a complete protein emerges. This generation process can be unconditional (sampling from the full learned distribution) or conditional on control signals such as protein family annotations, organism of origin, or functional keywords.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Stop and Think">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stop and Think
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Consider the temperature parameter in sequence generation. If you sample at T=0 (deterministic, always picking highest-probability amino acid), what kind of sequences would you expect to generate? What about at very high temperature? What tradeoff does this create for protein design?</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>At T=0, you generate the single most probable sequence—likely a “consensus” protein similar to highly abundant natural proteins. At very high T, you sample broadly including low-probability amino acids, producing diverse but potentially nonfunctional sequences. The tradeoff: low temperature exploits known-good sequence space (safe but unoriginal), high temperature explores novel space (creative but risky). Practical workflows sample across temperatures and use downstream filters.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The quality of generated sequences depends critically on how closely the sampling distribution matches functional proteins. Sequences sampled at low temperature (more deterministic) tend to resemble common protein families but may lack novelty. Sequences sampled at high temperature (more stochastic) exhibit greater diversity but risk straying into nonfunctional regions. The temperature parameter controls the entropy of the sampling distribution: at temperature T=0, the model deterministically selects the highest-probability token at each position; as T increases, lower-probability tokens become increasingly likely to be sampled. This creates a fundamental exploration-exploitation tradeoff: low temperatures exploit the model’s knowledge of natural sequences but may miss novel functional solutions, while high temperatures explore more broadly but venture into regions where the model’s predictions become unreliable. Practical design workflows often generate large libraries of candidates across temperature ranges, then filter using downstream oracles for structure, stability, or function.</p>
+<p>Masked language models like <em>ESM-2</em> support design through a different mechanism. Rather than generating sequences <em>de novo</em>, these models estimate the probability of each amino acid at each position given the surrounding context. Design proceeds by iterative refinement: starting from an initial sequence, positions are masked and resampled according to model predictions, gradually shifting the sequence toward higher-likelihood regions. This Gibbs-sampling-like procedure can be biased toward specific objectives by combining model likelihoods with scores from downstream predictors.</p>
+<p>The key advantage of protein language model-based design lies in data efficiency. Because models are pretrained on millions of natural sequences, they generalize to design tasks with minimal task-specific data. A model fine-tuned on a few hundred functional variants can propose candidates across sequence space, extrapolating far beyond the training examples. This contrasts with traditional directed evolution approaches that require extensive experimental screening to navigate sequence space.</p>
+</section>
+<section id="sec-ch31-structure-diffusion" class="level3" data-number="31.2.2">
+<h3 data-number="31.2.2" class="anchored" data-anchor-id="sec-ch31-structure-diffusion"><span class="header-section-number">31.2.2</span> Structure-Aware Design with Diffusion Models</h3>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Conceptual Difficulty
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Structure-aware design involves understanding how diffusion models operate in three-dimensional coordinate space. If you are unfamiliar with diffusion models (progressive denoising from noise to signal), you may wish to review the diffusion model literature or focus on the conceptual workflow rather than mathematical details.</p>
+</div>
+</div>
+<p>Structure-aware design addresses a fundamental limitation of sequence-only approaches: proteins function through three-dimensional structures, and sequence optimization without structural guidance may produce sequences that fail to fold correctly. The advent of accurate structure prediction (<em>AlphaFold2</em>, <em>ESMFold</em>; <a href="../part_4/p4-ch16-protein-lm.html#sec-ch16-esmfold" class="quarto-xref"><span>Section 16.4</span></a>; <a href="../part_4/p4-ch16-protein-lm.html#sec-ch16-esmfold" class="quarto-xref"><span>Section 16.4</span></a>) enables new design paradigms that jointly consider sequence and structure.</p>
+<p><em>RFdiffusion</em> exemplifies this approach by generating protein backbones through a <strong>diffusion</strong> process in three-dimensional coordinate space <span class="citation" data-cites="watson_rfdiffusion_2023">(<a href="../bib/references.html#ref-watson_rfdiffusion_2023" role="doc-biblioref">Watson et al. 2023</a>)</span>. Starting from random noise, the model iteratively denoises toward plausible backbone geometries, conditioned on design specifications such as target binding interfaces, desired topology, or symmetric assembly requirements. The resulting backbones represent novel structures not observed in nature but predicted to be physically realizable.</p>
+<p>Converting designed backbones to sequences requires <strong>inverse folding</strong> models that predict amino acid sequences likely to adopt a given structure. <em>ProteinMPNN</em> and <em>ESM-IF</em> operate on this principle, taking backbone coordinates as input and outputting probability distributions over sequences predicted to fold onto that backbone<span class="citation" data-cites="dauparas_proteinmpnn_2022 hsu_learning_2022">(<a href="../bib/references.html#ref-dauparas_proteinmpnn_2022" role="doc-biblioref">Dauparas et al. 2022</a>; <a href="../bib/references.html#ref-hsu_learning_2022" role="doc-biblioref">Hsu et al. 2022</a>)</span>. <em>ESM-IF</em> leverages the representations learned by <em>ESM-2</em> to condition sequence generation on structural constraints, connecting the inverse folding task directly to the protein language model paradigm. The model can generate thousands of candidate sequences for a single backbone, enabling selection based on additional criteria such as expression likelihood or immunogenicity.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Key Insight: Structure as Intermediate Representation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The power of structure-aware design lies in using 3D structure as an <em>intermediate representation</em> between function and sequence. Rather than searching directly in the astronomically large space of sequences, design first identifies a structure that would achieve the desired function, then finds sequences that fold to that structure. This factorization dramatically constrains the search space.</p>
+</div>
+</div>
+<p>This two-stage pipeline (structure diffusion followed by inverse folding) has proven effective for creating novel proteins. Designed binders targeting challenging therapeutic targets, <em>de novo</em> enzymes with specified active site geometries, and symmetric protein assemblies with precise nanoscale dimensions have all been realized experimentally. <em>[Citation Needed]</em> The key insight is that structure provides a useful intermediate representation: rather than searching directly in the vast space of sequences, design proceeds through the more constrained space of physically realizable structures.</p>
+<p>The table below compares sequence-based and structure-aware approaches across key design considerations.</p>
+<div id="tbl-protein-design-comparison" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-protein-design-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;31.2: Comparison of protein design paradigms.
+</figcaption>
+<div aria-describedby="tbl-protein-design-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Consideration</th>
+<th>Sequence-Based (PLM)</th>
+<th>Structure-Aware (Diffusion + Inverse Folding)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Prior knowledge required</strong></td>
+<td>Protein family or starting sequence</td>
+<td>Target structure or binding interface</td>
+</tr>
+<tr class="even">
+<td><strong>Novel structure capability</strong></td>
+<td>Limited to known folds</td>
+<td>Can generate entirely new topologies</td>
+</tr>
+<tr class="odd">
+<td><strong>Computational cost</strong></td>
+<td>Lower (sequence operations only)</td>
+<td>Higher (3D coordinate generation)</td>
+</tr>
+<tr class="even">
+<td><strong>Output diversity</strong></td>
+<td>Depends on sampling temperature</td>
+<td>High (many sequences per backbone)</td>
+</tr>
+<tr class="odd">
+<td><strong>Experimental success rate</strong></td>
+<td>30-50% express</td>
+<td>30-70% express; 5-30% functional</td>
+</tr>
+<tr class="even">
+<td><strong>Best applications</strong></td>
+<td>Variant optimization, library design</td>
+<td><em>De novo</em> binders, enzymes, assemblies</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="sec-ch31-multi-objective" class="level3" data-number="31.2.3">
+<h3 data-number="31.2.3" class="anchored" data-anchor-id="sec-ch31-multi-objective"><span class="header-section-number">31.2.3</span> Functional Conditioning and Multi-Objective Optimization</h3>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Consider a therapeutic antibody design project. List at least four properties you would need to optimize simultaneously, and explain why optimizing for just one property (e.g., binding affinity) would be insufficient for a successful therapeutic.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Key properties include: (1) binding affinity to target, (2) specificity to avoid off-target effects, (3) manufacturability and expression levels, (4) stability during storage, (5) solubility to prevent aggregation, and (6) low immunogenicity to minimize immune responses. Optimizing only affinity could yield an antibody that binds excellently but aggregates during manufacturing, triggers immune responses in patients, or binds unintended targets causing toxicity.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Real therapeutic or industrial applications rarely optimize a single objective. A designed enzyme must not only be catalytically active but also stable at process temperatures, expressible in the production host, and resistant to proteolytic degradation. A therapeutic antibody must bind its target with high affinity while avoiding off-target interactions, maintaining solubility, and minimizing immunogenicity. These competing demands create multi-objective optimization problems where no single sequence optimizes all criteria simultaneously.</p>
+<p>Multi-objective design produces <strong>Pareto frontiers</strong>—the set of solutions where no objective can be improved without worsening another—representing different trade-offs among objectives. A sequence might achieve exceptional binding affinity at the cost of reduced stability, while another balances moderate affinity with excellent developability properties. Practitioners must select among Pareto-optimal solutions based on application-specific priorities, and foundation models increasingly support this selection by providing diverse oracles across multiple property dimensions.</p>
+<p>Foundation models contribute to multi-objective design in three ways. Generative priors propose candidate sequences that satisfy basic plausibility constraints (foldability, expressibility) before optimization begins. Multiple differentiable oracles (for binding, stability, immunogenicity) enable gradient-based optimization toward Pareto frontiers. Embedding spaces support interpolation between sequences with different property profiles, enabling exploration of intermediate trade-offs. The combination of these capabilities makes foundation models central to modern protein design pipelines.</p>
+</section>
+</section>
+<section id="sec-ch31-regulatory-design" class="level2" data-number="31.3">
+<h2 data-number="31.3" class="anchored" data-anchor-id="sec-ch31-regulatory-design"><span class="header-section-number">31.3</span> Regulatory Sequence Design</h2>
+<p>Genomic foundation models trained on chromatin accessibility, transcription factor binding, and gene expression data enable design of synthetic regulatory elements with specified activity profiles. Unlike protein design where the sequence-to-function mapping operates through three-dimensional structure, regulatory design must account for the genomic and cellular context in which elements function. The functional genomics resources described in <a href="../part_1/p1-ch02-data.html#sec-ch02-functional" class="quarto-xref"><span>Section 2.4</span></a> provide training data for these models, while the interpretability methods from <a href="../part_6/p6-ch25-interpretability.html#sec-ch25-attribution" class="quarto-xref"><span>Section 25.1</span></a> inform design strategies by revealing which sequence features drive predictions.</p>
+<div id="fig-regulatory-design" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-regulatory-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_7/ch31/03-fig-regulatory-design.svg" class="img-fluid figure-img"></p>
+<figcaption>Regulatory element design workflow with DNA foundation models</figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-regulatory-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.3: Regulatory element design with DNA foundation models. Design targets span synthetic promoters (expression level), tissue-specific enhancers (spatial control), 5’ UTRs (translation efficiency), and CRISPR guides (specificity). Workflow combines sequence generation methods (gradient optimization, evolutionary search, generative sampling) with FM-based scoring. Validation through MPRA enables testing thousands of designs in parallel, creating feedback loops that improve both designs and models.
+</figcaption>
+</figure>
+</div>
+<section id="sec-ch31-promoter-enhancer" class="level3" data-number="31.3.1">
+<h3 data-number="31.3.1" class="anchored" data-anchor-id="sec-ch31-promoter-enhancer"><span class="header-section-number">31.3.1</span> Promoter and Enhancer Engineering</h3>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stop and Think
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Gradient-based design for regulatory elements uses the same saliency computations described in <a href="../part_6/p6-ch25-interpretability.html#sec-ch25-gradient" class="quarto-xref"><span>Section 25.1.2</span></a> for interpretation, but runs them “in reverse.” Before reading on, consider: if a saliency map tells you which nucleotides most affect the current prediction, how might you use this information to <em>increase</em> predicted expression in a target cell type?</p>
+</div>
+</div>
+<p>Massively parallel reporter assays (MPRAs) have generated training data for models that predict expression levels from promoter and enhancer sequences (<a href="../part_1/p1-ch02-data.html#sec-ch02-dms" class="quarto-xref"><span>Section 2.4.4</span></a>; <a href="../part_1/p1-ch02-data.html#sec-ch02-dms" class="quarto-xref"><span>Section 2.4.4</span></a>) <span class="citation" data-cites="deboer_deciphering_2020">(<a href="../bib/references.html#ref-deboer_deciphering_2020" role="doc-biblioref">Boer et al. 2020</a>)</span>. These models learn sequence determinants of regulatory activity, including transcription factor binding sites, spacing constraints between elements, and context-dependent interactions. Once trained, the same models serve as oracles for design: by evaluating expression predictions across millions of candidate sequences, optimization algorithms can identify synthetic regulatory elements with desired properties.</p>
+<p>Gradient-based design treats the sequence-to-expression model as a differentiable function. Starting from an initial sequence, gradients of predicted expression with respect to input positions indicate which mutations would increase (or decrease) activity. Because sequences are discrete while gradients are continuous, optimization requires relaxation strategies that operate on “soft” sequence representations before projecting back to discrete nucleotides. These approaches leverage the same saliency map computations used for model interpretation (<a href="../part_6/p6-ch25-interpretability.html#sec-ch25-gradient" class="quarto-xref"><span>Section 25.1.2</span></a>), running the analysis in reverse to guide design rather than explain predictions.</p>
+<p>Design objectives for regulatory elements extend beyond maximizing expression in a target context. Cell-type-specific enhancers should drive high expression in desired tissues while remaining inactive elsewhere. Inducible promoters should respond to specific signals while maintaining low basal activity. Compact regulatory elements are preferred for gene therapy applications where vector capacity is limited. These constraints transform simple optimization into multi-objective problems requiring careful balancing of competing requirements.</p>
+<p>Generative models trained directly on regulatory sequences offer an alternative to optimization-based approaches. Autoregressive or diffusion models learn to sample novel enhancers and promoters that match the statistical properties of natural regulatory elements. Conditioning on cell type labels, chromatin state annotations, or other metadata enables generation of elements with targeted activity profiles. The advantage of generative approaches lies in their ability to produce diverse candidate libraries for experimental screening, rather than converging on a single optimized sequence that may exploit model artifacts rather than genuine biology.</p>
+</section>
+<section id="sec-ch31-splicing-design" class="level3" data-number="31.3.2">
+<h3 data-number="31.3.2" class="anchored" data-anchor-id="sec-ch31-splicing-design"><span class="header-section-number">31.3.2</span> Splicing and RNA Processing Elements</h3>
+<p>Models trained on splicing outcomes (<em>SpliceAI</em> and related architectures described in <a href="../part_2/p2-ch06-cnn.html" class="quarto-xref"><span>Chapter 6</span></a>; see also <a href="../part_5/p5-ch19-rna.html" class="quarto-xref"><span>Chapter 19</span></a> for RNA-specific foundation models) enable design of sequences that modulate RNA processing. Therapeutic applications include correcting pathogenic splice site mutations by strengthening weak splice sites or weakening aberrant ones, designing antisense oligonucleotides that redirect splicing to skip exons containing disease-causing mutations, and engineering alternative splicing outcomes to produce desired protein isoforms.</p>
+<p>The design space for splicing elements encompasses splice site sequences themselves (the canonical GT-AG dinucleotides and surrounding intronic and exonic enhancers and silencers), branch point sequences, and auxiliary sequences that recruit splicing regulatory proteins. Foundation models that predict splicing patterns from local sequence context serve as oracles for evaluating candidate modifications, while gradient-based optimization identifies changes predicted to shift splicing toward therapeutic outcomes.</p>
+<p>Design of splicing modulators requires particular attention to off-target effects. The splicing code is highly context-dependent, and sequence modifications intended to affect one splice site may inadvertently alter recognition of others. Genome-wide splicing models that predict effects across all splice sites provide essential off-target assessment, flagging candidate designs that would disrupt normal splicing at unintended locations.</p>
+</section>
+</section>
+<section id="sec-ch31-mrna-design" class="level2" data-number="31.4">
+<h2 data-number="31.4" class="anchored" data-anchor-id="sec-ch31-mrna-design"><span class="header-section-number">31.4</span> mRNA Design and Optimization</h2>
+<div class="callout callout-style-default callout-note callout-titled" title="Stop and Think">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stop and Think
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Consider what you learned about protein design in <span class="quarto-unresolved-ref">?sec-ch32-protein-design</span>. How does mRNA design differ fundamentally? What additional constraints does an mRNA therapeutic face compared to a designed protein?</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Key differences: (1) mRNA must encode the <em>same</em> protein sequence (constrained by genetic code), limiting design to synonymous codon choices and UTRs; (2) mRNA faces immune recognition as a foreign nucleic acid, requiring evasion strategies; (3) mRNA degrades rapidly, requiring stability optimization; (4) mRNA must be manufactured and delivered, adding constraints proteins don’t face. Protein design optimizes amino acid sequence directly; mRNA design optimizes the nucleotide encoding while keeping the protein constant.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The clinical success of mRNA vaccines has intensified interest in systematic approaches to mRNA sequence design. Unlike protein or regulatory element design where the primary challenge is achieving desired function, mRNA design must simultaneously optimize translation efficiency, molecular stability, immune evasion, and manufacturing tractability. Foundation models increasingly contribute to each of these objectives.</p>
+<div id="fig-mrna-optimization" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mrna-optimization-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_7/ch31/04-fig-mrna-optimization.svg" class="img-fluid figure-img"></p>
+<figcaption>mRNA therapeutic design optimization</figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mrna-optimization-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.4: mRNA therapeutic design optimization. Each region requires distinct considerations: 5’ UTR affects translation initiation (Kozak sequence, structure minimization); coding sequence requires codon optimization balanced against GC content and immunogenicity; 3’ UTR controls stability and localization; chemical modifications (N1-methylpseudouridine) reduce immunogenicity. Foundation models predict translation efficiency, stability, and immunogenic potential. COVID-19 mRNA vaccines demonstrate successful integration of these design principles.
+</figcaption>
+</figure>
+</div>
+<section id="sec-ch31-codon-optimization" class="level3" data-number="31.4.1">
+<h3 data-number="31.4.1" class="anchored" data-anchor-id="sec-ch31-codon-optimization"><span class="header-section-number">31.4.1</span> Codon Optimization Principles</h3>
+<div class="callout callout-style-default callout-note callout-titled" title="Stop and Think">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stop and Think
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before diving into codon optimization, recall the genetic code’s degeneracy. For a 100-amino-acid protein, roughly how many different mRNA sequences could encode the same protein? Why does this create both an opportunity and a challenge for mRNA design?</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Most amino acids have 2-6 synonymous codons (Met and Trp have only 1). For 100 amino acids with ~3 average synonymous options per position, there are roughly 3^100 ≈ 10^47 possible encodings—an astronomical number. This creates opportunity because we can search for optimal encodings, but also creates a challenge because the search space is impossibly large, requiring smart optimization strategies rather than exhaustive search.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>The genetic code is degenerate: sixty-one sense codons encode twenty amino acids, meaning that any protein sequence can be encoded by many different mRNA sequences. These synonymous sequences differ in translation efficiency, mRNA stability, and immunogenicity despite producing identical proteins. <strong>Codon optimization</strong> exploits this redundancy to improve therapeutic mRNA performance.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Key Insight: The Hidden Complexity of Synonymous Mutations
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Although synonymous codons produce identical proteins, the mRNA sequences differ in ways that profoundly affect therapeutic outcomes. A single synonymous mutation can alter: (1) translation speed at that position, (2) mRNA secondary structure affecting stability, (3) recognition by innate immune sensors, and (4) ribosome pausing that affects co-translational folding. Codon optimization must navigate all these effects simultaneously.</p>
+</div>
+</div>
+<p>Traditional codon optimization relied on codon adaptation indices derived from highly expressed genes in target organisms. Codons frequently used in abundant proteins were assumed to be efficiently translated, leading to optimization strategies that maximize use of preferred codons. This approach oversimplifies the complex relationship between codon choice and expression. Translation elongation rate varies with codon-anticodon interactions, tRNA abundance, mRNA secondary structure, and ribosome queuing effects. Local codon context matters: rare codons following abundant ones may be translated efficiently, while runs of preferred codons can cause ribosome collisions.</p>
+<p>Machine learning models trained on ribosome profiling data and reporter assays have begun to capture these context-dependent effects. <em>[Citation Needed]</em> These models predict translation efficiency from sequence features including codon frequencies, local secondary structure, and amino acid properties. Using such models as oracles, optimization algorithms can search for mRNA sequences that maximize predicted translation while avoiding problematic sequence features. The resulting designs often differ substantially from simple codon-frequency optimization, incorporating rare codons at specific positions to optimize local translation dynamics.</p>
+</section>
+<section id="sec-ch31-utr-design" class="level3" data-number="31.4.2">
+<h3 data-number="31.4.2" class="anchored" data-anchor-id="sec-ch31-utr-design"><span class="header-section-number">31.4.2</span> Stability Engineering and UTR Design</h3>
+<div class="callout callout-style-default callout-note callout-titled" title="Stop and Think">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stop and Think
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Think back to regulatory element design (<span class="quarto-unresolved-ref">?sec-ch32-regulatory-design</span>). How is UTR design similar to enhancer/promoter design? How is it different? What properties must a 5’ UTR balance that a promoter does not?</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Similarities: Both are non-coding regulatory sequences where foundation models predict activity; both use gradient-based or generative design approaches. Key differences: (1) UTRs are transcribed into RNA (must consider RNA structure, not DNA), (2) 5’ UTRs must balance ribosome recruitment (high translation) against secondary structure that blocks scanning (low translation), (3) 3’ UTRs affect mRNA half-life via RNA-binding protein sites, while promoters don’t face degradation. UTRs operate post-transcriptionally; promoters control transcription initiation.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>mRNA stability in the cytoplasm determines the duration of protein production and thus the dose required for therapeutic effect. Stability is governed by multiple sequence features: the 5’ and 3’ <strong>untranslated regions (UTRs)</strong> that flank the coding sequence, the presence of destabilizing sequence motifs recognized by RNA-binding proteins, and secondary structures that protect against or expose the molecule to nucleases.</p>
+<p>UTR engineering represents a particularly active area of foundation model application. Natural UTRs contain binding sites for regulatory proteins and microRNAs, sequences that affect ribosome recruitment, and structures that influence mRNA localization and stability. Foundation models trained on expression data across diverse UTR sequences learn which features promote stability and efficient translation. <em>[Citation Needed]</em> Design algorithms then search for synthetic UTRs that maximize these properties while avoiding sequences that trigger immune recognition or rapid degradation.</p>
+<p>Chemical modifications of mRNA (pseudouridine, N1-methylpseudouridine, and other nucleoside analogs) dramatically improve stability and reduce immunogenicity. These modifications alter the sequence-function relationship in ways that current foundation models, trained primarily on natural RNA, may not fully capture. Emerging models that incorporate modification information promise to enable joint optimization of sequence and modification patterns.</p>
+</section>
+<section id="sec-ch31-mrna-immunogenicity" class="level3" data-number="31.4.3">
+<h3 data-number="31.4.3" class="anchored" data-anchor-id="sec-ch31-mrna-immunogenicity"><span class="header-section-number">31.4.3</span> Immunogenicity Considerations</h3>
+<div class="callout callout-style-default callout-note callout-titled" title="Stop and Think">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stop and Think
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Recall multi-objective optimization from protein design (<span class="quarto-unresolved-ref">?sec-ch32-multi-objective</span>). For an mRNA therapeutic, you need to balance: (1) high translation efficiency, (2) long mRNA half-life, (3) low immunogenicity, and (4) manufacturability. Why can’t you simply maximize each property independently? What is the likely tradeoff between translation efficiency and immunogenicity?</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>These objectives create competing constraints: (1) High GC content can improve stability but increases immunogenicity via TLR recognition; (2) Rare codons reduce translation but may reduce immune detection; (3) Strong secondary structures protect from nucleases but can block ribosome scanning; (4) Chemical modifications reduce immunogenicity but increase manufacturing cost. Translation efficiency often requires features (abundant codons, specific motifs) that immune sensors recognize. Optimization must find Pareto-optimal solutions balancing these tradeoffs, not single-objective maxima.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Exogenous mRNA triggers innate immune responses through pattern recognition receptors including Toll-like receptors (<em>TLR3</em>, <em>TLR7</em>, <em>TLR8</em>) and cytosolic sensors (<em>RIG-I</em>, <em>MDA5</em>). While some immune activation may be beneficial for vaccine applications, excessive inflammation limits dosing and causes adverse effects. For protein replacement therapies where repeated dosing is required, minimizing immunogenicity is essential.</p>
+<p>The immunostimulatory potential of mRNA depends on sequence features including GC content, specific sequence motifs recognized by pattern receptors, and secondary structures that resemble viral replication intermediates. Foundation models that predict immunogenicity from sequence enable design of mRNAs that evade innate immune detection. <em>[Citation Needed]</em> These predictions must be balanced against other objectives: modifications that reduce immunogenicity may also reduce translation efficiency, creating multi-objective trade-offs that characterize mRNA design more broadly.</p>
+</section>
+</section>
+<section id="sec-ch31-antibody-vaccine" class="level2" data-number="31.5">
+<h2 data-number="31.5" class="anchored" data-anchor-id="sec-ch31-antibody-vaccine"><span class="header-section-number">31.5</span> Antibody and Vaccine Design</h2>
+<p>Antibody engineering represents one of the most commercially significant applications of computational protein design. The modular architecture of antibodies (framework regions that maintain structural integrity surrounding hypervariable <strong>complementarity-determining regions (CDRs)</strong> that mediate antigen recognition) creates a well-defined design problem: optimize CDR sequences to achieve desired binding properties while maintaining framework stability and developability.</p>
+<div id="fig-antibody-design" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-antibody-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_7/ch31/05-fig-antibody-design.svg" class="img-fluid figure-img"></p>
+<figcaption>Antibody design with foundation models</figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-antibody-design-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.5: Antibody design with foundation models. The antibody structure comprises framework regions (scaffold) and CDR loops (binding interface). Design challenges include affinity maturation (improve binding), specificity (reduce off-targets), humanization (reduce immunogenicity), and developability (ensure manufacturability). Foundation models contribute binding affinity prediction from sequence, humanness scoring against human antibody corpus, and biophysical property prediction (aggregation, stability). Iterative design cycles alternate between FM-guided mutagenesis and experimental validation.
+</figcaption>
+</figure>
+</div>
+<section id="sec-ch31-cdr-optimization" class="level3" data-number="31.5.1">
+<h3 data-number="31.5.1" class="anchored" data-anchor-id="sec-ch31-cdr-optimization"><span class="header-section-number">31.5.1</span> CDR Optimization and Humanization</h3>
+<p>Antibodies discovered through animal immunization or phage display often require optimization before therapeutic use. Non-human framework sequences may trigger immune responses in patients, necessitating <strong>humanization</strong> that replaces framework residues with human equivalents while preserving antigen binding. CDR sequences may require affinity maturation to achieve therapeutic potency or specificity optimization to reduce off-target binding.</p>
+<p>Foundation models support antibody optimization through multiple mechanisms. Antibody-specific language models trained on paired heavy and light chain sequences learn the structural and functional constraints on CDR sequences. <em>[Citation Needed]</em> These models predict which mutations are compatible with the antibody fold and which are likely to disrupt structure. Given a parental antibody sequence, the models can propose libraries of variants enriched for functional candidates, reducing the experimental screening burden required to identify improved variants.</p>
+<p>Structure-aware approaches enable more targeted design. Given a structure of the antibody-antigen complex (determined experimentally or predicted computationally via methods discussed in <a href="../part_4/p4-ch16-protein-lm.html#sec-ch16-esmfold" class="quarto-xref"><span>Section 16.4</span></a>), optimization focuses on residues at the binding interface. Computational saturation mutagenesis predicts the effect of every possible amino acid substitution at each interface position, identifying combinations expected to improve affinity. These predictions guide the construction of focused libraries that explore the most promising region of sequence space.</p>
+</section>
+<section id="sec-ch31-vaccine-design" class="level3" data-number="31.5.2">
+<h3 data-number="31.5.2" class="anchored" data-anchor-id="sec-ch31-vaccine-design"><span class="header-section-number">31.5.2</span> Vaccine Antigen Design</h3>
+<p>Vaccine development increasingly employs computational design to create immunogens that elicit protective immune responses. The challenge differs from therapeutic protein design: rather than optimizing for direct biological activity, vaccine antigens must be recognized by the immune system and induce antibodies or T cells that protect against pathogen challenge.</p>
+<p>Foundation models contribute to vaccine design in several ways. <strong>Epitope prediction</strong> models identify regions of pathogen proteins most likely to be recognized by antibodies or T cells, guiding selection of vaccine targets. Structural models predict how mutations affect epitope conformation, enabling design of stabilized antigens that maintain native epitope structure during manufacturing and storage. Glycan shielding analysis predicts which epitopes will be accessible on the pathogen surface versus hidden by glycosylation, focusing vaccine design on exposed regions.</p>
+<p>The rapid development of mRNA vaccines against SARS-CoV-2 demonstrated the potential of computational approaches to accelerate vaccine design. Structure-guided stabilization of the prefusion spike conformation, optimization of mRNA sequences for expression and stability, and prediction of variant effects on vaccine efficacy all benefited from computational modeling. <em>[Citation Needed]</em> Future vaccine development will increasingly integrate foundation model predictions throughout the design process.</p>
+</section>
+</section>
+<section id="sec-ch31-dbtl" class="level2" data-number="31.6">
+<h2 data-number="31.6" class="anchored" data-anchor-id="sec-ch31-dbtl"><span class="header-section-number">31.6</span> Closed-Loop Design-Build-Test-Learn Cycles</h2>
+<p>Foundation models achieve their full potential when integrated into iterative experimental workflows. The <strong>design-build-test-learn (DBTL)</strong> paradigm treats computational predictions as hypotheses to be tested experimentally, with results feeding back to improve both the designed molecules and the models that guide design. This closed-loop approach connects to the lab-in-the-loop concepts introduced in <span class="quarto-unresolved-ref">?sec-ch28-lab-in-loop</span>.</p>
+<div id="fig-dbtl-cycle" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dbtl-cycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_7/ch31/06-fig-dbtl-cycle.svg" class="img-fluid figure-img"></p>
+<figcaption>Design-Build-Test-Learn cycle for sequence engineering</figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dbtl-cycle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.6: Design-Build-Test-Learn cycle for sequence engineering. <strong>Design</strong>: foundation models score candidates and optimization identifies promising sequences. <strong>Build</strong>: DNA synthesis and assembly create physical constructs. <strong>Test</strong>: functional assays measure actual performance. <strong>Learn</strong>: results update models for next cycle. Each iteration improves both designed sequences and predictive accuracy. Bottleneck reality: Build and Test phases (days to weeks) limit iteration speed despite fast computational Design (~seconds). Closed-loop automation increasingly accelerates the cycle.
+</figcaption>
+</figure>
+</div>
+<section id="sec-ch31-active-learning" class="level3" data-number="31.6.1">
+<h3 data-number="31.6.1" class="anchored" data-anchor-id="sec-ch31-active-learning"><span class="header-section-number">31.6.1</span> Active Learning for Efficient Exploration</h3>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stop and Think
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Imagine you have a budget to experimentally test 100 protein variants, but your foundation model proposes 10,000 candidates. Some candidates have high predicted fitness but the model is uncertain; others have moderate predictions but high confidence. How would you decide which 100 to test? What are the tradeoffs between “exploiting” high predictions versus “exploring” uncertain regions?</p>
+</div>
+</div>
+<p>Experimental validation remains the bottleneck in biological design. Even high-throughput assays can test at most thousands to millions of variants, a tiny fraction of possible sequences. <strong>Active learning</strong> strategies select which experiments to perform by balancing two competing objectives: exploiting current model predictions to test sequences likely to succeed, and exploring regions of uncertainty to gather data that will improve the model.</p>
+<p><strong>Bayesian optimization</strong> provides a principled framework for this trade-off. A surrogate model (typically a Gaussian process or ensemble neural network) approximates the sequence-to-fitness mapping. <strong>Acquisition functions</strong> such as expected improvement or upper confidence bound combine predicted function values with uncertainty estimates to select informative test sequences. The expected improvement acquisition function, for example, computes the probability-weighted average improvement over the current best sequence, naturally balancing regions of high predicted fitness (likely to improve) against regions of high uncertainty (potentially hiding superior solutions). Upper confidence bound adds a tunable exploration parameter that explicitly controls how much to favor uncertain regions. After each experimental round, the surrogate model is updated with new data, and the process repeats. This iterative refinement concentrates experimental resources on the most promising and informative regions of sequence space rather than uniformly sampling the combinatorially vast possibilities.</p>
+<p>Foundation models enhance active learning by providing informative priors and features. Rather than learning sequence-to-function mappings from scratch, surrogate models can operate on protein language model embeddings that capture evolutionary relationships and structural constraints. These embeddings provide a meaningful notion of sequence similarity even before any task-specific data is available, accelerating the early rounds of optimization when labeled data is scarce.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Practical Guidance: Choosing an Active Learning Strategy
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Consider these factors when selecting an active learning approach:</p>
+<ul>
+<li><strong>When labeled data is scarce:</strong> Use foundation model embeddings as features for your surrogate model; they provide useful priors even with few labels</li>
+<li><strong>When experimental costs are high:</strong> Favor acquisition functions that emphasize exploration (e.g., upper confidence bound with high exploration parameter) to maximize information gain per experiment</li>
+<li><strong>When you need quick wins:</strong> Favor exploitation-heavy strategies that test sequences with highest predicted fitness, accepting that you may miss better optima</li>
+<li><strong>When model reliability is uncertain:</strong> Use ensemble disagreement as an additional uncertainty measure; avoid testing sequences where all models confidently agree (may be exploiting shared artifacts)</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="sec-ch31-high-throughput" class="level3" data-number="31.6.2">
+<h3 data-number="31.6.2" class="anchored" data-anchor-id="sec-ch31-high-throughput"><span class="header-section-number">31.6.2</span> High-Throughput Experimentation Integration</h3>
+<p>Modern experimental platforms generate data at scales well-matched to foundation model training. <strong>Deep mutational scanning (DMS)</strong> systematically characterizes thousands of single-mutant variants of a protein, mapping the functional landscape around a parental sequence (see <a href="../part_1/p1-ch02-data.html#sec-ch02-dms" class="quarto-xref"><span>Section 2.4.4</span></a> for discussion of DMS data resources). Massively parallel reporter assays test tens of thousands of regulatory element variants in a single experiment. CRISPR screens introduce perturbations across the genome and measure phenotypic consequences.</p>
+<p>These assays generate dense local maps of sequence-function relationships that complement the global patterns captured by foundation models. The integration is bidirectional: model predictions prioritize which variants to include in experimental libraries, and experimental results fine-tune models for improved accuracy in relevant sequence neighborhoods. After several DBTL cycles, the combined system (fine-tuned model plus accumulated experimental data) can often design sequences that substantially outperform the parental molecule.</p>
+<p>The design of experiments themselves benefits from computational guidance. Rather than testing all possible single mutants, active learning identifies the most informative subset. Rather than random library construction, computational analysis identifies epistatic interactions that should be explored through combinatorial variants. The cost of DNA synthesis and high-throughput assays makes efficient experimental design increasingly important as design ambitions grow.</p>
+</section>
+</section>
+<section id="sec-ch31-validation" class="level2" data-number="31.7">
+<h2 data-number="31.7" class="anchored" data-anchor-id="sec-ch31-validation"><span class="header-section-number">31.7</span> Validation Requirements and Failure Modes</h2>
+<p>Computational design generates hypotheses; experimental validation determines whether those hypotheses are correct. The gap between predicted and observed performance represents the ultimate test of design methods, and understanding where predictions fail is essential for improving both models and design strategies. The evaluation principles discussed in <a href="../part_3/p3-ch11-benchmarks.html" class="quarto-xref"><span>Chapter 11</span></a> and uncertainty quantification from <a href="../part_6/p6-ch24-uncertainty.html" class="quarto-xref"><span>Chapter 24</span></a> apply directly to design validation.</p>
+<section id="sec-ch31-validation-hierarchy" class="level3" data-number="31.7.1">
+<h3 data-number="31.7.1" class="anchored" data-anchor-id="sec-ch31-validation-hierarchy"><span class="header-section-number">31.7.1</span> Validation Hierarchy</h3>
+<p>Designed sequences must pass through multiple validation stages before achieving real-world impact. Computational validation confirms that designs satisfy specified constraints and achieve predicted scores, filtering obvious failures before synthesis. <em>In vitro</em> validation tests whether designed proteins express, fold, and exhibit predicted activities in simplified experimental systems. <em>In vivo</em> validation assesses function in cellular or animal contexts where additional complexity may reveal unanticipated problems. Clinical validation, for therapeutic applications, determines whether designs are safe and effective in human patients.</p>
+<p>Success rates decline at each stage of this hierarchy. Computationally promising designs often fail to express or fold correctly. Designs that succeed <em>in vitro</em> may lose activity in cellular contexts due to incorrect localization, unexpected degradation, or off-target interactions. Molecules that perform well in model organisms may fail in human clinical trials due to immunogenicity, toxicity, or pharmacokinetic limitations. The attrition from computational design to clinical success remains substantial, motivating continued improvement in predictive accuracy and earlier identification of failure modes.</p>
+</section>
+<section id="sec-ch31-failure-patterns" class="level3" data-number="31.7.2">
+<h3 data-number="31.7.2" class="anchored" data-anchor-id="sec-ch31-failure-patterns"><span class="header-section-number">31.7.2</span> Characteristic Failure Patterns</h3>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Common Pitfalls
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Practitioners should be aware of these systematic failure modes in model-guided design:</p>
+<ol type="1">
+<li><strong>Distribution shift:</strong> Optimization pushes sequences into regions where model predictions are unreliable</li>
+<li><strong>Mode collapse:</strong> Generative models produce variants of training sequences rather than genuinely novel molecules</li>
+<li><strong>Reward hacking:</strong> Optimization exploits model artifacts rather than genuine sequence-function relationships</li>
+<li><strong>Missing properties:</strong> Models cannot predict properties absent from training data (e.g., aggregation under manufacturing conditions)</li>
+</ol>
+<p>Mitigation strategies include ensemble methods, novelty filters, uncertainty quantification, and experimental validation in application-relevant conditions.</p>
+</div>
+</div>
+<p>Foundation model-guided design exhibits systematic failure modes that practitioners must recognize and mitigate. <strong>Distribution shift</strong> occurs when optimization pushes sequences into regions where model predictions are unreliable (<a href="../part_3/p3-ch11-benchmarks.html#sec-ch11-distribution-shift" class="quarto-xref"><span>Section 11.7.1</span></a> for detailed discussion of distribution shift in genomic models; <a href="../part_6/p6-ch24-uncertainty.html#sec-ch24-ood-detection" class="quarto-xref"><span>Section 24.6</span></a> for detection methods). A model trained on natural proteins may produce confident but incorrect predictions for designed sequences that lie far from training data. Regularization toward natural sequence statistics and uncertainty quantification help identify when designs have strayed beyond reliable prediction regimes.</p>
+<p><strong>Mode collapse</strong> in generative models produces designs that are variants of training sequences rather than genuinely novel molecules. When generated sequences can be matched to close homologs in training data, the design process has failed to create anything new. Novelty filters and diversity requirements during generation help ensure that computational design adds value beyond database retrieval.</p>
+<p><strong>Reward hacking</strong> occurs when optimization exploits model artifacts rather than genuine sequence-function relationships. A model might predict high expression for sequences containing spurious features that happen to correlate with expression in training data but have no causal effect. Ensemble methods, where designs must score highly across multiple independently trained models, provide some protection against hacking individual model weaknesses.</p>
+<p>The most insidious failures involve properties that models cannot predict because they were absent from training data. A designed protein might aggregate under manufacturing conditions never encountered during model development. A regulatory element might be silenced by chromatin modifications specific to the therapeutic context. These failures can only be identified through experimental validation in relevant conditions, motivating the closed-loop DBTL approach that continuously tests designs in application-relevant settings.</p>
+</section>
+</section>
+<section id="sec-ch31-practical-constraints" class="level2" data-number="31.8">
+<h2 data-number="31.8" class="anchored" data-anchor-id="sec-ch31-practical-constraints"><span class="header-section-number">31.8</span> Practical Design Constraints</h2>
+<p>Beyond achieving desired function, practical design must satisfy numerous constraints arising from manufacturing, safety, and deployment requirements.</p>
+<section id="sec-ch31-manufacturing" class="level3" data-number="31.8.1">
+<h3 data-number="31.8.1" class="anchored" data-anchor-id="sec-ch31-manufacturing"><span class="header-section-number">31.8.1</span> Manufacturing and Developability</h3>
+<p>Designed proteins must be producible at scale in expression systems such as bacteria, yeast, or mammalian cells. Expression levels, solubility, and purification behavior determine manufacturing feasibility and cost. Foundation models trained on expression data can predict which sequences are likely to express well, enabling design pipelines that optimize not only for function but for manufacturability. <em>[Citation Needed]</em></p>
+<p>For therapeutic proteins, <strong>developability</strong> encompasses additional properties including stability during storage, compatibility with formulation requirements, and behavior during analytical characterization. Aggregation propensity, chemical degradation sites (oxidation, deamidation), and glycosylation patterns all affect developability. Computational tools increasingly predict these properties from sequence, enabling their incorporation as design constraints.</p>
+</section>
+<section id="sec-ch31-biosecurity" class="level3" data-number="31.8.2">
+<h3 data-number="31.8.2" class="anchored" data-anchor-id="sec-ch31-biosecurity"><span class="header-section-number">31.8.2</span> Safety and Biosecurity Considerations</h3>
+<p>The same capabilities that enable beneficial design applications also raise biosecurity concerns. Generative models trained on pathogen sequences might in principle be used to design enhanced pathogens or reconstruct dangerous organisms. The dual-use potential of biological design technology requires ongoing attention to safety practices and governance frameworks.</p>
+<p>Current foundation models do not provide straightforward paths to bioweapon development; designing a functional pathogen requires capabilities far beyond predicting sequence properties. As models improve and integrate with automated synthesis and testing platforms, the barrier to misuse may decrease. Responsible development practices, including careful consideration of training data, model access policies, and monitoring for concerning use patterns, are essential components of the foundation model ecosystem. These considerations connect to the broader discussion of safety and ethics in <a href="../part_6/p6-ch27-regulatory.html#sec-ch27-regulatory" class="quarto-xref"><span>Section 27.1</span></a>.</p>
+</section>
+</section>
+<section id="sec-ch31-algorithms" class="level2" data-number="31.9">
+<h2 data-number="31.9" class="anchored" data-anchor-id="sec-ch31-algorithms"><span class="header-section-number">31.9</span> Algorithmic Search and Optimization</h2>
+<p>Design algorithms must navigate vast sequence spaces to identify candidates with desired properties. Several algorithmic paradigms have proven effective, each with characteristic strengths and limitations.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each of the following design scenarios, which algorithmic approach would you choose and why?</p>
+<ol type="1">
+<li>Optimizing a single position in an enzyme active site for catalytic activity</li>
+<li>Designing a library of 10,000 diverse antibody variants for experimental screening</li>
+<li>Finding a sequence that maximizes binding affinity while maintaining stability above a threshold</li>
+<li>Exploring the fitness landscape around a well-characterized parental protein</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-24" class="callout-24-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><strong>Gradient-based optimization</strong> - single position allows exhaustive search of 20 amino acids, or gradient methods if using soft encodings. (2) <strong>Monte Carlo or evolutionary algorithms</strong> - generate diverse populations naturally; avoid mode collapse. (3) <strong>Constrained optimization or multi-objective evolutionary</strong> - explicit constraint handling for stability threshold. (4) <strong>Bayesian optimization</strong> - sample-efficient exploration when starting from known good sequence; balances exploitation and exploration naturally.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p><strong>Gradient-based optimization</strong> treats foundation models as differentiable functions and computes gradients of objectives with respect to input sequence representations. Because sequences are discrete while gradients are continuous, optimization operates on relaxed representations (probability distributions over nucleotides or amino acids) that are projected back to discrete sequences for evaluation. The relaxation step is necessary because gradient descent requires continuous inputs: a “soft” one-hot encoding represents each position as a probability distribution over amino acids (e.g., 0.7 Ala, 0.2 Gly, 0.1 Ser) rather than a discrete choice, allowing gradients to flow and guide optimization. Projection to discrete sequences occurs either through argmax (selecting the highest-probability amino acid) or through stochastic sampling from the learned distribution. This approach efficiently navigates high-dimensional spaces but can produce adversarial sequences that exploit model weaknesses rather than achieving genuine biological function.</p>
+<p><strong>Evolutionary algorithms</strong> maintain populations of candidate sequences that undergo mutation, recombination, and selection based on fitness scores from foundation model oracles or experimental assays. This approach naturally handles discrete sequence spaces and can maintain diversity to avoid local optima. Multi-objective evolutionary algorithms explicitly construct Pareto frontiers of solutions trading off competing objectives.</p>
+<p>Bayesian optimization models the sequence-to-fitness mapping with a probabilistic surrogate (typically a Gaussian process or ensemble neural network) and uses acquisition functions to balance exploration of uncertain regions with exploitation of predicted optima. This approach is particularly effective when experimental evaluations are expensive and each design round must be carefully chosen.</p>
+<p><strong>Monte Carlo methods</strong> sample sequences from distributions defined by foundation model likelihoods, optionally biased toward high-scoring regions through importance weighting or Markov chain Monte Carlo. These approaches naturally integrate foundation model priors with task-specific objectives and can generate diverse candidate sets for experimental screening.</p>
+<p>The table below summarizes when to use each algorithmic approach.</p>
+<div id="tbl-algorithm-selection" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-algorithm-selection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;31.3: Algorithm selection guide for sequence design.
+</figcaption>
+<div aria-describedby="tbl-algorithm-selection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Algorithm</th>
+<th>Best When</th>
+<th>Strengths</th>
+<th>Limitations</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Gradient-based</strong></td>
+<td>Differentiable oracle available; continuous relaxation feasible</td>
+<td>Fast; high-dimensional</td>
+<td>Adversarial solutions; local optima</td>
+</tr>
+<tr class="even">
+<td><strong>Evolutionary</strong></td>
+<td>Need diversity; multi-objective</td>
+<td>Handles discrete spaces; Pareto fronts</td>
+<td>Slower convergence</td>
+</tr>
+<tr class="odd">
+<td><strong>Bayesian optimization</strong></td>
+<td>Expensive experiments; need uncertainty</td>
+<td>Sample-efficient; principled exploration</td>
+<td>Scales poorly to high dimensions</td>
+</tr>
+<tr class="even">
+<td><strong>Monte Carlo</strong></td>
+<td>Foundation model provides good prior; want library diversity</td>
+<td>Natural uncertainty; diverse outputs</td>
+<td>May be slow to find optima</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The choice among algorithmic approaches depends on the specific design problem, available computational resources, and experimental constraints. Many practical pipelines combine multiple approaches: generative sampling to produce initial candidate pools, gradient-based refinement to optimize specific objectives, and active learning to select informative experimental tests.</p>
+</section>
+<section id="sec-ch31-generative-evaluation" class="level2" data-number="31.10">
+<h2 data-number="31.10" class="anchored" data-anchor-id="sec-ch31-generative-evaluation"><span class="header-section-number">31.10</span> Evaluating Generative Design</h2>
+<p>Assessing whether a generative model produces useful designs requires metrics that capture multiple dimensions of quality. Unlike discriminative models evaluated by accuracy on held-out data, generative models must produce outputs that are simultaneously novel (not merely retrieving training examples), valid (satisfying basic biological constraints), diverse (exploring the design space rather than collapsing to narrow modes), and functional (achieving desired biological properties). No single metric captures all these requirements; comprehensive evaluation demands a suite of complementary assessments.</p>
+<section id="sec-ch31-computational-metrics" class="level3" data-number="31.10.1">
+<h3 data-number="31.10.1" class="anchored" data-anchor-id="sec-ch31-computational-metrics"><span class="header-section-number">31.10.1</span> Computational Quality Metrics</h3>
+<p><strong>Perplexity and likelihood</strong> measure how well generated sequences match the statistical patterns of natural biology. A generative model trained on natural proteins should assign higher likelihood to generated sequences that resemble natural ones. Perplexity (the exponentiated average negative log-likelihood) provides a scalar summary: lower perplexity indicates that generated sequences appear more natural according to the model’s learned distribution. However, low perplexity alone does not guarantee functional designs; a model might generate highly probable but biologically inert sequences that closely mimic common motifs without capturing rare functional features.</p>
+<p><strong>Novelty</strong> quantifies how different generated sequences are from training data. Sequence identity to nearest training neighbors provides a simple measure: sequences with less than 30% identity to any training protein clearly represent novel designs. More sophisticated approaches compute distances in embedding space, identifying generated sequences that occupy regions unrepresented in training data. The challenge lies in balancing novelty against validity: sequences too similar to training data offer limited design value, while sequences too different may fail to fold or function.</p>
+<p><strong>Diversity</strong> measures the variety within a set of generated sequences. Internal diversity metrics quantify pairwise distances within generated batches; low diversity indicates mode collapse where the model repeatedly generates similar sequences. Coverage metrics assess what fraction of the natural sequence space is represented by generated samples. Diversity matters for practical applications: a design campaign benefits from exploring multiple solutions rather than converging on a single candidate, since experimental validation will reveal unpredicted failures among computationally promising designs.</p>
+<p><strong>Validity</strong> assesses whether generated sequences satisfy basic biological constraints. For proteins, validity might require that sequences are predicted to fold (using <em>AlphaFold2</em> or <em>ESMFold</em> structure prediction), contain no forbidden amino acid patterns, and have appropriate length distributions. For regulatory elements, validity might require balanced GC content, absence of restriction enzyme sites, and compatibility with delivery vectors. Validity filters identify obvious failures before expensive experimental testing, but passing validity checks does not guarantee function.</p>
+<div id="fig-generative-evaluation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-generative-evaluation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_7/ch31/07-fig-generative-evaluation.svg" class="img-fluid figure-img"></p>
+<figcaption>Evaluating generative sequence models</figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-generative-evaluation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31.7: Evaluating generative sequence models. Four dimensions: <strong>Diversity</strong> measures variation among outputs (avoiding mode collapse); <strong>Novelty</strong> assesses distance from training examples (avoiding memorization); <strong>Validity</strong> checks structural correctness (foldable, proper chemistry); <strong>Function</strong> measures experimental performance (ultimate test). These metrics can trade off—highly novel sequences may have lower validity. Critical insight: computational metrics provide useful screening, but only experimental validation confirms that generated sequences actually function as intended.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="sec-ch31-functional-assessment" class="level3" data-number="31.10.2">
+<h3 data-number="31.10.2" class="anchored" data-anchor-id="sec-ch31-functional-assessment"><span class="header-section-number">31.10.2</span> Functional Assessment</h3>
+<p>Computational metrics provide necessary but insufficient evidence of design success. The ultimate test is whether generated sequences achieve their intended biological function, which requires experimental validation that can only partially be predicted computationally.</p>
+<p><strong>Structure prediction</strong> offers an intermediate level of assessment between purely computational metrics and experimental validation. <em>AlphaFold2</em> and <em>ESMFold</em> predict whether generated protein sequences fold into well-defined structures, with predicted local distance difference test (pLDDT) scores providing residue-level confidence estimates (<a href="../part_4/p4-ch16-protein-lm.html#sec-ch16-esmfold" class="quarto-xref"><span>Section 16.4</span></a>). Designs with low predicted confidence likely fail to fold correctly. For generated regulatory elements, models like <em>Enformer</em> predict expression levels and chromatin state, providing functional estimates without wet-lab experiments. These predictions inherit the limitations of the underlying models: they may overestimate success for sequences that exploit model artifacts rather than achieving genuine biological function.</p>
+<p><strong>Oracle model evaluation</strong> uses trained predictors to estimate functional properties of generated sequences. Binding affinity predictors assess designed antibodies; stability predictors evaluate protein designs; expression models score regulatory elements. When oracle models are distinct from the generative model, this evaluation provides independent evidence of quality. However, oracle models themselves have limited accuracy, particularly for sequences far from their training distributions. A design might score highly on an oracle that has never seen similar sequences, yet fail experimentally.</p>
+<p><strong>Experimental success rates</strong> provide ground truth that computational metrics can only approximate. Published design studies report widely varying success rates depending on the design target and evaluation criteria. <em>De novo</em> protein design achieves expression rates of 30-70% for well-designed sequences, with functional activity observed in 5-30% of expressed candidates <span class="citation" data-cites="huang_coming_2016">(<a href="../bib/references.html#ref-huang_coming_2016" role="doc-biblioref"><strong>huang_coming_2016?</strong></a>)</span>. Designed antibodies targeting challenging epitopes may yield functional binders from 1-10% of tested sequences. Regulatory element design success rates vary enormously depending on the complexity of the specification and the stringency of activity requirements.</p>
+<p>These success rates reflect the combined limitations of generative models, oracle predictors, and experimental systems. Improving any component, whether by training better generative priors, developing more accurate oracles, or refining experimental assays, can increase overall design success. The closed-loop DBTL approach (<span class="quarto-unresolved-ref">?sec-ch32-dbtl</span>) systematically addresses these limitations by using experimental failures to improve models for subsequent design rounds.</p>
+</section>
+<section id="sec-ch31-generative-benchmarks" class="level3" data-number="31.10.3">
+<h3 data-number="31.10.3" class="anchored" data-anchor-id="sec-ch31-generative-benchmarks"><span class="header-section-number">31.10.3</span> Benchmarking Generative Models</h3>
+<p>Standardized benchmarks enable comparison across generative approaches, though constructing appropriate benchmarks for design presents unique challenges. Unlike prediction benchmarks where held-out data provides unambiguous ground truth, design benchmarks must assess open-ended generation where many valid solutions exist.</p>
+<p><strong>Retrospective benchmarks</strong> evaluate whether models can recover known functional sequences when given appropriate conditioning. Given a protein structure, can an inverse folding model generate a sequence that folds to that structure? Given a desired expression profile, can a regulatory model generate an element that achieves it? These evaluations test necessary capabilities but may not predict performance on genuinely novel design targets where the correct answer is unknown.</p>
+<p><strong>Prospective experimental validation</strong> provides the strongest benchmark but requires substantial resources. Community efforts like CASP (Critical Assessment of Structure Prediction) have driven progress in prediction; analogous competitions for design could similarly accelerate the field. Current efforts to establish design benchmarks include collections of deep mutational scanning data for evaluating predicted fitness landscapes and standardized assays for comparing designed proteins to natural sequences.</p>
+<p><strong>Meta-evaluation</strong> assesses whether computational metrics predict experimental outcomes. If high novelty correlates with experimental failure while low perplexity correlates with success, practitioners can use computational metrics to prioritize candidates. Establishing these correlations requires accumulating paired computational-experimental data across diverse design campaigns. As more groups publish both metrics and validation results, the field develops better understanding of which computational assessments matter for practical success.</p>
+</section>
+</section>
+<section id="sec-ch31-conclusion" class="level2" data-number="31.11">
+<h2 data-number="31.11" class="anchored" data-anchor-id="sec-ch31-conclusion"><span class="header-section-number">31.11</span> From Understanding to Creating</h2>
+<p>Sequence design represents the frontier where foundation models transition from tools for understanding biology to engines for creating it. The field has advanced from designing individual stable proteins to engineering complex molecular machines, from optimizing isolated regulatory elements to programming cellular behavior, from incremental improvement of existing sequences to <em>de novo</em> creation of functions not found in nature. The constraints of natural evolution no longer bound the sequences we can consider; the statistical patterns of existing biology provide priors that guide exploration of novel territory.</p>
+<p>The validation bottleneck persists as perhaps the most fundamental limitation. Computational design can propose candidates faster than experiments can test them, creating pressure to improve both predictive accuracy (reducing false positives that waste experimental resources) and experimental throughput (enabling more designs to be evaluated). Automated laboratories, standardized assay platforms, and improved experimental design methods all contribute to accelerating the design-build-test-learn cycle, but the gap between computational proposal and experimental validation remains substantial.</p>
+<p>The transition from prediction to design amplifies both the potential benefits and the risks of these technologies. A model that predicts protein function enables analysis; a model that designs protein function enables creation. Ensuring that designed biology serves human flourishing while minimizing potential harms requires not just technical advances but thoughtful governance, inclusive deliberation about applications, and ongoing attention to safety. These broader considerations connect sequence design to regulatory, ethical, and societal dimensions (<a href="../part_6/p6-ch27-regulatory.html#sec-ch27-regulatory" class="quarto-xref"><span>Section 27.1</span></a>), where the technical capabilities developed throughout genomic AI meet the human systems that will determine how they are used.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Chapter Summary
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<div class="callout callout-style-default callout-tip callout-titled" title="Test Yourself">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Test Yourself
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before reviewing the summary, test your recall:</p>
+<ol type="1">
+<li>Why is the design problem fundamentally harder than the prediction problem? What changes when you invert from “sequence → function” to “function → sequence”?</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-26-contents" aria-controls="callout-26" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-26" class="callout-26-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Prediction evaluates one sequence (computable in milliseconds); design must search astronomically large spaces (20^200 for a 200-residue protein). Prediction stays near training data where models are accurate; design optimizes toward extremes where models become unreliable (distribution shift). Prediction has ground truth for validation; design creates novel sequences with unknown true function, requiring expensive experimental validation.</p>
+</div>
+</div>
+</div>
+<ol start="2" type="1">
+<li>Compare sequence-based protein design (using language models) with structure-aware design (using diffusion and inverse folding). What are the advantages of each approach?</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-27-contents" aria-controls="callout-27" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-27" class="callout-27-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Sequence-based (PLMs): Advantages include computational efficiency, strong priors from evolutionary data, good for variant optimization. Limitations: restricted to known fold families. Structure-aware (RFdiffusion + ProteinMPNN): Advantages include ability to generate entirely novel topologies, target specific binding geometries, design for function-first. Limitations: higher computational cost, requires structural specification. Choose PLMs for optimizing existing proteins, structure-aware for de novo creation.</p>
+</div>
+</div>
+</div>
+<ol start="3" type="1">
+<li>What are the four key dimensions for evaluating generative sequence models (novelty, validity, diversity, functionality)? Why is no single metric sufficient?</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-28-contents" aria-controls="callout-28" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-28" class="callout-28-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Novelty: distance from training data (avoid memorization); (2) Validity: satisfies basic constraints (foldable, correct chemistry); (3) Diversity: variation among outputs (avoid mode collapse); (4) Functionality: achieves intended purpose (ultimate test). These can trade off—highly novel sequences may have lower validity. High validity doesn’t guarantee function. High diversity is useless if all designs fail. Comprehensive evaluation requires assessing all dimensions.</li>
+</ol>
+</div>
+</div>
+</div>
+<ol start="4" type="1">
+<li>Describe a design-build-test-learn cycle for protein engineering. How do foundation models contribute at each stage, and where does the bottleneck typically occur?</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-29-contents" aria-controls="callout-29" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-29" class="callout-29-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Design: FM scores candidates, optimization identifies promising sequences (seconds-minutes). Build: DNA synthesis and assembly create physical constructs (days). Test: expression and functional assays measure performance (days-weeks). Learn: results update models for next cycle. FMs contribute in Design (generative priors, fitness prediction) and Learn (incorporating experimental data to improve predictions). Bottleneck: Build-Test phases (days-weeks) vs.&nbsp;fast Design (seconds), limiting iteration speed.</p>
+</div>
+</div>
+</div>
+<ol start="5" type="1">
+<li>What characteristic failure modes should you watch for in model-guided design (distribution shift, mode collapse, reward hacking)? Give an example of each.</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-30-contents" aria-controls="callout-30" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-30" class="callout-30-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Distribution shift: optimization pushes into regions where FM predictions are unreliable (e.g., designed protein with 15% identity to any training sequence—model never saw such distant sequences). Mode collapse: generative model produces minor variants of training sequences rather than novel designs (all generated antibodies are &gt;95% identical to natural sequences in database). Reward hacking: optimization exploits model artifacts (e.g., promoter design finds sequences with spurious features correlating with high expression in training data but having no causal effect).</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>This chapter explored how foundation models enable the transition from predicting sequence function to designing sequences with desired properties.</p>
+<p><strong>Key Topics Covered:</strong></p>
+<ul>
+<li><strong>Design formalism:</strong> Mathematical frameworks (optimization, conditional generation, constrained optimization) that formalize the inverse prediction problem</li>
+<li><strong>Protein design:</strong> Sequence-based approaches using language models and structure-aware methods using diffusion and inverse folding</li>
+<li><strong>Regulatory design:</strong> Engineering promoters, enhancers, and splicing elements using gradient-based optimization and generative models</li>
+<li><strong>mRNA optimization:</strong> Balancing translation efficiency, stability, and immunogenicity through codon and UTR design</li>
+<li><strong>Closed-loop workflows:</strong> Design-Build-Test-Learn cycles with active learning for efficient experimental exploration</li>
+<li><strong>Validation and failure modes:</strong> Understanding distribution shift, mode collapse, and reward hacking in model-guided design</li>
+<li><strong>Generative evaluation:</strong> Metrics for novelty, validity, diversity, and functionality in design assessment</li>
+</ul>
+<p><strong>Key Takeaways:</strong></p>
+<ol type="1">
+<li>Design inverts prediction: instead of asking “what does this sequence do?”, we ask “what sequence achieves this function?” This inversion exposes model limitations invisible during prediction.</li>
+<li>Structure provides a powerful intermediate representation for protein design, constraining the search from astronomical sequence space to physically realizable geometries.</li>
+<li>Closed-loop DBTL cycles are essential because computational design generates hypotheses, not certainties. Models improve through iterative experimental feedback.</li>
+</ol>
+<p><strong>Looking Ahead:</strong></p>
+<ul>
+<li><a href="p7-ch32-frontiers.html" class="quarto-xref"><span>Chapter 32</span></a> explores emerging directions in genomic AI, including many-body effects, temporal dynamics, and increasingly integrated models</li>
+<li>The biosecurity considerations raised here connect to the broader governance discussion in <a href="../part_6/p6-ch27-regulatory.html#sec-ch27-regulatory" class="quarto-xref"><span>Section 27.1</span></a></li>
+<li>The lab-in-the-loop concepts from <span class="quarto-unresolved-ref">?sec-ch28-lab-in-loop</span> provide the experimental infrastructure for scaling design campaigns</li>
+</ul>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-deboer_deciphering_2020" class="csl-entry" role="listitem">
+Boer, Carl G. de, Eeshit Dhaval Vaishnav, Ronen Sadeh, Esteban Luis Abeyta, Nir Friedman, and Aviv Regev. 2020. <span>“Deciphering Eukaryotic Gene-Regulatory Logic with 100 Million Random Promoters.”</span> <em>Nature Biotechnology</em> 38 (1): 56–65. <a href="https://doi.org/10.1038/s41587-019-0315-8">https://doi.org/10.1038/s41587-019-0315-8</a>.
+</div>
+<div id="ref-dauparas_proteinmpnn_2022" class="csl-entry" role="listitem">
+Dauparas, J., I. Anishchenko, N. Bennett, H. Bai, R. J. Ragotte, L. F. Milles, B. I. M. Wicky, et al. 2022. <span>“Robust Deep Learning–Based Protein Sequence Design Using <span>ProteinMPNN</span>.”</span> <em>Science</em> 378 (6615): 49–56. <a href="https://doi.org/10.1126/science.add2187">https://doi.org/10.1126/science.add2187</a>.
+</div>
+<div id="ref-ferruz_protgpt2_2022" class="csl-entry" role="listitem">
+Ferruz, Noelia, Steffen Schmidt, and Birte Höcker. 2022. <span>“<span>ProtGPT2</span> Is a Deep Unsupervised Language Model for Protein Design.”</span> <em>Nature Communications</em> 13 (1): 4348. <a href="https://doi.org/10.1038/s41467-022-32007-7">https://doi.org/10.1038/s41467-022-32007-7</a>.
+</div>
+<div id="ref-hsu_learning_2022" class="csl-entry" role="listitem">
+Hsu, Chloe, Robert Verkuil, Jason Liu, Zeming Lin, Brian Hie, Tom Sercu, Adam Lerer, and Alexander Rives. 2022. <span>“Learning Inverse Folding from Millions of Predicted Structures.”</span> In <em>Proceedings of the 39th <span>International</span> <span>Conference</span> on <span>Machine</span> <span>Learning</span></em>, 8946–70. PMLR. <a href="https://proceedings.mlr.press/v162/hsu22a.html">https://proceedings.mlr.press/v162/hsu22a.html</a>.
+</div>
+<div id="ref-madani_progen_2023" class="csl-entry" role="listitem">
+Madani, Ali, Ben Krause, Eric R. Greene, Subu Subramanian, Benjamin P. Mohr, James M. Holton, Jose Luis Olmos, et al. 2023. <span>“Large Language Models Generate Functional Protein Sequences Across Diverse Families.”</span> <em>Nature Biotechnology</em> 41 (8): 1099–1106. <a href="https://doi.org/10.1038/s41587-022-01618-2">https://doi.org/10.1038/s41587-022-01618-2</a>.
+</div>
+<div id="ref-watson_rfdiffusion_2023" class="csl-entry" role="listitem">
+Watson, Joseph L., David Juergens, Nathaniel R. Bennett, Brian L. Trippe, Jason Yim, Helen E. Eisenach, Woody Ahern, et al. 2023. <span>“De Novo Design of Protein Structure and Function with <span>RFdiffusion</span>.”</span> <em>Nature</em> 620 (7976): 1089–1100. <a href="https://doi.org/10.1038/s41586-023-06415-8">https://doi.org/10.1038/s41586-023-06415-8</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../part_7/p7-ch30-drug-discovery.html" class="pagination-link" aria-label="Drug Discovery">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Drug Discovery</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../part_7/p7-ch32-frontiers.html" class="pagination-link" aria-label="Frontiers and Synthesis">
+        <span class="nav-page-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Frontiers and Synthesis</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Copyright 2025-2026, Josh Meehl</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

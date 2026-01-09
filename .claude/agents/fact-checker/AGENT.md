@@ -424,8 +424,8 @@ site:retractionwatch.com "[paper title]"
 ## Coordination with Other Agents
 
 This agent complements:
-- `paper-review` - Evaluates new papers; fact-checker validates existing citations
-- `review-chapter` - Reviews content quality; fact-checker focuses on citation integrity
+- `literature-critic` - Evaluates new papers; fact-checker validates existing citations
+- `chapter-auditor` - Reviews content quality; fact-checker focuses on citation integrity
 - `/bib-audit` - Checks bibliography formatting; fact-checker checks content accuracy
 
 ---

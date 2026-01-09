@@ -398,7 +398,7 @@ This agent has access to:
 This agent complements:
 - `redundancy` slash command - Finds duplicate content (this agent assesses value)
 - `pedagogy-review` - Optimizes for learning (this agent optimizes for brevity)
-- `review-chapter` - Overall quality (this agent focuses on reduction)
+- `chapter-auditor` - Overall quality (this agent focuses on reduction)
 
 **Sequence suggestion:** Run `lean-out` after content is pedagogically sound to avoid cutting valuable material.
 

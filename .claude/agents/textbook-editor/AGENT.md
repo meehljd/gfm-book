@@ -372,12 +372,12 @@ This agent has access to:
 ## Coordination with Other Agents
 
 This agent complements:
-- `review-chapter` - Technical content quality (this agent focuses on prose and publishing)
+- `chapter-auditor` - Technical content quality (this agent focuses on prose and publishing)
 - `pedagogy-review` - Learning optimization (this agent focuses on readability and market)
 - `pre-commit` - Style compliance (this agent goes deeper on professional polish)
 
 **Recommended sequence:**
-1. `review-chapter` for content and structure
+1. `chapter-auditor` for content and structure
 2. `pedagogy-review` for learning effectiveness
 3. `textbook-editor` for publication readiness and market positioning
 

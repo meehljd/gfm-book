@@ -456,7 +456,7 @@ This agent has access to:
 This agent works with:
 - **`figure-creator`** - Takes specs from this agent and produces actual figures
 - **`pedagogy-review`** - Identifies where dual coding (visual + verbal) would help
-- **`review-chapter`** - Checks figure references and placement
+- **`chapter-auditor`** - Checks figure references and placement
 - **`/figures` command** - Quick inventory without full design analysis
 
 ### Recommended Workflow

@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>9&nbsp; Transfer Learning Foundations – Genomic Foundation Models</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../part_3/p3-ch10-adaptation.html" rel="next">
+<link href="../part_3/p3-ch08-pretraining.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part_3/p3--learning.html">Part III: Learning &amp; Evaluation</a></li><li class="breadcrumb-item"><a href="../part_3/p3-ch09-transfer.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Transfer Learning Foundations</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Genomic Foundation Models</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_1/p1--foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part I: Data Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_1/p1-ch01-ngs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Reads to Variants</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_1/p1-ch02-data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Landscape</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_1/p1-ch03-gwas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">GWAS and Polygenic Scores</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_1/p1-ch04-vep-classical.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Classical Variant Prediction</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_2/p2--architectures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part II: Architectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_2/p2-ch05-representations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Tokens and Embeddings</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_2/p2-ch06-cnn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Convolutional Networks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_2/p2-ch07-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Transformers and Attention</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_3/p3--learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part III: Learning &amp; Evaluation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_3/p3-ch08-pretraining.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Pretraining Strategies</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_3/p3-ch09-transfer.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Transfer Learning Foundations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_3/p3-ch10-adaptation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Adaptation Strategies</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_3/p3-ch11-benchmarks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">The Benchmark Landscape</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_3/p3-ch12-evaluation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Evaluation Methods</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_3/p3-ch13-confounding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Confounding and Data Leakage</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_4/p4--fm-families.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part IV: Foundation Model Families</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_4/p4-ch14-fm-principles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Foundation Model Paradigm</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_4/p4-ch15-dna-lm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">DNA Language Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_4/p4-ch16-protein-lm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Protein Language Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_4/p4-ch17-regulatory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Regulatory Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_4/p4-ch18-vep-fm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Variant Effect Prediction</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_5/p5--cellular-context.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part V: Cellular Context</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_5/p5-ch19-rna.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">RNA Structure and Function</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_5/p5-ch20-single-cell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Single-Cell Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_5/p5-ch21-3d-genome.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">3D Genome Organization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_5/p5-ch22-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Graph and Network Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_5/p5-ch23-multi-omics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Multi-Omics Integration</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_6/p6--responsible-deployment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part VI: Evaluation and Trust</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_6/p6-ch24-uncertainty.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Uncertainty Quantification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_6/p6-ch25-interpretability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Interpretability</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_6/p6-ch26-causal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Causality</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_6/p6-ch27-regulatory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Regulatory and Governance</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../part_7/p7--applications.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Part VII: Clinical Translation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_7/p7-ch28-clinical-risk.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Clinical Risk Prediction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_7/p7-ch29-rare-disease.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Rare Disease Diagnosis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_7/p7-ch30-drug-discovery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Drug Discovery</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_7/p7-ch31-design.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Sequence Design</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../part_7/p7-ch32-frontiers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Frontiers and Synthesis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../bib/references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/app-a-dl.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Deep Learning Primer</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/app-b-compute.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Deployment and Compute</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/app-c-data-curation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Data Curation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/app-d-models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Model Reference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/app-e-resources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">Resources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendix/app-f-glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-ch09-source-target" id="toc-sec-ch09-source-target" class="nav-link active" data-scroll-target="#sec-ch09-source-target"><span class="header-section-number">9.1</span> Source and Target Domains</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch09-pretraining-deployment-gap" id="toc-sec-ch09-pretraining-deployment-gap" class="nav-link" data-scroll-target="#sec-ch09-pretraining-deployment-gap"><span class="header-section-number">9.1.1</span> Gap Between Pretraining and Deployment</a></li>
+  <li><a href="#sec-ch09-transfer-outcomes" id="toc-sec-ch09-transfer-outcomes" class="nav-link" data-scroll-target="#sec-ch09-transfer-outcomes"><span class="header-section-number">9.1.2</span> Recognizing Transfer Outcomes</a></li>
+  </ul></li>
+  <li><a href="#sec-ch09-transfer-factors" id="toc-sec-ch09-transfer-factors" class="nav-link" data-scroll-target="#sec-ch09-transfer-factors"><span class="header-section-number">9.2</span> Factors Determining Transfer Success</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch09-task-relatedness" id="toc-sec-ch09-task-relatedness" class="nav-link" data-scroll-target="#sec-ch09-task-relatedness"><span class="header-section-number">9.2.1</span> Task Relatedness</a></li>
+  <li><a href="#sec-ch09-target-data-quantity" id="toc-sec-ch09-target-data-quantity" class="nav-link" data-scroll-target="#sec-ch09-target-data-quantity"><span class="header-section-number">9.2.2</span> Target Data Quantity</a></li>
+  <li><a href="#sec-ch09-model-expressiveness" id="toc-sec-ch09-model-expressiveness" class="nav-link" data-scroll-target="#sec-ch09-model-expressiveness"><span class="header-section-number">9.2.3</span> Model Expressiveness</a></li>
+  <li><a href="#sec-ch09-distribution-overlap" id="toc-sec-ch09-distribution-overlap" class="nav-link" data-scroll-target="#sec-ch09-distribution-overlap"><span class="header-section-number">9.2.4</span> Distribution Overlap</a></li>
+  <li><a href="#factor-interactions" id="toc-factor-interactions" class="nav-link" data-scroll-target="#factor-interactions"><span class="header-section-number">9.2.5</span> Factor Interactions</a></li>
+  </ul></li>
+  <li><a href="#sec-ch09-feature-extraction" id="toc-sec-ch09-feature-extraction" class="nav-link" data-scroll-target="#sec-ch09-feature-extraction"><span class="header-section-number">9.3</span> Feature Extraction and Representation Analysis</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch09-linear-probing" id="toc-sec-ch09-linear-probing" class="nav-link" data-scroll-target="#sec-ch09-linear-probing"><span class="header-section-number">9.3.1</span> Linear Probing</a></li>
+  <li><a href="#sec-ch09-linear-probing-limits" id="toc-sec-ch09-linear-probing-limits" class="nav-link" data-scroll-target="#sec-ch09-linear-probing-limits"><span class="header-section-number">9.3.2</span> When Linear Probing Fails</a></li>
+  <li><a href="#sec-ch09-probing-representations" id="toc-sec-ch09-probing-representations" class="nav-link" data-scroll-target="#sec-ch09-probing-representations"><span class="header-section-number">9.3.3</span> Probing Representations</a></li>
+  <li><a href="#sec-ch09-probing-results" id="toc-sec-ch09-probing-results" class="nav-link" data-scroll-target="#sec-ch09-probing-results"><span class="header-section-number">9.3.4</span> What Probing Reveals About Pretrained Models</a></li>
+  <li><a href="#sec-ch09-probe-guided-adaptation" id="toc-sec-ch09-probe-guided-adaptation" class="nav-link" data-scroll-target="#sec-ch09-probe-guided-adaptation"><span class="header-section-number">9.3.5</span> Probe-Guided Adaptation</a></li>
+  </ul></li>
+  <li><a href="#sec-ch09-summary" id="toc-sec-ch09-summary" class="nav-link" data-scroll-target="#sec-ch09-summary"><span class="header-section-number">9.4</span> Summary</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../part_3/p3--learning.html">Part III: Learning &amp; Evaluation</a></li><li class="breadcrumb-item"><a href="../part_3/p3-ch09-transfer.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Transfer Learning Foundations</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-ch09-transfer" class="quarto-section-identifier"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Transfer Learning Foundations</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<blockquote class="blockquote">
+<p>Transfer learning fails as often as it succeeds. The failures are silent.</p>
+</blockquote>
+<div class="callout callout-style-default callout-note callout-titled" title="Chapter Overview">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Chapter Overview
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Estimated reading time:</strong> 30-40 minutes</p>
+<p><strong>Prerequisites:</strong> Understanding of neural network basics (<a href="../appendix/app-a-dl.html#sec-apx-a-pretraining" class="quarto-xref"><span>Section A.7</span></a>), familiarity with pretraining objectives (<a href="p3-ch08-pretraining.html" class="quarto-xref"><span>Chapter 8</span></a>), and awareness of how genomic sequences are tokenized and embedded (<a href="../part_2/p2-ch05-representations.html" class="quarto-xref"><span>Chapter 5</span></a>).</p>
+<p><strong>You will learn:</strong></p>
+<ul>
+<li>How to determine when transfer learning will help versus hurt your specific task</li>
+<li>The four factors that predict transfer success: task relatedness, data quantity, model expressiveness, and distribution overlap</li>
+<li>How to use linear probing as a diagnostic tool before committing to adaptation</li>
+<li>When frozen features suffice and when more aggressive adaptation is necessary</li>
+<li>How to detect silent transfer failures before they reach clinical applications</li>
+</ul>
+<p><strong>Key insight:</strong> Transfer learning fails silently. A model can produce confident predictions based on patterns completely irrelevant to your task, and nothing in the output signals this failure. The diagnostic tools in this chapter help detect these failures before they cause harm.</p>
+</div>
+</div>
+<p>A protein language model trained on human sequences may confidently score variants in mouse orthologs, producing predictions that look reasonable but reflect human-specific evolutionary pressures irrelevant to mouse biology. A foundation model pretrained on coding sequences may extract features actively misleading for noncoding regulatory elements. A classifier achieving 90% accuracy on common variants may collapse to chance performance on the rare variants that matter most clinically. Nothing in the model’s outputs signals these failures. The predictions look the same whether transfer has succeeded or catastrophically failed. This asymmetry between confident outputs and actual reliability creates the central methodological challenge of applying pretrained models: detecting when transfer works and when it does not, before the predictions reach clinical applications where failures have consequences.</p>
+<p>The promise of transfer learning is substantial. Foundation models trained on billions of evolutionary sequences learn representations that capture protein structure, functional constraints, and sequence grammar without task-specific supervision (see <a href="p3-ch08-pretraining.html" class="quarto-xref"><span>Chapter 8</span></a>). When these representations are applied to downstream tasks with limited labeled data, they can achieve performance that would be impossible for models trained from scratch. A variant effect predictor fine-tuned from <em>ESM-2</em> can classify novel missense mutations using patterns learned from the entire protein universe, not just the handful of variants with clinical annotations. This capacity to generalize from abundant unlabeled data to rare clinical scenarios has driven much of the enthusiasm for genomic foundation models.</p>
+<p>The reality requires careful navigation. Every adaptation decision involves tradeoffs: preserving pretrained knowledge versus enabling task-specific learning, computational efficiency versus model flexibility, rapid deployment versus careful validation. Like a medical student who studied general anatomy before specializing in cardiology, the question is how much to retain from broad training versus how deeply to reshape understanding for the specialty. Full <strong>fine-tuning</strong> updates all parameters, risking catastrophic forgetting of pretrained knowledge—akin to a specialist who forgets basic anatomy while mastering cardiac surgery. Feature extraction freezes all pretrained parameters, limiting adaptation to task-specific patterns—like applying general anatomical knowledge directly without specialty training. Parameter-efficient methods (adapters, LoRA, prompt tuning) navigate between these extremes, but each makes different assumptions about where adaptation should occur.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Key Insight">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Key Insight
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Transfer learning involves a fundamental tension: the pretrained model learned something useful, but not necessarily what you need. Your task is to determine whether what it learned helps, hurts, or is irrelevant to your specific problem—before making predictions that others will trust.</p>
+</div>
+</div>
+<section id="sec-ch09-source-target" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="sec-ch09-source-target"><span class="header-section-number">9.1</span> Source and Target Domains</h2>
+<p>When a cardiologist requests variant interpretation for a patient with hypertrophic cardiomyopathy, the clinical need (classifying a specific <em>MYH7</em> variant) differs fundamentally from the data available during model development (millions of protein sequences sampled across all of evolution). Bridging this gap requires understanding what properties of pretraining determine whether transfer will succeed. When this bridge fails, patients receive confident predictions based on patterns irrelevant to their clinical context.</p>
+<div id="fig-domain-alignment" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-domain-alignment-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_3/ch09/01-fig-domain-alignment.svg" class="img-fluid figure-img"></p>
+<figcaption>Domain shift in genomic transfer learning</figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-domain-alignment-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.1: Domain shift in genomic transfer learning. The source domain (left) contains billions of diverse genomic sequences from which pretrained models learn statistical regularities including local motifs, sequence composition, and conservation patterns. The target domain (right) presents sparse labeled examples for specific clinical tasks such as pathogenic variant classification or tissue-specific enhancer prediction. In the learned representation space (center), some features transfer effectively (solid arrows): local motif recognition and conservation patterns align between domains. Other features transfer poorly (dashed arrows): long-range regulatory logic and tissue-specific patterns present in targets may be absent or misleading in source representations. The challenge is that transfer failures are silent—models produce confident predictions regardless of whether underlying features are appropriate for the target task.
+</figcaption>
+</figure>
+</div>
+<section id="sec-ch09-pretraining-deployment-gap" class="level3" data-number="9.1.1">
+<h3 data-number="9.1.1" class="anchored" data-anchor-id="sec-ch09-pretraining-deployment-gap"><span class="header-section-number">9.1.1</span> Gap Between Pretraining and Deployment</h3>
+<p>The <strong>source domain</strong> encompasses the data and objectives used during pretraining. For DNA foundation models, source domains typically include reference genomes, pan-genomic collections spanning population diversity, or metagenomic assemblies sampling environmental sequence space <span class="citation" data-cites="ji_dnabert_2021 dalla-torre_nucleotide_2023">(<a href="../bib/references.html#ref-ji_dnabert_2021" role="doc-biblioref">Ji et al. 2021</a>; <a href="../bib/references.html#ref-dalla-torre_nucleotide_2023" role="doc-biblioref">Dalla-Torre et al. 2023</a>)</span>. For protein models, databases like UniRef provide billions of sequences representing the diversity of evolutionary history <span class="citation" data-cites="suzek_uniref_2007">(<a href="../bib/references.html#ref-suzek_uniref_2007" role="doc-biblioref">Suzek et al. 2007</a>)</span>. Pretraining objectives (masked language modeling, next-token prediction, contrastive learning) encourage models to capture statistical regularities that help predict held-out tokens: local motifs, compositional patterns, and the signatures distinguishing functional from random sequence (see <a href="p3-ch08-pretraining.html" class="quarto-xref"><span>Chapter 8</span></a> for detailed treatment of these objectives). These learned regularities become the representations that might transfer to downstream tasks.</p>
+<p>The <strong>target domain</strong> presents a fundamentally different challenge. Rather than abundant unlabeled sequence, the target domain offers sparse labeled examples of a specific clinical or biological question: a few thousand enhancer sequences with luciferase measurements, several hundred variants with expert pathogenicity classifications, chromatin profiles across a handful of disease-relevant cell types. The target distribution often looks nothing like pretraining data. Pathogenic variants are rare outliers, not typical protein sequences. Tissue-specific enhancers exhibit patterns that genome-wide pretraining may never emphasize. Disease-associated regulatory elements may have been systematically underrepresented in reference data <span class="citation" data-cites="kircher_general_2014">(<a href="../bib/references.html#ref-kircher_general_2014" role="doc-biblioref">Kircher et al. 2014</a>)</span>.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Stop and Think">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stop and Think
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Consider a protein language model pretrained on UniRef sequences. You want to use it to predict pathogenicity of novel missense variants. What types of patterns learned during pretraining might help this task? What patterns might be irrelevant or misleading?</p>
+<p><em>Think about what the pretraining objective actually rewarded the model for learning, and whether those patterns correlate with what makes a variant pathogenic.</em></p>
+</div>
+</div>
+</section>
+<section id="sec-ch09-transfer-outcomes" class="level3" data-number="9.1.2">
+<h3 data-number="9.1.2" class="anchored" data-anchor-id="sec-ch09-transfer-outcomes"><span class="header-section-number">9.1.2</span> Recognizing Transfer Outcomes</h3>
+<p>Not all transfer helps, and distinguishing outcomes requires explicit validation. <strong>Positive transfer</strong> accelerates learning or improves final performance beyond training from scratch. <strong>Negative transfer</strong> occurs when pretraining actively hurts, either because learned features conflict with task requirements or because pretrained initialization creates optimization difficulties <span class="citation" data-cites="wang_characterizing_2019">(<a href="../bib/references.html#ref-wang_characterizing_2019" role="doc-biblioref">Wang et al. 2019</a>)</span>. Why would pretraining ever hurt? Similar to how learning British English spelling conventions can interfere with American English writing—“colour” feels right even when “color” is required—prior knowledge sometimes points in the wrong direction. Consider a model pretrained on protein-coding sequences that learns to recognize patterns like codon usage bias, amino acid composition, and reading frame consistency. When applied to noncoding regulatory sequences, these coding-specific patterns become noise that the model must unlearn before it can capture regulatory motif patterns. The pretrained initialization points the model in a direction that conflicts with the target task, and gradient descent must first undo this initialization before making progress—wasting optimization steps and potentially never fully escaping the misleading starting point. Neutral transfer describes situations where pretraining neither helps nor hurts, wasting computational resources on pretrained models without benefit. When a cardiology team adapts a DNA language model for <em>KCNQ1</em> long QT syndrome variant classification, they must empirically verify which outcome applies to their specific task rather than assuming transfer will help because it helped elsewhere.</p>
+<div id="tbl-transfer-outcomes" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-transfer-outcomes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.1: Possible outcomes when applying pretrained models to new tasks. The critical challenge is detecting negative transfer, which often manifests only on out-of-distribution examples.
+</figcaption>
+<div aria-describedby="tbl-transfer-outcomes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 29%">
+<col style="width: 21%">
+<col style="width: 15%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Transfer Outcome</th>
+<th>Definition</th>
+<th>Example</th>
+<th>Detection Strategy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Positive transfer</strong></td>
+<td>Pretrained model improves task performance</td>
+<td>ESM embeddings improve variant classification over one-hot encoding</td>
+<td>Linear probe outperforms random features</td>
+</tr>
+<tr class="even">
+<td><strong>Negative transfer</strong></td>
+<td>Pretraining hurts task performance</td>
+<td>Coding-sequence model produces misleading features for noncoding regions</td>
+<td>Fine-tuned model underperforms from-scratch training</td>
+</tr>
+<tr class="odd">
+<td><strong>Neutral transfer</strong></td>
+<td>Pretraining neither helps nor hurts</td>
+<td>Model captures irrelevant patterns; adaptation simply overwrites them</td>
+<td>Similar performance with and without pretraining</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+</section>
+<section id="sec-ch09-transfer-factors" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="sec-ch09-transfer-factors"><span class="header-section-number">9.2</span> Factors Determining Transfer Success</h2>
+<p>Four factors determine whether this distributional gap can be bridged. Task relatedness measures whether target predictions depend on patterns the model learned during pretraining; predicting transcription factor binding after sequence pretraining succeeds because both involve local motif recognition, while predicting three-dimensional chromatin contacts may require spatial relationships the pretraining objective never captured (see <a href="../part_5/p5-ch21-3d-genome.html" class="quarto-xref"><span>Chapter 21</span></a> for chromatin contact prediction approaches). Target data quantity constrains which adaptation strategies avoid overfitting; with thousands of labeled examples, aggressive fine-tuning can reshape representations, but with dozens, only the lightest approaches remain viable. Model expressiveness influences adaptation flexibility, as larger models encode richer internal representations that can potentially serve more diverse downstream tasks but also risk memorizing small target datasets. Distribution overlap between source and target determines how much learned knowledge applies; human regulatory elements share patterns with mouse elements (enabling cross-species transfer) but diverge in species-specific enhancers (limiting it).</p>
+<p>Understanding why transfer succeeds or fails requires examining four interacting factors that collectively determine whether pretrained representations serve a new task. These factors are not independent: a highly related task may still fail with insufficient data, while abundant data cannot rescue transfer when source and target distributions fundamentally diverge. Practitioners must evaluate all four before committing to a transfer learning approach.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Mathematical Content Ahead">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Mathematical Content Ahead
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The following sections discuss quantitative thresholds and factor interactions. The numerical guidance (e.g., “fewer than 500 examples”) is approximate and context-dependent. Focus on the underlying logic: why each factor matters and how they interact.</p>
+</div>
+</div>
+<section id="sec-ch09-task-relatedness" class="level3" data-number="9.2.1">
+<h3 data-number="9.2.1" class="anchored" data-anchor-id="sec-ch09-task-relatedness"><span class="header-section-number">9.2.1</span> Task Relatedness</h3>
+<p>Transfer succeeds when target predictions depend on patterns the model learned during pretraining. This dependency is not always obvious from surface-level task descriptions. A model pretrained on DNA sequence using masked language modeling learns to predict nucleotides from context, which implicitly requires learning motifs, sequence composition, and local dependencies. Predicting transcription factor binding sites succeeds because binding depends on sequence motifs that the pretraining objective directly rewarded the model for recognizing. Predicting three-dimensional chromatin contacts typically fails because spatial relationships between distant genomic loci depend on protein-mediated interactions, chromatin accessibility, and nuclear architecture that sequence statistics alone cannot capture (see <a href="../part_5/p5-ch21-3d-genome.html" class="quarto-xref"><span>Chapter 21</span></a> for approaches that explicitly model chromatin structure).</p>
+<p>The key question is not whether source and target tasks share a domain (both involve genomics) but whether they share relevant features. Protein language models pretrained on evolutionary sequences learn representations that capture structural constraints, functional domains, and evolutionary conservation. Variant effect prediction succeeds because pathogenic variants often disrupt these same structural and functional properties. Protein-protein interaction prediction may succeed partially (interaction surfaces correlate with evolutionary conservation) but fail for interaction specificity (which residues determine <em>which</em> partners bind), because the pretraining objective never distinguished between interacting and non-interacting proteins.</p>
+<p>Practitioners can estimate task relatedness before committing to transfer through three approaches. First, linear probing (see <a href="#sec-ch09-linear-probing" class="quarto-xref"><span>Section 9.3.1</span></a>) reveals whether frozen pretrained representations contain task-relevant information; if a simple classifier on frozen embeddings outperforms random features, the pretraining objective captured something useful. Second, examining what the pretraining objective explicitly rewards clarifies what patterns the model was incentivized to learn; masked language modeling rewards local context prediction, contrastive learning rewards distinguishing related from unrelated sequences, and next-token prediction rewards sequential dependencies. Third, consulting the literature for related transfer attempts provides empirical guidance; if similar transfers have failed for this model class, success is unlikely without architectural or data modifications.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before continuing, ensure you can answer: What is the difference between task relatedness based on domain (both are “genomics”) versus feature alignment (both require the same learned patterns)? Why does the latter matter more for transfer success?</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Domain relatedness refers to tasks being in the same field (both involving DNA or proteins), while feature alignment means tasks require similar learned patterns in their representations. Feature alignment matters more because transfer success depends on whether the pretrained features are actually useful for the target task, not just whether tasks share a domain label. For example, predicting gene expression and variant pathogenicity are both “genomics” but require different features, while splice site prediction and variant effect prediction both benefit from learning local sequence constraints despite different prediction targets.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>When task relatedness is low, three strategies may salvage transfer. Intermediate fine-tuning on a related auxiliary task can build bridge representations: a model pretrained on general DNA sequence might be fine-tuned on chromatin accessibility prediction before the final adaptation to enhancer-gene linking, because chromatin accessibility provides intermediate features more relevant to regulatory relationships than raw sequence statistics. Multi-task fine-tuning that includes the target task alongside related tasks can encourage the model to extract shared features. Alternatively, practitioners may conclude that transfer is inappropriate for this task and proceed with from-scratch training, which remains a valid choice when pretrained representations offer no advantage.</p>
+</section>
+<section id="sec-ch09-target-data-quantity" class="level3" data-number="9.2.2">
+<h3 data-number="9.2.2" class="anchored" data-anchor-id="sec-ch09-target-data-quantity"><span class="header-section-number">9.2.2</span> Target Data Quantity</h3>
+<p>Available labeled data constrains which adaptation strategies avoid overfitting, creating a fundamental limit on adaptation complexity. The thresholds are approximate but provide useful guidance: with fewer than 500 labeled examples, only linear probing remains viable because any approach that updates pretrained parameters will overfit catastrophically. Between 500 and 5,000 examples, parameter-efficient methods like LoRA introduce enough flexibility to improve over frozen features while maintaining implicit regularization through low-rank constraints and frozen backbone parameters. Above 10,000 examples, full fine-tuning becomes feasible for adapting pretrained representations to fundamentally different target distributions.</p>
+<div id="tbl-data-thresholds" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-data-thresholds-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.2: Approximate data thresholds for different adaptation strategies. These boundaries are guidelines, not rules—effective thresholds depend on task complexity, class balance, and data quality.
+</figcaption>
+<div aria-describedby="tbl-data-thresholds-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 43%">
+<col style="width: 11%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Data Quantity</th>
+<th>Viable Strategies</th>
+<th>Why</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>&lt; 500 examples</td>
+<td>Linear probing only</td>
+<td>Too few examples to learn new parameters without overfitting</td>
+<td>Underfitting if frozen features lack task-relevant information</td>
+</tr>
+<tr class="even">
+<td>500 - 5,000 examples</td>
+<td>PEFT (LoRA, adapters)</td>
+<td>Low-rank constraints provide implicit regularization</td>
+<td>Hyperparameter sensitivity; overfitting still possible</td>
+</tr>
+<tr class="odd">
+<td>5,000 - 10,000 examples</td>
+<td>PEFT or careful full fine-tuning</td>
+<td>Enough data for some parameter updates</td>
+<td>Catastrophic forgetting if learning rate too high</td>
+</tr>
+<tr class="even">
+<td>&gt; 10,000 examples</td>
+<td>Full fine-tuning viable</td>
+<td>Sufficient data to reshape representations without memorization</td>
+<td>Computational cost; still validate on held-out data</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>These thresholds interact with data quality in ways that complicate simple counting. Five thousand noisy labels from high-throughput screening contribute less information than five hundred expert-curated annotations. Class imbalance matters: a dataset with 10,000 examples split 9,900 negative and 100 positive effectively provides only hundreds of examples for learning positive class features. Redundancy in training data (multiple variants from the same gene, or cells from the same patient) reduces effective sample size because nominally independent examples share confounding factors. The relevant quantity is not raw example count but effective information content for the target task.</p>
+<p>Data augmentation can stretch limited examples further, but augmentation strategies must preserve task-relevant properties. Reverse-complementing DNA sequences provides valid augmentation for tasks with strand-symmetric biology (transcription factor binding is typically strand-symmetric) but introduces noise for tasks with strand-specific signals (RNA secondary structure depends on transcript strand). Random nucleotide masking followed by model infilling can generate plausible sequence variants, but these variants may not span the relevant distribution of task-specific variation. The safest augmentation strategies involve domain knowledge about what transformations preserve task labels.</p>
+<p>When data is severely limited (dozens of examples), practitioners face a choice between three imperfect options. Linear probing on frozen features provides the most stable approach but may miss task-specific patterns not captured in pretrained representations. Few-shot learning methods (see <a href="p3-ch10-adaptation.html#sec-ch10-few-shot" class="quarto-xref"><span>Section 10.6.1</span></a>) attempt to adapt with minimal examples by leveraging structured prompts or metric learning, but success varies dramatically across tasks. Collecting more data, though often expensive, may be the only path to reliable adaptation.</p>
+</section>
+<section id="sec-ch09-model-expressiveness" class="level3" data-number="9.2.3">
+<h3 data-number="9.2.3" class="anchored" data-anchor-id="sec-ch09-model-expressiveness"><span class="header-section-number">9.2.3</span> Model Expressiveness</h3>
+<p>Larger models encode richer internal representations that can potentially serve more diverse downstream tasks, but this expressiveness creates a tension with overfitting risk. A 3-billion parameter protein language model captures subtle evolutionary signals invisible to smaller models, encoding relationships between distant residues, complex motif interactions, and nuanced conservation patterns. These rich representations enable zero-shot transfer to tasks the model was never explicitly trained for, because the pretraining objective forced the model to learn features that happen to correlate with task-relevant properties. <em>ESM-2</em> at 15 billion parameters predicts protein structure contact maps despite never seeing structure labels during training, because evolutionary constraints that determine which sequences survive (the pretraining signal) are the same constraints that determine which structures fold stably (the transfer target).</p>
+<p>The same expressiveness that enables rich transfer creates memorization risk when adaptation data is limited. A highly expressive model can memorize thousands of training examples without learning generalizable patterns, achieving perfect training accuracy while failing entirely on held-out data. This risk scales with model capacity relative to dataset size: a 3-billion parameter model fine-tuned on 500 variants will almost certainly overfit, while the same model fine-tuned on 500,000 variants may generalize effectively.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Stop and Think">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stop and Think
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You have two options: (1) a 150-million parameter model and 1,000 labeled examples, or (2) a 3-billion parameter model with the same 1,000 examples. Which would you expect to generalize better, and why? What adaptation strategy might make the larger model viable?</p>
+</div>
+</div>
+<p>Parameter-efficient methods mitigate this tension by constraining which model behaviors can change during adaptation. Why does restricting the adaptation space help? The core insight is that most of the pretrained model’s capacity encodes generally useful features, while only a small subspace needs to change for task-specific adaptation. LoRA restricts updates to low-rank subspaces, limiting the effective capacity available for memorization while preserving the rich pretrained representations for transfer. If a model’s behavior can be adapted with rank-8 updates (adding only 8 parameters per dimension to adapt), then the model cannot memorize thousands of unique examples through those 8 degrees of freedom—the low-rank bottleneck prevents it. Adapter layers introduce small trainable modules between frozen layers, enabling task-specific computation without overwriting general knowledge. The rank, placement, and number of adapted parameters become hyperparameters that balance adaptation flexibility against overfitting risk.</p>
+<p>Model selection thus involves matching expressiveness to available data and task complexity. For tasks with abundant data and substantial divergence from pretraining, larger models provide more capacity to learn task-specific representations. For tasks with limited data that closely align with pretraining objectives, smaller models may transfer more reliably because their simpler representations leave less room for spurious memorization. The optimal model size depends on the interaction between all four transfer factors, not on model quality in isolation.</p>
+</section>
+<section id="sec-ch09-distribution-overlap" class="level3" data-number="9.2.4">
+<h3 data-number="9.2.4" class="anchored" data-anchor-id="sec-ch09-distribution-overlap"><span class="header-section-number">9.2.4</span> Distribution Overlap</h3>
+<p>The degree of overlap between source and target distributions determines how much learned knowledge applies directly versus requires adaptation. Human and mouse genomes share regulatory syntax for housekeeping genes whose expression patterns were established before the mammalian radiation, enabling direct transfer of core promoter recognition, splice site identification, and basic transcriptional logic. Human-specific enhancers that evolved after the human-mouse divergence (roughly 75 million years ago) have no mouse counterparts from which to transfer, creating blind spots for human enhancer prediction based on mouse training data.</p>
+<p>Distribution overlap operates at multiple scales that practitioners must evaluate separately. At the sequence level, nucleotide composition, k-mer frequencies, and local motif distributions may diverge between source and target. Protein sequences from thermophilic organisms differ systematically in amino acid composition from mesophilic training data, potentially confusing models that implicitly learned composition-dependent features. At the feature level, the relationship between sequence patterns and biological function may shift: a motif that indicates enhancer activity in one cell type may be repressive in another due to cofactor availability. At the label level, the definition of positive and negative examples may differ: “pathogenic” variants in ClinVar reflect clinical ascertainment patterns that differ systematically from the evolutionary selection captured in pretraining.</p>
+<p>Cross-species transfer illustrates distribution overlap challenges concretely. Models pretrained on human sequences and applied to non-human primates succeed for conserved elements (core promoters, splice sites, essential genes) because evolutionary proximity ensures feature preservation. Application to more distant species (zebrafish, <em>Drosophila</em>, plants) succeeds only for deeply conserved features and fails progressively for lineage-specific innovations. Kelley demonstrated that training simultaneously on human and mouse data improves regulatory prediction for both species compared to single-species training, because shared evolutionary history provides implicit labels about functional conservation while species-specific examples reveal where that conservation breaks down <span class="citation" data-cites="kelley_cross-species_2020">(<a href="../bib/references.html#ref-kelley_cross-species_2020" role="doc-biblioref">Kelley 2020</a>)</span>.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Key Insight">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Key Insight
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Distribution shift can be subtle. A model trained on coding variants may fail on synonymous variants not because the sequences look different, but because the relationship between sequence features and pathogenicity differs. The model learned “this amino acid change is rare in evolution, therefore damaging”—a pattern that does not apply to synonymous changes.</p>
+</div>
+</div>
+<p>Detecting distribution shift requires comparing source and target distributions before deployment (see <a href="p3-ch10-adaptation.html#sec-ch10-detecting-shift" class="quarto-xref"><span>Section 10.5.2</span></a> for methods). Statistical divergence measures quantify distribution differences numerically; embedding visualizations reveal whether target examples occupy familiar or novel regions of representation space; canary examples that should always be predicted correctly provide early warning of catastrophic shift. When shift is detected, practitioners must choose between domain adaptation techniques (which attempt to bridge the gap), acceptance that certain target subpopulations cannot be served by this model, or collection of target-distribution training data to enable proper adaptation.</p>
+</section>
+<section id="factor-interactions" class="level3" data-number="9.2.5">
+<h3 data-number="9.2.5" class="anchored" data-anchor-id="factor-interactions"><span class="header-section-number">9.2.5</span> Factor Interactions</h3>
+<p>The four factors interact in ways that preclude simple rules. High task relatedness cannot rescue transfer when target data is too limited for any adaptation; abundant data cannot overcome fundamental distribution mismatch; an expressive model provides no advantage when pretrained representations lack task-relevant features. Practitioners must evaluate all four factors jointly, using the linear probing and validation approaches described in subsequent sections to empirically determine whether transfer succeeds for their specific combination of model, task, and data.</p>
+<div id="fig-four-factors" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-four-factors-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_3/ch09/02-A-fig-four-factors.svg" class="img-fluid figure-img"></p>
+<figcaption>Task relatedness determines feature relevance</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_3/ch09/02-B-fig-four-factors.svg" class="img-fluid figure-img"></p>
+<figcaption>Data quantity constrains adaptation strategy</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_3/ch09/02-C-fig-four-factors.svg" class="img-fluid figure-img"></p>
+<figcaption>Model expressiveness vs.&nbsp;overfitting risk</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_3/ch09/02-D-fig-four-factors.svg" class="img-fluid figure-img"></p>
+<figcaption>Distribution overlap enables knowledge transfer</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-four-factors-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.2: Four interacting factors determine transfer success. (A) Task relatedness: when source and target tasks share relevant features (motif detection, conservation patterns), pretrained knowledge transfers; when they require different features (coding vs.&nbsp;noncoding), transfer fails or hurts. (B) Data quantity thresholds: fewer than 500 examples limits you to linear probing; 500-5,000 enables PEFT; above 10,000 enables full fine-tuning. (C) Model expressiveness creates a double-edged sword: larger models capture richer features but risk memorizing limited target data. (D) Distribution overlap: cross-species transfer succeeds for conserved elements (housekeeping promoters) but fails for lineage-specific innovations (human-specific enhancers).
+</figcaption>
+</figure>
+</div>
+<p>The most reliable path forward is conservative escalation: establish frozen feature baselines first to assess task relatedness and distribution overlap; try parameter-efficient methods next if frozen features show promise but leave room for improvement; reserve full fine-tuning for cases where simpler methods demonstrably fail and sufficient data exists to justify the risk; and maintain from-scratch training as a valid comparison throughout. Each escalation step provides information about which factors limit transfer, guiding both immediate decisions and future model development.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Practical Guidance: The Conservative Escalation Protocol">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Practical Guidance: The Conservative Escalation Protocol
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When approaching a new transfer learning problem, follow this sequence:</p>
+<ol type="1">
+<li><strong>Linear probe first.</strong> Train a simple classifier on frozen embeddings. If this fails badly (near-random performance), the pretrained features may lack task-relevant information.</li>
+<li><strong>Compare to random features.</strong> If linear probe on pretrained embeddings barely beats random features, question whether transfer helps at all.</li>
+<li><strong>Try PEFT if linear probe shows promise.</strong> If frozen features provide reasonable accuracy but leave headroom, parameter-efficient methods can capture task-specific patterns.</li>
+<li><strong>Reserve full fine-tuning for abundant data.</strong> Only with 10,000+ examples and evidence that PEFT is insufficient should full parameter updates be considered.</li>
+<li><strong>Always maintain a from-scratch baseline.</strong> This reveals whether transfer actually helps or whether you are simply training on your target data.</li>
+</ol>
+</div>
+</div>
+<div id="fig-conservative-escalation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-conservative-escalation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_3/ch09/03-fig-conservative-escalation.svg" class="img-fluid figure-img"></p>
+<figcaption>Conservative escalation decision flowchart</figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-conservative-escalation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.3: Conservative escalation protocol for transfer learning decisions. Start with linear probing on frozen embeddings (Step 1). If probe performance exceeds random baseline, pretrained features encode task-relevant information (Step 2a); proceed to PEFT if headroom remains. If probe performance matches random, question whether transfer helps (Step 2b). PEFT methods like LoRA add flexibility while constraining overfitting (Step 3). Reserve full fine-tuning for cases with abundant data (10,000+ examples) where PEFT is insufficient (Step 4). Throughout, maintain from-scratch baseline to verify transfer provides genuine benefit. Red paths indicate stopping points; green paths indicate progression.
+</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Worked Example: Applying the Conservative Escalation Protocol">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Worked Example: Applying the Conservative Escalation Protocol
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A team wants to predict pathogenicity of <em>BRCA1</em> variants using ESM-2 embeddings. They have 800 labeled variants.</p>
+<p><strong>Step 1 (Linear probe):</strong> Train logistic regression on frozen ESM-2 embeddings. - Result: 78% accuracy</p>
+<p><strong>Step 2 (Random baseline):</strong> Train the same classifier on random embeddings. - Result: 52% accuracy - Interpretation: The 26-percentage-point gap confirms pretrained embeddings encode pathogenicity-relevant information.</p>
+<p><strong>Step 3 (PEFT consideration):</strong> With 78% accuracy but room for improvement, they try LoRA (rank 8). - Result: 84% accuracy - Interpretation: Some task-specific reorganization helps.</p>
+<p><strong>Step 4 (Decision):</strong> With 800 examples, they stop here. Full fine-tuning risks overfitting, and 84% meets requirements.</p>
+<p><strong>Step 5 (Baseline check):</strong> A CNN trained from scratch achieves 71% accuracy. - Interpretation: Transfer provides genuine 13-point benefit over from-scratch training.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Approach</th>
+<th>Accuracy</th>
+<th>Trainable Params</th>
+<th>Risk Level</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Random baseline</td>
+<td>52%</td>
+<td>—</td>
+<td>Reference</td>
+</tr>
+<tr class="even">
+<td>From-scratch CNN</td>
+<td>71%</td>
+<td>2M</td>
+<td>Moderate</td>
+</tr>
+<tr class="odd">
+<td>Linear probe (frozen ESM-2)</td>
+<td>78%</td>
+<td>1K</td>
+<td>Minimal</td>
+</tr>
+<tr class="even">
+<td>LoRA (rank 8)</td>
+<td>84%</td>
+<td>50K</td>
+<td>Low</td>
+</tr>
+<tr class="odd">
+<td>Full fine-tuning</td>
+<td>Not attempted</td>
+<td>650M</td>
+<td>High with 800 examples</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-ch09-feature-extraction" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="sec-ch09-feature-extraction"><span class="header-section-number">9.3</span> Feature Extraction and Representation Analysis</h2>
+<p>Clinical laboratories processing hundreds of variants daily cannot afford to fine-tune models for each new gene or variant class. When a novel gene enters diagnostic panels, classifiers must be deployed rapidly using whatever labeled examples exist. A molecular diagnostics team with 200 annotated <em>RYR1</em> variants for malignant hyperthermia risk prediction cannot fine-tune a 500-million parameter model; they need an approach that works with minimal data while avoiding adaptation risk entirely.</p>
+<p>Frozen feature extraction addresses this constraint by treating pretrained models as fixed representation engines. All backbone parameters remain frozen; only a lightweight classifier trained on the extracted representations learns from labeled data. The backbone never changes, eliminating catastrophic forgetting entirely and enabling deployment within hours rather than weeks. The fundamental tradeoff is clear: frozen features sacrifice adaptation flexibility for speed, safety, and efficiency.</p>
+<section id="sec-ch09-linear-probing" class="level3" data-number="9.3.1">
+<h3 data-number="9.3.1" class="anchored" data-anchor-id="sec-ch09-linear-probing"><span class="header-section-number">9.3.1</span> Linear Probing</h3>
+<p>Why does the simplest possible classifier often suffice? If pretrained representations already encode task-relevant features in linearly separable form, adding complexity provides no benefit and risks overfitting. <strong>Linear probing</strong> tests this hypothesis by introducing only <span class="math inline">\(d \times c\)</span> parameters (where <span class="math inline">\(d\)</span> is the embedding dimension and <span class="math inline">\(c\)</span> is the number of output classes). Pass input sequences through the frozen model to obtain embeddings, typically from the final layer or from a designated [CLS] token aggregating sequence information, then train a linear classifier mapping embeddings to task labels.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Worked Example: Linear Probing for Splice Site Classification">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Worked Example: Linear Probing for Splice Site Classification
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Suppose you want to classify whether a sequence contains a functional splice donor site using frozen <em>DNABERT</em> embeddings.</p>
+<p><strong>Step 1:</strong> Extract embeddings. For each 200-bp sequence centered on a potential splice site, obtain the 768-dimensional [CLS] embedding from the frozen model.</p>
+<p><strong>Step 2:</strong> Train a linear classifier. With 5,000 labeled examples (2,500 true splice sites, 2,500 negative controls), train a logistic regression: <span class="math inline">\(p(\text{splice}) = \sigma(w^\top h + b)\)</span> where <span class="math inline">\(h\)</span> is the embedding, <span class="math inline">\(w\)</span> is a 768-dimensional weight vector, and <span class="math inline">\(b\)</span> is a scalar bias.</p>
+<p><strong>Step 3:</strong> Evaluate on held-out data. If the linear probe achieves 92% accuracy while random features achieve 60%, the pretrained embeddings encode splice-relevant information that transferred successfully.</p>
+<p><strong>Step 4:</strong> Interpret the result. The 92% accuracy suggests motif patterns learned during pretraining (the GT dinucleotide, surrounding sequence context) are preserved in the embeddings. You now have evidence that transfer works for this task.</p>
+</div>
+</div>
+<div id="fig-linear-probing-workflow" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-linear-probing-workflow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_3/ch09/04-fig-linear-probing-workflow.svg" class="img-fluid figure-img"></p>
+<figcaption>Linear probing workflow for transfer diagnostics</figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-linear-probing-workflow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.4: Linear probing workflow for diagnosing transfer potential. Step 1: Pass input sequences through frozen pretrained model to extract embeddings (typically [CLS] token or final layer). Step 2: Train lightweight classifier (logistic regression, small MLP) on frozen embeddings using labeled target data. Step 3: Compare probe accuracy against random embedding baseline and from-scratch training. Interpretation guide: If probe &gt;&gt; random, pretrained features encode task-relevant information (positive transfer likely). If probe ≈ random, pretrained features lack relevance (consider different model or from-scratch training). If probe &lt; from-scratch, pretraining may hurt (negative transfer risk).
+</figcaption>
+</figure>
+</div>
+<p>Ji et al.&nbsp;demonstrated that <em>DNABERT</em> embeddings paired with linear probes achieve competitive chromatin accessibility prediction from a few hundred positive and negative examples, matching convolutional neural network baselines requiring far more labeled data <span class="citation" data-cites="ji_dnabert_2021">(<a href="../bib/references.html#ref-ji_dnabert_2021" role="doc-biblioref">Ji et al. 2021</a>)</span>. Dalla-Torre et al.&nbsp;showed similar results with <em>Nucleotide Transformer</em>, where linear probes on frozen embeddings approached fine-tuned performance for promoter detection and splice site recognition <span class="citation" data-cites="dalla-torre_nucleotide_2023">(<a href="../bib/references.html#ref-dalla-torre_nucleotide_2023" role="doc-biblioref">Dalla-Torre et al. 2023</a>)</span>. These successes reflect alignment between pretraining objectives (predicting masked tokens from local context) and target tasks (distinguishing sequences based on motif patterns the model already learned to recognize).</p>
+</section>
+<section id="sec-ch09-linear-probing-limits" class="level3" data-number="9.3.2">
+<h3 data-number="9.3.2" class="anchored" data-anchor-id="sec-ch09-linear-probing-limits"><span class="header-section-number">9.3.2</span> When Linear Probing Fails</h3>
+<p>Linear probes fail when relevant information exists in embeddings but requires nonlinear transformation to extract. Shallow multilayer perceptrons (one or two hidden layers) extend linear probing by enabling more complex decision boundaries while maintaining computational efficiency. With several thousand labeled examples, shallow MLPs on <em>HyenaDNA</em> embeddings improve splice site prediction over linear probes by capturing interactions between features that linear models cannot represent <span class="citation" data-cites="nguyen_hyenadna_2023">(<a href="../bib/references.html#ref-nguyen_hyenadna_2023" role="doc-biblioref">Nguyen et al. 2023</a>)</span>. The additional expressiveness helps when task-relevant patterns are distributed across embedding dimensions in ways that linear combination cannot capture.</p>
+<p>The more fundamental limitation cannot be addressed by classifier complexity: performance caps at how well pretrained representations already encode task-relevant features. If the pretraining objective emphasized patterns irrelevant to the downstream task, or if required features were actively suppressed during pretraining, frozen features will underperform models trained from scratch regardless of classifier sophistication. A model pretrained exclusively on coding sequence may encode features misleading for noncoding regulatory prediction; no linear probe can overcome representations that point in the wrong direction.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Knowledge Check
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A linear probe on frozen protein language model embeddings achieves 85% accuracy for predicting whether variants are pathogenic. Adding a two-layer MLP increases accuracy to 86%. Adding a five-layer MLP increases accuracy to 86.5%. What do these results suggest about:</p>
+<ol type="1">
+<li>Whether the pretrained embeddings contain pathogenicity-relevant information?</li>
+<li>Whether more complex classifiers are likely to help?</li>
+<li>What the ceiling on frozen-feature performance might be?</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Yes, the 85% accuracy with a linear probe indicates the frozen embeddings contain substantial pathogenicity-relevant information that is linearly separable. (2) No, the minimal gains from adding complexity (only 1.5% improvement with a five-layer MLP) suggest more complex classifiers won’t help much - the useful information is already captured linearly. (3) The ceiling appears to be around 86-87%, indicating that further improvements likely require updating the pretrained model itself rather than just adding more classifier capacity. This pattern suggests linear probing is sufficient and parameter-efficient fine-tuning or full fine-tuning would be needed to go beyond this ceiling.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-ch09-probing-representations" class="level3" data-number="9.3.3">
+<h3 data-number="9.3.3" class="anchored" data-anchor-id="sec-ch09-probing-representations"><span class="header-section-number">9.3.3</span> Probing Representations</h3>
+<p>A variant effect predictor built on <em>ESM</em> embeddings achieves 85% accuracy in initial testing, but the team deploying it needs to understand why. Does the model genuinely capture evolutionary constraint relevant to pathogenicity, or has it learned spurious correlations that will fail on out-of-distribution variants? Before committing computational resources to adaptation, practitioners benefit from understanding what the pretrained model actually learned.</p>
+<p><strong>Probing classifiers</strong> answer these diagnostic questions by systematically interrogating representations before deployment. The methodology converts the abstract question “will transfer help?” into concrete evidence about representation content: train lightweight classifiers to predict properties of interest from frozen embeddings, then examine how accurately different properties can be decoded. If chromatin accessibility can be predicted with 85% accuracy from a linear probe, the representations already encode accessibility-relevant features and frozen feature extraction will likely succeed. If transcription factor binding requires a deep nonlinear classifier to reach the same accuracy, relevant information exists but is not linearly separable, suggesting PEFT might help by reorganizing representations for easier extraction. If a property cannot be predicted above chance even with flexible classifiers, the representations may lack necessary information entirely, and transfer to this task may fail regardless of adaptation strategy.</p>
+</section>
+<section id="sec-ch09-probing-results" class="level3" data-number="9.3.4">
+<h3 data-number="9.3.4" class="anchored" data-anchor-id="sec-ch09-probing-results"><span class="header-section-number">9.3.4</span> What Probing Reveals About Pretrained Models</h3>
+<p>Systematic probing reveals what models learn during pretraining. Rives et al.&nbsp;demonstrated that <em>ESM</em> protein embeddings encode secondary structure so thoroughly that linear probes achieve near state-of-the-art helix/sheet/coil prediction accuracy <span class="citation" data-cites="rives_biological_2021">(<a href="../bib/references.html#ref-rives_biological_2021" role="doc-biblioref">Rives et al. 2021</a>)</span>. Contact prediction (which residues are spatially close in folded structure) requires nonlinear probes but still achieves strong performance, indicating that tertiary structure information is present but requires transformation to extract. DNA language models show similar patterns: local motif information is recoverable by linear probes while long-range dependencies require multi-layer networks <span class="citation" data-cites="ji_dnabert_2021">(<a href="../bib/references.html#ref-ji_dnabert_2021" role="doc-biblioref">Ji et al. 2021</a>)</span>. The <em>ESM</em> family and its learned structural knowledge are examined in <a href="../part_4/p4-ch16-protein-lm.html" class="quarto-xref"><span>Chapter 16</span></a>, while DNA language model probing appears in <a href="../part_4/p4-ch15-dna-lm.html" class="quarto-xref"><span>Chapter 15</span></a>.</p>
+<p>Layer-wise probing reveals how information transforms through the model. Early layers typically encode local compositional features (<span class="math inline">\(k\)</span>-mer frequencies, simple motifs, sequence statistics) while later layers capture more abstract patterns (regulatory signatures, evolutionary constraints, functional classifications) <span class="citation" data-cites="jawahar_what_2019">(<a href="../bib/references.html#ref-jawahar_what_2019" role="doc-biblioref">Jawahar, Sagot, and Seddah 2019</a>)</span>. Why does this layer-wise organization emerge? The structure reflects how neural networks compose features hierarchically: early layers detect simple patterns (individual motifs, dinucleotide frequencies) because they operate on raw input with limited receptive field; later layers combine these detections into higher-order features (motif combinations, spacing patterns, evolutionary signatures) that summarize broader context. The implication for practitioners is that optimal layer selection depends on task complexity: tasks requiring raw motif detection may benefit from early layers, while tasks requiring integration of multiple signals benefit from later layers. Layer selection becomes another hyperparameter to optimize during adaptation.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Key Insight">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Key Insight
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Probing is diagnostic, not just evaluative. The goal is not just to measure performance but to understand <em>what</em> the model knows. This understanding guides adaptation strategy: if probing reveals that secondary structure is encoded but contact information requires nonlinear extraction, you know that contact prediction will benefit from PEFT more than secondary structure prediction.</p>
+</div>
+</div>
+</section>
+<section id="sec-ch09-probe-guided-adaptation" class="level3" data-number="9.3.5">
+<h3 data-number="9.3.5" class="anchored" data-anchor-id="sec-ch09-probe-guided-adaptation"><span class="header-section-number">9.3.5</span> Probe-Guided Adaptation</h3>
+<p>The diagnostic value extends beyond predicting which adaptation strategy to use. When probing reveals that required features are absent from pretrained representations, practitioners face a choice: commit to full fine-tuning with sufficient target data (hoping the model can learn missing features), switch to a different foundation model whose pretraining objective better aligns with task requirements, or proceed with from-scratch training that does not inherit inappropriate inductive biases. The investment in probing before adaptation often saves months of wasted effort on transfer that was doomed from the start.</p>
+</section>
+</section>
+<section id="sec-ch09-summary" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="sec-ch09-summary"><span class="header-section-number">9.4</span> Summary</h2>
+<p>Transfer learning succeeds when pretrained representations encode features relevant to downstream tasks, and fails when they do not. The four factors examined in this chapter—task relatedness, target data quantity, model expressiveness, and distribution overlap—collectively determine whether pretrained knowledge transfers productively to new applications.</p>
+<p>Feature extraction and linear probing provide the essential diagnostic tools for assessing transfer potential before committing to more complex adaptation. When linear probes on frozen representations outperform random baselines, the pretrained model has captured task-relevant structure. When probing accuracy approaches fine-tuned performance, simpler adaptation strategies may suffice. When probing fails entirely, more aggressive adaptation or alternative models may be necessary.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Test Yourself">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Test Yourself
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before reviewing the summary, test your recall:</p>
+<ol type="1">
+<li>Explain the four factors that determine transfer success (task relatedness, data quantity, model expressiveness, distribution overlap) and how they interact.</li>
+<li>Why can transfer learning fail silently, producing confident predictions despite learning nothing useful? What makes this particularly dangerous for clinical applications?</li>
+<li>A linear probe on frozen ESM-2 embeddings achieves 78% accuracy for pathogenicity prediction, while random embeddings achieve 52%. What does this 26-point gap reveal about the pretrained representations?</li>
+<li>When does negative transfer occur, and why would pretraining sometimes hurt performance compared to training from scratch?</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Check Your Answers
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>Four factors and interactions</strong>: Task relatedness measures whether the target task requires patterns learned during pretraining (e.g., motif recognition transfers well from masked language modeling). Data quantity constrains which adaptation strategies avoid overfitting (fewer than 500 examples limits you to linear probing). Model expressiveness determines how rich the pretrained representations are, but larger models risk overfitting with limited data. Distribution overlap quantifies similarity between source and target data (human-mouse regulatory elements share patterns, enabling cross-species transfer). These factors interact: high task relatedness cannot rescue transfer with insufficient data, abundant data cannot overcome fundamental distribution mismatch, and expressive models provide no advantage when pretrained representations lack task-relevant features.</p></li>
+<li><p><strong>Silent failures in transfer learning</strong>: Transfer learning fails silently because models produce confident predictions regardless of whether they learned relevant patterns or spurious correlations. A protein language model trained on human sequences may confidently score mouse variants based on human-specific evolutionary pressures completely irrelevant to mouse biology, but the output format looks identical to successful predictions. For clinical applications, this is particularly dangerous because confident but wrong predictions can lead to misdiagnosis, inappropriate treatment decisions, or missed pathogenic variants, with no internal signal that the model’s learned features are misaligned with the clinical task.</p></li>
+<li><p><strong>Interpreting the 26-point gap</strong>: The 26-percentage-point gap between ESM-2 embeddings (78%) and random embeddings (52%) confirms that the pretrained representations encode substantial pathogenicity-relevant information in a form that is already linearly separable. This suggests the pretraining objective (masked language modeling on evolutionary sequences) successfully captured patterns correlated with variant pathogenicity, such as evolutionary constraints, structural preferences, and functional domain information. The gap provides strong evidence that transfer learning will help this task and justifies exploring parameter-efficient methods to capture additional task-specific patterns beyond what frozen features provide.</p></li>
+<li><p><strong>Negative transfer mechanisms</strong>: Negative transfer occurs when pretraining actively hurts performance because learned features conflict with task requirements or create optimization difficulties. For example, a model pretrained on protein-coding sequences learns patterns like codon usage bias, reading frame consistency, and amino acid composition constraints. When applied to noncoding regulatory sequences, these coding-specific patterns become noise that misleads the model or must be unlearned during fine-tuning. The pretrained initialization points gradient descent in a direction that conflicts with the target task, wasting optimization steps and potentially never fully escaping the misleading starting point, resulting in worse performance than training from scratch without these inappropriate biases.</p></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Chapter Summary">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Chapter Summary
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Core concepts:</strong></p>
+<ul>
+<li><strong>Source and target domains</strong>: Pretraining data differs systematically from deployment data; understanding this gap is essential</li>
+<li><strong>Transfer outcomes</strong>: Positive, negative, and neutral transfer are all possible—only validation distinguishes them</li>
+<li><strong>Four factors</strong>: Task relatedness, data quantity, model expressiveness, and distribution overlap jointly determine transfer success</li>
+<li><strong>Linear probing</strong>: The essential first diagnostic—reveals what pretrained representations encode before committing to adaptation</li>
+<li><strong>Conservative escalation</strong>: Start with frozen features, escalate to PEFT, reserve full fine-tuning for abundant data</li>
+</ul>
+<p><strong>Main takeaways:</strong></p>
+<ol type="1">
+<li>Transfer failures are silent. Models produce confident predictions whether transfer has succeeded or failed catastrophically.</li>
+<li>Task relatedness depends on shared features, not shared domain. “Both are genomics” does not guarantee transfer will help.</li>
+<li>Data quantity constrains adaptation complexity. With limited data, simpler methods (linear probing, PEFT) avoid overfitting.</li>
+<li>Probing before adaptation saves wasted effort. Understanding what the model knows guides strategy selection.</li>
+<li>The conservative escalation protocol provides a systematic path from diagnosis to deployment.</li>
+</ol>
+<p><strong>Looking ahead:</strong> <a href="p3-ch10-adaptation.html" class="quarto-xref"><span>Chapter 10</span></a> examines the practical adaptation strategies that operationalize these principles: parameter-efficient fine-tuning (LoRA, adapters), layer selection for embedding extraction, full fine-tuning, and the emerging paradigms that extend transfer to minimal-data scenarios.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Self-Assessment">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Self-Assessment
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before moving to <a href="p3-ch10-adaptation.html" class="quarto-xref"><span>Chapter 10</span></a>, ensure you can:</p>
+<ol type="1">
+<li>Explain why transfer learning fails silently and what makes this dangerous for clinical applications</li>
+<li>Describe the four factors that determine transfer success and how they interact</li>
+<li>Outline the linear probing procedure and interpret its results</li>
+<li>Articulate when frozen features suffice versus when more aggressive adaptation is necessary</li>
+<li>Apply the conservative escalation protocol to a new transfer learning problem</li>
+</ol>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-dalla-torre_nucleotide_2023" class="csl-entry" role="listitem">
+Dalla-Torre, Hugo, Liam Gonzalez, Javier Mendoza-Revilla, Nicolas Lopez Carranza, Adam Henryk Grzywaczewski, Francesco Oteri, Christian Dallago, et al. 2023. <span>“Nucleotide <span>Transformer</span>: Building and Evaluating Robust Foundation Models for Human Genomics.”</span> <em>Nature Methods</em> 22 (2): 287–97. <a href="https://doi.org/10.1038/s41592-024-02523-z">https://doi.org/10.1038/s41592-024-02523-z</a>.
+</div>
+<div id="ref-jawahar_what_2019" class="csl-entry" role="listitem">
+Jawahar, Ganesh, Benoît Sagot, and Djamé Seddah. 2019. <span>“What Does <span>BERT</span> Learn about the Structure of Language?”</span> In <em><span>ACL</span> 2019 - 57th <span>Annual</span> <span>Meeting</span> of the <span>Association</span> for <span>Computational</span> <span>Linguistics</span></em>. Florence, Italy. <a href="https://inria.hal.science/hal-02131630">https://inria.hal.science/hal-02131630</a>.
+</div>
+<div id="ref-ji_dnabert_2021" class="csl-entry" role="listitem">
+Ji, Yanrong, Zhihan Zhou, Han Liu, and Ramana V Davuluri. 2021. <span>“<span>DNABERT</span>: Pre-Trained <span>Bidirectional</span> <span>Encoder</span> <span>Representations</span> from <span>Transformers</span> Model for <span>DNA</span>-Language in Genome.”</span> <em>Bioinformatics</em> 37 (15): 2112–20. <a href="https://doi.org/10.1093/bioinformatics/btab083">https://doi.org/10.1093/bioinformatics/btab083</a>.
+</div>
+<div id="ref-kelley_cross-species_2020" class="csl-entry" role="listitem">
+Kelley, David R. 2020. <span>“[<span>Basenji2</span>] <span>Cross</span>-Species Regulatory Sequence Activity Prediction.”</span> <em>PLOS Computational Biology</em> 16 (7): e1008050. <a href="https://doi.org/10.1371/journal.pcbi.1008050">https://doi.org/10.1371/journal.pcbi.1008050</a>.
+</div>
+<div id="ref-kircher_general_2014" class="csl-entry" role="listitem">
+Kircher, Martin, Daniela M. Witten, Preti Jain, Brian J. O’Roak, Gregory M. Cooper, and Jay Shendure. 2014. <span>“A General Framework for Estimating the Relative Pathogenicity of Human Genetic Variants.”</span> <em>Nature Genetics</em> 46 (3): 310–15. <a href="https://doi.org/10.1038/ng.2892">https://doi.org/10.1038/ng.2892</a>.
+</div>
+<div id="ref-nguyen_hyenadna_2023" class="csl-entry" role="listitem">
+Nguyen, Eric, Michael Poli, Marjan Faizi, Armin Thomas, Callum Birch-Sykes, Michael Wornow, Aman Patel, et al. 2023. <span>“<span>HyenaDNA</span>: <span>Long</span>-<span>Range</span> <span>Genomic</span> <span>Sequence</span> <span>Modeling</span> at <span>Single</span> <span>Nucleotide</span> <span>Resolution</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2306.15794">https://doi.org/10.48550/arXiv.2306.15794</a>.
+</div>
+<div id="ref-rives_biological_2021" class="csl-entry" role="listitem">
+Rives, Alexander, Joshua Meier, Tom Sercu, Siddharth Goyal, Zeming Lin, Jason Liu, Demi Guo, et al. 2021. <span>“[<span>ESM</span>-1b] <span>Biological</span> Structure and Function Emerge from Scaling Unsupervised Learning to 250 Million Protein Sequences.”</span> <em>Proceedings of the National Academy of Sciences of the United States of America</em> 118 (15): e2016239118. <a href="https://doi.org/10.1073/pnas.2016239118">https://doi.org/10.1073/pnas.2016239118</a>.
+</div>
+<div id="ref-suzek_uniref_2007" class="csl-entry" role="listitem">
+Suzek, Baris E., Hongzhan Huang, Peter McGarvey, Raja Mazumder, and Cathy H. Wu. 2007. <span>“<span>UniRef</span>: Comprehensive and Non-Redundant <span>UniProt</span> Reference Clusters.”</span> <em>Bioinformatics</em> 23 (10): 1282–88. <a href="https://doi.org/10.1093/bioinformatics/btm098">https://doi.org/10.1093/bioinformatics/btm098</a>.
+</div>
+<div id="ref-wang_characterizing_2019" class="csl-entry" role="listitem">
+Wang, Zirui, Zihang Dai, Barnabas Poczos, and Jaime Carbonell. 2019. <span>“Characterizing and <span>Avoiding</span> <span>Negative</span> <span>Transfer</span>.”</span> In, 11293–302. <a href="https://openaccess.thecvf.com/content_CVPR_2019/html/Wang_Characterizing_and_Avoiding_Negative_Transfer_CVPR_2019_paper.html">https://openaccess.thecvf.com/content_CVPR_2019/html/Wang_Characterizing_and_Avoiding_Negative_Transfer_CVPR_2019_paper.html</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../part_3/p3-ch08-pretraining.html" class="pagination-link" aria-label="Pretraining Strategies">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Pretraining Strategies</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../part_3/p3-ch10-adaptation.html" class="pagination-link" aria-label="Adaptation Strategies">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Adaptation Strategies</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Copyright 2025-2026, Josh Meehl</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

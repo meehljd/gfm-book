@@ -224,7 +224,7 @@ This agent has access to:
 ## Coordination with Other Agents
 
 This agent complements:
-- `review-chapter` - Style, structure, soft landings (this agent focuses on learning science)
+- `chapter-auditor` - Style, structure, soft landings (this agent focuses on learning science)
 - `pre-commit` - Content integrity (this agent focuses on pedagogical effectiveness)
 
-When both reviews are needed, run `review-chapter` first for structural issues, then `pedagogy-review` for learning optimization.
+When both reviews are needed, run `chapter-auditor` first for structural issues, then `pedagogy-review` for learning optimization.

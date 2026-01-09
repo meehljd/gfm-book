@@ -909,7 +909,7 @@ Level: [level]
 This agent works with:
 - **`pedagogy-review`** - Provides learning science foundation
 - **`figure-design`** - Figures for slides and materials
-- **`review-chapter`** - Ensures content accuracy before course materials
+- **`chapter-auditor`** - Ensures content accuracy before course materials
 
 ### Recommended Workflow
 

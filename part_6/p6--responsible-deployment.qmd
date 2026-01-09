@@ -1,0 +1,45 @@
+# Part VI: Evaluation and Trust {.unnumbered}
+
+::: {.callout-note}
+## Part VI at a Glance
+
+**Central question:** How do we know whether genomic foundation models work, what they've actually learned, and when we can trust their predictions?
+
+**Prerequisites:** Parts II-IV for model context. This part is essential reading before Part VII (clinical applications).
+
+| Chapter | Topic | Key Concepts |
+|---------|-------|--------------|
+| @sec-ch24-uncertainty | Uncertainty Quantification | Calibration, epistemic vs. aleatoric, ensembles, conformal prediction |
+| @sec-ch25-interpretability | Interpretability | Attribution methods, motif analysis, mechanistic interpretability |
+| @sec-ch26-causal | Causal Inference | Causal graphs, Mendelian randomization, foundation models for causality |
+| @sec-ch27-regulatory | Ethics & Regulation | Bias, fairness, regulatory frameworks, responsible deployment |
+
+**After completing Part VI, you will understand:**
+
+- When model confidence can be trusted and when it cannot
+- How to distinguish genuine biological insight from spurious pattern matching
+- What causal claims foundation models can and cannot support
+- What ethical and regulatory constraints govern clinical deployment
+:::
+
+Evaluating genomic models presents challenges that distinguish this domain from natural language processing or computer vision. Biological sequences contain evolutionary history: a model tested on homologous sequences may appear to generalize when it has merely memorized. Population structure creates spurious associations: a variant predictor may learn ancestry rather than pathogenicity. Nested functional hierarchies obscure what models actually capture: strong performance on common variants provides no guarantee of accuracy on the rare variants that drive most clinical decisions. Standard machine learning evaluation practices, developed for domains where training and test examples are approximately independent and identically distributed, become actively misleading when applied to genomic data without careful adaptation.
+
+Rigorous evaluation determines whether genomic foundation models deliver on their promises. The benchmark and evaluation methodology chapters from Part III (@sec-ch11-benchmarks, @sec-ch12-eval, @sec-ch13-confounding) established foundational principles; this part extends that framework to address deeper questions about model reliability.
+
+Calibration and uncertainty quantification (@sec-ch24-uncertainty) determine whether model outputs can inform decisions or require careful reinterpretation. A model achieving high discrimination (auROC) may still provide dangerously miscalibrated probabilities that mislead clinical decisions. Moving beyond black-box prediction toward mechanistic understanding (@sec-ch25-interpretability) requires distinguishing faithful explanations that accurately reflect model computation from plausible explanations that merely satisfy human intuition. Causal inference frameworks (@sec-ch26-causal) clarify what kinds of causal claims foundation models can support and where correlation remains stubbornly distinct from causation. Ethical and regulatory considerations (@sec-ch27-regulatory) establish the constraints that govern responsible deployment, from algorithmic fairness to regulatory approval pathways.
+
+This critical toolkit enables rigorous evaluation of genomic AI claims and responsible deployment in research and clinical settings.
+
+::: {.callout-warning}
+## Essential for Clinical Applications
+
+**If you plan to deploy genomic foundation models in clinical or high-stakes settings, Part VI is not optional.** The evaluation frameworks, uncertainty quantification methods, and ethical considerations developed here are prerequisites for responsible deployment. Part VII assumes familiarity with these concepts.
+:::
+
+::: {.callout-tip}
+## Connections to Other Parts
+
+- **Part III** (@sec-ch11-benchmarks, @sec-ch12-eval, @sec-ch13-confounding) establishes foundational evaluation principles
+- **Parts IV-V** model chapters benefit from the critical lens developed here
+- **Part VII** clinical applications require the uncertainty and interpretability tools from this part
+:::
