@@ -341,26 +341,28 @@ Per MIT Press guidelines, initial inquiries should be brief (few paragraphs) wit
 
 Dear Ms. Audet,
 
-I am writing to inquire about MIT Press's interest in publishing *Genomic Foundation Models: From Sequence to Clinical Insight*, a comprehensive graduate-level textbook at the intersection of deep learning and clinical genomics.
+I'm writing to gauge MIT Press's interest in *Genomic Foundation Models: From Sequence to Clinical Insight*, a graduate-level textbook covering deep learning for clinical genomics.
 
-Foundation models—large-scale pretrained neural networks like DNABERT, ESM-2, and Enformer—are transforming how we interpret genomic variation and predict disease risk. Yet no comprehensive educational resource exists for this rapidly growing field. My manuscript fills this gap, bridging computational methodology and clinical application.
+Foundation models like DNABERT, ESM-2, and Enformer are changing how we interpret genetic variation and predict disease risk. No comprehensive textbook exists for this fast-moving field. My manuscript covers the full stack: from transformer architectures to clinical deployment, with dedicated sections on uncertainty quantification, interpretability, and responsible AI.
 
 **About the book:**
-- Content-complete at ~340,000 words across 32 chapters (7 parts)
-- Three structured reading pathways for genomics, ML, and clinical audiences
-- Part VI covers responsible deployment (uncertainty, interpretability, fairness)
-- Part VII addresses clinical translation (risk prediction, rare disease diagnosis, drug discovery)
-- Foreword anticipated from Dr. Matthew Callstrom M.D. Ph.D., Mayo Clinic's Director for AI and Board of Trustees member
-- A web version at gfm.meehl.org demonstrates community interest
+- 32 chapters (~330,000 words) organized in 7 parts
+- Spans three disciplines: deep learning methodology, genomics/bioinformatics, and clinical medicine
+- Three reading pathways for ML practitioners, genomics researchers, and clinicians
+- Part VI: responsible deployment (uncertainty, interpretability, fairness)
+- Part VII: clinical translation (risk prediction, rare disease, drug discovery)
+- Foreword anticipated from Dr. Matthew Callstrom, Mayo Clinic's Medical Director for AI and Board of Trustees member
+- Web version live at gfm.meehl.org
 
 **About me:**
-I'm a Senior Data Scientist in the Digital Biology group at Mayo Clinic with over 10 years in life sciences and biomedical research. I hold an M.S. from Georgia Tech and am starting a Ph.D. focused on genomic foundation models. I wrote this book because practitioners at the intersection of deep learning, genomics, and clinical medicine currently have no single resource that speaks all three languages. I wanted to build that bridge.
+I'm a Senior Data Scientist in the Digital Biology group at Mayo Clinic with over 10 years in life sciences and biomedical research. I hold an M.S. from Georgia Tech and am starting a Ph.D. focused on genomic foundation models. This book grew out of my work at the intersection of computational methods and clinical genomics.
 
-I believe this work aligns well with MIT Press's strength in biomedical science and trade science. I would welcome the opportunity to discuss a full proposal.
+I think this would fit well with MIT Press's biomedical science list. Happy to discuss a full proposal if there's interest.
 
-Sincerely,
-[Your Name]
-[Contact information]
+Best,
+Josh Meehl
+Senior Data Scientist, Digital Biology
+Mayo Clinic
 
 ---
 
@@ -370,26 +372,27 @@ Sincerely,
 
 Dear Megan,
 
-I am reaching out regarding a graduate textbook project that I believe aligns well with your computational biology list: *Genomic Foundation Models: From Sequence to Clinical Insight*.
+I'm reaching out about a graduate textbook that I think fits well with your computational biology list: *Genomic Foundation Models: From Sequence to Clinical Insight*.
 
-This book provides the first comprehensive treatment of foundation models for genomic data—covering architectures (transformers, state-space models), model families (DNA language models, protein language models, regulatory models), and clinical applications (variant effect prediction, risk assessment, drug discovery).
+This is the first comprehensive treatment of foundation models for genomic data. It covers the architectures (transformers, state-space models), the major model families (DNA language models, protein language models, regulatory models), and clinical applications (variant effect prediction, risk assessment, drug discovery).
 
-**Key features:**
-- 32 chapters (~340,000 words) organized into 7 thematic parts
+**About the book:**
+- 32 chapters (~330,000 words) organized in 7 parts
 - Designed for graduate courses in computational genomics and ML for biology
-- Three reading pathways for different backgrounds (genomics, ML, clinical)
+- Three reading pathways for genomics researchers, ML practitioners, and clinicians
 - 437 figures, 245-term glossary, 359 references
-- Foreword commitment from Mayo Clinic's AI leadership (Dr. Matthew Callstrom, Medical Director for Generative AI)
-- Companion web version live at gfm.meehl.org
+- Foreword anticipated from Dr. Matthew Callstrom, Mayo Clinic's Medical Director for AI
+- Web version live at gfm.meehl.org
 
 **About me:**
-I'm a Senior Data Scientist in the Digital Biology group at Mayo Clinic with over 10 years in life sciences and biomedical research. I hold an M.S. from Georgia Tech and am starting a Ph.D. focused on genomic foundation models. I wrote this book because practitioners at the intersection of deep learning, genomics, and clinical medicine currently have no single resource that speaks all three languages. I wanted to build that bridge.
+I'm a Senior Data Scientist in the Digital Biology group at Mayo Clinic with over 10 years in life sciences and biomedical research. I hold an M.S. from Georgia Tech and am starting a Ph.D. focused on genomic foundation models. This book grew out of my work at the intersection of computational methods and clinical genomics.
 
-The manuscript is content-complete. I would welcome guidelines for preparing a full proposal tailored to Cambridge's requirements.
+The manuscript is content-complete. Happy to prepare a full proposal if there's interest.
 
-Best regards,
-[Your Name]
-[Contact information]
+Best,
+Josh Meehl
+Senior Data Scientist, Digital Biology
+Mayo Clinic
 
 ---
 
@@ -416,7 +419,7 @@ The manuscript is content-complete at approximately 340,000 words. I believe [Pu
 I would welcome the opportunity to discuss this project further.
 
 Sincerely,
-[Your Name]
+Josh Meehl
 [Contact information]
 
 ---
