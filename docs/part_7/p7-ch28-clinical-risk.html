@@ -505,7 +505,10 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#sec-ch28-pgs-to-fm" id="toc-sec-ch28-pgs-to-fm" class="nav-link active" data-scroll-target="#sec-ch28-pgs-to-fm"><span class="header-section-number">28.1</span> From Polygenic Scores to Foundation Model Features</a></li>
+  <li><a href="#sec-ch28-pgs-to-fm" id="toc-sec-ch28-pgs-to-fm" class="nav-link active" data-scroll-target="#sec-ch28-pgs-to-fm"><span class="header-section-number">28.1</span> From Polygenic Scores to Foundation Model Features</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch28-nonlinear-prs" id="toc-sec-ch28-nonlinear-prs" class="nav-link" data-scroll-target="#sec-ch28-nonlinear-prs"><span class="header-section-number">28.1.1</span> Non-Linear and Deep Learning PRS Approaches</a></li>
+  </ul></li>
   <li><a href="#sec-ch28-defining-risk" id="toc-sec-ch28-defining-risk" class="nav-link" data-scroll-target="#sec-ch28-defining-risk"><span class="header-section-number">28.2</span> Defining Clinical Risk Prediction</a></li>
   <li><a href="#sec-ch28-feature-integration" id="toc-sec-ch28-feature-integration" class="nav-link" data-scroll-target="#sec-ch28-feature-integration"><span class="header-section-number">28.3</span> Feature Integration Architectures</a></li>
   <li><a href="#sec-ch28-ehr-integration" id="toc-sec-ch28-ehr-integration" class="nav-link" data-scroll-target="#sec-ch28-ehr-integration"><span class="header-section-number">28.4</span> EHR Integration and Phenotype Embeddings</a>
@@ -579,7 +582,7 @@ Chapter Overview
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>Estimated reading time:</strong> 40-50 minutes</p>
-<p><strong>Prerequisites:</strong> This chapter builds on concepts from multiple earlier chapters. You should be familiar with polygenic risk scores (<a href="../part_1/p1-ch03-gwas.html#sec-ch03-pgs-construction" class="quarto-xref"><span>Section 3.5</span></a>), foundation model architectures for DNA and protein sequences (<a href="../part_4/p4-ch15-dna-lm.html" class="quarto-xref"><span>Chapter 15</span></a>, <a href="../part_4/p4-ch16-protein-lm.html" class="quarto-xref"><span>Chapter 16</span></a>), transfer learning approaches (<a href="../part_3/p3-ch09-transfer.html" class="quarto-xref"><span>Chapter 9</span></a>), and uncertainty quantification principles (<a href="../part_6/p6-ch24-uncertainty.html" class="quarto-xref"><span>Chapter 24</span></a>). Understanding of evaluation metrics (<a href="../part_3/p3-ch12-evaluation.html#sec-ch12-metrics-genomic-tasks" class="quarto-xref"><span>Section 12.5</span></a>) and interpretability methods (<a href="../part_6/p6-ch25-interpretability.html" class="quarto-xref"><span>Chapter 25</span></a>) will help you assess clinical deployment requirements.</p>
+<p><strong>Prerequisites:</strong> This chapter builds on concepts from multiple earlier chapters. You should be familiar with polygenic risk scores (<a href="../part_1/p1-ch03-gwas.html#sec-ch03-pgs-construction" class="quarto-xref"><span>Section 3.5</span></a>), foundation model architectures for DNA and protein sequences (<a href="../part_4/p4-ch15-dna-lm.html" class="quarto-xref"><span>Chapter 15</span></a>, <a href="../part_4/p4-ch16-protein-lm.html" class="quarto-xref"><span>Chapter 16</span></a>), transfer learning approaches (<a href="../part_3/p3-ch09-transfer.html" class="quarto-xref"><span>Chapter 9</span></a>), and uncertainty quantification principles (<a href="../part_6/p6-ch24-uncertainty.html" class="quarto-xref"><span>Chapter 24</span></a>). Understanding of evaluation metrics (<a href="../part_3/p3-ch12-evaluation.html#sec-ch12-metrics-genomic-tasks" class="quarto-xref"><span>Section 12.6</span></a>) and interpretability methods (<a href="../part_6/p6-ch25-interpretability.html" class="quarto-xref"><span>Chapter 25</span></a>) will help you assess clinical deployment requirements.</p>
 <p><strong>Learning Objectives:</strong> After completing this chapter, you should be able to:</p>
 <ol type="1">
 <li>Explain why traditional polygenic scores often fail clinical translation and how foundation model features address these limitations</li>
@@ -684,6 +687,61 @@ Table&nbsp;28.1: Comparison of polygenic risk approaches: traditional polygenic 
 </div>
 </figure>
 </div>
+<section id="sec-ch28-nonlinear-prs" class="level3" data-number="28.1.1">
+<h3 data-number="28.1.1" class="anchored" data-anchor-id="sec-ch28-nonlinear-prs"><span class="header-section-number">28.1.1</span> Non-Linear and Deep Learning PRS Approaches</h3>
+<p>Recent work has explored whether deep learning can capture genetic interactions missed by linear PRS. <span class="citation" data-cites="dibaeinia_prsformer_2025">Dibaeinia et al. (<a href="../bib/references.html#ref-dibaeinia_prsformer_2025" role="doc-biblioref">2025</a>)</span> introduce <em>PRSformer</em>, a transformer-based architecture designed to model variant interactions directly, potentially capturing epistatic effects that linear methods cannot represent.</p>
+<div id="tbl-linear-vs-nonlinear" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-linear-vs-nonlinear-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;28.2: Comparison of linear versus non-linear approaches to polygenic prediction. The trade-off between modeling complexity and interpretability remains a key consideration for clinical deployment.
+</figcaption>
+<div aria-describedby="tbl-linear-vs-nonlinear-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 24%">
+<col style="width: 20%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method Class</th>
+<th>Architecture</th>
+<th>Captures Epistasis?</th>
+<th>Interpretability</th>
+<th>Computational Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Linear PRS (LDpred2, PRS-CS)</td>
+<td>Weighted sum</td>
+<td>No</td>
+<td>High (weights)</td>
+<td>Low</td>
+</tr>
+<tr class="even">
+<td>Non-linear ML (XGBoost)</td>
+<td>Decision trees</td>
+<td>Limited (pairwise)</td>
+<td>Moderate (SHAP)</td>
+<td>Moderate</td>
+</tr>
+<tr class="odd">
+<td>Deep learning (PRSformer)</td>
+<td>Transformer</td>
+<td>Potentially</td>
+<td>Low</td>
+<td>High</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>However, rigorous comparison with well-tuned linear methods is essential before concluding that deep learning adds value (<a href="../part_3/p3-ch12-evaluation.html#sec-ch12-baseline-selection" class="quarto-xref"><span>Section 12.7</span></a>). <span class="citation" data-cites="elgart_non-linear_2022">Elgart et al. (<a href="../bib/references.html#ref-elgart_non-linear_2022" role="doc-biblioref">2022</a>)</span> systematically compared linear and non-linear PRS approaches across multiple phenotypes, finding that non-linear models can provide modest but consistent improvements (typically 2-5% AUC gain) for phenotypes with complex genetic architectures, while establishing that improvements from deep learning must exceed well-tuned linear baselines to justify increased complexity. As discussed in baseline requirements, apparent advantages of complex models may reflect improper comparison rather than genuine epistatic signal.</p>
+</section>
 </section>
 <section id="sec-ch28-defining-risk" class="level2" data-number="28.2">
 <h2 data-number="28.2" class="anchored" data-anchor-id="sec-ch28-defining-risk"><span class="header-section-number">28.2</span> Defining Clinical Risk Prediction</h2>
@@ -755,7 +813,7 @@ Deep Dive: Clinical Validity vs.&nbsp;Clinical Utility
 <div id="tbl-risk-task-types" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-risk-task-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;28.2: Clinical risk prediction task archetypes and their distinct requirements.
+Table&nbsp;28.3: Clinical risk prediction task archetypes and their distinct requirements.
 </figcaption>
 <div aria-describedby="tbl-risk-task-types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -868,7 +926,7 @@ Figure&nbsp;28.1: Feature integration for clinical risk prediction. (A) DNA foun
 <div id="tbl-fusion-strategies" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-fusion-strategies-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;28.3: Comparison of fusion architectures for combining genomic and clinical features.
+Table&nbsp;28.4: Comparison of fusion architectures for combining genomic and clinical features.
 </figcaption>
 <div aria-describedby="tbl-fusion-strategies-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -973,6 +1031,7 @@ Check Your Answer
 <p>The pattern of improvement across traits reveals when EHR embeddings add value to polygenic prediction. Conditions that cluster together in clinical space, co-occurring in patients and sharing risk factors, benefit most. The cardiovascular cluster (coronary artery disease, ischemic stroke, peripheral artery disease, heart failure, angina, type 2 diabetes) forms a coherent group in both clinical practice and genetic architecture. Embeddings trained on EHR data capture this clustering, and GWAS on embedding dimensions identify variants associated with the shared liability across the cluster. These variants provide additional prediction signal beyond what single-trait GWAS can detect.</p>
 <p>Conversely, conditions with distinct genetic architectures that do not cluster with other phenotypes show minimal improvement. Breast cancer and coronary artery disease, despite both being common conditions well-represented in biobanks, did not benefit from embedding integration in external validation. Their genetic architectures are largely distinct; embedding-based scores derived from cardiovascular-weighted dimensions provide no additional signal for cancer prediction.</p>
 <p>This selectivity has important implications for clinical deployment. <em>EEPRS</em> offers greatest value for conditions where conventional polygenic scores remain underpowered despite adequate GWAS sample sizes. Heart failure, peripheral artery disease, and asthma showed substantial improvements precisely because their polygenic scores have historically underperformed relative to heritability estimates. Embedding integration effectively borrows strength across genetically correlated phenotypes, amplifying signal that single-trait analyses struggle to detect.</p>
+<p>Beyond diagnostic code embeddings, clinical measurements themselves can be embedded for improved prediction. <span class="citation" data-cites="yun_regle_2023">Yun et al. (<a href="../bib/references.html#ref-yun_regle_2023" role="doc-biblioref">2023</a>)</span> introduce <em>REGLE</em>, which learns embeddings from raw clinical data such as spirograms and electrocardiograms rather than from ICD codes. These physiological embeddings capture aspects of phenotype not reflected in diagnostic labels, potentially enabling transfer learning across related conditions and improving prediction for phenotypes with limited direct training data.</p>
 </section>
 <section id="sec-ch28-prs-phewas" class="level3" data-number="28.4.3">
 <h3 data-number="28.4.3" class="anchored" data-anchor-id="sec-ch28-prs-phewas"><span class="header-section-number">28.4.3</span> PRS-PheWAS for Clinical Interpretation</h3>
@@ -1101,13 +1160,13 @@ Stop and Think
 </div>
 <section id="sec-ch28-discrimination" class="level3" data-number="28.6.1">
 <h3 data-number="28.6.1" class="anchored" data-anchor-id="sec-ch28-discrimination"><span class="header-section-number">28.6.1</span> Discrimination</h3>
-<p>Discrimination measures how well a model ranks patients by risk, distinguishing those who will experience outcomes from those who will not. For binary endpoints like disease occurrence within a fixed time window, the <strong>area under the receiver operating characteristic curve (auROC)</strong> summarizes discrimination across all classification thresholds (<a href="../part_3/p3-ch12-evaluation.html#sec-ch12-metrics-genomic-tasks" class="quarto-xref"><span>Section 12.5</span></a>). When outcomes are rare (severe adverse drug reactions, specific disease subtypes), the <strong>area under the precision-recall curve (auPRC)</strong> better reflects how well the model identifies true positives among many negatives. For survival tasks with censoring, the concordance index and time-dependent auROC generalize these metrics to the time-to-event setting.</p>
+<p>Discrimination measures how well a model ranks patients by risk, distinguishing those who will experience outcomes from those who will not. For binary endpoints like disease occurrence within a fixed time window, the <strong>area under the receiver operating characteristic curve (auROC)</strong> summarizes discrimination across all classification thresholds (<a href="../part_3/p3-ch12-evaluation.html#sec-ch12-metrics-genomic-tasks" class="quarto-xref"><span>Section 12.6</span></a>). When outcomes are rare (severe adverse drug reactions, specific disease subtypes), the <strong>area under the precision-recall curve (auPRC)</strong> better reflects how well the model identifies true positives among many negatives. For survival tasks with censoring, the concordance index and time-dependent auROC generalize these metrics to the time-to-event setting.</p>
 <p>Strong discrimination is necessary but not sufficient. A model that correctly ranks patients but systematically overestimates or underestimates absolute risk magnitudes will lead to inappropriate clinical decisions. If a model predicts 5% risk for patients who actually experience 15% event rates, physicians using those predictions will undertreat. Conversely, systematically inflated predictions lead to overtreatment with attendant harms and costs.</p>
 </section>
 <section id="sec-ch28-calibration" class="level3" data-number="28.6.2">
 <h3 data-number="28.6.2" class="anchored" data-anchor-id="sec-ch28-calibration"><span class="header-section-number">28.6.2</span> Calibration</h3>
 <p><strong>Calibration</strong> asks whether predicted probabilities match observed frequencies. If a model assigns 20% risk to a group of patients, approximately 20% should experience the outcome. Well-calibrated predictions can be interpreted at face value and used directly for clinical decision-making; miscalibrated predictions mislead regardless of discrimination quality.</p>
-<p>Assessment involves calibration plots comparing predicted risk deciles to observed event rates, statistical tests like the Hosmer-Lemeshow test, and proper scoring rules like the Brier score that combine calibration and discrimination (<a href="../part_3/p3-ch12-evaluation.html#sec-ch12-calibration" class="quarto-xref"><span>Section 12.10</span></a>). The methodological foundations for these assessments, including temperature scaling and isotonic regression approaches, are detailed in <a href="../part_6/p6-ch24-uncertainty.html#sec-ch24-post-hoc-calibration" class="quarto-xref"><span>Section 24.3</span></a>. These assessments must be stratified by clinically relevant subgroups (ancestry, sex, age, comorbidity burden) because a model well-calibrated overall may be systematically miscalibrated for specific populations.</p>
+<p>Assessment involves calibration plots comparing predicted risk deciles to observed event rates, statistical tests like the Hosmer-Lemeshow test, and proper scoring rules like the Brier score that combine calibration and discrimination (<a href="../part_3/p3-ch12-evaluation.html#sec-ch12-calibration" class="quarto-xref"><span>Section 12.11</span></a>). The methodological foundations for these assessments, including temperature scaling and isotonic regression approaches, are detailed in <a href="../part_6/p6-ch24-uncertainty.html#sec-ch24-post-hoc-calibration" class="quarto-xref"><span>Section 24.3</span></a>. These assessments must be stratified by clinically relevant subgroups (ancestry, sex, age, comorbidity burden) because a model well-calibrated overall may be systematically miscalibrated for specific populations.</p>
 <p>For polygenic score-informed models, calibration requires particular attention. Raw polygenic scores are typically centered and scaled rather than calibrated to absolute risk. Why are raw scores uncalibrated? A PGS is constructed by summing effect sizes across variants, producing a relative ranking rather than an absolute probability. The score distribution depends on the training population’s allele frequencies and LD structure; the same score percentile maps to different absolute risks depending on baseline disease incidence, age, sex, and environmental exposures. Without anchoring to an external incidence rate, the score carries no inherent probability interpretation. Mapping a score to an absolute event probability requires post-hoc models incorporating baseline incidence and clinical covariates. Foundation models can shift score distributions as architectures evolve, meaning recalibration may be necessary when updating encoders. The connection to <a href="../part_6/p6-ch24-uncertainty.html" class="quarto-xref"><span>Chapter 24</span></a> is direct: calibration is one form of uncertainty quantification, assessing whether model confidence aligns with actual outcome frequencies.</p>
 </section>
 <section id="sec-ch28-clinical-utility" class="level3" data-number="28.6.3">
@@ -1117,7 +1176,7 @@ Stop and Think
 <div id="tbl-evaluation-pillars" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-evaluation-pillars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;28.4: The three pillars of clinical evaluation for risk prediction models.
+Table&nbsp;28.5: The three pillars of clinical evaluation for risk prediction models.
 </figcaption>
 <div aria-describedby="tbl-evaluation-pillars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1439,7 +1498,7 @@ Figure&nbsp;28.7: Case study: FM-enhanced cardiovascular risk prediction. A 45-y
 <h3 data-number="28.11.3" class="anchored" data-anchor-id="sec-ch28-case-pharmacogenomics"><span class="header-section-number">28.11.3</span> Pharmacogenomic Adverse Event Prediction</h3>
 <p>A 45-year-old man with newly diagnosed epilepsy requires anticonvulsant therapy. Carbamazepine is a common first-line choice, but it carries risk of severe cutaneous adverse reactions including Stevens-Johnson syndrome and toxic epidermal necrolysis. The <em>HLA-B</em>15:02* allele is strongly associated with carbamazepine hypersensitivity in patients of Asian ancestry, and FDA labeling recommends genetic testing before initiating therapy in at-risk populations <em>[Citation Needed]</em>.</p>
 <p>This established pharmacogenomic association illustrates both the potential and limitations of current approaches. Single-variant associations with high effect sizes enable straightforward clinical implementation, but they cover a small fraction of drug-gene interactions. Many patients who do not carry <em>HLA-B</em>15:02* still experience adverse reactions, suggesting additional genetic (and non-genetic) risk factors that single-variant testing misses.</p>
-<p>Foundation models could extend pharmacogenomic prediction beyond established single-gene associations. Variant effect scores across HLA genes, drug metabolism enzymes, and immune-related loci provide features reflecting the patient’s overall pharmacogenetic landscape (<a href="../part_1/p1-ch02-data.html#sec-ch02-pharmacogenomics" class="quarto-xref"><span>Section 2.8.4</span></a>). These features aggregate into a polygenic adverse event risk score that captures contributions from many variants rather than relying on individual high-effect alleles. Combined with clinical features (renal function affecting drug clearance, concomitant medications with interaction potential, prior adverse reaction history), the model predicts adverse event probability specific to the proposed drug.</p>
+<p>Foundation models could extend pharmacogenomic prediction beyond established single-gene associations. Resources like PharmGKB <span class="citation" data-cites="whirl-carrillo_pharmacogenomics_2012">(<a href="../bib/references.html#ref-whirl-carrillo_pharmacogenomics_2012" role="doc-biblioref">Whirl-Carrillo et al. 2012</a>)</span> provide curated drug-gene-variant associations that serve as ground truth for model development and validation, though coverage remains incomplete for many drug classes. Variant effect scores across HLA genes, drug metabolism enzymes, and immune-related loci provide features reflecting the patient’s overall pharmacogenetic landscape (<a href="../part_1/p1-ch02-data.html#sec-ch02-pharmacogenomics" class="quarto-xref"><span>Section 2.8.4</span></a>). These features aggregate into a polygenic adverse event risk score that captures contributions from many variants rather than relying on individual high-effect alleles. Combined with clinical features (renal function affecting drug clearance, concomitant medications with interaction potential, prior adverse reaction history), the model predicts adverse event probability specific to the proposed drug.</p>
 <p>The validation challenge is severe. Serious adverse drug reactions are rare, making endpoint ascertainment difficult and underpowered. Case-control designs enriched for adverse events may overestimate model performance compared to prospective deployment. Multi-site validation across healthcare systems with different prescribing patterns and population ancestry compositions is essential.</p>
 <p>Clinical implementation requires integration at the point of prescribing, providing actionable information when drug selection decisions are being made. This argues for pre-computed pharmacogenomic profiles that alert at order entry rather than reactive testing after a prescription is written. The interpretability requirement is particularly acute: clinicians must understand why a model flags a patient as high-risk for a specific drug to make informed risk-benefit decisions.</p>
 </section>
@@ -1533,6 +1592,12 @@ Clarke, Brian, Eva Holtkamp, Hakime Öztürk, Marcel Mück, Magnus Wahlberg, Kay
 <div id="ref-dalla-torre_nucleotide_2023" class="csl-entry" role="listitem">
 Dalla-Torre, Hugo, Liam Gonzalez, Javier Mendoza-Revilla, Nicolas Lopez Carranza, Adam Henryk Grzywaczewski, Francesco Oteri, Christian Dallago, et al. 2023. <span>“Nucleotide <span>Transformer</span>: Building and Evaluating Robust Foundation Models for Human Genomics.”</span> <em>Nature Methods</em> 22 (2): 287–97. <a href="https://doi.org/10.1038/s41592-024-02523-z">https://doi.org/10.1038/s41592-024-02523-z</a>.
 </div>
+<div id="ref-dibaeinia_prsformer_2025" class="csl-entry" role="listitem">
+Dibaeinia, Payam, Chris German, Suyash Shringarpure, Adam Auton, and Aly A. Khan. 2025. <span>“<span>PRSformer</span>: <span>Disease</span> <span>Prediction</span> from <span>Million</span>-<span>Scale</span> <span>Individual</span> <span>Genotypes</span>.”</span> bioRxiv. <a href="https://doi.org/10.1101/2025.10.26.684578">https://doi.org/10.1101/2025.10.26.684578</a>.
+</div>
+<div id="ref-elgart_non-linear_2022" class="csl-entry" role="listitem">
+Elgart, Michael, Genevieve Lyons, Santiago Romero-Brufau, Nuzulul Kurniansyah, Jennifer A. Brody, Xiuqing Guo, Henry J. Lin, et al. 2022. <span>“Non-Linear Machine Learning Models Incorporating <span>SNPs</span> and <span>PRS</span> Improve Polygenic Prediction in Diverse Human Populations.”</span> <em>Communications Biology</em> 5 (1): 856. <a href="https://doi.org/10.1038/s42003-022-03812-z">https://doi.org/10.1038/s42003-022-03812-z</a>.
+</div>
 <div id="ref-ge_polygenic_2019" class="csl-entry" role="listitem">
 Ge, Tian, Chia-Yen Chen, Yang Ni, Yen-Chen Anne Feng, and Jordan W. Smoller. 2019. <span>“Polygenic Prediction via <span>Bayesian</span> Regression and Continuous Shrinkage Priors.”</span> <em>Nature Communications</em> 10 (1): 1776. <a href="https://doi.org/10.1038/s41467-019-09718-5">https://doi.org/10.1038/s41467-019-09718-5</a>.
 </div>
@@ -1565,6 +1630,12 @@ Ruan, Yunfeng, Yen-Feng Lin, Yen-Chen Anne Feng, Chia-Yen Chen, Max Lam, Zhengli
 </div>
 <div id="ref-tipirneni_self-supervised_2022" class="csl-entry" role="listitem">
 Tipirneni, Sindhu, and Chandan K. Reddy. 2022. <span>“Self-<span>Supervised</span> <span>Transformer</span> for <span>Sparse</span> and <span>Irregularly</span> <span>Sampled</span> <span>Multivariate</span> <span>Clinical</span> <span>Time</span>-<span>Series</span>.”</span> <em>ACM Trans. Knowl. Discov. Data</em> 16 (6): 105:1–17. <a href="https://doi.org/10.1145/3516367">https://doi.org/10.1145/3516367</a>.
+</div>
+<div id="ref-whirl-carrillo_pharmacogenomics_2012" class="csl-entry" role="listitem">
+Whirl-Carrillo, M, E M McDonagh, J M Hebert, L Gong, K Sangkuhl, C F Thorn, R B Altman, and T E Klein. 2012. <span>“Pharmacogenomics <span>Knowledge</span> for <span>Personalized</span> <span>Medicine</span>.”</span> <em>Clinical Pharmacology &amp; Therapeutics</em> 92 (4): 414–17. <a href="https://doi.org/10.1038/clpt.2012.96">https://doi.org/10.1038/clpt.2012.96</a>.
+</div>
+<div id="ref-yun_regle_2023" class="csl-entry" role="listitem">
+Yun, Taedong, Justin Cosentino, Babak Behsaz, Zachary R. McCaw, Davin Hill, Robert Luben, Dongbing Lai, et al. 2023. <span>“[<span>REGLE</span>] <span>Unsupervised</span> Representation Learning Improves Genomic Discovery and Risk Prediction for Respiratory and Circulatory Functions and Diseases.”</span> medRxiv. <a href="https://doi.org/10.1101/2023.04.28.23289285">https://doi.org/10.1101/2023.04.28.23289285</a>.
 </div>
 </div>
 </section>

@@ -171,6 +171,8 @@ The *EVE* architecture consists of an encoder that maps sequences to a latent sp
 
 The tradeoff between single-sequence and MSA-based approaches involves coverage versus depth. *ESM-1v* scores any protein sequence without requiring alignment construction. *EVE* provides stronger performance when high-quality MSAs are available but cannot score proteins lacking sufficient homologs. For well-studied protein families with deep evolutionary sampling, MSA-based methods remain competitive; for orphan proteins or rapidly evolving sequences, single-sequence models offer the only foundation model option.
 
+*Tranception* [@notin_tranception_2022] offers a middle ground through retrieval augmentation: rather than training a separate model per protein family, it retrieves evolutionarily related sequences at inference time and uses them to provide context-specific information about which positions tolerate variation. This approach bridges classical MSA-based methods and modern language models, potentially offering benefits of both paradigms for proteins where sufficient homologs can be retrieved. Performance on DMS benchmarks suggests retrieval augmentation can improve variant effect prediction, though benefits vary across protein families.
+
 ::: {.callout-note title="Knowledge Check: Single-Sequence vs. MSA-Based Models"}
 A patient carries a missense variant in *OBSCN*, an extremely large gene encoding a protein with few characterized homologs. The gene has only 12 sequences in its MSA, most from closely related mammals.
 
@@ -224,7 +226,7 @@ Approximately 98% of the human genome lies outside protein-coding regions, yet n
 
 Splicing variants illustrate both the promise and current limitations of deep learning for noncoding VEP. Approximately 10% of pathogenic variants in ClinVar act through splicing mechanisms, disrupting the precise excision of introns from pre-mRNA *[Citation Needed]*. Classical approaches relied on position weight matrices matching consensus splice site sequences, achieving limited sensitivity for variants outside the core GT-AG dinucleotides.
 
-*SpliceAI* applies the dilated convolutional architecture introduced in @sec-ch06-cnn to predict splice site usage from raw DNA sequence [@jaganathan_spliceai_2019]. The architecture processes 10,000 nucleotides of context through 32 residual blocks with dilated convolutions (dilation rates increasing from 1 to 128), enabling the **receptive field** to span several kilobases while maintaining nucleotide resolution. Output heads predict splice donor probability, splice acceptor probability, and junction usage at each position.
+*SpliceAI* applies the dilated convolutional architecture introduced in @sec-ch06-cnn to predict splice site usage from raw DNA sequence [@jaganathan_predicting_2019]. The architecture processes 10,000 nucleotides of context through 32 residual blocks with dilated convolutions (dilation rates increasing from 1 to 128), enabling the **receptive field** to span several kilobases while maintaining nucleotide resolution. Output heads predict splice donor probability, splice acceptor probability, and junction usage at each position.
 
 For variant effect prediction, *SpliceAI* compares predictions between reference and alternate sequences. The delta score quantifies the change in splice site probability, with positive values indicating gained splice sites and negative values indicating lost sites. Scores exceeding 0.2 correlate with experimentally validated splicing changes; scores above 0.5 have high specificity for pathogenic splicing variants [@jaganathan_predicting_2019].
 
@@ -233,6 +235,12 @@ Clinical deployment has validated *SpliceAI's* utility. Illumina integrated the 
 Limitations reflect the model's training data. *SpliceAI* learned from annotated transcripts representing major isoforms in common tissues. Tissue-specific alternative splicing, rare isoforms, and developmental stage-specific patterns fall outside the training distribution. The model also does not capture downstream consequences: whether a predicted splicing change produces a functional protein, triggers nonsense-mediated decay, or has no phenotypic effect requires additional analysis.
 
 ### Regulatory Variant Prediction with Enformer {#sec-ch18-enformer-vep}
+
+The challenge of non-coding variant interpretation is quantified by landmark studies of GWAS variant localization. @farh_genetic_2015 established that approximately 90% of disease-associated variants fall in non-coding regions, with roughly 60% in enhancer-like chromatin states (regions showing histone modifications characteristic of active enhancers). Of these, only 10-20% directly disrupt recognizable transcription factor binding motifs.
+
+::: {.callout-tip title="Stop and Think"}
+If only 10-20% of regulatory variants disrupt recognizable TF motifs, what does this imply about the complexity of regulatory grammar that foundation models must learn?
+:::
 
 While *SpliceAI* addresses one specific noncoding mechanism, regulatory variants that alter enhancer activity, promoter function, or chromatin organization require different approaches. *Enformer* (@sec-ch17-regulatory) predicts multiple molecular phenotypes (histone modifications, transcription factor binding, chromatin accessibility, gene expression) from 196,608 base pairs of DNA sequence, providing a substrate for regulatory VEP [@avsec_enformer_2021].
 
@@ -258,6 +266,8 @@ This exercise illustrates a fundamental gap between mechanistic prediction (what
 DNA language models provide an alternative to phenotype prediction: scoring variants by how unexpected they appear in learned sequence context, analogous to protein language model approaches for missense variants.
 
 *GPN-MSA* combines DNA language modeling with multi-species sequence alignments [@benegas_gpn-msa_2024]. Building on the *GPN* approach introduced in @sec-ch15-gpn, the model processes aligned sequences from dozens of vertebrate species, learning which positions are conserved and which tolerate variation. Variant scores derive from likelihood ratios: how much less probable is the variant allele compared to reference given the alignment context? This approach captures deep evolutionary constraint missed by simple conservation scores while providing genome-wide coverage including noncoding regions.
+
+Primate-specific constraint data provides complementary evidence. @gao_landscape_2023 characterized variation across great ape genomes, providing constraint estimates from species evolutionarily close to humans. Because primates diverged relatively recently, variants tolerated in primate genomes may provide more relevant evidence of benignity than variants tolerated only in distant species. This primate-specific constraint signal can calibrate PLM-based VEP predictions, particularly for variants where deep phylogenetic conservation is ambiguous.
 
 *Evo 2* pushes context length to approximately one megabase, enabling single models to capture local motifs and long-range dependencies simultaneously [@brixi_evo_2025]. The StripedHyena architecture provides computational efficiency at this scale through state-space-based sequence modeling rather than quadratic attention, as detailed in @sec-ch15-evo2 and @sec-ch07-attention. Training on diverse genomes across the tree of life teaches general principles of sequence organization that transfer to human variant interpretation.
 
@@ -504,7 +514,7 @@ These improvements reflect richer representations. Classical methods aggregate i
 
 Classical methods often fail silently on understudied genes, rare variant classes, or poorly annotated regions. *SIFT* and *PolyPhen* require protein alignments; variants in singleton genes without homologs receive no prediction. *CADD* depends on annotation features; variants in regions lacking regulatory marks receive uninformative scores.
 
-Foundation models degrade more gracefully. Protein language models score any amino acid sequence regardless of available homologs. DNA language models score any genomic position regardless of existing annotation. This extended coverage matters for clinical sequencing of rare diseases, where pathogenic variants often reside in less-studied genes precisely because their severe effects are incompatible with population frequency.
+Foundation models degrade more gracefully. Protein language models score any amino acid sequence regardless of available homologs. DNA language models score any genomic position regardless of existing annotation. This extended coverage matters for clinical sequencing of rare diseases, where pathogenic variants often reside in less-studied genes precisely because their severe effects are incompatible with population frequency. Cross-species transfer learning extends this coverage further: @jagota_cross_2023 demonstrate that models trained on deep mutational scanning data from model organisms can generalize to human variants, particularly valuable for rare disease variants in understudied genes where human-only data remains scarce.
 
 ### Mechanistic Interpretability {#sec-ch18-mechanistic-interpretability}
 
@@ -541,6 +551,16 @@ For common variants in well-studied genes with extensive clinical annotation, th
 Foundation model VEP: gains and remaining gaps. (A) Performance varies by protein family—well-characterized families achieve high accuracy while poorly-studied families show degraded performance. (B) Rare variants are harder to predict, particularly for recently evolved or population-specific variants. (C) Clinical impact assessment: FM predictions could reclassify significant fractions of VUS, but require appropriate validation. (D) Remaining gaps include complex variants (multi-allelic, structural), modifier effects, and tissue-specific pathogenicity. Foundation models have advanced VEP substantially but do not eliminate the need for functional validation.
 :::
 
+### Limitations of PLM-Based VEP {#sec-ch18-plm-limitations}
+
+Despite impressive benchmark performance, protein language model approaches to variant effect prediction face limitations that practitioners must understand. @karollus_current_2023 systematically evaluated PLM-VEP methods and identified several challenges:
+
+- **Limited sensitivity to rare functional variation:** Because PLMs learn from evolutionary data, they may underestimate pathogenicity of de novo variants, recent adaptive mutations, or population-specific functional variants not well-represented in training databases
+- **Limited epistatic modeling:** While attention mechanisms capture some residue dependencies, PLMs cannot directly score compound heterozygous or digenic interactions (cases where two variants together cause disease) that may be clinically relevant
+- **Calibration challenges:** Scores reflect evolutionary constraint, not pathogenicity probability. Translating constraint scores to clinical interpretation requires calibration on labeled pathogenic variants
+
+@swanson_predicting_2022 provides complementary analysis showing that PLMs show reduced predictive accuracy on proteins with limited evolutionary coverage or non-canonical functions where training data is sparse.
+
 
 ## Clinical Integration Considerations {#sec-ch18-clinical-integration}
 
@@ -550,7 +570,7 @@ Foundation model VEP tools require thoughtful integration into clinical workflow
 
 Before clinical use, laboratories should validate foundation model tools against local truth sets representing their patient population. Published benchmark performance on ClinVar may not generalize to a laboratory's specific case mix. Validation should assess discrimination (can the tool distinguish pathogenic from benign?), calibration (do probability estimates match observed frequencies?), and utility (does incorporating the tool improve variant classification compared to existing workflows?).
 
-Validation requires variants with known pathogenicity independent of the computational predictions being tested. Using ClinVar variants whose classifications already incorporated *CADD* scores to validate *CADD* creates circular reasoning, a form of label circularity examined in @sec-ch13-label-circularity. Gold-standard variants from functional studies, segregation data, or expert review provide cleaner validation targets, with detailed evaluation methodology in @sec-ch12-eval.
+Validation requires variants with known pathogenicity independent of the computational predictions being tested. Using ClinVar variants whose classifications already incorporated *CADD* scores to validate *CADD* creates circular reasoning, a form of label circularity examined in @sec-ch13-label-circularity. @dey_evaluating_2020 systematically characterize three evaluation pitfalls for VEP methods: (1) label circularity from overlapping annotation sources, (2) class imbalance with pathogenic variants vastly outnumbered by benign, and (3) benchmark contamination through shared training data ancestry. Awareness of these biases is essential for proper method comparison. Gold-standard variants from functional studies, segregation data, or expert review provide cleaner validation targets, with detailed evaluation methodology in @sec-ch12-eval.
 
 ::: {.callout-warning title="Practical Guidance: Laboratory Validation Checklist"}
 Before deploying a foundation model VEP tool clinically, ensure you have:

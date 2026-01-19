@@ -173,7 +173,7 @@ The **foundation model** paradigm, introduced in @sec-ch14-fm-principles, extend
 
 Before diving into deep learning, consider a simpler question: can we explain the variation across modalities with a small number of shared factors? If inflammation drives coordinated changes in both gene expression and DNA methylation, a single factor might capture both effects. Factor-based methods test whether multi-omics complexity reduces to interpretable dimensions.
 
-Multi-Omics Factor Analysis (*MOFA* and its successor *MOFA+*) provides a probabilistic framework for learning shared and modality-specific factors from multi-omics data [@argelaguet_mofa_2018]. The approach assumes that observed measurements across modalities can be explained by a small number of latent factors, some shared across modalities and others specific to individual data types.
+Multi-Omics Factor Analysis (*MOFA* and its successor *MOFA+*) provides a probabilistic framework for learning shared and modality-specific factors from multi-omics data [@argelaguet_multiomics_2018]. The approach assumes that observed measurements across modalities can be explained by a small number of latent factors, some shared across modalities and others specific to individual data types.
 
 *MOFA+* extends this framework to handle multiple sample groups (such as different tissues or conditions), non-Gaussian likelihoods appropriate for count data, and scalable inference for large datasets *[Citation Needed]*. The factors learned by *MOFA+* capture sources of variation that span modalities, enabling biological interpretation: a factor that loads heavily on inflammatory genes in expression data and on hypomethylation at immune loci in methylation data suggests coordinated epigenetic-transcriptional regulation of inflammation.
 
@@ -224,6 +224,18 @@ Why does this objective produce biologically meaningful alignment rather than ar
 This objective requires paired samples for training: the same cells or patients measured across modalities. Anchor pairs define the positive examples; negative examples come from non-matching pairs within a batch. The encoders learn to produce embeddings where cross-modal correspondence emerges from training dynamics rather than explicit feature engineering.
 
 Contrastive approaches scale well and can incorporate foundation model encoders pretrained on single modalities. An expression encoder pretrained on millions of cells via masked gene prediction can be fine-tuned with contrastive objectives to align with an ATAC-seq encoder. The **pretraining** provides rich initial representations; the contrastive **fine-tuning** establishes cross-modal correspondence (see @sec-ch08-contrastive for contrastive pretraining strategies).
+
+
+### Language Models for Multi-Omics {#sec-ch23-lm-multiomics}
+
+Recent work extends the language model paradigm to multi-omics integration, treating different molecular modalities as distinct "languages" amenable to joint modeling. @zhu_gpt_2024 apply GPT-style autoregressive modeling to learn unified representations across genomic, transcriptomic, and proteomic data. Similarly, @hwang_glm_2024 demonstrate that generative language models can capture cross-modal dependencies that escape modality-specific approaches.
+
+This paradigm shift reframes multi-omics integration from a feature engineering problem to a representation learning problem, potentially discovering latent biological relationships that manual feature design would miss.
+
+::: {.callout-tip}
+## Research Opportunity
+The multi-omics language model paradigm remains nascent. Key open questions include optimal tokenization across modalities, handling missing data, and whether joint pretraining outperforms modality-specific models with late fusion.
+:::
 
 
 ## Clinical Integration: EHR, Imaging, and Molecular Data {#sec-ch23-clinical-integration}

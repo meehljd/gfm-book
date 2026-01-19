@@ -486,7 +486,10 @@ div.csl-indent {
   <li><a href="#sec-ch13-temporal-drift" id="toc-sec-ch13-temporal-drift" class="nav-link" data-scroll-target="#sec-ch13-temporal-drift"><span class="header-section-number">13.2.5</span> Temporal Drift</a></li>
   <li><a href="#sec-ch13-resource-overlap" id="toc-sec-ch13-resource-overlap" class="nav-link" data-scroll-target="#sec-ch13-resource-overlap"><span class="header-section-number">13.2.6</span> Resource Overlap and Indirect Leakage</a></li>
   </ul></li>
-  <li><a href="#sec-ch13-population-shortcut" id="toc-sec-ch13-population-shortcut" class="nav-link" data-scroll-target="#sec-ch13-population-shortcut"><span class="header-section-number">13.3</span> Population Structure as a Shortcut</a></li>
+  <li><a href="#sec-ch13-population-shortcut" id="toc-sec-ch13-population-shortcut" class="nav-link" data-scroll-target="#sec-ch13-population-shortcut"><span class="header-section-number">13.3</span> Population Structure as a Shortcut</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch13-addressing-ancestry-bias" id="toc-sec-ch13-addressing-ancestry-bias" class="nav-link" data-scroll-target="#sec-ch13-addressing-ancestry-bias"><span class="header-section-number">13.3.1</span> Addressing Ancestry Bias in Genomic Models</a></li>
+  </ul></li>
   <li><a href="#sec-ch13-technical-artifacts" id="toc-sec-ch13-technical-artifacts" class="nav-link" data-scroll-target="#sec-ch13-technical-artifacts"><span class="header-section-number">13.4</span> Technical Artifacts as Biological Signal</a></li>
   <li><a href="#sec-ch13-label-circularity" id="toc-sec-ch13-label-circularity" class="nav-link" data-scroll-target="#sec-ch13-label-circularity"><span class="header-section-number">13.5</span> Label Bias and Circularity</a></li>
   <li><a href="#sec-ch13-data-splitting" id="toc-sec-ch13-data-splitting" class="nav-link" data-scroll-target="#sec-ch13-data-splitting"><span class="header-section-number">13.6</span> Data Splitting</a>
@@ -874,6 +877,10 @@ Key Insight: Capacity Amplifies Confounding
 </div>
 </div>
 <p>This mismatch between the populations used for model development and the populations that would benefit from genomic medicine creates a fundamental tension between current practice and equitable healthcare. Models that work primarily for European ancestry individuals perpetuate existing health disparities, regardless of their benchmark performance. The fairness implications are examined further in <a href="#sec-ch13-fairness" class="quarto-xref"><span>Section 13.10</span></a>.</p>
+<section id="sec-ch13-addressing-ancestry-bias" class="level3" data-number="13.3.1">
+<h3 data-number="13.3.1" class="anchored" data-anchor-id="sec-ch13-addressing-ancestry-bias"><span class="header-section-number">13.3.1</span> Addressing Ancestry Bias in Genomic Models</h3>
+<p>Several approaches have emerged to address ancestry confounding in genomic prediction. <span class="citation" data-cites="amariuta_improving_2020">Amariuta et al. (<a href="../bib/references.html#ref-amariuta_improving_2020" role="doc-biblioref">2020</a>)</span> demonstrated that incorporating functional genomic annotations can improve PRS transferability across populations, with larger gains for traits with well-characterized regulatory mechanisms.</p>
+<p>The importance of diverse representation extends beyond European-focused cohorts. <span class="citation" data-cites="sohail_mexican_2023">Sohail et al. (<a href="../bib/references.html#ref-sohail_mexican_2023" role="doc-biblioref">2023</a>)</span> provides critical analysis of PRS performance in Latin American populations, revealing systematic biases that cannot be addressed by simple recalibration. The work highlights the need for foundation models to be evaluated explicitly on diverse populations rather than assuming that performance on European-ancestry cohorts will transfer.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check: Recall Key Concepts">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -912,6 +919,7 @@ Check Your Answer
 </div>
 </div>
 </div>
+</section>
 </section>
 <section id="sec-ch13-technical-artifacts" class="level2" data-number="13.4">
 <h2 data-number="13.4" class="anchored" data-anchor-id="sec-ch13-technical-artifacts"><span class="header-section-number">13.4</span> Technical Artifacts as Biological Signal</h2>
@@ -1445,6 +1453,7 @@ Table&nbsp;13.4: Mitigation strategy selection guide. Choose based on when inter
 <p>Confounding connects directly to fairness and health equity. Models that achieve high average performance while failing for specific populations may appear successful while exacerbating existing disparities.</p>
 <p>Polygenic risk scores illustrate this tension. European ancestry-derived scores predict cardiovascular disease, diabetes, and breast cancer risk reasonably well within European ancestry populations. Applied to African or Asian ancestry individuals, the same scores show substantially worse discrimination and calibration <span class="citation" data-cites="duncan_analysis_2019">(<a href="../bib/references.html#ref-duncan_analysis_2019" role="doc-biblioref">Duncan et al. 2019</a>)</span>. Healthcare systems that deploy these scores without ancestry-specific validation risk providing inferior risk stratification to already underserved populations. The portability analysis framework in <a href="../part_1/p1-ch03-gwas.html#sec-ch03-portability" class="quarto-xref"><span>Section 3.7</span></a> quantifies these degradations, while clinical deployment frameworks (<a href="../part_7/p7-ch28-clinical-risk.html#sec-ch28-fairness" class="quarto-xref"><span>Section 28.8</span></a>) address operational responses.</p>
 <p>Variant interpretation exhibits similar patterns. ClinVar contains many more pathogenic variant classifications for European ancestry individuals than for other populations <span class="citation" data-cites="landrum_clinvar_2018">(<a href="../bib/references.html#ref-landrum_clinvar_2018" role="doc-biblioref">Landrum et al. 2018</a>)</span>. The data composition issues underlying this imbalance are examined in <a href="../part_1/p1-ch02-data.html#sec-ch02-clinvar" class="quarto-xref"><span>Section 2.8.1</span></a>. Predictors trained on ClinVar inherit this imbalance, performing better for variants common in European populations and worse for variants enriched in other ancestries. Clinical deployment of such predictors may reduce diagnostic yield for non-European patients.</p>
+<p>Pharmacogenomics provides a concrete example of ancestry-dependent clinical utility. <span class="citation" data-cites="chung_marker_2004">Chung et al. (<a href="../bib/references.html#ref-chung_marker_2004" role="doc-biblioref">2004</a>)</span> demonstrated that CYP2D6 metabolizer phenotypes vary substantially across populations, with allele frequencies differing by orders of magnitude between African, Asian, and European ancestry groups. Foundation models predicting drug response should account for these population-specific patterns or risk systematic errors in dosing recommendations for underrepresented groups.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1603,6 +1612,12 @@ Chapter Summary
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-amariuta_improving_2020" class="csl-entry" role="listitem">
+Amariuta, Tiffany, Kazuyoshi Ishigaki, Hiroki Sugishita, Tazro Ohta, Masaru Koido, Kushal K. Dey, Koichi Matsuda, et al. 2020. <span>“Improving the Trans-Ancestry Portability of Polygenic Risk Scores by Prioritizing Variants in Predicted Cell-Type-Specific Regulatory Elements.”</span> <em>Nature Genetics</em> 52 (12): 1346–54. <a href="https://doi.org/10.1038/s41588-020-00740-8">https://doi.org/10.1038/s41588-020-00740-8</a>.
+</div>
+<div id="ref-chung_marker_2004" class="csl-entry" role="listitem">
+Chung, Wen-Hung, Shuen-Iu Hung, Hong-Shang Hong, Mo-Song Hsih, Li-Cheng Yang, Hsin-Chun Ho, Jer-Yuarn Wu, and Yuan-Tsong Chen. 2004. <span>“A Marker for <span>Stevens</span>–<span>Johnson</span> Syndrome.”</span> <em>Nature</em> 428 (6982): 486–86. <a href="https://doi.org/10.1038/428486a">https://doi.org/10.1038/428486a</a>.
+</div>
 <div id="ref-davey_smith_mendelian_2003" class="csl-entry" role="listitem">
 Davey Smith, George, and Shah Ebrahim. 2003. <span>“<span>‘<span>Mendelian</span> Randomization’</span>: Can Genetic Epidemiology Contribute to Understanding Environmental Determinants of Disease?*.”</span> <em>International Journal of Epidemiology</em> 32 (1): 1–22. <a href="https://doi.org/10.1093/ije/dyg070">https://doi.org/10.1093/ije/dyg070</a>.
 </div>
@@ -1626,6 +1641,9 @@ Pearl, Judea. 2009. <em>Causality</em>. Cambridge University Press.
 </div>
 <div id="ref-price_principal_2006" class="csl-entry" role="listitem">
 Price, Alkes L., Nick J. Patterson, Robert M. Plenge, Michael E. Weinblatt, Nancy A. Shadick, and David Reich. 2006. <span>“Principal Components Analysis Corrects for Stratification in Genome-Wide Association Studies.”</span> <em>Nature Genetics</em> 38 (8): 904–9. <a href="https://doi.org/10.1038/ng1847">https://doi.org/10.1038/ng1847</a>.
+</div>
+<div id="ref-sohail_mexican_2023" class="csl-entry" role="listitem">
+Sohail, Mashaal, María J. Palma-Martínez, Amanda Y. Chong, Consuelo D. Quinto-Cortés, Carmina Barberena-Jonas, Santiago G. Medina-Muñoz, Aaron Ragsdale, et al. 2023. <span>“Mexican <span>Biobank</span> Advances Population and Medical Genomics of Diverse Ancestries.”</span> <em>Nature</em> 622 (7984): 775–83. <a href="https://doi.org/10.1038/s41586-023-06560-0">https://doi.org/10.1038/s41586-023-06560-0</a>.
 </div>
 <div id="ref-vilhjalmsson_modeling_2015" class="csl-entry" role="listitem">
 Vilhjálmsson, Bjarni J., Jian Yang, Hilary K. Finucane, Alexander Gusev, Sara Lindström, Stephan Ripke, Giulio Genovese, et al. 2015. <span>“Modeling <span>Linkage</span> <span>Disequilibrium</span> <span>Increases</span> <span>Accuracy</span> of <span>Polygenic</span> <span>Risk</span> <span>Scores</span>.”</span> <em>American Journal of Human Genetics</em> 97 (4): 576–92. <a href="https://doi.org/10.1016/j.ajhg.2015.09.001">https://doi.org/10.1016/j.ajhg.2015.09.001</a>.

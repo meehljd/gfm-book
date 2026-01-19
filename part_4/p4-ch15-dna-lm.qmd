@@ -103,6 +103,8 @@ Protein language models demonstrated an alternative. *ESM* and related models tr
 The core shift from task-specific CNNs to DNA language models is this: instead of building specialized architectures for each task, train a single model to understand DNA sequence through self-supervision, then adapt that understanding to any downstream application. This inverts the traditional workflow from *task-first* (design architecture for task, train from scratch) to *representation-first* (learn general representations, adapt to tasks).
 :::
 
+The rapid proliferation of DNA foundation models has prompted systematic reviews cataloguing architectural choices, pretraining strategies, and benchmark performance across model families [@boshar_foundational_nodate; @consens_transformers_2025]. These surveys reveal that while transformer architectures dominate, significant diversity exists in tokenization schemes, context lengths, and training objectives.
+
 The practical workflow begins with training a language model on unlabeled genomic sequences to predict masked or subsequent nucleotides. From the trained model, **embeddings** are extracted for sequences of interest (windows around variants, regulatory elements, or entire genes). These embeddings then support downstream tasks through probing with lightweight classifiers, fine-tuning for specific applications, or zero-shot scoring via probability comparisons. Once a sufficiently powerful backbone exists, it becomes the default starting point for nearly any DNA-level prediction problem.
 
 
@@ -119,6 +121,16 @@ Despite these limitations, *DNABERT* demonstrated several important principles. 
 The *DNABERT* family collectively established that self-supervision on DNA works, that tokenization choices substantially affect performance, and that masked language model training produces reusable representations for diverse sequence tasks. The foundation model paradigm transfers effectively from natural language to genomic sequence.
 
 
+### Tokenization Beyond k-mers {#sec-ch15-tokenization-alternatives}
+
+While k-mer and BPE tokenization dominate DNA language models, biologically-motivated alternatives offer compelling advantages. Codon-level tokenization aligns token boundaries with the genetic code's natural reading frame, providing an inductive bias well-suited to protein-coding regions [@outeiral_codon_2024]. This approach demonstrates that domain knowledge can inform tokenization design, potentially improving performance on tasks where codon identity matters---such as synonymous variant effect prediction or codon optimization for expression.
+
+::: {.callout-note}
+## Tokenization Trade-offs
+Codon tokenization excels for coding sequences but may underperform in non-coding regions where the reading frame concept does not apply. Model selection should consider the target application's sequence composition.
+:::
+
+
 ## *Nucleotide Transformer*: Scaling Data and Model Diversity {#sec-ch15-nucleotide-transformer}
 
 *DNABERT* demonstrated feasibility but operated at modest scale relative to the size of genomes. The *Nucleotide Transformer* family pushed substantially further, emphasizing diversity in both training data and model architecture [@dalla-torre_nucleotide_2023].
@@ -128,6 +140,8 @@ The training corpus spanned genomic data from multiple species and human populat
 The *Nucleotide Transformer* project introduced a benchmark panel that has become a standard yardstick for evaluating DNA language models. Tasks include promoter and enhancer classification, histone mark and chromatin accessibility prediction, splice site identification, and regulatory element type classification. Models are evaluated through linear probes or light fine-tuning on standardized train/validation/test splits. This benchmark infrastructure enabled systematic comparison across models and established the evaluation protocols now used throughout the field (see @sec-ch11-benchmarks for comprehensive discussion of genomic benchmarks).
 
 Scaling experiments revealed predictable relationships between model size, training data, and performance. Larger models with more pretraining data and longer context windows achieved better downstream performance, following patterns observed in natural language and protein modeling. These scaling trends suggest that continued investment in larger genomic language models will yield further improvements, though the optimal allocation between parameters, data, and compute remains an active research question (@sec-ch14-fm-principles).
+
+The *Nucleotide Transformer* family continues to evolve through subsequent versions with architectural improvements, including expanded context windows and refined tokenization strategies [@boshar_foundational_nodate]. These updates demonstrate how DNA language models mature through iterative refinement, with each generation addressing limitations identified in prior versions.
 
 
 ## *GPN*: Cross-Species Pretraining for Variant Effect Prediction {#sec-ch15-gpn}
@@ -276,6 +290,8 @@ The following table highlights five landmark DNA language models representing di
 | *Evo 2* | 2025 | 1 Mb | 7B-40B | StripedHyena 2 | Pan-genomic, largest scale |
 
 : Landmark DNA language models representing distinct architectural paradigms. {#tbl-dna-lm-comparison}
+
+Beyond the models detailed above, the Genomic Language Model (gLM) demonstrates that architectural innovations beyond standard BERT encoders---including mixture-of-experts and improved positional encodings---can yield competitive performance while enabling joint DNA-protein modeling [@cornman_glm_2024]. This multimodal capability suggests future convergence between DNA and protein foundation models.
 
 
 ## Training Data and What Models Learn {#sec-ch15-training-data}

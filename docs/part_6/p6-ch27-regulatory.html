@@ -634,6 +634,22 @@ Key Insight: The Locked vs.&nbsp;Adaptive Dilemma
 <p>Foundation models challenge the FDA’s locked/adaptive dichotomy. A model with frozen pretrained weights appears “locked,” but fine-tuning for specific clinical applications, prompt engineering, and evolving downstream heads create “adaptive” behavior in practice. This architectural flexibility—a technical strength—becomes a regulatory liability when approval pathways assume static behavior.</p>
 </div>
 </div>
+<p>The FDA’s action plan for AI/ML-based Software as a Medical Device (SaMD) establishes the regulatory framework for algorithms that continuously learn from real-world data <span class="citation" data-cites="us_food_and_drug_administration_artificial_2021">(<a href="../bib/references.html#ref-us_food_and_drug_administration_artificial_2021" role="doc-biblioref">U.S. Food and Drug Administration 2021</a>)</span>. This guidance introduces the concept of a “predetermined change control plan” (PCCP), allowing manufacturers to specify anticipated model updates without requiring new submissions for each modification.</p>
+<p>For genomic foundation models, the PCCP framework raises important questions: How should regulators evaluate models that improve with each patient encounter? What validation is required when a model’s behavior changes post-deployment? These questions remain actively debated as regulators develop genomics-specific guidance.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Regulatory Uncertainty
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>As of 2025, no genomic foundation model has received FDA clearance for clinical diagnosis. The regulatory pathway remains uncertain, particularly for models that operate across multiple variant types or phenotypes.</p>
+</div>
+</div>
+<p>The FDA’s evolving framework for AI/ML-based medical devices <span class="citation" data-cites="food_and_drug_administration_using_2023">(<a href="../bib/references.html#ref-food_and_drug_administration_using_2023" role="doc-biblioref">Food and Drug Administration 2023</a>)</span> provides additional guidance on predetermined change control plans, real-world performance monitoring, and transparency requirements. For genomic foundation models, this framework implies that developers must specify in advance what types of model updates will occur without re-submission versus which changes require new regulatory review.</p>
 </section>
 <section id="sec-ch27-global-regulation" class="level3" data-number="27.1.2">
 <h3 data-number="27.1.2" class="anchored" data-anchor-id="sec-ch27-global-regulation"><span class="header-section-number">27.1.2</span> European and Global Regulatory Landscapes</h3>
@@ -728,7 +744,7 @@ Knowledge Check
 <p>The chapter on confounding (<a href="../part_3/p3-ch13-confounding.html" class="quarto-xref"><span>Chapter 13</span></a>) introduced a critical validation pitfall. Can you recall what it is? How might this same pitfall affect regulatory submissions for a variant classifier trained on ClinVar data?</p>
 <p><em>Hint: Think about where training labels come from and how evaluation benchmarks are constructed.</em></p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -737,7 +753,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The critical pitfall is circular validation or data leakage—when the same data (or closely related data) appears in both training and evaluation. For ClinVar-trained classifiers, this manifests when variants from the same genes, families, or submissions appear in both train and test sets, inflating performance estimates. Regulatory submissions must demonstrate true held-out validation using variants submitted after model training or from independent databases, not just random splits of the same ClinVar version.</p>
 </div>
@@ -905,7 +921,7 @@ Knowledge Check: Which Consent Model?
 <li><p>A rare disease foundation wants participants to control exactly which studies can access their data, potentially revoking access if concerns arise.</p></li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -914,7 +930,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Broad consent</strong> is appropriate here—the original consent documents likely authorized future unspecified health research, which includes foundation model training. However, ethical questions remain about whether participants could have anticipated AI applications.</p></li>
@@ -1137,7 +1153,7 @@ Knowledge Check
 </ol>
 <p>These questions remain unsettled, but thinking through them helps clarify the IP landscape.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1146,7 +1162,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>A truly novel, non-naturally-occurring protein sequence can potentially be patented if it meets utility, novelty, and non-obviousness requirements. (2) Current law does not recognize AI as an inventor (see Thaler v. USPTO); inventorship would likely be assigned to the human who directed the generation (user or developer), though this remains contested. (3) A sequence 95% identical to a natural protein likely fails the novelty requirement and would not be patentable, while a truly novel sequence could be—but determining what constitutes sufficient novelty in sequence space remains legally unclear.</li>
@@ -1426,8 +1442,11 @@ European Parliament. 2016. <span>“Regulation on the Protection of Natural Pers
 <div id="ref-european_parliament_regulation_2024" class="csl-entry" role="listitem">
 ———. 2024. <span>“Regulation Laying down Harmonised Rules on Artificial Intelligence.”</span>
 </div>
+<div id="ref-food_and_drug_administration_using_2023" class="csl-entry" role="listitem">
+Food and Drug Administration. 2023. <span>“Using <span>Artificial</span> <span>Intelligence</span> and <span>Machine</span> <span>Learning</span> in the <span>Development</span> of <span>Drug</span> and <span>Biological</span> <span>Products</span>; <span>Availability</span>.”</span>
+</div>
 <div id="ref-food_and_drug_administration_laboratory_2024" class="csl-entry" role="listitem">
-Food and Drug Administration. 2024. <span>“Laboratory <span>Developed</span> <span>Tests</span>: <span>Small</span> <span>Entity</span> <span>Compliance</span> <span>Guide</span>; <span>Guidance</span> for <span>Laboratory</span> <span>Manufacturers</span> and <span>Food</span> and <span>Drug</span> <span>Administration</span> <span>Staff</span>; <span>Availability</span>.”</span>
+———. 2024. <span>“Laboratory <span>Developed</span> <span>Tests</span>: <span>Small</span> <span>Entity</span> <span>Compliance</span> <span>Guide</span>; <span>Guidance</span> for <span>Laboratory</span> <span>Manufacturers</span> and <span>Food</span> and <span>Drug</span> <span>Administration</span> <span>Staff</span>; <span>Availability</span>.”</span>
 </div>
 <div id="ref-food_and_drug_administration_artificial_2025" class="csl-entry" role="listitem">
 ———. 2025. <span>“Artificial <span>Intelligence</span>-<span>Enabled</span> <span>Medical</span> <span>Devices</span>.”</span>

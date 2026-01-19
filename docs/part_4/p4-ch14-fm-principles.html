@@ -671,7 +671,7 @@ Stop and Think
 </section>
 <section id="sec-ch14-defining" class="level2" data-number="14.2">
 <h2 data-number="14.2" class="anchored" data-anchor-id="sec-ch14-defining"><span class="header-section-number">14.2</span> Defining Genomic Foundation Models</h2>
-<p>The term “foundation model” appears frequently in genomics literature, sometimes applied to any large neural network trained on biological sequences. Establishing clear criteria helps separate true genomic foundation models from ordinary deep learning approaches that happen to operate on DNA or protein sequences.</p>
+<p>The term “foundation model” appears frequently in genomics literature, sometimes applied to any large neural network trained on biological sequences. The Stanford HAI report formally defined foundation models as “models trained on broad data at scale such that they can be adapted to a wide range of downstream tasks” <span class="citation" data-cites="bommasani_opportunities_2022">(<a href="../bib/references.html#ref-bommasani_opportunities_2022" role="doc-biblioref">Bommasani et al. 2022</a>)</span>. This definition, while originating from general AI discourse, captures essential properties that distinguish true genomic foundation models from task-specific deep learning approaches. Establishing clear criteria helps separate these categories.</p>
 <section id="sec-ch14-essential-properties" class="level3" data-number="14.2.1">
 <h3 data-number="14.2.1" class="anchored" data-anchor-id="sec-ch14-essential-properties"><span class="header-section-number">14.2.1</span> Essential Properties</h3>
 <p>The defining characteristic of genomic foundation models is their capacity to serve purposes far beyond their original training objectives. This generality emerges from several interconnected properties.</p>
@@ -732,10 +732,24 @@ Table&nbsp;14.1: Distinguishing properties of foundation models versus task-spec
 </figure>
 </div>
 <p>Why does self-supervised pretraining enable transfer while supervised training does not? The difference lies in what the training objective encourages the model to learn. A model trained to predict splice sites learns features specifically useful for splice site prediction—the GT-AG consensus, branch point motifs, exonic splicing enhancers. These features may be irrelevant or even misleading for other tasks. In contrast, a model trained to predict masked nucleotides across the entire genome must learn features useful for reconstructing any genomic context. To succeed at this broad objective, the model must discover general principles: how motifs combine, how sequence composition varies across regions, what patterns distinguish functional from non-functional sequence. These general features transfer because they capture the underlying organization of the genome rather than task-specific shortcuts.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Field Overview">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Field Overview
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For a comprehensive survey of genomic foundation models as of 2024, including taxonomy, benchmarks, and applications, see <span class="citation" data-cites="trop_genomics_2024">Trop et al. (<a href="../bib/references.html#ref-trop_genomics_2024" role="doc-biblioref">2024</a>)</span>.</p>
+<p><strong>Reading Extension:</strong> Compare Trop et al.’s taxonomy to the four families introduced in this chapter. Where do their categories align with ours? Where do they diverge, and what might account for different organizational choices?</p>
+</div>
+</div>
 </section>
 <section id="sec-ch14-what-doesnt-count" class="level3" data-number="14.2.2">
 <h3 data-number="14.2.2" class="anchored" data-anchor-id="sec-ch14-what-doesnt-count"><span class="header-section-number">14.2.2</span> What does not Count</h3>
-<p>Many excellent genomic models fail one or more of these criteria and should not be classified as foundation models. Early versions of <em>DeepSEA</em> trained specifically on chromatin accessibility data from a limited set of cell types lack the generality and standardized interface of foundation models, though later iterations that integrate many assays begin to approach foundation model territory <span class="citation" data-cites="zhou_deepsea_2015">(<a href="../bib/references.html#ref-zhou_deepsea_2015" role="doc-biblioref">J. Zhou and Troyanskaya 2015</a>)</span>. <em>SpliceAI</em> predicts splicing outcomes exceptionally well but was designed for that specific task and provides neither general-purpose embeddings nor easy transfer to other genomic prediction problems <span class="citation" data-cites="jaganathan_spliceai_2019">(<a href="../bib/references.html#ref-jaganathan_spliceai_2019" role="doc-biblioref">Jaganathan et al. 2019</a>)</span>. Even a very large <em>Enformer</em>-like model trained solely on human chromatin tracks remains bound to its specific prediction interface despite its scale and sophistication <span class="citation" data-cites="avsec_enformer_2021">(<a href="../bib/references.html#ref-avsec_enformer_2021" role="doc-biblioref">Avsec et al. 2021</a>)</span>.</p>
+<p>Many excellent genomic models fail one or more of these criteria and should not be classified as foundation models. Early versions of <em>DeepSEA</em> trained specifically on chromatin accessibility data from a limited set of cell types lack the generality and standardized interface of foundation models, though later iterations that integrate many assays begin to approach foundation model territory <span class="citation" data-cites="zhou_deepsea_2015">(<a href="../bib/references.html#ref-zhou_deepsea_2015" role="doc-biblioref">J. Zhou and Troyanskaya 2015</a>)</span>. <em>SpliceAI</em> predicts splicing outcomes exceptionally well but was designed for that specific task and provides neither general-purpose embeddings nor easy transfer to other genomic prediction problems <span class="citation" data-cites="jaganathan_predicting_2019">(<a href="../bib/references.html#ref-jaganathan_predicting_2019" role="doc-biblioref">Jaganathan et al. 2019</a>)</span>. Even a very large <em>Enformer</em>-like model trained solely on human chromatin tracks remains bound to its specific prediction interface despite its scale and sophistication <span class="citation" data-cites="avsec_enformer_2021">(<a href="../bib/references.html#ref-avsec_enformer_2021" role="doc-biblioref">Avsec et al. 2021</a>)</span>.</p>
 <p>The distinction matters for several reasons. It affects evaluation strategy, since foundation models must be assessed across families of tasks rather than single benchmarks (<a href="../part_3/p3-ch12-evaluation.html" class="quarto-xref"><span>Chapter 12</span></a>). It affects integration into existing pipelines, since foundation models serve as feature extractors while task-specific models typically provide end-to-end predictions. It affects how we think about model development, since foundation model training requires different infrastructure and data curation than task-specific supervised learning.</p>
 </section>
 <section id="sec-ch14-concept-limitations" class="level3" data-number="14.2.3">
@@ -1013,7 +1027,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>At this point, you should be able to distinguish between the three model families covered so far. Without looking back, try to answer: What is the key difference between DNA language models and sequence-to-function models in terms of their training objectives? Which family would you choose if you needed to predict enhancer activity in a novel cell type not represented in existing training data?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1022,7 +1036,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>DNA language models use self-supervised objectives (masked language modeling or next-token prediction) on raw sequence without functional labels, while sequence-to-function models train with supervised multi-task prediction on thousands of chromatin and expression assays. For a novel cell type, DNA language models would be preferable because they learn general sequence patterns that transfer across contexts, whereas sequence-to-function models are tied to the specific cell types and assays in their training data.</p>
 </div>
@@ -1337,7 +1351,7 @@ Test Yourself
 <li><p>When should you build a foundation model from scratch versus adapting an existing one? What are the key decision factors in the build-versus-use hierarchy?</p></li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1346,7 +1360,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Foundation vs.&nbsp;task-specific models</strong>: Foundation models are distinguished by their ability to transfer to diverse downstream tasks through embeddings or lightweight adaptation, not by their size alone. Self-supervised pretraining enables transfer because the model must learn general features useful for reconstructing any genomic context (e.g., how motifs combine, sequence composition patterns, functional vs.&nbsp;non-functional sequence). In contrast, supervised training on narrow tasks produces features specifically optimized for that task (e.g., splice site prediction learns GT-AG consensus and branch points), which may be irrelevant or misleading for other applications.</p></li>
@@ -1390,6 +1404,9 @@ Check Your Answers
 <div id="ref-avsec_enformer_2021" class="csl-entry" role="listitem">
 Avsec, Žiga, Vikram Agarwal, D. Visentin, J. Ledsam, A. Grabska-Barwinska, Kyle R. Taylor, Yannis Assael, J. Jumper, Pushmeet Kohli, and David R. Kelley. 2021. <span>“[<span>Enformer</span>] <span>Effective</span> Gene Expression Prediction from Sequence by Integrating Long-Range Interactions.”</span> <em>Nature Methods</em> 18 (October): 1196–1203. <a href="https://doi.org/10.1038/s41592-021-01252-x">https://doi.org/10.1038/s41592-021-01252-x</a>.
 </div>
+<div id="ref-bommasani_opportunities_2022" class="csl-entry" role="listitem">
+Bommasani, Rishi, Drew A. Hudson, Ehsan Adeli, Russ Altman, Simran Arora, Sydney von Arx, Michael S. Bernstein, et al. 2022. <span>“On the <span>Opportunities</span> and <span>Risks</span> of <span>Foundation</span> <span>Models</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2108.07258">https://doi.org/10.48550/arXiv.2108.07258</a>.
+</div>
 <div id="ref-chen_deepsea_2022" class="csl-entry" role="listitem">
 Chen, Kathleen M., Aaron K. Wong, Olga G. Troyanskaya, and Jian Zhou. 2022. <span>“[<span>DeepSEA</span> <span>Sei</span>] <span>A</span> Sequence-Based Global Map of Regulatory Activity for Deciphering Human Genetics.”</span> <em>Nature Genetics</em> 54 (7): 940–49. <a href="https://doi.org/10.1038/s41588-022-01102-2">https://doi.org/10.1038/s41588-022-01102-2</a>.
 </div>
@@ -1405,7 +1422,7 @@ Hoffmann, Jordan, Sebastian Borgeaud, Arthur Mensch, Elena Buchatskaya, Trevor C
 <div id="ref-hu_lora_2021" class="csl-entry" role="listitem">
 Hu, Edward J., Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, and Weizhu Chen. 2021. <span>“<span>LoRA</span>: <span>Low</span>-<span>Rank</span> <span>Adaptation</span> of <span>Large</span> <span>Language</span> <span>Models</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2106.09685">https://doi.org/10.48550/arXiv.2106.09685</a>.
 </div>
-<div id="ref-jaganathan_spliceai_2019" class="csl-entry" role="listitem">
+<div id="ref-jaganathan_predicting_2019" class="csl-entry" role="listitem">
 Jaganathan, Kishore, Sofia Kyriazopoulou Panagiotopoulou, Jeremy F. McRae, Siavash Fazel Darbandi, David Knowles, Yang I. Li, Jack A. Kosmicki, et al. 2019. <span>“[<span>SpliceAI</span>] <span>Predicting</span> <span>Splicing</span> from <span>Primary</span> <span>Sequence</span> with <span>Deep</span> <span>Learning</span>.”</span> <em>Cell</em> 176 (3): 535–548.e24. <a href="https://doi.org/10.1016/j.cell.2018.12.015">https://doi.org/10.1016/j.cell.2018.12.015</a>.
 </div>
 <div id="ref-ji_dnabert_2021" class="csl-entry" role="listitem">
@@ -1434,6 +1451,9 @@ Sanabria, Melissa, Jonas Hirsch, Pierre M. Joubert, and Anna R. Poetsch. 2024. <
 </div>
 <div id="ref-schubach_cadd_2024" class="csl-entry" role="listitem">
 Schubach, Max, Thorben Maass, Lusiné Nazaretyan, Sebastian Röner, and Martin Kircher. 2024. <span>“<span>CADD</span> V1.7: Using Protein Language Models, Regulatory <span>CNNs</span> and Other Nucleotide-Level Scores to Improve Genome-Wide Variant Predictions.”</span> <em>Nucleic Acids Research</em> 52 (D1): D1143–54. <a href="https://doi.org/10.1093/nar/gkad989">https://doi.org/10.1093/nar/gkad989</a>.
+</div>
+<div id="ref-trop_genomics_2024" class="csl-entry" role="listitem">
+Trop, Evan, Yair Schiff, Edgar Mariano Marroquin, Chia Hsiang Kao, Aaron Gokaslan, McKinley Polen, Mingyi Shao, et al. 2024. <span>“The <span>Genomics</span> <span>Long</span>-<span>Range</span> <span>Benchmark</span>: <span>Advancing</span> <span>DNA</span> <span>Language</span> <span>Models</span>,”</span> October.
 </div>
 <div id="ref-wei_emergent_2022" class="csl-entry" role="listitem">
 Wei, Jason, Yi Tay, Rishi Bommasani, Colin Raffel, Barret Zoph, Sebastian Borgeaud, Dani Yogatama, et al. 2022. <span>“Emergent <span>Abilities</span> of <span>Large</span> <span>Language</span> <span>Models</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2206.07682">https://doi.org/10.48550/arXiv.2206.07682</a>.

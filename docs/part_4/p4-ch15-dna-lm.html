@@ -506,7 +506,10 @@ window.Quarto = {
    
   <ul>
   <li><a href="#sec-ch15-task-specific-to-general" id="toc-sec-ch15-task-specific-to-general" class="nav-link active" data-scroll-target="#sec-ch15-task-specific-to-general"><span class="header-section-number">15.1</span> From Task-Specific CNNs to General-Purpose Language Models</a></li>
-  <li><a href="#sec-ch15-dnabert" id="toc-sec-ch15-dnabert" class="nav-link" data-scroll-target="#sec-ch15-dnabert"><span class="header-section-number">15.2</span> <em>DNABERT</em>: The First DNA Language Model</a></li>
+  <li><a href="#sec-ch15-dnabert" id="toc-sec-ch15-dnabert" class="nav-link" data-scroll-target="#sec-ch15-dnabert"><span class="header-section-number">15.2</span> <em>DNABERT</em>: The First DNA Language Model</a>
+  <ul class="collapse">
+  <li><a href="#sec-ch15-tokenization-alternatives" id="toc-sec-ch15-tokenization-alternatives" class="nav-link" data-scroll-target="#sec-ch15-tokenization-alternatives"><span class="header-section-number">15.2.1</span> Tokenization Beyond k-mers</a></li>
+  </ul></li>
   <li><a href="#sec-ch15-nucleotide-transformer" id="toc-sec-ch15-nucleotide-transformer" class="nav-link" data-scroll-target="#sec-ch15-nucleotide-transformer"><span class="header-section-number">15.3</span> <em>Nucleotide Transformer</em>: Scaling Data and Model Diversity</a></li>
   <li><a href="#sec-ch15-gpn" id="toc-sec-ch15-gpn" class="nav-link" data-scroll-target="#sec-ch15-gpn"><span class="header-section-number">15.4</span> <em>GPN</em>: Cross-Species Pretraining for Variant Effect Prediction</a></li>
   <li><a href="#sec-ch15-long-context" id="toc-sec-ch15-long-context" class="nav-link" data-scroll-target="#sec-ch15-long-context"><span class="header-section-number">15.5</span> Long-Context Revolution</a>
@@ -700,6 +703,7 @@ Key Insight: The Foundation Model Paradigm Shift
 <p>The core shift from task-specific CNNs to DNA language models is this: instead of building specialized architectures for each task, train a single model to understand DNA sequence through self-supervision, then adapt that understanding to any downstream application. This inverts the traditional workflow from <em>task-first</em> (design architecture for task, train from scratch) to <em>representation-first</em> (learn general representations, adapt to tasks).</p>
 </div>
 </div>
+<p>The rapid proliferation of DNA foundation models has prompted systematic reviews cataloguing architectural choices, pretraining strategies, and benchmark performance across model families <span class="citation" data-cites="boshar_foundational_nodate consens_transformers_2025">(<a href="../bib/references.html#ref-boshar_foundational_nodate" role="doc-biblioref">Boshar et al., n.d.</a>; <a href="../bib/references.html#ref-consens_transformers_2025" role="doc-biblioref">Consens et al. 2025</a>)</span>. These surveys reveal that while transformer architectures dominate, significant diversity exists in tokenization schemes, context lengths, and training objectives.</p>
 <p>The practical workflow begins with training a language model on unlabeled genomic sequences to predict masked or subsequent nucleotides. From the trained model, <strong>embeddings</strong> are extracted for sequences of interest (windows around variants, regulatory elements, or entire genes). These embeddings then support downstream tasks through probing with lightweight classifiers, fine-tuning for specific applications, or zero-shot scoring via probability comparisons. Once a sufficiently powerful backbone exists, it becomes the default starting point for nearly any DNA-level prediction problem.</p>
 </section>
 <section id="sec-ch15-dnabert" class="level2" data-number="15.2">
@@ -709,6 +713,23 @@ Key Insight: The Foundation Model Paradigm Shift
 <p>Despite these limitations, <em>DNABERT</em> demonstrated several important principles. Fine-tuning on downstream tasks (promoter classification, splice site prediction, transcription factor binding site identification) achieved competitive performance with task-specific models trained from scratch. Learned embeddings captured biologically meaningful patterns, with similar sequences clustering together in embedding space even when trained only on the reference genome. The <em>BERT</em>-style architecture could be reused across multiple tasks with modest adaptation.</p>
 <p><em>DNABERT-2</em> addressed the tokenization limitations through improved approaches including BPE-style token merging that better compressed repetitive sequences <span class="citation" data-cites="zhou_dnabert-2_2024">(<a href="../bib/references.html#ref-zhou_dnabert-2_2024" role="doc-biblioref">Zhou et al. 2024</a>)</span>. The resulting model could represent longer genomic contexts within the same number of tokens, improving computational efficiency. On standardized benchmarks spanning sequence classification, regulatory element prediction, and variant effect scoring (<a href="../part_3/p3-ch11-benchmarks.html" class="quarto-xref"><span>Chapter 11</span></a>), <em>DNABERT-2</em> achieved consistent gains over both the original <em>DNABERT</em> and non-pretrained baselines. These improvements validated the importance of thoughtful tokenization design for genomic applications (see <a href="../part_2/p2-ch05-representations.html" class="quarto-xref"><span>Chapter 5</span></a> for detailed discussion of tokenization strategies).</p>
 <p>The <em>DNABERT</em> family collectively established that self-supervision on DNA works, that tokenization choices substantially affect performance, and that masked language model training produces reusable representations for diverse sequence tasks. The foundation model paradigm transfers effectively from natural language to genomic sequence.</p>
+<section id="sec-ch15-tokenization-alternatives" class="level3" data-number="15.2.1">
+<h3 data-number="15.2.1" class="anchored" data-anchor-id="sec-ch15-tokenization-alternatives"><span class="header-section-number">15.2.1</span> Tokenization Beyond k-mers</h3>
+<p>While k-mer and BPE tokenization dominate DNA language models, biologically-motivated alternatives offer compelling advantages. Codon-level tokenization aligns token boundaries with the genetic code’s natural reading frame, providing an inductive bias well-suited to protein-coding regions <span class="citation" data-cites="outeiral_codon_2024">(<a href="../bib/references.html#ref-outeiral_codon_2024" role="doc-biblioref">Outeiral and Deane 2024</a>)</span>. This approach demonstrates that domain knowledge can inform tokenization design, potentially improving performance on tasks where codon identity matters—such as synonymous variant effect prediction or codon optimization for expression.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tokenization Trade-offs
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Codon tokenization excels for coding sequences but may underperform in non-coding regions where the reading frame concept does not apply. Model selection should consider the target application’s sequence composition.</p>
+</div>
+</div>
+</section>
 </section>
 <section id="sec-ch15-nucleotide-transformer" class="level2" data-number="15.3">
 <h2 data-number="15.3" class="anchored" data-anchor-id="sec-ch15-nucleotide-transformer"><span class="header-section-number">15.3</span> <em>Nucleotide Transformer</em>: Scaling Data and Model Diversity</h2>
@@ -716,6 +737,7 @@ Key Insight: The Foundation Model Paradigm Shift
 <p>The training corpus spanned genomic data from multiple species and human populations, exposing models to diverse sequence patterns, different regulatory architectures, and evolutionary constraints recurring across lineages. This cross-species pretraining mirrors the use of large multi-species alignments in protein language models but operates directly on raw DNA without explicit alignment. Context length expanded to approximately 6 kb per input sequence, representing an order-of-magnitude increase over <em>DNABERT</em> while still using dense transformer attention. The training objective remained masked language modeling on subsequences sampled from genomes.</p>
 <p>The <em>Nucleotide Transformer</em> project introduced a benchmark panel that has become a standard yardstick for evaluating DNA language models. Tasks include promoter and enhancer classification, histone mark and chromatin accessibility prediction, splice site identification, and regulatory element type classification. Models are evaluated through linear probes or light fine-tuning on standardized train/validation/test splits. This benchmark infrastructure enabled systematic comparison across models and established the evaluation protocols now used throughout the field (see <a href="../part_3/p3-ch11-benchmarks.html" class="quarto-xref"><span>Chapter 11</span></a> for comprehensive discussion of genomic benchmarks).</p>
 <p>Scaling experiments revealed predictable relationships between model size, training data, and performance. Larger models with more pretraining data and longer context windows achieved better downstream performance, following patterns observed in natural language and protein modeling. These scaling trends suggest that continued investment in larger genomic language models will yield further improvements, though the optimal allocation between parameters, data, and compute remains an active research question (<a href="p4-ch14-fm-principles.html" class="quarto-xref"><span>Chapter 14</span></a>).</p>
+<p>The <em>Nucleotide Transformer</em> family continues to evolve through subsequent versions with architectural improvements, including expanded context windows and refined tokenization strategies <span class="citation" data-cites="boshar_foundational_nodate">(<a href="../bib/references.html#ref-boshar_foundational_nodate" role="doc-biblioref">Boshar et al., n.d.</a>)</span>. These updates demonstrate how DNA language models mature through iterative refinement, with each generation addressing limitations identified in prior versions.</p>
 </section>
 <section id="sec-ch15-gpn" class="level2" data-number="15.4">
 <h2 data-number="15.4" class="anchored" data-anchor-id="sec-ch15-gpn"><span class="header-section-number">15.4</span> <em>GPN</em>: Cross-Species Pretraining for Variant Effect Prediction</h2>
@@ -733,7 +755,7 @@ Stop and Think
 <div class="callout-body-container callout-body">
 <p><em>GPN</em> learns from only eight plant genomes, yet it outperforms conservation scores derived from alignments across dozens of species. What might explain this surprising result? Consider what information is preserved versus lost in multiple sequence alignment.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -742,7 +764,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Multiple sequence alignment preserves only positions where sequences can be reliably aligned, discarding information from insertion/deletion-rich regions and structural variants. <em>GPN</em> learns from unaligned sequences, capturing patterns in these regions that alignment-based methods miss. Additionally, <em>GPN</em> learns higher-order sequence patterns (motif combinations, spacing constraints, regulatory grammar) that phyloP and phastCons cannot represent—they only measure single-position conservation. The self-supervised objective forces <em>GPN</em> to predict nucleotides from context, requiring it to learn the sequence rules that determine “allowed” versus “disallowed” patterns. This is precisely the information needed for variant effect prediction.</p>
 </div>
@@ -840,7 +862,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>Consider a model predicting transcription factor binding. A binding site on the forward strand (5’-GAATTC-3’) has reverse complement (5’-GAATTC-3’ on the reverse strand). Should a model’s prediction differ based on which strand you query? Why or why not? What about for genes, which have defined orientations?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -849,7 +871,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>For transcription factor binding sites, predictions should be identical for forward and reverse complement sequences because the binding site represents the same functional element on either strand. However, for genes with defined orientations (coding sequences, promoters), strand matters biologically, so predictions can differ. The key insight is that strand symmetry applies to motifs without inherent directionality, but not to oriented features like genes where 5’ to 3’ direction carries functional meaning.</p>
 </div>
@@ -934,7 +956,7 @@ Knowledge Check: Predict Before You Look
 <li>Which training objective (masked LM vs.&nbsp;next-token prediction) do you think is more common in long-context models?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -943,7 +965,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p><strong>Expected predictions based on earlier discussion:</strong></p>
 <ol type="1">
@@ -1028,6 +1050,7 @@ Table&nbsp;15.1: Landmark DNA language models representing distinct architectura
 </div>
 </figure>
 </div>
+<p>Beyond the models detailed above, the Genomic Language Model (gLM) demonstrates that architectural innovations beyond standard BERT encoders—including mixture-of-experts and improved positional encodings—can yield competitive performance while enabling joint DNA-protein modeling <span class="citation" data-cites="cornman_glm_2024">(<a href="../bib/references.html#ref-cornman_glm_2024" role="doc-biblioref">Cornman et al. 2024</a>)</span>. This multimodal capability suggests future convergence between DNA and protein foundation models.</p>
 </section>
 </section>
 <section id="sec-ch15-training-data" class="level2" data-number="15.6">
@@ -1088,7 +1111,7 @@ Stop and Think
 <div class="callout-body-container callout-body">
 <p>If a model was trained only to predict masked nucleotides (never seeing any labels), how could we determine whether it learned to recognize splice sites, transcription factor binding sites, or gene boundaries? What experiments would reveal this?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1097,7 +1120,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Use <strong>linear probing</strong>: freeze the pretrained model and extract embeddings for sequences with known annotations (e.g., windows around splice sites versus random genomic positions). Train a simple linear classifier (logistic regression) on these frozen embeddings to predict the annotation. If the classifier achieves high accuracy, the embeddings must encode information distinguishing that feature—meaning the model learned to recognize it during pretraining. This works because if splice sites have different statistical patterns than non-splice sites, and the model learned to predict nucleotides accurately, it must have internalized what makes splice sites distinctive. The probing methodology is detailed in <a href="../part_3/p3-ch09-transfer.html#sec-ch09-probing-representations" class="quarto-xref"><span>Section 9.3.3</span></a>.</p>
 </div>
@@ -1124,7 +1147,7 @@ Knowledge Check: Connect to Earlier Material
 <div class="callout-body-container callout-body">
 <p>Recall the feature ceiling discussed in <a href="../part_1/p1-ch04-vep-classical.html#sec-ch04-features-to-representations" class="quarto-xref"><span>Section 4.6.4</span></a>. How do the limitations of sequence-only DNA language models relate to that concept? Think about what information is available versus what is needed for complete predictions.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1133,7 +1156,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The feature ceiling occurs when model performance is bounded by what the input features can represent, not by model architecture or training data. DNA language models face a fundamental feature ceiling: they can only learn from sequence, but gene regulation depends on epigenetic state, 3D chromatin structure, and cellular context that sequence doesn’t encode. Even with infinite parameters and perfect optimization, a sequence-only model cannot predict cell-type-specific chromatin accessibility because the information simply isn’t present in DNA sequence alone. This is analogous to trying to predict splice patterns without knowing which tissues a gene is expressed in—the necessary information is missing. Breaking this ceiling requires multi-modal integration (Part IV) that incorporates functional genomics data beyond sequence.</p>
 </div>
@@ -1161,7 +1184,7 @@ Predict Before You Look
 <li>Where do you think the fundamental boundary lies between “learnable from sequence” and “requires additional context”?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1170,7 +1193,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div id="callout-20" class="callout-20-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p><strong>Learnable from sequence:</strong> Features encoded in DNA sequence itself—motifs (TF binding sites, splice signals), gene structure (exon boundaries, coding regions), and evolutionary constraint (patterns conserved across species). These emerge from statistical regularities in genomic sequence.</p>
 <p><strong>Requires additional context:</strong> Features dependent on cellular state—epigenetic modifications (methylation, histone marks), 3D chromatin organization (which enhancers contact which promoters), and cell-type-specific activity (whether a motif is actually bound by TFs present in that cell).</p>
@@ -1306,7 +1329,7 @@ Spaced Retrieval: Test Your Memory
 <li>What is the core difference between the old “task-first” workflow and the new “representation-first” paradigm?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1315,7 +1338,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-21" class="callout-21-contents callout-collapse collapse">
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p><strong>Three limitations of task-specific CNNs:</strong></p>
 <ol type="1">
@@ -1454,7 +1477,7 @@ Test Yourself
 <li><p>DNA language models learn representations from sequence alone. What can they capture (provide three examples) and what fundamental limitations prevent them from learning (provide three examples)?</p></li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-25-contents" aria-controls="callout-25" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1463,7 +1486,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-24" class="callout-24-contents callout-collapse collapse">
+<div id="callout-25" class="callout-25-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><strong>DNABERT innovation and limitations:</strong>
@@ -1539,11 +1562,20 @@ Check Your Answers
 <div id="ref-benegas_gpn_2023" class="csl-entry" role="listitem">
 Benegas, Gonzalo, Sanjit Singh Batra, and Yun S. Song. 2023. <span>“[<span>GPN</span>] <span>DNA</span> Language Models Are Powerful Predictors of Genome-Wide Variant Effects.”</span> <em>Proceedings of the National Academy of Sciences</em> 120 (44): e2311219120. <a href="https://doi.org/10.1073/pnas.2311219120">https://doi.org/10.1073/pnas.2311219120</a>.
 </div>
+<div id="ref-boshar_foundational_nodate" class="csl-entry" role="listitem">
+Boshar, Sam, Benjamin Evans, Ziqi Tang, Armand Picard, Yanis Adel, Franziska K Lorbeer, Chandana Rajesh, et al. n.d. <span>“A Foundational Model for Joint Sequence-Function Multi-Species Modeling at Scale for Long-Range Genomic Prediction.”</span>
+</div>
 <div id="ref-brixi_evo_2025" class="csl-entry" role="listitem">
 Brixi, Garyk, Matthew G. Durrant, Jerome Ku, Michael Poli, Greg Brockman, Daniel Chang, Gabriel A. Gonzalez, et al. 2025. <span>“[<span>Evo</span> 2] <span>Genome</span> Modeling and Design Across All Domains of Life with <span>Evo</span> 2.”</span> bioRxiv. <a href="https://doi.org/10.1101/2025.02.18.638918">https://doi.org/10.1101/2025.02.18.638918</a>.
 </div>
 <div id="ref-cheng_dnalongbench_2024" class="csl-entry" role="listitem">
 Cheng, Wenduo, Zhenqiao Song, Yang Zhang, Shike Wang, Danqing Wang, Muyu Yang, Lei Li, and Jian Ma. 2024. <span>“<span>DNALONGBENCH</span>: <span>A</span> <span>Benchmark</span> <span>Suite</span> <span>For</span> <span>Long</span>-<span>Range</span> <span>DNA</span> <span>Prediction</span> <span>Tasks</span>,”</span> October.
+</div>
+<div id="ref-consens_transformers_2025" class="csl-entry" role="listitem">
+Consens, Micaela E., Cameron Dufault, Michael Wainberg, Duncan Forster, Mehran Karimzadeh, Hani Goodarzi, Fabian J. Theis, Alan Moses, and Bo Wang. 2025. <span>“Transformers and Genome Language Models.”</span> <em>Nature Machine Intelligence</em> 7 (3): 346–62. <a href="https://doi.org/10.1038/s42256-025-01007-9">https://doi.org/10.1038/s42256-025-01007-9</a>.
+</div>
+<div id="ref-cornman_glm_2024" class="csl-entry" role="listitem">
+Cornman, Andre, Jacob West-Roberts, Antonio Pedro Camargo, Simon Roux, Martin Beracochea, Milot Mirdita, Sergey Ovchinnikov, and Yunha Hwang. 2024. <span>“The <span>OMG</span> Dataset: <span>An</span> <span>Open</span> <span>MetaGenomic</span> Corpus for Mixed-Modality Genomic Language Modeling.”</span> bioRxiv. <a href="https://doi.org/10.1101/2024.08.14.607850">https://doi.org/10.1101/2024.08.14.607850</a>.
 </div>
 <div id="ref-dalla-torre_nucleotide_2023" class="csl-entry" role="listitem">
 Dalla-Torre, Hugo, Liam Gonzalez, Javier Mendoza-Revilla, Nicolas Lopez Carranza, Adam Henryk Grzywaczewski, Francesco Oteri, Christian Dallago, et al. 2023. <span>“Nucleotide <span>Transformer</span>: Building and Evaluating Robust Foundation Models for Human Genomics.”</span> <em>Nature Methods</em> 22 (2): 287–97. <a href="https://doi.org/10.1038/s41592-024-02523-z">https://doi.org/10.1038/s41592-024-02523-z</a>.
@@ -1574,6 +1606,9 @@ Nguyen, Eric, Michael Poli, Matthew G. Durrant, Brian Kang, Dhruva Katrekar, Dav
 </div>
 <div id="ref-nguyen_hyenadna_2023" class="csl-entry" role="listitem">
 Nguyen, Eric, Michael Poli, Marjan Faizi, Armin Thomas, Callum Birch-Sykes, Michael Wornow, Aman Patel, et al. 2023. <span>“<span>HyenaDNA</span>: <span>Long</span>-<span>Range</span> <span>Genomic</span> <span>Sequence</span> <span>Modeling</span> at <span>Single</span> <span>Nucleotide</span> <span>Resolution</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2306.15794">https://doi.org/10.48550/arXiv.2306.15794</a>.
+</div>
+<div id="ref-outeiral_codon_2024" class="csl-entry" role="listitem">
+Outeiral, Carlos, and Charlotte M. Deane. 2024. <span>“Codon Language Embeddings Provide Strong Signals for Use in Protein Engineering.”</span> <em>Nature Machine Intelligence</em> 6 (2): 170–79. <a href="https://doi.org/10.1038/s42256-024-00791-0">https://doi.org/10.1038/s42256-024-00791-0</a>.
 </div>
 <div id="ref-schiff_caduceus_2024" class="csl-entry" role="listitem">
 Schiff, Yair, Chia-Hsiang Kao, Aaron Gokaslan, Tri Dao, Albert Gu, and Volodymyr Kuleshov. 2024. <span>“Caduceus: <span>Bi</span>-<span>Directional</span> <span>Equivariant</span> <span>Long</span>-<span>Range</span> <span>DNA</span> <span>Sequence</span> <span>Modeling</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2403.03234">https://doi.org/10.48550/arXiv.2403.03234</a>.
