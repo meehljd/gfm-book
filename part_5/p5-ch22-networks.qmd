@@ -350,7 +350,7 @@ The integration with foundation models strengthens this approach. Rather than re
 
 ![Integration of sequence and network features](../figs/part_5/ch22/04-D-fig-disease-gene-prioritization.svg)
 
-Disease gene prioritization for GWAS follow-up. (A) The GWAS challenge: a lead SNP is in LD with multiple genes—which is causal? (B) Network context: Gene B connects to five known disease genes while A, C, D are peripheral. (C) GNN scoring: foundation model embeddings as node features combined with network propagation prioritize gene B. (D) Sequence-network integration: Gene C has strong protein features while Gene B has network context—combined scoring identifies both as candidates for follow-up.
+Disease gene prioritization for GWAS follow-up. (A) The GWAS challenge: a lead SNP is in LD with multiple genes; which is causal? (B) Network context: Gene B connects to five known disease genes while A, C, D are peripheral. (C) GNN scoring: foundation model embeddings as node features combined with network propagation prioritize gene B. (D) Sequence-network integration: Gene C has strong protein features while Gene B has network context; combined scoring identifies both as candidates for follow-up.
 :::
 
 Clinical applications include rare disease diagnosis, where patient exome sequencing identifies hundreds of candidate variants and network-based scoring helps prioritize which genes to investigate further (@sec-ch29-rare-disease). The approach also supports drug target identification by highlighting genes whose network position and functional properties make them amenable to therapeutic modulation (@sec-ch30-drug-discovery). For rare disease diagnosis, network-based prioritization integrates with the variant filtering pipelines in @sec-ch29-prioritization-funnel, where foundation model embeddings and network context jointly inform gene ranking.
@@ -420,7 +420,7 @@ The foundation model integration follows the standard pattern: *scGPT* or simila
 ## Practical Considerations {#sec-ch22-practical}
 
 ::: {.callout-tip title="Recall and Connect: Networks in Clinical Applications"}
-The network modeling principles you learn here power clinical applications in later chapters. In @sec-ch29-rare-disease, network propagation prioritizes disease genes from GWAS loci—the same message passing mechanics you've learned enable identifying which genes in a locus are most likely causal. In @sec-ch30-drug-discovery, drug-target interaction prediction combines PLM embeddings (@sec-ch16-protein-lm) with network proximity to disease genes. The ascertainment bias discussed above directly affects these applications: understudied genes appear less connected than they truly are, potentially causing prioritization methods to miss important candidates.
+The network modeling principles you learn here power clinical applications in later chapters. In @sec-ch29-rare-disease, network propagation prioritizes disease genes from GWAS loci; the same message passing mechanics you have learned enable identifying which genes in a locus are most likely causal. In @sec-ch30-drug-discovery, drug-target interaction prediction combines PLM embeddings (@sec-ch16-protein-lm) with network proximity to disease genes. The ascertainment bias discussed above directly affects these applications: understudied genes appear less connected than they truly are, potentially causing prioritization methods to miss important candidates.
 :::
 
 Deploying graph neural networks on biological data requires navigating choices that profoundly affect model behavior. Graph construction determines what relationships the model can exploit. Scalability strategies determine whether training is feasible on large networks. Robustness techniques determine whether predictions generalize beyond well-characterized network regions. Interpretation methods determine whether outputs provide actionable biological insight. The following subsections address each consideration in turn.
@@ -576,7 +576,7 @@ Before reviewing the summary, test your recall:
 
 4. **Message passing iteratively updates node representations based on neighbors** - At each layer: (1) compute messages from neighbors, (2) aggregate messages using permutation-invariant operations (sum/mean/max/attention), (3) update node representation by combining aggregated messages with current state. After L layers, each node has incorporated information from its L-hop neighborhood.
 
-5. **Association means correlation; causation means perturbation effects** - An edge in a PPI network indicates proteins bind (association) but not that perturbing one changes the other (causation). Co-expression correlations may reflect shared regulation rather than direct regulatory relationship. This matters for drug targets: correlation doesn't guarantee that modulating a gene will have the desired therapeutic effect.
+5. **Association means correlation; causation means perturbation effects** - An edge in a PPI network indicates proteins bind (association) but not that perturbing one changes the other (causation). Co-expression correlations may reflect shared regulation rather than direct regulatory relationship. This matters for drug targets: correlation does not guarantee that modulating a gene will have the desired therapeutic effect.
 :::
 
 :::{.callout-note}

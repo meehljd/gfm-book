@@ -626,7 +626,7 @@ Worked Example: Convolution Computation
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Consider a filter of width 4 learning to detect the TATA box motif. Why width 4? The TATA box consensus is approximately 4-6 bp, so a 4-bp filter can capture its core pattern. Filters narrower than the motif miss context; filters much wider waste capacity on flanking sequence that varies between binding sites. The first CNN layer typically uses multiple filter widths (4, 8, 12, 16 bp) to capture motifs of different lengths simultaneously—transcription factor binding sites range from 6-12 bp, so no single width suffices.</p>
+<p>Consider a filter of width 4 learning to detect the TATA box motif. Why width 4? The TATA box consensus is approximately 4-6 bp, so a 4-bp filter can capture its core pattern. Filters narrower than the motif miss context; filters much wider waste capacity on flanking sequence that varies between binding sites. The first CNN layer typically uses multiple filter widths (4, 8, 12, 16 bp) to capture motifs of different lengths simultaneously; transcription factor binding sites range from 6-12 bp, so no single width suffices.</p>
 <p>After training, the filter weights might be:</p>
 <table class="caption-top table">
 <thead>
@@ -737,7 +737,7 @@ Deep Dive: Receptive Field
 </div>
 <div class="callout-body-container callout-body">
 <p><strong>For biology readers:</strong> The receptive field is how much input sequence can influence each output prediction:</p>
-<p><strong>The concept:</strong> Imagine looking at a photo through a small window—you can only see a portion at a time. A CNN’s receptive field is like this window: it determines how much genomic context the model can “see” when making predictions at any position.</p>
+<p><strong>The concept:</strong> Imagine looking at a photo through a small window; you can only see a portion at a time. A CNN’s receptive field is like this window: it determines how much genomic context the model can “see” when making predictions at any position.</p>
 <p><strong>How it grows:</strong></p>
 <ul>
 <li>A single convolutional layer with filter width 8 sees 8 nucleotides</li>
@@ -771,7 +771,7 @@ Deep Dive: Receptive Field
 </tr>
 </tbody>
 </table>
-<p><strong>The limitation:</strong> Biology doesn’t respect receptive field boundaries. If an enhancer 50 kb from a gene affects its expression, a model with 10 kb receptive field cannot learn this relationship—it simply cannot see both elements simultaneously. This architectural ceiling motivated the move to attention mechanisms.</p>
+<p><strong>The limitation:</strong> Biology does not respect receptive field boundaries. If an enhancer 50 kb from a gene affects its expression, a model with 10 kb receptive field cannot learn this relationship; it simply cannot see both elements simultaneously. This architectural ceiling motivated the move to attention mechanisms.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-warning callout-titled" title="Mathematical Detail">
@@ -910,7 +910,7 @@ Deep Dive: Multi-Task Learning
 <li><p><strong>Regularization:</strong> Predicting many related outputs prevents the model from memorizing quirks of any single dataset. It must learn general patterns useful across contexts.</p></li>
 <li><p><strong>Transfer:</strong> Features learned from abundant data (e.g., well-studied cell lines) help predictions for scarce data (e.g., rare cell types with few experiments).</p></li>
 </ol>
-<p><strong>The biology analog:</strong> Think of it like this—understanding general transcription factor binding helps you interpret specific experiments across many cell types, rather than starting from scratch for each.</p>
+<p><strong>The biology analog:</strong> Think of it like this: understanding general transcription factor binding helps you interpret specific experiments across many cell types, rather than starting from scratch for each.</p>
 <p><strong>Trade-off:</strong> Multi-task learning assumes tasks share structure. If tasks are unrelated, forcing them to share features can hurt performance. For chromatin features, the shared regulatory grammar makes multi-task learning highly effective.</p>
 </div>
 </div>
@@ -1364,7 +1364,7 @@ Knowledge Check
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Before proceeding, ensure you can explain: (1) Why can’t a CNN learn dependencies that exceed its receptive field, even with more training data? (2) What biological phenomena require context longer than typical CNN receptive fields? (3) What architectural approaches extend receptive fields in CNNs?</p>
+<p>Before proceeding, ensure you can explain: (1) Why cannot a CNN learn dependencies that exceed its receptive field, even with more training data? (2) What biological phenomena require context longer than typical CNN receptive fields? (3) What architectural approaches extend receptive fields in CNNs?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -1378,7 +1378,7 @@ Check Your Answer
 <div id="callout-19" class="callout-19-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li><p>A CNN cannot learn dependencies beyond its receptive field because positions outside this window have zero gradient with respect to the output—information simply cannot flow between them, regardless of training data quantity.</p></li>
+<li><p>A CNN cannot learn dependencies beyond its receptive field because positions outside this window have zero gradient with respect to the output; information simply cannot flow between them, regardless of training data quantity.</p></li>
 <li><p>Distal enhancer-promoter interactions (tens of kilobases), long-range chromatin loops, TAD boundary effects, and coordinated regulation across large genomic domains all require longer context than typical CNN receptive fields of 200-1000 bp.</p></li>
 <li><p>Receptive fields can be extended through dilated convolutions, deeper networks with more layers, or hybrid architectures that combine CNNs with attention mechanisms.</p></li>
 </ol>
@@ -1491,10 +1491,10 @@ Check Your Answers
 <div id="callout-22" class="callout-22-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li><p><strong>CNN (DeepSEA/Basset-style)</strong>—Local motif detection within 1 kb is well within CNN receptive fields; convolutional filters directly learn position weight matrix-like patterns without needing long-range context. CNNs are also more computationally efficient for this task.</p></li>
-<li><p><strong>Attention-based (Enformer/transformer)</strong>—The 50 kb distance between the variant and gene far exceeds CNN receptive fields; only attention mechanisms can compute direct dependencies across such distances. This task requires the long-range integration that transformers provide.</p></li>
-<li><p><strong>Dilated CNN (SpliceAI-style)</strong>—Splice prediction requires ~10 kb context (branch point, donor, acceptor), which dilated convolutions reach efficiently. SpliceAI achieves clinical-grade performance; attention adds computational cost without clear benefit for this specific, well-defined task.</p></li>
-<li><p><strong>Hybrid (Enformer-style: CNN + attention)</strong>—Local motif detection benefits from CNN inductive biases, while long-range tasks require attention. Hybrid architectures use convolutional layers for initial motif extraction, then attention layers to integrate across the full context, combining the strengths of both approaches.</p></li>
+<li><p><strong>CNN (DeepSEA/Basset-style)</strong>: Local motif detection within 1 kb is well within CNN receptive fields; convolutional filters directly learn position weight matrix-like patterns without needing long-range context. CNNs are also more computationally efficient for this task.</p></li>
+<li><p><strong>Attention-based (Enformer/transformer)</strong>: The 50 kb distance between the variant and gene far exceeds CNN receptive fields; only attention mechanisms can compute direct dependencies across such distances. This task requires the long-range integration that transformers provide.</p></li>
+<li><p><strong>Dilated CNN (SpliceAI-style)</strong>: Splice prediction requires ~10 kb context (branch point, donor, acceptor), which dilated convolutions reach efficiently. SpliceAI achieves clinical-grade performance; attention adds computational cost without clear benefit for this specific, well-defined task.</p></li>
+<li><p><strong>Hybrid (Enformer-style: CNN + attention)</strong>: Local motif detection benefits from CNN inductive biases, while long-range tasks require attention. Hybrid architectures use convolutional layers for initial motif extraction, then attention layers to integrate across the full context, combining the strengths of both approaches.</p></li>
 </ol>
 </div>
 </div>

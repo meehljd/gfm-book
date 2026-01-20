@@ -31,7 +31,7 @@ PCSK9 exemplifies the power of genetic evidence for drug development. In 2003, r
 
 This genetic validation de-risked PCSK9 as a target. Multiple pharmaceutical companies developed PCSK9 inhibitors (evolocumab, alirocumab), which received FDA approval in 2015---just 12 years from gene discovery to approved drug, remarkably fast for novel targets. Clinical trials confirmed what genetics predicted: ~60% LDL reduction and significant cardiovascular event reduction.
 
-Compare to targets without genetic support: The average Phase II success rate for novel mechanisms is approximately 25%. For PCSK9, the mechanism was validated by human genetics before the first patient was dosed. This is what "2x success rate for genetically supported targets" looks like in practice.
+Compare to targets without genetic support: The average Phase II success rate for novel mechanisms is approximately 25%. For PCSK9, the mechanism was validated by human genetics before the first patient was dosed. This is what "2x success rate for genetically supported targets" looks like in practice [@nelson_support_2015].
 :::
 
 Yet exploiting this signal is harder than it sounds. Genome-wide association studies have identified thousands of disease-associated loci, but most point to noncoding regions where the causal gene is unclear. Even when a gene is implicated, the direction of effect often remains ambiguous. Translating a statistical association into a validated therapeutic target typically requires a decade of work and hundreds of millions of dollars in follow-up studies.
@@ -46,7 +46,7 @@ Genomic foundation models offer a path through this translational bottleneck. Ra
 
 ## Genetic Foundation of Target Selection {#sec-ch30-genetic-foundation}
 
-Human genetics provides uniquely causal evidence for target selection. Unlike expression correlations or pathway membership, genetic associations reflect the consequences of lifelong modulation of gene activity in human populations. Multiple analyses over the past decade have demonstrated that genetically supported targets succeed in clinical trials at roughly twice the rate of targets without genetic evidence *[Citation Needed]*. Targets implicated by Mendelian disease genetics, **genome-wide association study (GWAS)** hits, or functional variants show higher probabilities of success in phase II and III trials compared to targets selected through other means.
+Human genetics provides uniquely causal evidence for target selection. Unlike expression correlations or pathway membership, genetic associations reflect the consequences of lifelong modulation of gene activity in human populations. Multiple analyses over the past decade have demonstrated that genetically supported targets succeed in clinical trials at roughly twice the rate of targets without genetic evidence, a finding that has been replicated as genetic databases have grown. Targets implicated by Mendelian disease genetics, **genome-wide association study (GWAS)** hits, or functional variants show higher probabilities of success in phase II and III trials compared to targets selected through other means.
 
 ::: {#fig-target-prioritization}
 ![Drug target prioritization pipeline](../figs/part_7/ch30/01-fig-target-prioritization.svg)
@@ -141,7 +141,7 @@ Network proximity provides one concrete operationalization: drugs whose targets 
 
 Metformin, a first-line type 2 diabetes treatment, illustrates network-based repurposing in action. Network analyses identified that metformin's targets (primarily mitochondrial complex I and AMPK) have high proximity to genes implicated in cancer susceptibility, including STK11/LKB1 and TP53-related pathways.
 
-Retrospective epidemiological analyses across multiple cohorts found that diabetic patients taking metformin had 10-40% reduced cancer incidence compared to patients on other diabetes medications, with particularly strong signals for colorectal and liver cancer. The network proximity score (mean shortest path from metformin targets to cancer genes: 1.8 hops) was in the top 5% of all approved drugs.
+Retrospective epidemiological analyses across multiple cohorts found that diabetic patients taking metformin had 10-40% reduced cancer incidence compared to patients on other diabetes medications, with particularly strong signals for colorectal and liver cancer. Network analyses consistently placed metformin's targets among the closest to cancer-associated genes of any approved drug.
 
 This hypothesis-generating finding led to prospective clinical trials testing metformin in cancer prevention and treatment. Results have been mixed: some trials show benefit in specific populations, others show no effect. The example illustrates both the promise of network-based repurposing (generating testable hypotheses from computational analysis) and its limitations (retrospective associations do not guarantee prospective efficacy).
 :::
@@ -158,13 +158,13 @@ For each scenario, would you prioritize a single-gene approach or a network-awar
 4. A target validation study where a single gene shows borderline GWAS significance (p = 10⁻⁶) but sits at a hub position connecting multiple confirmed disease genes.
 
 :::{.callout-note collapse="true" title="Check Your Answers"}
-1. **Single-gene approach**—Strong genetic evidence for a single causal gene, clear mechanism, and structural data make this ideal for direct targeting without network propagation.
+1. **Single-gene approach**: Strong genetic evidence for a single causal gene, clear mechanism, and structural data make this ideal for direct targeting without network propagation.
 
-2. **Network-aware approach**—Polygenicity, small effects, and noncoding signals mean individual genes have weak evidence alone; network propagation can identify convergent pathways and prioritize targets at pathway bottlenecks.
+2. **Network-aware approach**: Polygenicity, small effects, and noncoding signals mean individual genes have weak evidence alone; network propagation can identify convergent pathways and prioritize targets at pathway bottlenecks.
 
-3. **Network-aware approach**—Repurposing relies on connecting drug targets to disease biology through functional relationships; network proximity scoring identifies whether drug targets are biologically proximal to disease genes.
+3. **Network-aware approach**: Repurposing relies on connecting drug targets to disease biology through functional relationships; network proximity scoring identifies whether drug targets are biologically proximal to disease genes.
 
-4. **Network-aware approach**—The borderline statistical significance would fail single-gene prioritization, but network context (hub connecting confirmed disease genes) provides biological evidence that the gene is functionally relevant despite modest direct association.
+4. **Network-aware approach**: The borderline statistical significance would fail single-gene prioritization, but network context (hub connecting confirmed disease genes) provides biological evidence that the gene is functionally relevant despite modest direct association.
 :::
 :::
 
@@ -292,7 +292,7 @@ While human genetics offers observational evidence, drug discovery relies heavil
 ::: {#fig-perturb-seq}
 ![Perturb-seq for mechanism discovery](../figs/part_7/ch30/04-fig-perturb-seq.svg)
 
-Perturb-seq for mechanism discovery. Pooled CRISPR libraries target hundreds to thousands of genes; single-cell capture identifies both the perturbation (guide barcode) and its effect (expression profile). The resulting matrix directly measures gene-gene regulatory relationships—interventional data that foundation models cannot learn from observation alone. FM integration: predict perturbation effects for virtual screening, interpret expression signatures for mechanism discovery, and identify informative perturbations for active learning.
+Perturb-seq for mechanism discovery. Pooled CRISPR libraries target hundreds to thousands of genes; single-cell capture identifies both the perturbation (guide barcode) and its effect (expression profile). The resulting matrix directly measures gene-gene regulatory relationships, interventional data that foundation models cannot learn from observation alone. FM integration: predict perturbation effects for virtual screening, interpret expression signatures for mechanism discovery, and identify informative perturbations for active learning.
 :::
 
 ### Designing Informative Perturbation Libraries {#sec-ch30-library-design}
@@ -319,7 +319,7 @@ Perturb-seq experiments combine pooled genetic screens with single-cell RNA sequ
 
 Foundation models trained on Perturb-seq data learn to predict transcriptomic responses to genetic perturbations (@sec-ch20-perturbation for architectural details). Given a gene knockdown, these models predict which other genes will be up- or down-regulated, providing a functional signature for each target. Similar signatures suggest similar biology; divergent signatures suggest distinct mechanisms even for targets in the same pathway.
 
-The drug discovery application is perturbation matching. Given a disease state characterized by a transcriptomic signature (perhaps derived from patient samples or disease models), foundation models can identify perturbations whose predicted response signature would move the system toward a healthier state. If knocking down gene X reverses the disease signature, X becomes a candidate therapeutic target. If treating with drug Y produces a signature similar to knocking down gene X, Y becomes a candidate molecule for that mechanism *[Citation Needed]*.
+The drug discovery application is perturbation matching. Given a disease state characterized by a transcriptomic signature (perhaps derived from patient samples or disease models), foundation models can identify perturbations whose predicted response signature would move the system toward a healthier state. If knocking down gene X reverses the disease signature, X becomes a candidate therapeutic target. If treating with drug Y produces a signature similar to knocking down gene X, Y becomes a candidate molecule for that mechanism .
 
 ### Closing the Loop: Lab-in-the-Loop Refinement {#sec-ch30-lab-in-loop}
 
@@ -355,7 +355,7 @@ Biomarker discovery pipeline with foundation models. FM embeddings from patient 
 
 ### Foundation Model Features for Stratification {#sec-ch30-stratification-features}
 
-Classical **polygenic scores** summarize additive effects of common variants on disease risk (see @sec-ch03-pgs-construction). These scores have proven useful for patient enrichment in cardiovascular and metabolic disease trials, selecting patients at highest genetic risk who might benefit most from intervention *[Citation Needed]*. The enrichment logic is straightforward: if a drug reduces cardiovascular events by 30% relative risk, enrolling patients with 2x baseline risk doubles the absolute benefit and thus the statistical power to detect efficacy. High-risk patients also have more room for improvement, making treatment effects more detectable. Deep learning methods extend this approach by learning nonlinear genotype-phenotype mappings that capture interactions and nonadditive effects.
+Classical **polygenic scores** summarize additive effects of common variants on disease risk (see @sec-ch03-pgs-construction). These scores have proven useful for patient enrichment in cardiovascular and metabolic disease trials, selecting patients at highest genetic risk who might benefit most from intervention . The enrichment logic is straightforward: if a drug reduces cardiovascular events by 30% relative risk, enrolling patients with 2x baseline risk doubles the absolute benefit and thus the statistical power to detect efficacy. High-risk patients also have more room for improvement, making treatment effects more detectable. Deep learning methods extend this approach by learning nonlinear genotype-phenotype mappings that capture interactions and nonadditive effects.
 
 Foundation models enhance polygenic prediction in several ways. Instead of using raw genotypes as inputs, models can use variant effect scores, regulatory predictions, or gene-level embeddings derived from foundation models. This captures biological context that simple genotypes miss. Models trained on variant embeddings rather than binary genotype calls can capture subtle differences between variants at the same position, distinguishing a mildly damaging missense from a severely damaging one even when both are heterozygous.
 
@@ -413,7 +413,7 @@ From @sec-ch24-calibration, recall that well-calibrated models produce confidenc
 
 Foundation model predictions inform trial design at multiple stages. Patient enrichment uses genetic risk scores or molecular subtypes to select patients most likely to respond, increasing statistical power and reducing required sample sizes. Adaptive designs use intermediate biomarker responses to modify randomization or dosing during the trial. Endpoint selection uses molecular signatures to define pharmacodynamic biomarkers that indicate target engagement, supporting dose selection and early efficacy signals.
 
-Regulatory agencies increasingly accept genomic biomarkers for patient selection in oncology and are developing frameworks for other therapeutic areas *[Citation Needed]*. The challenge is validation: demonstrating that foundation model predictions actually stratify patient outcomes requires prospective trials or well-designed retrospective analyses with appropriate controls for confounding (see @sec-ch13-confounding).
+Regulatory agencies increasingly accept genomic biomarkers for patient selection in oncology and are developing frameworks for other therapeutic areas . The challenge is validation: demonstrating that foundation model predictions actually stratify patient outcomes requires prospective trials or well-designed retrospective analyses with appropriate controls for confounding (see @sec-ch13-confounding).
 
 ## Industry Workflows and Infrastructure {#sec-ch30-industry-workflows}
 
@@ -543,7 +543,7 @@ Before reviewing the summary, test your recall:
 
 **Core Concepts:**
 
-- **Genetic target validation**: Targets with genetic support succeed at ~2x the rate of unsupported targets; foundation models provide mechanistic context for genetic associations
+- **Genetic target validation**: Targets with genetic support succeed at ~2x the rate of unsupported targets [@nelson_support_2015]; foundation models provide mechanistic context for genetic associations
 - **Variant-to-gene aggregation**: Pipelines integrate fine-mapping, VEP scoring, and regulatory predictions to rank candidate targets
 - **Network-aware discovery**: Graph neural networks propagate genetic signals through interaction networks, recovering targets missed by single-gene analysis
 - **Drug-target interaction**: Protein and chemical embeddings enable binding prediction without experimental structures

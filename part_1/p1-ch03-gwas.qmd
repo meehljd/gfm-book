@@ -21,7 +21,7 @@
 
 When a **genome-wide association study (GWAS)** reports that a particular **single nucleotide polymorphism (SNP)** associates with coronary artery disease, that SNP is almost certainly not the variant that alters cardiac biology. It is correlated with the causal variant through linkage disequilibrium, the non-random association of nearby alleles that persists across generations. The statistical machinery of GWAS is exquisitely sensitive to these correlations but fundamentally agnostic about mechanism. It can identify a region of the genome that harbors trait-relevant variation without distinguishing the causal variant from its correlated neighbors, without explaining which genes or pathways are affected, and without revealing whether the same associations hold in populations with different linkage patterns.
 
-This distinction between association and causation defines the central intellectual challenge of statistical genetics. GWAS have identified thousands of genomic regions associated with hundreds of complex traits, from height and blood pressure to schizophrenia and type 2 diabetes. These associations replicate across studies with remarkable consistency, confirming that the signals are real. Yet the path from associated region to biological mechanism remains obscure for most loci. The majority of GWAS signals fall in non-coding regions where there is no obvious gene to implicate. Even when a signal overlaps a gene, whether it affects expression, splicing, or protein function is rarely apparent from the association alone.
+This distinction between association and causation defines the central intellectual challenge of statistical genetics. GWAS have identified thousands of genomic regions associated with hundreds of complex traits, from height and blood pressure to schizophrenia and type 2 diabetes. These associations replicate across studies with high consistency, confirming that the signals are real. Yet the path from associated region to biological mechanism remains obscure for most loci. The majority of GWAS signals fall in non-coding regions where there is no obvious gene to implicate. Even when a signal overlaps a gene, whether it affects expression, splicing, or protein function is rarely apparent from the association alone.
 
 Polygenic scores aggregate these associations into predictions, summing risk alleles across thousands of loci to estimate an individual's genetic predisposition. For some traits, these scores achieve clinically meaningful discrimination: individuals in the top percentile of coronary artery disease risk have odds ratios comparable to monogenic familial hypercholesterolemia. Yet polygenic scores inherit all the limitations of the associations they aggregate. They predict without explaining, correlate without identifying mechanism, and transfer poorly across populations with different allele frequencies and linkage patterns. Understanding both their power and their limitations is essential for mechanistic approaches where regulatory sequence models (@sec-ch17-regulatory) and variant effect predictors (@sec-ch18-vep-fm) attempt to move from statistical association to biological explanation [@khera_genetics_2017]. The portability challenges of polygenic scores across populations motivate the fairness and equity considerations examined in @sec-ch13-ancestry-confounding and @sec-ch28-fairness.
 
@@ -61,12 +61,12 @@ For each variant, a test statistic is computed for the null hypothesis $H_0: \be
 
 **Bonferroni correction:** Divide $\alpha$ by the number of tests. For 1 million tests: $0.05 / 1{,}000{,}000 = 5 \times 10^{-8}$. This threshold has become the conventional genome-wide significance cutoff.
 
-**Why it works:** Variants in linkage disequilibrium are correlated, so there are roughly 1 million *effectively independent* tests even when testing 10 million variants. The $5 \times 10^{-8}$ threshold controls the family-wise error rate (FWER)—the probability of any false positive.
+**Why it works:** Variants in linkage disequilibrium are correlated, so there are roughly 1 million *effectively independent* tests even when testing 10 million variants. The $5 \times 10^{-8}$ threshold controls the family-wise error rate (FWER): the probability of any false positive.
 
 **Consequences for ML:**
 
 - GWAS hits represent extremely strong statistical signals (typically hundreds or thousands of samples carry each risk allele)
-- Marginal effects (variants that contribute but don't reach significance) are systematically excluded
+- Marginal effects (variants that contribute but do not reach significance) are systematically excluded
 - Polygenic scores must handle the millions of "sub-threshold" variants that collectively explain substantial heritability
 :::
 
@@ -76,7 +76,7 @@ For each variant, a test statistic is computed for the null hypothesis $H_0: \be
 **Step 1: Does it pass genome-wide significance?**
 Threshold: 5 × 10^-8^
 Observed: 3 × 10^-12^
-Since 3 × 10^-12^ < 5 × 10^-8^, **yes**—this variant passes the significance threshold.
+Since 3 × 10^-12^ < 5 × 10^-8^, **yes**, this variant passes the significance threshold.
 
 **Step 2: How strong is the evidence?**
 The p-value is 1,666× smaller than required (5 × 10^-8^ / 3 × 10^-12^ ≈ 16,667). This is a highly robust association unlikely to be a false positive.
@@ -154,7 +154,7 @@ Population structure control is a statistical partial fix for a deeper problem. 
 Before GWAS can identify specific variants, a more fundamental question must be answered: how much of the variation in a trait is attributable to genetics at all? A trait entirely determined by environment would yield no GWAS hits regardless of sample size. A trait entirely determined by genetics would, in principle, be fully predictable from genotype. **Heritability** quantifies where traits fall along this spectrum, but the concept is more subtle than it first appears, and different estimation methods yield systematically different answers.
 
 ::: {.callout-note title="Predict Before You Look"}
-Before viewing the heritability decomposition figure below, consider this scenario: Height has pedigree heritability of ~80% (from twin studies), but even the largest GWAS with millions of participants explain only ~25% of height variance with genome-wide significant hits. The remaining genetic variance hasn't disappeared—where is it? Predict which of these contributes most to "missing heritability":
+Before viewing the heritability decomposition figure below, consider this scenario: Height has pedigree heritability of ~80% (from twin studies), but even the largest GWAS with millions of participants explain only ~25% of height variance with genome-wide significant hits. The remaining genetic variance has not disappeared. Where is it? Predict which of these contributes most to "missing heritability":
 
 - Measurement error in height phenotypes
 - Variants too rare to be on genotyping arrays
@@ -180,7 +180,7 @@ These high heritability estimates established that genetics substantially influe
 A twin study finds that identical twins have a correlation of 0.90 for height, while fraternal twins have a correlation of 0.45. Using the classical formula $h^2 = 2 \times (r_{MZ} - r_{DZ})$, what is the estimated heritability? Does this match the published estimates mentioned above? What assumptions does this calculation make about shared versus non-shared environmental influences?
 
 ::: {.callout-note collapse="true" title="Check Your Answer"}
-The estimated heritability is $h^2 = 2 \times (0.90 - 0.45) = 0.90$ (90%), which matches the ~80% published estimates reasonably well. This calculation assumes that shared environmental influences affect identical and fraternal twins equally, and that gene-environment interactions and non-additive genetic effects are negligible—assumptions that may be violated in practice.
+The estimated heritability is $h^2 = 2 \times (0.90 - 0.45) = 0.90$ (90%), which matches the ~80% published estimates reasonably well. This calculation assumes that shared environmental influences affect identical and fraternal twins equally, and that gene-environment interactions and non-additive genetic effects are negligible, assumptions that may be violated in practice.
 :::
 :::
 
@@ -200,7 +200,7 @@ The distinction matters for how foundation models might contribute. Models train
 
 SNP-heritability tells us how much variance common variants explain in aggregate, but not how that variance is distributed across the genome. Two traits with identical SNP-heritability can have radically different genetic architectures: one might concentrate signal in a handful of large-effect variants, the other might distribute signal across thousands of variants each contributing infinitesimally. This distinction matters for model building, benchmark design, and understanding when foundation models might provide advantages over simpler approaches.
 
-The **M50% metric** from PolyFun quantifies this distribution directly: it measures the number of SNPs required to explain 50% of a trait's heritability [@weissbrod_functionally_2020]. Hair color requires only approximately 28 SNPs to reach M50%, reflecting an oligogenic architecture where pigmentation genes dominate. Height, despite similar heritability estimates, requires roughly 3,400 SNPs—a highly polygenic architecture where thousands of variants each contribute small effects. At the extreme, behavioral traits like number of children require millions of SNPs, indicating genetic architectures that may exceed current modeling capacity entirely.
+The **M50% metric** from PolyFun quantifies this distribution directly: it measures the number of SNPs required to explain 50% of a trait is heritability [@weissbrod_functionally_2020]. Hair color requires only approximately 28 SNPs to reach M50%, reflecting an oligogenic architecture where pigmentation genes dominate. Height, despite similar heritability estimates, requires roughly 3,400 SNPs, a highly polygenic architecture where thousands of variants each contribute small effects. At the extreme, behavioral traits like number of children require millions of SNPs, indicating genetic architectures that may exceed current modeling capacity entirely.
 
 | Trait | M50% | Architecture | Implications |
 |-------|------|--------------|--------------|
@@ -256,7 +256,7 @@ GWAS test variants one at a time, but the genome is not inherited one variant at
 **Implications for genomics:**
 
 - *GWAS power*: A genotyping array with 1 million variants can "tag" most common variation because ungenotyped variants are correlated with genotyped ones
-- *Causal ambiguity*: When variant A associates with disease, any variant B in high LD with A will also show association—GWAS cannot distinguish which is causal
+- *Causal ambiguity*: When variant A associates with disease, any variant B in high LD with A will also show association; GWAS cannot distinguish which is causal
 - *Population specificity*: LD patterns differ across populations, causing polygenic scores to transfer poorly
 :::
 
@@ -341,7 +341,7 @@ Variants with high PIPs (above 0.5 or 0.9) are strong candidates for functional 
 A fine-mapping analysis reports that variant X has PIP = 0.35 and variant Y has PIP = 0.30, with X and Y in strong LD (r^2^ = 0.92). The 95% credible set contains 5 variants including both X and Y. What can you conclude about whether X or Y is causal? What would make you more confident in one over the other?
 
 ::: {.callout-note collapse="true" title="Check Your Answer"}
-You cannot confidently determine which variant is causal based on these statistics alone—both have modest PIPs and are strongly correlated through LD. Functional annotations (e.g., X disrupts a known regulatory motif while Y is in a non-functional region), multi-ancestry fine-mapping showing differential LD patterns, or experimental validation would increase confidence in one variant over the other.
+You cannot confidently determine which variant is causal based on these statistics alone; both have modest PIPs and are strongly correlated through LD. Functional annotations (e.g., X disrupts a known regulatory motif while Y is in a non-functional region), multi-ancestry fine-mapping showing differential LD patterns, or experimental validation would increase confidence in one variant over the other.
 :::
 :::
 
@@ -377,7 +377,7 @@ The weight $w_j$ reflects the estimated effect of variant $j$, and $g_{ij}$ is t
 
 
 ::: {.callout-note title="Predict Before You Look"}
-Before viewing the comparison below, predict: If you're building a polygenic score for height (which has thousands of contributing variants) using two methods:
+Before viewing the comparison below, predict: If you are building a polygenic score for height (which has thousands of contributing variants) using two methods:
 
 - Method A: Select only genome-wide significant variants (p < 5×10^-8^), prune away correlated variants, use remaining ~300 variants
 - Method B: Keep all variants but shrink effect sizes based on statistical evidence and LD structure, effectively using millions of variants with modulated weights
@@ -508,7 +508,7 @@ Portability of polygenic scores across ancestry groups. Bar heights show relativ
 Polygenic scores derived from European-ancestry GWAS show markedly reduced performance in other populations. African-ancestry individuals typically experience 40% to 75% reductions in prediction accuracy compared to European-ancestry individuals, even for the same trait measured in the same study [@duncan_analysis_2019; @martin_clinical_2019]. The pattern holds across traits and across methods, though the magnitude varies with genetic architecture and the degree of shared causal variants.
 
 ::: {.callout-note title="Stop and Think"}
-You're a genetic counselor and a patient of African ancestry receives a direct-to-consumer polygenic score placing them at the 85th percentile for type 2 diabetes risk. The score was derived from European GWAS data. Given what you now know about portability, what concerns would you have about interpreting this result? What would you tell the patient about the reliability of this percentile ranking?
+You are a genetic counselor and a patient of African ancestry receives a direct-to-consumer polygenic score placing them at the 85th percentile for type 2 diabetes risk. The score was derived from European GWAS data. Given what you now know about portability, what concerns would you have about interpreting this result? What would you tell the patient about the reliability of this percentile ranking?
 :::
 
 Several factors contribute to this portability failure. LD structure differs across populations: tag SNPs that effectively proxy causal variants in Europeans may be poor proxies in populations with different recombination history. Allele frequencies differ: variants common in one population may be rare or absent in another. Effect sizes may genuinely differ across populations due to gene-environment interactions or genetic background effects. And GWAS in smaller non-European samples have less power to detect associations, yielding noisier effect estimates that further degrade prediction.
@@ -610,7 +610,7 @@ Before reviewing the summary, test your recall:
 ::: {.callout-note collapse="true" title="Check Your Answers"}
 
 **1. LD and the association-causation gap:**
-Linkage disequilibrium means nearby variants are inherited together in correlated haplotype blocks. When a causal variant affects a trait, all variants in high LD with it will also show statistical association—even if they have no functional role. GWAS cannot distinguish the causal variant from correlated "tag" variants based on association statistics alone, creating fundamental ambiguity about which variants actually matter biologically.
+Linkage disequilibrium means nearby variants are inherited together in correlated haplotype blocks. When a causal variant affects a trait, all variants in high LD with it will also show statistical association, even if they have no functional role. GWAS cannot distinguish the causal variant from correlated "tag" variants based on association statistics alone, creating fundamental ambiguity about which variants actually matter biologically.
 
 **2. Three layers of heritability:**
 - **Pedigree heritability (h²)**: Estimated from family resemblance (e.g., twin studies), represents the total proportion of phenotypic variance attributable to genetic factors (~80% for height). This is the upper bound.
@@ -618,10 +618,10 @@ Linkage disequilibrium means nearby variants are inherited together in correlate
 - **Missing heritability**: The gap between pedigree and SNP-heritability, representing genetic variation not captured by common SNPs (rare variants, structural variants, poorly tagged regions).
 
 **3. C+T method and limitation:**
-C+T selects the most significant variant at each locus, removes correlated variants within a window (clumping), applies a p-value threshold, and uses GWAS effect sizes as weights. The main limitation is massive information loss—it discards thousands of sub-threshold variants that collectively explain substantial variance, particularly problematic for highly polygenic traits.
+C+T selects the most significant variant at each locus, removes correlated variants within a window (clumping), applies a p-value threshold, and uses GWAS effect sizes as weights. The main limitation is massive information loss: it discards thousands of sub-threshold variants that collectively explain substantial variance, particularly problematic for highly polygenic traits.
 
 **4. Portability failure and the 78% problem:**
-Polygenic scores fail to transfer across ancestries primarily because LD patterns differ between populations—a tag SNP that works in Europeans may not correlate with the causal variant in African-ancestry populations where LD blocks are shorter. Allele frequency differences and effect heterogeneity also contribute. The "78% problem" refers to the fact that ~78% of GWAS participants have been European despite Europeans comprising only ~16% of the global population, creating systematic bias in which variants are discovered and weighted.
+Polygenic scores fail to transfer across ancestries primarily because LD patterns differ between populations; a tag SNP that works in Europeans may not correlate with the causal variant in African-ancestry populations where LD blocks are shorter. Allele frequency differences and effect heterogeneity also contribute. The "78% problem" refers to the fact that ~78% of GWAS participants have been European despite Europeans comprising only ~16% of the global population, creating systematic bias in which variants are discovered and weighted.
 
 **5. Fine-mapping purpose and credible sets:**
 Fine-mapping moves from "this region is associated" to "these specific variants are most likely causal" by modeling how variants behave jointly given LD structure. A 95% credible set is the smallest set of variants with cumulative posterior probability ≥0.95 of containing the true causal variant(s). Small credible sets (1-5 variants) are actionable for functional follow-up; large sets indicate unresolvable ambiguity due to tight LD.

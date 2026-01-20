@@ -19,7 +19,7 @@
 6. Articulate the workflow, monitoring, and governance requirements for clinical integration of foundation model-based risk tools
 :::
 
-Maria is 52, with moderately elevated cholesterol and a family history that keeps her cardiologist alert: her father's heart attack at 49, her brother's stent at 54. Her physician orders a polygenic risk score and receives a number: 0.84, placing Maria in the top 5% of genetic risk for coronary artery disease. The cardiologist pauses. What should she *do* differently because of this score? Prescribe the statin she was already considering? Recommend earlier imaging she would have suggested anyway? Counsel Maria about lifestyle modifications she's heard a hundred times before?
+Maria is 52, with moderately elevated cholesterol and a family history that keeps her cardiologist alert: her father's heart attack at 49, her brother's stent at 54. Her physician orders a polygenic risk score and receives a number: 0.84, placing Maria in the top 5% of genetic risk for coronary artery disease. The cardiologist pauses. What should she *do* differently because of this score? Prescribe the statin she was already considering? Recommend earlier imaging she would have suggested anyway? Counsel Maria about lifestyle modifications she has heard a hundred times before?
 
 A risk prediction has clinical value only if it changes what happens next. If Maria with her high polygenic risk score receives the same statin prescription, lifestyle counseling, and follow-up schedule as a patient without genetic testing, the score added nothing to her care regardless of its statistical validity. The fundamental challenge is not generating genomic predictions but translating them into actions that improve outcomes. This translation requires more than **discrimination** between who will and will not develop disease; it requires that the prediction reach clinicians in a usable form, at a decision point where alternatives exist, for a patient population where the prediction performs equitably.
 
@@ -29,7 +29,7 @@ Genomic foundation models offer capabilities that may address some of these limi
 
 ## From Polygenic Scores to Foundation Model Features {#sec-ch28-pgs-to-fm}
 
-The limitations of classical polygenic risk scores define the opportunity for foundation model approaches. As discussed in @sec-ch03-pgs-construction, polygenic scores aggregate the effects of common variants into weighted sums, with weights derived from genome-wide association study effect sizes. This framework has demonstrated that common genetic variation contributes substantially to risk for conditions including coronary artery disease, type 2 diabetes, and breast cancer. A patient in the top percentile of polygenic risk for coronary disease faces roughly threefold higher lifetime risk than one in the bottom percentile, a gradient comparable to traditional risk factors like smoking or hyperlipidemia *[Citation Needed]*.
+The limitations of classical polygenic risk scores define the opportunity for foundation model approaches. As discussed in @sec-ch03-pgs-construction, polygenic scores aggregate the effects of common variants into weighted sums, with weights derived from genome-wide association study effect sizes. This framework has demonstrated that common genetic variation contributes substantially to risk for conditions including coronary artery disease, type 2 diabetes, and breast cancer. A patient in the top percentile of polygenic risk for coronary disease faces roughly threefold higher lifetime risk than one in the bottom percentile, a gradient comparable to traditional risk factors like smoking or hyperlipidemia .
 
 ::: {.callout-tip}
 ## Stop and Think
@@ -101,11 +101,11 @@ Each of these applications represents a different prediction task with distinct 
 
 | Level | Can Be High While Others Are Low? | Example |
 |-------|-----------------------------------|---------|
-| Analytical validity | Yes | Perfectly accurate test for a biomarker that doesn't predict disease |
-| Clinical validity | Yes | Highly predictive test that doesn't change management |
+| Analytical validity | Yes | Perfectly accurate test for a biomarker that does not predict disease |
+| Clinical validity | Yes | Highly predictive test that does not change management |
 | Clinical utility | Requires others | Test must be valid and actually improve care |
 
-A model can achieve excellent discrimination (clinical validity) yet provide no clinical utility if the resulting predictions don't change clinical decisions, if the population tested differs from training, or if interventions triggered by the prediction are ineffective.
+A model can achieve excellent discrimination (clinical validity) yet provide no clinical utility if the resulting predictions do not change clinical decisions, if the population tested differs from training, or if interventions triggered by the prediction are ineffective.
 :::
 
 Clinical risk prediction tasks cluster into several archetypes. Incident risk concerns whether a currently disease-free individual will develop disease within a specified window, such as 10-year diabetes risk for prediabetic patients. Progression risk asks which patients with existing disease will develop complications, for instance nephropathy in diabetes or heart failure after myocardial infarction. Survival and prognosis involve time-from-diagnosis to events like death, recurrence, or transplant, often requiring survival models that handle censoring and competing risks. Treatment response and toxicity concerns whether a patient will benefit from one therapy versus another and their probability of experiencing serious adverse effects.
@@ -179,7 +179,7 @@ The EHR-embedding-enhanced PRS (*EEPRS*) framework addresses these limitations b
 
 The framework proceeds in stages. Embedding models (Word2Vec trained on ICD-10 code sequences, or GPT-based embeddings of code descriptions) transform each patient's diagnostic history into a low-dimensional vector representation. GWAS conducted on these embedding dimensions identify genetic variants associated with each dimension of clinical phenotype space. The resulting summary statistics enable construction of embedding-based polygenic scores that capture genetic predisposition to the phenotypic patterns encoded in each dimension. Integration with traditional disease-specific PGS through weighted combination yields final risk predictions.
 
-Validation in UK Biobank demonstrated consistent improvement over single-trait polygenic scores across 41 clinical traits. Cardiovascular conditions showed the largest gains: ischemic stroke improved by 66%, heart failure by 32%, and peripheral artery disease by 25% *[Citation Needed]*. These improvements concentrate in traits where related phenotypes share genetic architecture, allowing the embedding-based scores to leverage cross-phenotype genetic correlation. For isolated traits without strong embedding-dimension associations, improvements were modest or absent.
+Validation in UK Biobank demonstrated consistent improvement over single-trait polygenic scores across 41 clinical traits. Cardiovascular conditions showed the largest gains: ischemic stroke improved by 66%, heart failure by 32%, and peripheral artery disease by 25% . These improvements concentrate in traits where related phenotypes share genetic architecture, allowing the embedding-based scores to leverage cross-phenotype genetic correlation. For isolated traits without strong embedding-dimension associations, improvements were modest or absent.
 
 ### Understanding When Embeddings Help {#sec-ch28-embeddings-help}
 
@@ -204,7 +204,7 @@ Beyond diagnostic code embeddings, clinical measurements themselves can be embed
 
 Clinical deployment requires interpretability: why does this score predict disease risk, and what biological mechanisms does it capture? PRS-based phenome-wide association studies provide one answer by systematically testing association between the polygenic score and hundreds of clinical phenotypes (@sec-ch03-phewas). For embedding-enhanced scores, PRS-PheWAS reveals which clinical manifestations the genetic risk predicts.
 
-The *EEPRS* framework's cardiovascular improvements became interpretable through PRS-PheWAS analysis. Embedding-based scores derived from ICA-transformed dimensions showed strong associations (adjusted $p < 10^{-20}$) with hypertension, atrial fibrillation, and cardiac dysrhythmias *[Citation Needed]*. These associations explain the improvement: the embeddings capture genetic variation that influences multiple cardiovascular endpoints, and aggregating across these endpoints provides stronger risk stratification than targeting any single outcome.
+The *EEPRS* framework's cardiovascular improvements became interpretable through PRS-PheWAS analysis. Embedding-based scores derived from ICA-transformed dimensions showed strong associations (adjusted $p < 10^{-20}$) with hypertension, atrial fibrillation, and cardiac dysrhythmias . These associations explain the improvement: the embeddings capture genetic variation that influences multiple cardiovascular endpoints, and aggregating across these endpoints provides stronger risk stratification than targeting any single outcome.
 
 
 PRS-PheWAS also reveals unexpected associations that warrant clinical attention. Different embedding methods capture different aspects of phenotypic structure, with GPT-based embeddings uniquely identifying associations with infectious diseases and mental disorders that Word2Vec embeddings missed. These method-specific patterns may reflect differences in what the embedding approaches learn from clinical data, or they may indicate opportunities for method combination that leverages complementary signals.
@@ -318,7 +318,7 @@ Claims that foundation model-based risk tools improve upon "state-of-the-art" po
 4. **Published PGS** from PGS Catalog for the specific trait, representing community-validated scores
 5. **XGBoost or random forest**: Non-deep-learning ML alternative establishing whether neural network complexity is necessary
 
-Using only clumping-and-thresholding (C+T) as baseline artificially inflates apparent foundation model gains by 16-60%. When properly tuned linear methods are included, neural networks for polygenic prediction often perform only 93-95% as well—with apparent nonlinear advantages reflecting implicit LD modeling rather than genuine epistasis detection or representation learning [@ge_polygenic_2019].
+Using only clumping-and-thresholding (C+T) as baseline artificially inflates apparent foundation model gains by 16-60%. When properly tuned linear methods are included, neural networks for polygenic prediction often perform only 93-95% as well, with apparent nonlinear advantages reflecting implicit LD modeling rather than genuine epistasis detection or representation learning [@ge_polygenic_2019].
 
 The diagnostic question: does your foundation model approach outperform the best available linear method, or only weak linear methods? Incremental improvement over strong baselines justifies deployment complexity; improvement only over weak baselines does not.
 :::
@@ -386,7 +386,7 @@ The ancestry bias in genome-wide association studies persists in foundation mode
 
 ![Mitigation strategies for equitable performance](../figs/part_7/ch28/05-D-fig-fairness-assessment.svg)
 
-Fairness assessment in clinical genomic AI. (A) Ancestry-stratified performance reveals disparities masked by aggregate metrics—African ancestry AUC significantly lower than European. (B) Calibration varies by group: models may be overconfident for underrepresented populations. (C) Bias accumulates: European-dominated training data leads to models that underperform on other populations, compounded by EHR biases. (D) Mitigation strategies: stratified evaluation disclosure, training reweighting, group-specific calibration, and uncertainty flagging for underrepresented inputs.
+Fairness assessment in clinical genomic AI. (A) Ancestry-stratified performance reveals disparities masked by aggregate metrics: African ancestry AUC significantly lower than European. (B) Calibration varies by group: models may be overconfident for underrepresented populations. (C) Bias accumulates: European-dominated training data leads to models that underperform on other populations, compounded by EHR biases. (D) Mitigation strategies: stratified evaluation disclosure, training reweighting, group-specific calibration, and uncertainty flagging for underrepresented inputs.
 :::
 
 Electronic health record features introduce additional bias sources. Which patients receive genetic testing, which laboratory tests are ordered, how diagnoses are coded, and how thoroughly clinical notes are documented all differ systematically across patient populations, care settings, and health systems. A model trained on one institution's data may encode those institutional patterns rather than underlying biology.
@@ -490,7 +490,7 @@ The validation requirements are stringent. Retrospective analysis of institution
 
 ### Pharmacogenomic Adverse Event Prediction {#sec-ch28-case-pharmacogenomics}
 
-A 45-year-old man with newly diagnosed epilepsy requires anticonvulsant therapy. Carbamazepine is a common first-line choice, but it carries risk of severe cutaneous adverse reactions including Stevens-Johnson syndrome and toxic epidermal necrolysis. The *HLA-B*15:02* allele is strongly associated with carbamazepine hypersensitivity in patients of Asian ancestry, and FDA labeling recommends genetic testing before initiating therapy in at-risk populations *[Citation Needed]*.
+A 45-year-old man with newly diagnosed epilepsy requires anticonvulsant therapy. Carbamazepine is a common first-line choice, but it carries risk of severe cutaneous adverse reactions including Stevens-Johnson syndrome and toxic epidermal necrolysis. The *HLA-B\*15:02* allele is strongly associated with carbamazepine hypersensitivity in patients of Asian ancestry, and FDA-approved drug labeling recommends genetic testing before initiating therapy in at-risk populations.
 
 This established pharmacogenomic association illustrates both the potential and limitations of current approaches. Single-variant associations with high effect sizes enable straightforward clinical implementation, but they cover a small fraction of drug-gene interactions. Many patients who do not carry *HLA-B*15:02* still experience adverse reactions, suggesting additional genetic (and non-genetic) risk factors that single-variant testing misses.
 

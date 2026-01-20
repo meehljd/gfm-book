@@ -43,7 +43,7 @@ Most machine learning, including foundation models, operates at rung 1. Models l
 ::: {#fig-ladder-causation}
 ![Pearl's ladder of causation applied to genomics](../figs/part_6/ch26/01-fig-ladder-causation.svg)
 
-Pearl's ladder of causation applied to genomics. **Rung 1 (Association)**: Foundation models learn P(Y|X)—observing variant V, predict phenotype P. **Rung 2 (Intervention)**: P(Y|do(X))—if we edit V, what happens to P? Requires causal structure, not just correlations. **Rung 3 (Counterfactual)**: For this specific patient, what would have happened under alternative conditions? The gaps are qualitative: predictive accuracy at Rung 1 provides no guarantee of accuracy at Rungs 2-3.
+Pearl's ladder of causation applied to genomics. **Rung 1 (Association)**: Foundation models learn P(Y|X): observing variant V, predict phenotype P. **Rung 2 (Intervention)**: P(Y|do(X)): if we edit V, what happens to P? Requires causal structure, not just correlations. **Rung 3 (Counterfactual)**: For this specific patient, what would have happened under alternative conditions? The gaps are qualitative: predictive accuracy at Rung 1 provides no guarantee of accuracy at Rungs 2-3.
 :::
 
 ::: {.callout-tip}
@@ -144,15 +144,15 @@ MR analysis using protein quantitative trait loci (pQTLs) as instrumental variab
 
 ### Model-X Knockoffs for Controlled Variable Selection {#sec-ch26-knockoffs}
 
-Mendelian randomization exploits random allele assignment to isolate causal effects; fine-mapping exploits LD structure to identify causal variants. A third approach—**Model-X knockoffs**—provides a complementary framework for causal variable selection that addresses a specific limitation of standard GWAS: the inability to distinguish marginal association from conditional independence [@candes_panning_2018].
+Mendelian randomization exploits random allele assignment to isolate causal effects; fine-mapping exploits LD structure to identify causal variants. A third approach, **Model-X knockoffs**, provides a complementary framework for causal variable selection that addresses a specific limitation of standard GWAS: the inability to distinguish marginal association from conditional independence [@candes_panning_2018].
 
-Standard GWAS tests each variant marginally: is this variant associated with the outcome? But in the presence of linkage disequilibrium, marginal p-values conflate direct effects with indirect correlation. A non-causal variant in high LD with a causal variant will show significant marginal association even though it provides no information about the outcome beyond what other variants already provide. This distinction—marginal versus conditional association—is precisely what causal inference requires.
+Standard GWAS tests each variant marginally: is this variant associated with the outcome? But in the presence of linkage disequilibrium, marginal p-values conflate direct effects with indirect correlation. A non-causal variant in high LD with a causal variant will show significant marginal association even though it provides no information about the outcome beyond what other variants already provide. This distinction (marginal versus conditional association) is precisely what causal inference requires.
 
-Model-X knockoffs construct synthetic "knockoff" variables that preserve the correlation structure among features but are conditionally independent of the outcome given the original features. By comparing how strongly each original variant predicts the outcome versus its knockoff, the method identifies variants that provide genuine predictive signal beyond what their LD neighbors explain. The framework provides finite-sample false discovery rate (FDR) control without requiring knowledge of how the outcome depends on the variants—a model-free property that distinguishes it from parametric approaches.
+Model-X knockoffs construct synthetic "knockoff" variables that preserve the correlation structure among features but are conditionally independent of the outcome given the original features. By comparing how strongly each original variant predicts the outcome versus its knockoff, the method identifies variants that provide genuine predictive signal beyond what their LD neighbors explain. The framework provides finite-sample false discovery rate (FDR) control without requiring knowledge of how the outcome depends on the variants, a model-free property that distinguishes it from parametric approaches.
 
 Applied to Crohn's disease GWAS data (~400,000 SNPs), knockoffs identified twice as many discoveries as marginal association testing while maintaining FDR control. Several discoveries were subsequently validated in larger meta-analyses, demonstrating that the method identifies true positives that marginal testing misses due to conservative thresholding across correlated variants.
 
-For foundation model applications, knockoffs offer several advantages. First, they provide principled feature selection for high-dimensional embeddings where standard regularization may be insufficient—selecting which embedding dimensions carry genuine predictive signal versus which reflect noise that degrades performance through the dimensionality trap (@sec-ch23-limits). Second, they can distinguish true epistasis from "phantom epistasis" created by LD confounding: apparent variant interactions that actually reflect joint tagging of single causal variants. Third, the framework extends naturally to testing whether foundation model attention patterns identify conditionally important positions rather than merely correlated ones.
+For foundation model applications, knockoffs offer several advantages. First, they provide principled feature selection for high-dimensional embeddings where standard regularization may be insufficient, selecting which embedding dimensions carry genuine predictive signal versus which reflect noise that degrades performance through the dimensionality trap (@sec-ch23-limits). Second, they can distinguish true epistasis from "phantom epistasis" created by LD confounding: apparent variant interactions that actually reflect joint tagging of single causal variants. Third, the framework extends naturally to testing whether foundation model attention patterns identify conditionally important positions rather than merely correlated ones.
 
 The practical limitation is computational: knockoff construction requires estimating or specifying the joint distribution of variants, which scales poorly with variant count. Approximate methods using block-diagonal LD structure make genome-scale application tractable, but the approach is most powerful for targeted analysis of fine-mapped regions or selected feature sets rather than whole-genome screening.
 
@@ -205,7 +205,7 @@ Integrating these evidence types into coherent gene prioritization frameworks re
 ::: {#fig-gwas-to-gene}
 ![From GWAS to causal gene identification](../figs/part_6/ch26/02-fig-gwas-to-gene.svg)
 
-From GWAS to causal gene. **Stage 1**: GWAS identifies associated locus with multiple variants in linkage disequilibrium. **Stage 2**: Fine-mapping with foundation model functional annotations narrows to credible set. **Stage 3**: Multiple evidence integration—eQTL colocalization, chromatin contacts, FM variant predictions—prioritizes target gene. **Stage 4**: Experimental validation provides causal ground truth. Foundation models accelerate stages 2-3 but cannot substitute for experimental validation.
+From GWAS to causal gene. **Stage 1**: GWAS identifies associated locus with multiple variants in linkage disequilibrium. **Stage 2**: Fine-mapping with foundation model functional annotations narrows to credible set. **Stage 3**: Multiple evidence integration (eQTL colocalization, chromatin contacts, FM variant predictions) prioritizes target gene. **Stage 4**: Experimental validation provides causal ground truth. Foundation models accelerate stages 2-3 but cannot substitute for experimental validation.
 :::
 
 ::: {.callout-tip title="Recall and Connect"}
@@ -356,7 +356,7 @@ Closed-loop systems face practical challenges: experimental throughput limits it
 ::: {#fig-closed-loop-causal}
 ![Closed-loop causal learning for foundation models](../figs/part_6/ch26/03-fig-closed-loop-causal.svg)
 
-Closed-loop causal learning for foundation models. The cycle iterates between: (1) Predicting intervention effects from current knowledge, (2) Executing prioritized interventions on automated platforms, (3) Capturing experimental readouts, and (4) Updating the model with interventional data. Unlike standard training on observational data, closed-loop systems accumulate interventional ground truth that progressively improves causal accuracy—providing a path from Rung 1 (association) toward Rung 2 (intervention) of the causal ladder.
+Closed-loop causal learning for foundation models. The cycle iterates between: (1) Predicting intervention effects from current knowledge, (2) Executing prioritized interventions on automated platforms, (3) Capturing experimental readouts, and (4) Updating the model with interventional data. Unlike standard training on observational data, closed-loop systems accumulate interventional ground truth that progressively improves causal accuracy, providing a path from Rung 1 (association) toward Rung 2 (intervention) of the causal ladder.
 :::
 
 ## Causal Discovery {#sec-ch26-causal-discovery}
@@ -384,7 +384,7 @@ Foundation models offer new approaches to regulatory network inference:
 Network inference from foundation models remains an active research area. Validation against gold-standard regulatory relationships (e.g., ChIP-seq, perturbation experiments) is essential for assessing accuracy.
 
 ::: {.callout-tip title="Recall and Connect"}
-**From @sec-ch25-interpretability**: We learned that attention weights in transformers show which inputs the model considers important. Now think critically: If attention from gene A to gene B is high, does this prove A regulates B? What's the difference between computational attention and biological causation?
+**From @sec-ch25-interpretability**: We learned that attention weights in transformers show which inputs the model considers important. Now think critically: If attention from gene A to gene B is high, does this prove A regulates B? What is the difference between computational attention and biological causation?
 :::
 
 ### Temporal Causality {#sec-ch26-temporal-causality}
@@ -444,7 +444,7 @@ Foundation models can accelerate target validation by integrating across evidenc
 ::: {#fig-evidence-hierarchy}
 ![Evidence hierarchy for drug target validation](../figs/part_6/ch26/04-fig-evidence-hierarchy.svg)
 
-Evidence hierarchy for drug target validation. **Weakest**: observational association—foundation models excel here but associations may be confounded. **Moderate**: Mendelian randomization provides human in-vivo causal evidence. **Strong**: Experimental perturbation directly tests causation in model systems. **Strongest**: Clinical trial efficacy is definitive but expensive. Foundation models accelerate association discovery, MR instrument selection, and perturbation prioritization, but cannot substitute for the experimental and clinical evidence required for confident target validation.
+Evidence hierarchy for drug target validation. **Weakest**: observational association (foundation models excel here but associations may be confounded). **Moderate**: Mendelian randomization provides human in-vivo causal evidence. **Strong**: Experimental perturbation directly tests causation in model systems. **Strongest**: Clinical trial efficacy is definitive but expensive. Foundation models accelerate association discovery, MR instrument selection, and perturbation prioritization, but cannot substitute for the experimental and clinical evidence required for confident target validation.
 :::
 
 ::: {.callout-important}
@@ -492,15 +492,15 @@ The frontier challenges in causal reasoning are examined further in @sec-ch32-ca
 :::{.callout-tip title="Test Yourself"}
 Before reviewing the summary, test your recall:
 
-1. Describe Pearl's three rungs of the ladder of causation. Why can't you reach Rung 2 (intervention) from Rung 1 (association) through more data or better prediction accuracy alone?
+1. Describe Pearl's three rungs of the ladder of causation. Why cannot you reach Rung 2 (intervention) from Rung 1 (association) through more data or better prediction accuracy alone?
 2. A foundation model achieves 95% accuracy predicting disease outcome from gene expression. List three different causal structures that could produce this correlation, and explain why they matter for treatment decisions.
 3. What is Mendelian randomization, and what properties of genetic variants make it a valid causal inference tool?
 4. How can foundation models be trained to support causal reasoning? What types of training data would enable movement from associational to interventional predictions?
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-1. **Rung 1 (Association)**: P(Y|X)—observing X tells us about Y. **Rung 2 (Intervention)**: P(Y|do(X))—changing X affects Y. **Rung 3 (Counterfactual)**: What would Y have been for this individual if X were different? More data at Rung 1 cannot reach Rung 2 because observational data conflates causal and confounded associations; no amount of correlation data distinguishes causation from common causes without interventional data or causal assumptions.
+1. **Rung 1 (Association)**: P(Y|X): observing X tells us about Y. **Rung 2 (Intervention)**: P(Y|do(X)): changing X affects Y. **Rung 3 (Counterfactual)**: What would Y have been for this individual if X were different? More data at Rung 1 cannot reach Rung 2 because observational data conflates causal and confounded associations; no amount of correlation data distinguishes causation from common causes without interventional data or causal assumptions.
 
-2. Three causal structures: (a) Gene expression directly causes disease—treatment targeting the gene would work; (b) Disease causes gene expression—targeting the gene would not help; (c) Both are caused by an unmeasured factor—gene is a biomarker but not a therapeutic target. These distinctions are critical for choosing whether to develop therapies targeting the gene.
+2. Three causal structures: (a) Gene expression directly causes disease (treatment targeting the gene would work); (b) Disease causes gene expression (targeting the gene would not help); (c) Both are caused by an unmeasured factor (gene is a biomarker but not a therapeutic target). These distinctions are critical for choosing whether to develop therapies targeting the gene.
 
 3. Mendelian randomization uses genetic variants as instrumental variables to infer causation. Key properties: alleles are randomly assigned at conception (independence from confounders), variants affect an exposure (relevance), and under the exclusion restriction, variants affect outcomes only through the exposure. This creates a natural experiment analogous to randomized trials.
 

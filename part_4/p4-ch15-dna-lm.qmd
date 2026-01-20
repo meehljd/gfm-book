@@ -50,7 +50,7 @@ You would face three key challenges:
 
 2. **Architecture mismatch** - the model's architecture was optimized for chromatin accessibility, so adapting it to a different task (like splice prediction) would require substantial re-engineering;
 
-3. **Feature transfer failure** - patterns learned for one task (chromatin marks) don't directly transfer to unrelated tasks without retraining.
+3. **Feature transfer failure** - patterns learned for one task (chromatin marks) do not directly transfer to unrelated tasks without retraining.
 
 This is precisely why the foundation model paradigm emerged: learn general representations once, then adapt to many tasks.
 :::
@@ -94,7 +94,7 @@ Protein language models demonstrated an alternative. *ESM* and related models tr
 3. Positions with strong predictions = evolutionarily constrained positions
 4. Patterns useful for masked prediction transfer to other tasks
 
-**The key insight:** Predicting masked nucleotides requires understanding what patterns are "allowed" in genomic sequence—which is exactly what determines variant effects.
+**The key insight:** Predicting masked nucleotides requires understanding what patterns are "allowed" in genomic sequence, which is exactly what determines variant effects.
 :::
 
 ::: {.callout-important}
@@ -156,7 +156,7 @@ While the *Nucleotide Transformer* demonstrated the value of scaling, the Genomi
 *GPN* learns from only eight plant genomes, yet it outperforms conservation scores derived from alignments across dozens of species. What might explain this surprising result? Consider what information is preserved versus lost in multiple sequence alignment.
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-Multiple sequence alignment preserves only positions where sequences can be reliably aligned, discarding information from insertion/deletion-rich regions and structural variants. *GPN* learns from unaligned sequences, capturing patterns in these regions that alignment-based methods miss. Additionally, *GPN* learns higher-order sequence patterns (motif combinations, spacing constraints, regulatory grammar) that phyloP and phastCons cannot represent—they only measure single-position conservation. The self-supervised objective forces *GPN* to predict nucleotides from context, requiring it to learn the sequence rules that determine "allowed" versus "disallowed" patterns. This is precisely the information needed for variant effect prediction.
+Multiple sequence alignment preserves only positions where sequences can be reliably aligned, discarding information from insertion/deletion-rich regions and structural variants. *GPN* learns from unaligned sequences, capturing patterns in these regions that alignment-based methods miss. Additionally, *GPN* learns higher-order sequence patterns (motif combinations, spacing constraints, regulatory grammar) that phyloP and phastCons cannot represent; they only measure single-position conservation. The self-supervised objective forces *GPN* to predict nucleotides from context, requiring it to learn the sequence rules that determine "allowed" versus "disallowed" patterns. This is precisely the information needed for variant effect prediction.
 :::
 :::
 
@@ -249,7 +249,7 @@ The original *Evo* model demonstrated that DNA language models could operate at 
 Reverse complement equivariance as architectural constraint. (A) DNA's double-stranded nature creates biological equivalence: a regulatory element on one strand has the same function when read as its reverse complement from the other strand. (B) Standard models violate this equivalence, producing different predictions for forward and reverse complement sequences despite their biological identity. (C) Caduceus uses bidirectional Mamba state-space models with equivariant architecture to guarantee identical predictions for equivalent sequences. This architectural constraint eliminates strand bias without data augmentation, improving both biological correctness and data efficiency.
 :::
 
-The training corpus draws from the OpenGenome2 dataset comprising 9.3 trillion DNA tokens across all domains of life, a 30-fold increase over the original *Evo* training data. This massive scale exposes the model to the full spectrum of genomic organization: compact prokaryotic gene arrangements, sprawling eukaryotic regulatory landscapes with extensive noncoding sequence, viral genomes with overlapping reading frames, and the diversity of regulatory architectures across evolution. The model comes in 7 billion and 40 billion parameter variants, with the larger model extending well beyond the original *Evo*'s scale.
+The training corpus draws from the OpenGenome2 dataset comprising 9.3 trillion DNA base pairs across all domains of life, a 30-fold increase over the original *Evo* training data. This massive scale exposes the model to the full spectrum of genomic organization: compact prokaryotic gene arrangements, sprawling eukaryotic regulatory landscapes with extensive noncoding sequence, viral genomes with overlapping reading frames, and the diversity of regulatory architectures across evolution. The model comes in 7 billion and 40 billion parameter variants, with the larger model extending well beyond the original *Evo*'s scale.
 
 The architecture builds on StripedHyena 2, refining the hybrid design that proved effective in the original *Evo*. The combination of convolutional operations with selective attention mechanisms enables processing of sequences up to 1 million nucleotides, nearly an order of magnitude beyond *Evo*'s 131 kilobase context. Like its predecessor, *Evo 2* uses an autoregressive training objective (predicting the next base given all previous bases), which differs from the masked language modeling used in *DNABERT* and related models. Autoregressive training may provide complementary strengths for sequence generation and likelihood-based scoring, since the model learns to generate plausible sequences in addition to discriminating between them (@sec-ch08-pretraining).
 
@@ -300,7 +300,7 @@ DNA language models are trained on diverse corpora ranging from single reference
 
 ### Training Corpus Composition {#sec-ch15-corpus-composition}
 
-Early models like *DNABERT* trained primarily on the human reference genome (GRCh38), providing exposure to approximately 3 billion nucleotides from a single individual. The *Nucleotide Transformer* expanded to include multiple species and human population variation from resources like the 1000 Genomes Project (@sec-ch02-data). *Evo 2* scaled to 9.3 trillion tokens spanning all domains of life, including complete bacterial chromosomes, eukaryotic genomes, viral sequences, and metagenomic assemblies.
+Early models like *DNABERT* trained primarily on the human reference genome (GRCh38), providing exposure to approximately 3 billion nucleotides from a single individual. The *Nucleotide Transformer* expanded to include multiple species and human population variation from resources like the 1000 Genomes Project (@sec-ch02-data). *Evo 2* scaled to 9.3 trillion base pairs spanning all domains of life, including complete bacterial chromosomes, eukaryotic genomes, viral sequences, and metagenomic assemblies.
 
 ::: {#fig-evo2-training layout-ncol=3}
 ![Pan-genomic training data for Evo 2](../figs/part_4/ch15/04-A-fig-evo2-training.svg)
@@ -344,7 +344,7 @@ More complex patterns like regulatory grammar (the syntax governing how transcri
 Recall the feature ceiling discussed in @sec-ch04-features-to-representations. How do the limitations of sequence-only DNA language models relate to that concept? Think about what information is available versus what is needed for complete predictions.
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-The feature ceiling occurs when model performance is bounded by what the input features can represent, not by model architecture or training data. DNA language models face a fundamental feature ceiling: they can only learn from sequence, but gene regulation depends on epigenetic state, 3D chromatin structure, and cellular context that sequence doesn't encode. Even with infinite parameters and perfect optimization, a sequence-only model cannot predict cell-type-specific chromatin accessibility because the information simply isn't present in DNA sequence alone. This is analogous to trying to predict splice patterns without knowing which tissues a gene is expressed in—the necessary information is missing. Breaking this ceiling requires multi-modal integration (Part IV) that incorporates functional genomics data beyond sequence.
+The feature ceiling occurs when model performance is bounded by what the input features can represent, not by model architecture or training data. DNA language models face a fundamental feature ceiling: they can only learn from sequence, but gene regulation depends on epigenetic state, 3D chromatin structure, and cellular context that sequence does not encode. Even with infinite parameters and perfect optimization, a sequence-only model cannot predict cell-type-specific chromatin accessibility because the information simply is not present in DNA sequence alone. This is analogous to trying to predict splice patterns without knowing which tissues a gene is expressed in—the necessary information is missing. Breaking this ceiling requires multi-modal integration (Part IV) that incorporates functional genomics data beyond sequence.
 :::
 :::
 
@@ -357,18 +357,18 @@ Complex variant patterns beyond single nucleotide changes remain challenging. In
 ::: {.callout-tip}
 ## Predict Before You Look
 
-Before viewing @tbl-what-models-learn below, make predictions based on what you've learned:
+Before viewing @tbl-what-models-learn below, make predictions based on what you have learned:
 
 1. What categories of biological features can sequence-only models learn?
 2. What requires information beyond DNA sequence?
 3. Where do you think the fundamental boundary lies between "learnable from sequence" and "requires additional context"?
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-**Learnable from sequence:** Features encoded in DNA sequence itself—motifs (TF binding sites, splice signals), gene structure (exon boundaries, coding regions), and evolutionary constraint (patterns conserved across species). These emerge from statistical regularities in genomic sequence.
+**Learnable from sequence:** Features encoded in DNA sequence itself: motifs (TF binding sites, splice signals), gene structure (exon boundaries, coding regions), and evolutionary constraint (patterns conserved across species). These emerge from statistical regularities in genomic sequence.
 
-**Requires additional context:** Features dependent on cellular state—epigenetic modifications (methylation, histone marks), 3D chromatin organization (which enhancers contact which promoters), and cell-type-specific activity (whether a motif is actually bound by TFs present in that cell).
+**Requires additional context:** Features dependent on cellular state: epigenetic modifications (methylation, histone marks), 3D chromatin organization (which enhancers contact which promoters), and cell-type-specific activity (whether a motif is actually bound by TFs present in that cell).
 
-**Fundamental boundary:** Sequence encodes *potential* (what *could* happen), but realization depends on *context* (what *does* happen in specific cells). A promoter sequence contains information about where transcription could initiate, but whether it actually does depends on transcription factor availability, chromatin accessibility, and regulatory signals—none of which are in the DNA sequence alone.
+**Fundamental boundary:** Sequence encodes *potential* (what *could* happen), but realization depends on *context* (what *does* happen in specific cells). A promoter sequence contains information about where transcription could initiate, but whether it actually does depends on transcription factor availability, chromatin accessibility, and regulatory signals, none of which are in the DNA sequence alone.
 :::
 :::
 
@@ -395,7 +395,7 @@ The following table summarizes what DNA language models can and cannot learn fro
 
 ![Probing reveals fundamental limitations](../figs/part_4/ch15/05-D-fig-dna-lm-probing.svg)
 
-Probing analysis reveals what DNA language models learn—and what they cannot. (A) Frozen embeddings support high-accuracy linear classification of genomic element types including promoters, enhancers, and splice sites. (B) Model attention correlates with evolutionary conservation, suggesting learned focus on functionally important positions. (C) Attention patterns capture long-range regulatory relationships between enhancers and promoters. (D) However, probing fails for context-dependent properties: tissue-specific activity, environmental responses, and 3D chromatin organization cannot be predicted from sequence representations alone. DNA language models learn sequence potential; realizing that potential requires cellular context they cannot access.
+Probing analysis reveals what DNA language models learn, and what they cannot. (A) Frozen embeddings support high-accuracy linear classification of genomic element types including promoters, enhancers, and splice sites. (B) Model attention correlates with evolutionary conservation, suggesting learned focus on functionally important positions. (C) Attention patterns capture long-range regulatory relationships between enhancers and promoters. (D) However, probing fails for context-dependent properties: tissue-specific activity, environmental responses, and 3D chromatin organization cannot be predicted from sequence representations alone. DNA language models learn sequence potential; realizing that potential requires cellular context they cannot access.
 :::
 
 
@@ -412,9 +412,9 @@ Without looking back, try to recall from @sec-ch15-task-specific-to-general:
 :::{.callout-note collapse="true" title="Check Your Answer"}
 **Three limitations of task-specific CNNs:**
 
-1. **Data dependency:** Every new task required fresh labeled data; models couldn't transfer knowledge
-2. **Architecture rigidity:** Model architectures were tailored to specific tasks and didn't generalize
-3. **Feature isolation:** Learned features didn't transfer across tasks without re-engineering
+1. **Data dependency:** Every new task required fresh labeled data; models could not transfer knowledge
+2. **Architecture rigidity:** Model architectures were tailored to specific tasks and did not generalize
+3. **Feature isolation:** Learned features did not transfer across tasks without re-engineering
 
 **Workflow shift:**
 

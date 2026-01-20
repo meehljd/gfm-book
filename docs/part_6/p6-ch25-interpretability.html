@@ -786,7 +786,7 @@ Table&nbsp;25.1: Comparison of attribution methods for genomic sequence models. 
 <section id="sec-ch25-filter-pwm" class="level3" data-number="25.2.1">
 <h3 data-number="25.2.1" class="anchored" data-anchor-id="sec-ch25-filter-pwm"><span class="header-section-number">25.2.1</span> From Filters to Position Weight Matrices</h3>
 <p>Converting learned filters to interpretable motifs follows a standard workflow. The trained model processes a large sequence set, typically training data or genome-wide tiles, recording positions where each filter’s activation exceeds a threshold. The fixed-length windows around high-activation positions are extracted and aligned, and nucleotide frequencies at each position are computed to build a <strong>position weight matrix (PWM)</strong>. This PWM can be visualized as a sequence logo and compared to databases like JASPAR or HOCOMOCO.</p>
-<p>When this procedure is applied to models trained on chromatin accessibility or transcription factor binding, first-layer filters frequently match known transcription factor motifs. <em>DeepSEA</em> filters include recognizable matches to CTCF, AP-1, and cell-type-specific factors <em>[Citation Needed: Zhou &amp; Troyanskaya, DeepSEA paper]</em>. This correspondence validates that models discover biologically meaningful patterns rather than arbitrary correlations, and it provides a direct link between model weights and decades of experimental characterization of transcription factor binding preferences.</p>
+<p>When this procedure is applied to models trained on chromatin accessibility or transcription factor binding, first-layer filters frequently match known transcription factor motifs. <em>DeepSEA</em> filters include recognizable matches to CTCF, AP-1, and cell-type-specific factors <span class="citation" data-cites="zhou_deepsea_2015">(<a href="../bib/references.html#ref-zhou_deepsea_2015" role="doc-biblioref">Zhou and Troyanskaya 2015</a>)</span>. This correspondence validates that models discover biologically meaningful patterns rather than arbitrary correlations, and it provides a direct link between model weights and decades of experimental characterization of transcription factor binding preferences.</p>
 <p>Several complications affect filter interpretation. DNA is double-stranded, and models may learn forward and reverse-complement versions of the same motif as separate filters. Some filters capture general sequence composition (GC-rich regions, homopolymer runs) rather than specific binding sites. These patterns can be biologically meaningful in contexts like nucleosome positioning or purely artifactual depending on the training task. Distinguishing informative filters from compositional shortcuts requires cross-referencing with known biology and testing whether filter-derived motifs predict binding in held-out data.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -852,7 +852,7 @@ Key Insight: Why TF-MoDISco Works Better Than Traditional Motif Finding
 <p>The insight underlying <em>TF-MoDISco</em> is that importance-weighted sequences focus motif discovery on positions the model actually uses. Traditional motif finders must contend with the fact that most positions in regulatory sequences do not participate in functional motifs. By extracting seqlets (short windows where total importance exceeds a threshold) and clustering them based on both sequence content and importance profiles, <em>TF-MoDISco</em> identifies patterns that drive model predictions.</p>
 <p>The workflow proceeds through several stages. Base-level importance scores are computed for many sequences using <em>DeepLIFT</em>, ISM, or integrated gradients. Windows where total importance exceeds a threshold are extracted as seqlets, each representing a candidate motif instance. These seqlets are compared using metrics that consider both sequence content and importance profiles, then clustered into groups corresponding to putative motifs. Within each cluster, seqlets are aligned and consolidated into PWMs and importance-weighted logos. The resulting motifs can be matched to known transcription factors or flagged as novel patterns.</p>
 <p>Beyond individual motifs, <em>TF-MoDISco</em> enables grammar inference by analyzing motif co-occurrence. Mapping discovered motif instances back to genomic coordinates reveals characteristic spacing between motif pairs, orientation preferences, and cell-type-specific usage patterns. These grammatical rules can be validated through <em>in silico</em> experiments: inserting or removing motifs in synthetic sequences and checking whether predictions change as expected.</p>
-<p>Applications to models like <em>BPNet</em> trained on ChIP-seq data have recovered known transcription factor motifs, discovered novel sequence variants, and revealed spacing constraints validated through synthetic reporter assays <em>[Citation Needed: BPNet paper]</em>. The same workflow applies to foundation model analysis: use the model to produce base-level attributions for a downstream task, run <em>TF-MoDISco</em> to extract a task-specific motif vocabulary, and analyze how motif usage varies across conditions.</p>
+<p>Applications to models like <em>BPNet</em> trained on ChIP-seq data have recovered known transcription factor motifs, discovered novel sequence variants, and revealed spacing constraints validated through synthetic reporter assays. The same workflow applies to foundation model analysis: use the model to produce base-level attributions for a downstream task, run <em>TF-MoDISco</em> to extract a task-specific motif vocabulary, and analyze how motif usage varies across conditions.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Worked Example: TF-MoDISco Workflow">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -919,7 +919,7 @@ Worked Example: TF-MoDISco Workflow
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tfmodisco-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;25.3: TF-MoDISco motif discovery from attribution scores. Starting from attribution maps for many sequences, the method extracts high-importance windows (seqlets), clusters similar seqlets, consolidates into position weight matrices, and matches to known motif databases. Discovered motifs represent what the model learned—known transcription factors validate biological relevance while novel patterns may indicate previously unknown regulatory features.
+Figure&nbsp;25.3: TF-MoDISco motif discovery from attribution scores. Starting from attribution maps for many sequences, the method extracts high-importance windows (seqlets), clusters similar seqlets, consolidates into position weight matrices, and matches to known motif databases. Discovered motifs represent what the model learned; known transcription factors validate biological relevance while novel patterns may indicate previously unknown regulatory features.
 </figcaption>
 </figure>
 </div>
@@ -1020,7 +1020,7 @@ Challenge Alert: The Selectivity-Accessibility Tradeoff
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-attention-visualization-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;25.4: Attention patterns in genomic transformers. (A) Attention heatmap showing position-position weights with local and long-range patterns. (B) Biological overlay: attention sometimes aligns with regulatory elements—but correlation does not prove the model learned these relationships causally. (C) Multi-head specialization: different heads capture local context, long-range interactions, or specific motifs. <strong>Caution</strong>: attention weights describe information routing, not importance—always validate with perturbation experiments.
+Figure&nbsp;25.4: Attention patterns in genomic transformers. (A) Attention heatmap showing position-position weights with local and long-range patterns. (B) Biological overlay: attention sometimes aligns with regulatory elements, but correlation does not prove the model learned these relationships causally. (C) Multi-head specialization: different heads capture local context, long-range interactions, or specific motifs. <strong>Caution</strong>: attention weights describe information routing, not importance—always validate with perturbation experiments.
 </figcaption>
 </figure>
 </div>
@@ -1087,8 +1087,8 @@ Check Your Answer
 <div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li><p>Local analysis (attribution methods) would identify which specific nucleotides the variant disrupts and what motifs are affected—for example, “variant disrupts a GATA4 binding site at position 142.”</p></li>
-<li><p>Global analysis would show how the variant shifts regulatory program membership—for example, “variant shifts sequence class from cardiac-specific enhancer to generic promoter-like.”</p></li>
+<li><p>Local analysis (attribution methods) would identify which specific nucleotides the variant disrupts and what motifs are affected: for example, “variant disrupts a GATA4 binding site at position 142.”</p></li>
+<li><p>Global analysis would show how the variant shifts regulatory program membership: for example, “variant shifts sequence class from cardiac-specific enhancer to generic promoter-like.”</p></li>
 <li><p>Prefer local for clinical variant interpretation where you need mechanistic detail for a specific case; prefer global for GWAS follow-up where you want to understand which regulatory programs are disease-relevant across many variants.</p></li>
 </ol>
 </div>
@@ -1127,7 +1127,7 @@ Challenge Alert: Frontier Research Area
 </section>
 <section id="sec-ch25-mechanistic-genomics" class="level3" data-number="25.7.2">
 <h3 data-number="25.7.2" class="anchored" data-anchor-id="sec-ch25-mechanistic-genomics"><span class="header-section-number">25.7.2</span> Applications to Genomic Models</h3>
-<p>Mechanistic interpretability remains nascent for genomic foundation models, but initial applications show promise. Attention head analysis in DNA language models has identified heads specialized for different genomic functions: some attend within genes, others across regulatory regions, still others implement positional computations <em>[Citation Needed]</em>. Probing activations at different layers reveals hierarchical feature construction, from local sequence patterns in early layers to long-range regulatory relationships in later layers.</p>
+<p>Mechanistic interpretability remains nascent for genomic foundation models, but initial applications show promise. Attention head analysis in DNA language models has identified heads specialized for different genomic functions: some attend within genes, others across regulatory regions, still others implement positional computations . Probing activations at different layers reveals hierarchical feature construction, from local sequence patterns in early layers to long-range regulatory relationships in later layers.</p>
 <p>Circuit analysis can explain specific model behaviors. If a model predicts that a variant disrupts regulation, mechanistic analysis can trace which features activate differently for reference versus variant sequence, which attention heads route information about the variant to the prediction, and which intermediate computations change. This mechanistic trace provides far richer explanation than attribution scores alone, potentially identifying the regulatory logic the model has learned.</p>
 <p>The challenge is scalability. Current mechanistic interpretability techniques require substantial manual analysis and work best for small models or specific behaviors. Foundation models with billions of parameters resist exhaustive circuit enumeration. Developing automated tools for circuit discovery and scaling mechanistic analysis to large genomic models represents an active research frontier.</p>
 </section>
@@ -1388,7 +1388,7 @@ Test Yourself
 <div class="callout-body-container callout-body">
 <p>Before reviewing the summary, test your recall:</p>
 <ol type="1">
-<li>What is the difference between a plausible and a faithful explanation? Why might a model produce attributions that highlight a biologically plausible motif even when that motif doesn’t drive the prediction?</li>
+<li>What is the difference between a plausible and a faithful explanation? Why might a model produce attributions that highlight a biologically plausible motif even when that motif does not drive the prediction?</li>
 <li>Why is in silico mutagenesis (ISM) considered the “gold standard” for attribution faithfulness, and what is its main practical limitation?</li>
 <li>What problem does the saturation issue create for gradient-based attribution methods, and how do integrated gradients address this?</li>
 <li>Explain why attention weights are not reliable indicators of input importance. What do they actually measure?</li>
@@ -1446,6 +1446,9 @@ Shrikumar, Avanti, Katherine Tian, Žiga Avsec, Anna Shcherbina, Abhimanyu Baner
 </div>
 <div id="ref-sundararajan_axiomatic_2017" class="csl-entry" role="listitem">
 Sundararajan, Mukund, Ankur Taly, and Qiqi Yan. 2017. <span>“Axiomatic <span>Attribution</span> for <span>Deep</span> <span>Networks</span>.”</span> In <em>Proceedings of the 34th <span>International</span> <span>Conference</span> on <span>Machine</span> <span>Learning</span></em>, 3319–28. PMLR.
+</div>
+<div id="ref-zhou_deepsea_2015" class="csl-entry" role="listitem">
+Zhou, Jian, and Olga G. Troyanskaya. 2015. <span>“[<span>DeepSEA</span>] <span>Predicting</span> Effects of Noncoding Variants with Deep Learning–Based Sequence Model.”</span> <em>Nature Methods</em> 12 (10): 931–34. <a href="https://doi.org/10.1038/nmeth.3547">https://doi.org/10.1038/nmeth.3547</a>.
 </div>
 </div>
 </section>

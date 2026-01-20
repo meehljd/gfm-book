@@ -20,7 +20,7 @@
 
 **Why This Matters:** A variant classifier achieving 0.95 auROC on benchmarks means nothing if regulatory barriers prevent its clinical use, if patients cannot trust how their data is used, or if the same capabilities enable biosecurity threats. This chapter bridges the gap between technical achievement and responsible deployment.
 
-**Your Opportunity:** Regulatory knowledge isn't just compliance—it's competitive advantage. Researchers who understand what evidence FDA requires can design validation studies that satisfy regulators from the start, rather than scrambling to retrofit approval-ready documentation onto a mature model. If you're building genomic AI tools, this chapter teaches you how to get your model to patients—and how to do so responsibly.
+**Your Opportunity:** Regulatory knowledge is not just compliance: it is competitive advantage. Researchers who understand what evidence FDA requires can design validation studies that satisfy regulators from the start, rather than scrambling to retrofit approval-ready documentation onto a mature model. If you are building genomic AI tools, this chapter teaches you how to get your model to patients, and how to do so responsibly.
 :::
 
 The first genomic foundation model to receive U.S. Food and Drug Administration (FDA) clearance as a medical device will face a peculiar regulatory challenge: demonstrating that a system trained on millions of sequences from research biobanks, academic databases, and public repositories can safely inform clinical decisions for individual patients who never consented to such use. Clinical-grade variant interpretation tools already incorporate deep learning predictions, yet the regulatory frameworks governing their deployment were designed for deterministic software with traceable decision logic, not for neural networks whose internal representations resist simple explanation. As of 2024, more than 500 AI-enabled medical devices have received FDA authorization, but fewer than a dozen involve genomic interpretation, and none yet deploys a foundation model at scale [@food_and_drug_administration_artificial_2025]. The gap between technical capability and regulatory readiness defines one of the central tensions facing the field.
@@ -119,7 +119,7 @@ The chapter on confounding (@sec-ch13-confounding) introduced a critical validat
 *Hint: Think about where training labels come from and how evaluation benchmarks are constructed.*
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-The critical pitfall is circular validation or data leakage—when the same data (or closely related data) appears in both training and evaluation. For ClinVar-trained classifiers, this manifests when variants from the same genes, families, or submissions appear in both train and test sets, inflating performance estimates. Regulatory submissions must demonstrate true held-out validation using variants submitted after model training or from independent databases, not just random splits of the same ClinVar version.
+The critical pitfall is circular validation or data leakage: when the same data (or closely related data) appears in both training and evaluation. For ClinVar-trained classifiers, this manifests when variants from the same genes, families, or submissions appear in both train and test sets, inflating performance estimates. Regulatory submissions must demonstrate true held-out validation using variants submitted after model training or from independent databases, not just random splits of the same ClinVar version.
 :::
 :::
 
@@ -161,7 +161,7 @@ This example illustrates the gap between research publication (which reports ben
 :::
 
 ::: {.callout-tip title="Recall and Connect: From Regulation to Deployment"}
-The validation requirements you see here—prospective evaluation, ancestry stratification, comparison to existing tools—directly shape the clinical deployment workflows covered in @sec-ch28-clinical-risk and @sec-ch29-rare-disease. A model that clears regulatory hurdles with aggregate metrics but lacks ancestry-stratified validation will fail the equity requirements discussed in @sec-ch13-confounding. The evidence pyramid you'll encounter in @sec-ch29-evidence-categories depends on regulatory-grade validation to assign computational evidence strength.
+The validation requirements you see here (prospective evaluation, ancestry stratification, comparison to existing tools) directly shape the clinical deployment workflows covered in @sec-ch28-clinical-risk and @sec-ch29-rare-disease. A model that clears regulatory hurdles with aggregate metrics but lacks ancestry-stratified validation will fail the equity requirements discussed in @sec-ch13-confounding. The evidence pyramid you'll encounter in @sec-ch29-evidence-categories depends on regulatory-grade validation to assign computational evidence strength.
 :::
 
 ## Data Governance and Consent {#sec-ch27-governance}
@@ -204,20 +204,20 @@ For each scenario below, which consent model would be most appropriate and why?
 4. A rare disease foundation wants participants to control exactly which studies can access their data, potentially revoking access if concerns arise.
 
 :::{.callout-note collapse="true" title="Check Your Answers"}
-1. **Broad consent** is appropriate here—the original consent documents likely authorized future unspecified health research, which includes foundation model training. However, ethical questions remain about whether participants could have anticipated AI applications.
+1. **Broad consent** is appropriate here: the original consent documents likely authorized future unspecified health research, which includes foundation model training. However, ethical questions remain about whether participants could have anticipated AI applications.
 
-2. **Community consent** is essential—indigenous communities have legitimate collective interests in how their genetic data is used, and historical exploitation requires governance structures that respect community sovereignty alongside individual consent.
+2. **Community consent** is essential: indigenous communities have legitimate collective interests in how their genetic data is used, and historical exploitation requires governance structures that respect community sovereignty alongside individual consent.
 
-3. **Tiered consent** balances utility and autonomy—patients can authorize categories of acceptable research use (quality improvement, drug discovery, commercial partnerships) while declining others.
+3. **Tiered consent** balances utility and autonomy: patients can authorize categories of acceptable research use (quality improvement, drug discovery, commercial partnerships) while declining others.
 
-4. **Dynamic consent** matches this requirement—digital engagement platforms allow ongoing preference updates, enabling participants to respond to new research contexts or revoke access based on evolving concerns.
+4. **Dynamic consent** matches this requirement: digital engagement platforms allow ongoing preference updates, enabling participants to respond to new research contexts or revoke access based on evolving concerns.
 :::
 :::
 
 ::: {#fig-consent-models}
 ![Consent model spectrum for genomic data](../figs/part_6/ch27/04-fig-consent-models.svg)
 
-Consent model spectrum for genomic foundation model training data. Left: Broad consent—simple to implement, enables innovation, but provides weak autonomy protection; exemplified by UK Biobank and All of Us. Center-left: Tiered consent—participants choose categories of permitted use; balances autonomy and utility but introduces decision fatigue. Center-right: Dynamic consent—ongoing digital engagement allows preference updates over time; responsive but infrastructure-intensive and may introduce selection bias. Right: Community consent—requires tribal or collective approval; respects group interests but may conflict with individual preferences and slows research. Arrow indicates tradeoff between individual control and research utility.
+Consent model spectrum for genomic foundation model training data. Left: Broad consent: simple to implement, enables innovation, but provides weak autonomy protection; exemplified by UK Biobank and All of Us. Center-left: Tiered consent: participants choose categories of permitted use; balances autonomy and utility but introduces decision fatigue. Center-right: Dynamic consent: ongoing digital engagement allows preference updates over time; responsive but infrastructure-intensive and may introduce selection bias. Right: Community consent: requires tribal or collective approval; respects group interests but may conflict with individual preferences and slows research. Arrow indicates tradeoff between individual control and research utility.
 :::
 
 ### Biobank Governance Models {#sec-ch27-biobanks}
@@ -265,7 +265,7 @@ Unlike most personal data, genomic sequences cannot be truly anonymized because 
 
 ![Cross-border regulatory complexity](../figs/part_6/ch27/01-D-fig-data-governance.svg)
 
-Data governance challenges for genomic foundation models. (A) Privacy-utility tradeoff: stronger privacy protection (e.g., differential privacy with small ε) reduces model utility—there is no free lunch. (B) Consent complexity: models range from broad (simple, enables innovation) to dynamic (responsive, resource-intensive). (C) Federated learning: data stays local while model updates travel, but gradient attacks remain a risk. (D) Cross-border complexity: different jurisdictions (HIPAA, GDPR, MDR) impose different requirements, complicating global deployment.
+Data governance challenges for genomic foundation models. (A) Privacy-utility tradeoff: stronger privacy protection (e.g., differential privacy with small ε) reduces model utility; there is no free lunch. (B) Consent complexity: models range from broad (simple, enables innovation) to dynamic (responsive, resource-intensive). (C) Federated learning: data stays local while model updates travel, but gradient attacks remain a risk. (D) Cross-border complexity: different jurisdictions (HIPAA, GDPR, MDR) impose different requirements, complicating global deployment.
 :::
 
 ### Re-identification Challenge {#sec-ch27-reidentification}
@@ -322,7 +322,7 @@ The 2013 Myriad decision addressed naturally occurring DNA sequences. But what a
 These questions remain unsettled, but thinking through them helps clarify the IP landscape.
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-(1) A truly novel, non-naturally-occurring protein sequence can potentially be patented if it meets utility, novelty, and non-obviousness requirements. (2) Current law does not recognize AI as an inventor (see Thaler v. USPTO); inventorship would likely be assigned to the human who directed the generation (user or developer), though this remains contested. (3) A sequence 95% identical to a natural protein likely fails the novelty requirement and would not be patentable, while a truly novel sequence could be—but determining what constitutes sufficient novelty in sequence space remains legally unclear.
+(1) A truly novel, non-naturally-occurring protein sequence can potentially be patented if it meets utility, novelty, and non-obviousness requirements. (2) Current law does not recognize AI as an inventor (see Thaler v. USPTO); inventorship would likely be assigned to the human who directed the generation (user or developer), though this remains contested. (3) A sequence 95% identical to a natural protein likely fails the novelty requirement and would not be patentable, while a truly novel sequence could be, but determining what constitutes sufficient novelty in sequence space remains legally unclear.
 :::
 :::
 

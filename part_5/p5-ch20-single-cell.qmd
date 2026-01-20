@@ -42,7 +42,7 @@ Traditional transcriptomic studies measure gene expression in bulk tissue, produ
 Imagine a tumor with 95% of cells expressing gene X at level 0 and 5% of cells (drug-resistant subpopulation) expressing gene X at level 100. What would bulk RNA-seq report as the expression level of gene X? What critical clinical information would be lost? How might this affect treatment decisions?
 :::
 
-**Single-cell RNA sequencing** (scRNA-seq) resolves this ambiguity by measuring gene expression in individual cells. The technology has evolved rapidly since its introduction in 2009 *[Citation Needed]*. Early methods captured hundreds of cells per experiment; current platforms routinely profile hundreds of thousands of cells, with some studies exceeding a million *[Citation Needed]*. Public repositories now contain tens of millions of single-cell transcriptomes spanning diverse tissues, developmental stages, disease states, and species. This scale approaches the data volumes that enabled large language models in natural language processing.
+**Single-cell RNA sequencing** (scRNA-seq) resolves this ambiguity by measuring gene expression in individual cells. The technology has evolved rapidly since its introduction in 2009 [@tang_mrna-seq_2009]. Early methods captured hundreds of cells per experiment; current platforms routinely profile hundreds of thousands of cells, with some studies exceeding a million . Public repositories now contain tens of millions of single-cell transcriptomes spanning diverse tissues, developmental stages, disease states, and species. This scale approaches the data volumes that enabled large language models in natural language processing.
 
 The analogy between cells and documents runs deeper than dataset size. In language, words combine according to grammatical rules to form sentences that convey meaning. In cells, genes combine according to regulatory programs to form expression profiles that define cellular identity. A hepatocyte expresses genes for drug metabolism, albumin synthesis, and bile production; a neuron expresses genes for synaptic transmission, ion channels, and neurotransmitter receptors. These expression programs are not random: transcription factors activate coherent sets of target genes, signaling pathways coordinate cellular responses, and developmental programs establish cell type identities through cascades of regulatory events. Just as language models learn syntax and semantics by predicting masked words (see @sec-ch08-pretraining), single-cell foundation models might learn regulatory logic by predicting masked genes.
 
@@ -78,7 +78,7 @@ This correspondence explains why transformer architectures and pretraining strat
 
 ### Technical Challenges and Data Characteristics {#sec-ch20-technical}
 
-Single-cell data present distinctive challenges that shape how foundation models must be designed. Dropout is pervasive: due to inefficiencies in RNA capture and amplification, many genes that are actually expressed in a cell register as zero in the measurement. A gene with true expression may appear as zero in 50% to 90% of cells where it is actually transcribed *[Citation Needed]*. This zero-inflation means that absence of signal is not absence of expression.
+Single-cell data present distinctive challenges that shape how foundation models must be designed. Dropout is pervasive: due to inefficiencies in RNA capture and amplification, many genes that are actually expressed in a cell register as zero in the measurement. Depending on the protocol, overall dropout rates range from roughly 65% to 80% of gene-cell combinations, meaning that true expression frequently appears as zero [@svensson_droplet_2020]. This zero-inflation means that absence of signal is not absence of expression.
 
 Sparsity compounds the interpretation challenge. A typical single-cell transcriptome measures 20,000 genes, but any individual cell might have detectable expression for only 1,000 to 5,000 of them. The resulting data matrices are more than 90% zeros, requiring specialized computational approaches.
 
@@ -113,7 +113,7 @@ Without correction, cells cluster by *when they were processed* rather than *wha
 3. **Integration methods:** *Harmony*, *scVI* explicitly model and remove batch effects
 4. **Rank-based encoding:** Reduce sensitivity to absolute expression values
 
-**Key insight:** A foundation model trained on batch-confounded data will learn to distinguish batches, not biology. Batch correction is not optional preprocessing—it determines whether the model captures anything useful.
+**Key insight:** A foundation model trained on batch-confounded data will learn to distinguish batches, not biology. Batch correction is not optional preprocessing; it determines whether the model captures anything useful.
 :::
 
 Dynamic range spans orders of magnitude, from highly expressed housekeeping genes to rare transcription factors present at a few copies per cell. Normalizing across this range while preserving biologically meaningful variation requires careful preprocessing choices that can affect downstream results.
@@ -163,7 +163,7 @@ For each scenario, which single-cell foundation model would be most appropriate?
 
 3. A clinical study has 500 labeled cells from a rare immune disorder and needs to classify 50,000 unlabeled patient cells.
 
-4. You're investigating whether a regulatory network identified in mouse immune cells is conserved in human.
+4. You are investigating whether a regulatory network identified in mouse immune cells is conserved in human.
 
 :::{.callout-note collapse="true" title="Check Your Answers"}
 1. **TranscriptFormer** - Its cross-species pretraining (spanning 1.5 billion years of evolution) enables zero-shot annotation across species without requiring labeled training data from the target species.
@@ -217,7 +217,7 @@ Before continuing, pause to consolidate your understanding of Geneformer's desig
 
 2. Masked gene prediction forces the model to learn co-expression patterns: which genes predict each other's presence. If masking gene A makes gene B harder to predict, the model learns they co-occur in regulatory modules or pathways.
 
-3. Attention weights capture which genes attend to which others during prediction. These relationships often correspond to regulatory interactions (transcription factors attending to their targets) without being explicitly trained on network structure—the regulatory relationships emerge from expression patterns alone.
+3. Attention weights capture which genes attend to which others during prediction. These relationships often correspond to regulatory interactions (transcription factors attending to their targets) without being explicitly trained on network structure; the regulatory relationships emerge from expression patterns alone.
 :::
 :::
 
@@ -315,7 +315,7 @@ When evaluating these foundation model approaches, comparison against classical 
 
 ![Performance correlates with gene characterization level](../figs/part_5/ch20/04-D-fig-perturbation-prediction.svg)
 
-Perturbation response prediction. (A) The prediction task: given unperturbed cell state and perturbation identity, predict post-perturbation expression profile. (B) Training data from Perturb-seq provides supervised signal across thousands of gene knockouts. (C) What models must learn: directional regulatory relationships, network cascade effects, and cell-type-specific responses. (D) Current limitation: prediction accuracy correlates with gene characterization level—models perform best on well-studied genes where predictions are least needed.
+Perturbation response prediction. (A) The prediction task: given unperturbed cell state and perturbation identity, predict post-perturbation expression profile. (B) Training data from Perturb-seq provides supervised signal across thousands of gene knockouts. (C) What models must learn: directional regulatory relationships, network cascade effects, and cell-type-specific responses. (D) Current limitation: prediction accuracy correlates with gene characterization level: models perform best on well-studied genes where predictions are least needed.
 :::
 
 ### Limitations of Current Approaches {#sec-ch20-perturbation-limits}
@@ -340,7 +340,7 @@ Treat predictions with more skepticism when:
 
 - The target gene has few or no training examples
 - The cell type is underrepresented or novel
-- You're predicting combinatorial effects
+- You are predicting combinatorial effects
 - The prediction contradicts orthogonal evidence
 
 Always validate high-stakes predictions experimentally. Use model predictions to prioritize which experiments to run, not to replace experiments entirely.
@@ -352,7 +352,7 @@ Gene expression profiles capture one layer of cellular state, but the regulatory
 
 ### DNA Methylation and *CpGPT* {#sec-ch20-methylation}
 
-DNA methylation occupies a privileged position in the regulatory hierarchy, sitting at a junction between genotype, environment, and phenotype. Methylation patterns integrate genetic influences, since sequence context affects which **CpG sites** (genomic locations where cytosine is followed by guanine, the primary targets of DNA methylation in mammals) can be methylated and polymorphisms can create or destroy CpG dinucleotides. They also integrate developmental programs, since methylation landscapes are extensively remodeled during differentiation and establish cell-type-specific regulatory states. Environmental exposures including diet, smoking, and stress leave lasting methylation signatures that persist long after the exposure ends *[Citation Needed]*.
+DNA methylation occupies a privileged position in the regulatory hierarchy, sitting at a junction between genotype, environment, and phenotype. Methylation patterns integrate genetic influences, since sequence context affects which **CpG sites** (genomic locations where cytosine is followed by guanine, the primary targets of DNA methylation in mammals) can be methylated and polymorphisms can create or destroy CpG dinucleotides. They also integrate developmental programs, since methylation landscapes are extensively remodeled during differentiation and establish cell-type-specific regulatory states. Environmental exposures including diet, smoking, and stress leave lasting methylation signatures that persist long after the exposure ends .
 
 Beyond serving as an integrative readout, methylation encodes rich information about cellular identity and state. Epigenetic clocks built from methylation data predict chronological age with striking accuracy, and deviations from predicted age (epigenetic age acceleration) correlate with mortality risk and disease burden [@horvath_dna_2013]. Cell types can be distinguished by their methylation profiles, and disease states often manifest as characteristic methylation changes.
 
@@ -368,7 +368,7 @@ Before moving to chromatin accessibility, verify your understanding of DNA methy
 3. How does *CpGPT's* architecture differ from cellular language models like *Geneformer*?
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-1. Methylation integrates: (a) genetic influences—sequence context affects which CpG sites can be methylated; (b) developmental programs—methylation landscapes are remodeled during differentiation and establish cell-type identity; (c) environmental exposures—diet, smoking, and stress leave lasting methylation signatures that persist after exposure ends.
+1. Methylation integrates: (a) genetic influences: sequence context affects which CpG sites can be methylated; (b) developmental programs: methylation landscapes are remodeled during differentiation and establish cell-type identity; (c) environmental exposures: diet, smoking, and stress leave lasting methylation signatures that persist after exposure ends.
 
 2. Methylation determines regulatory potential before transcription occurs by blocking transcription factor binding at silenced genes and marking accessible regulatory regions. Expression can only occur at genes where methylation patterns permit it.
 
@@ -397,13 +397,13 @@ Before proceeding to cross-modality integration, ensure you can answer:
 4. What makes scATAC-seq integration across datasets particularly challenging?
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-1. **Methylation encodes regulatory memory.** DNA methylation captures developmental history, environmental exposure signatures, and epigenetic age—stable regulatory states that persist independently of current expression levels. This matters because expression reflects what a cell is doing *now*, while methylation reveals where it came from developmentally and what regulatory programs are permanently silenced or primed for activation.
+1. **Methylation encodes regulatory memory.** DNA methylation captures developmental history, environmental exposure signatures, and epigenetic age: stable regulatory states that persist independently of current expression levels. This matters because expression reflects what a cell is doing *now*, while methylation reveals where it came from developmentally and what regulatory programs are permanently silenced or primed for activation.
 
 2. **Accessibility precedes expression causally.** Chromatin accessibility determines which regulatory elements are available for transcription factor binding, establishing regulatory potential before any transcription occurs. A gene cannot be expressed if its promoter is inaccessible, making accessibility a prerequisite rather than a consequence of expression.
 
 3. **Different biological units require different tokenization.** *CpGPT* tokenizes CpG sites with their methylation values and genomic positions because methylation is measured at specific genomic loci. *Geneformer* tokenizes cells as rank-ordered sequences of genes because it treats each cell as a "document" where genes are "words." The tokenization strategy must match the biological unit being modeled.
 
-4. **Peaks lack a universal coordinate system.** scATAC-seq peak sets vary across datasets depending on peak calling procedures, creating mismatched feature spaces. Gene A in one RNA-seq dataset is the same as Gene A in another, but Peak #12345 from one ATAC dataset may have no correspondence to peaks in another dataset—forcing integration methods to learn mappings between arbitrary feature spaces rather than simply aligning common features.
+4. **Peaks lack a universal coordinate system.** scATAC-seq peak sets vary across datasets depending on peak calling procedures, creating mismatched feature spaces. Gene A in one RNA-seq dataset is the same as Gene A in another, but Peak #12345 from one ATAC dataset may have no correspondence to peaks in another dataset, forcing integration methods to learn mappings between arbitrary feature spaces rather than simply aligning common features.
 :::
 :::
 
@@ -508,7 +508,7 @@ The perturbation prediction task illustrates this limitation. A model that accur
 - Acknowledge known limitations (training data bias, batch effects)
 - Compare to appropriate baselines (not just trivial ones)
 
-**Don't:**
+**Avoid:**
 
 - Treat model predictions as ground truth without validation
 - Assume high benchmark performance means the model "understands" biology
@@ -543,11 +543,11 @@ Before reviewing the summary, test your recall:
 :::{.callout-note collapse="true" title="Check Your Answers"}
 1. **Rank-based encoding**: Rank-based encoding emphasizes relative expression (which genes are unusually high or low compared to their typical baseline) rather than absolute counts that vary with technical factors like sequencing depth, capture efficiency, and amplification bias. This preserves biological signal (what is distinctive about this cell's state) while discarding technical noise that would confound count-based representations.
 
-2. **Batch effects**: Batch effects arise when technical variation between experiments (different processing dates, operators, reagent lots, sequencing platforms) exceeds biological variation within them. Without correction, cells cluster by when they were processed rather than what cell type they are—a T cell from batch 1 may appear more similar to a B cell from batch 1 than to a T cell from batch 2. This means models can learn to distinguish batches instead of biology, leading to poor generalization across studies.
+2. **Batch effects**: Batch effects arise when technical variation between experiments (different processing dates, operators, reagent lots, sequencing platforms) exceeds biological variation within them. Without correction, cells cluster by when they were processed rather than what cell type they are; a T cell from batch 1 may appear more similar to a B cell from batch 1 than to a T cell from batch 2. This means models can learn to distinguish batches instead of biology, leading to poor generalization across studies.
 
 3. **Causation limitation**: From observational co-expression data alone, the statistical signature of "A causes B" is indistinguishable from "B causes A" or "C causes both A and B." No amount of observational data can determine directionality or distinguish direct causation from confounding. Even with Perturb-seq data, coverage is limited (thousands of perturbations across ~20,000 genes), leaving most regulatory relationships unobserved and requiring models to generalize beyond what they have seen experimentally validated.
 
-4. **Cross-modality integration**: GLUE uses a feature graph encoding biological prior knowledge (gene-peak relationships based on genomic proximity, transcription factor binding, chromatin conformation) to link features across modalities. This graph serves as a regulatory backbone that constrains alignment—modality-specific encoders must produce cell embeddings consistent with known regulatory relationships, preventing biologically implausible alignments based on technical artifacts while allowing discovery of new patterns within biologically plausible space.
+4. **Cross-modality integration**: GLUE uses a feature graph encoding biological prior knowledge (gene-peak relationships based on genomic proximity, transcription factor binding, chromatin conformation) to link features across modalities. This graph serves as a regulatory backbone that constrains alignment; modality-specific encoders must produce cell embeddings consistent with known regulatory relationships, preventing biologically implausible alignments based on technical artifacts while allowing discovery of new patterns within biologically plausible space.
 :::
 :::
 

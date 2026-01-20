@@ -137,7 +137,7 @@ Ancestry representation across major genomic resources. Stacked bars show the pr
 
 2. **Evolutionary signal:** Rare variants have been exposed to less natural selection. Absence from large population databases suggests the variant may be deleterious.
 
-3. **Population specificity:** A variant at 5% in one population but absent from another isn't "rare"—it's population-specific. Frequency filtering must be ancestry-aware.
+3. **Population specificity:** A variant at 5% in one population but absent from another is not "rare"; it is population-specific. Frequency filtering must be ancestry-aware.
 :::
 
 A crucial nuance shapes model interpretation: these catalogs record variants that are compatible with being sampled in the first place. Gene-lethal variants that cause embryonic death or severe childhood disease rarely appear, even when they are biologically informative. Variants causing late-onset conditions (Alzheimer's risk alleles, adult-onset cancer predisposition) can persist at appreciable frequencies because selection has not had time to remove them. Models trained on population data can only learn from variants present in these catalogs, which means they systematically underrepresent the most severe loss-of-function mutations.
@@ -202,13 +202,13 @@ For each scenario, which database or resource would be most appropriate to query
 4. A computational biologist training a chromatin accessibility model needs experimental data on DNase-seq and transcription factor binding across multiple cell types.
 
 :::{.callout-note collapse="true" title="Check Your Answers"}
-1. **ClinVar**—Aggregates expert variant classifications from clinical laboratories and expert panels, providing pathogenicity assertions with supporting evidence summaries.
+1. **ClinVar**: Aggregates expert variant classifications from clinical laboratories and expert panels, providing pathogenicity assertions with supporting evidence summaries.
 
-2. **gnomAD**—Provides population-stratified allele frequencies from >140,000 exomes and >76,000 genomes, enabling ancestry-aware filtering that avoids misclassifying population-specific variants as ultra-rare.
+2. **gnomAD**: Provides population-stratified allele frequencies from >140,000 exomes and >76,000 genomes, enabling ancestry-aware filtering that avoids misclassifying population-specific variants as ultra-rare.
 
-3. **dbSNP**—Assigns stable rsID identifiers to known variants, serving as the common vocabulary for referencing variants across databases, publications, and bioinformatics tools.
+3. **dbSNP**: Assigns stable rsID identifiers to known variants, serving as the common vocabulary for referencing variants across databases, publications, and bioinformatics tools.
 
-4. **ENCODE/Roadmap Epigenomics**—Provides experimental functional genomics data including DNase-seq, ChIP-seq for transcription factors and histone marks, and chromatin state annotations across hundreds of cell types and tissues.
+4. **ENCODE/Roadmap Epigenomics**: Provides experimental functional genomics data including DNase-seq, ChIP-seq for transcription factors and histone marks, and chromatin state annotations across hundreds of cell types and tissues.
 :::
 :::
 
@@ -230,7 +230,7 @@ Detecting genetic associations with small effect sizes requires very large sampl
 
 A variant that increases heart disease risk by 5% (OR = 1.05) requires approximately 50,000 cases and 50,000 controls to detect reliably at genome-wide significance ($\alpha = 5 \times 10^{-8}$). A variant shifting a continuous trait like blood pressure by 0.05 standard deviations demands even larger samples, often exceeding 100,000 individuals. The fundamental constraint is statistical: detecting small effect sizes against a backdrop of millions of tested variants requires both stringent significance thresholds and massive sample sizes to achieve adequate power. Required sample size scales with the inverse square of effect size, meaning a variant with half the effect requires four times the sample. This relationship explains why genetic discovery accelerated dramatically when biobanks reached the scale of hundreds of thousands of participants. @sec-ch28-clinical-risk provides a detailed treatment of these statistical foundations and their implications for clinical risk prediction.
 
-UK Biobank, with approximately 500,000 participants and deep phenotyping across thousands of traits, has become a dominant resource for methods development and benchmarking [@bycroft_uk_2018]. FinnGen leverages Finland's population history and unified healthcare records for large-scale disease association discovery [@kurki_finngen_2023]. The All of Us Research Program prioritizes diversity, aiming to enroll one million participants with deliberate oversampling of historically underrepresented groups [@all_of_us_research_program_investigators_the_all_2019]. deCODE genetics has genotyped a substantial fraction of Iceland's population, enabling unique studies of rare variants and founder effects in a population with detailed genealogical records [@gudbjartsson_sequence_2015]. Additional resources include the Million Veteran Program, Mexican Biobank, BioBank Japan, China Kadoorie Biobank, and emerging African genomics initiatives such as H3Africa [@sirugo_missing_2019].
+UK Biobank, with approximately 500,000 participants and deep phenotyping across thousands of traits, has become a dominant resource for methods development and benchmarking [@bycroft_uk_2018]. FinnGen uses Finland's population history and unified healthcare records for large-scale disease association discovery [@kurki_finngen_2023]. The All of Us Research Program prioritizes diversity, aiming to enroll one million participants with deliberate oversampling of historically underrepresented groups [@all_of_us_research_program_investigators_the_all_2019]. deCODE genetics has genotyped a substantial fraction of Iceland's population, enabling unique studies of rare variants and founder effects in a population with detailed genealogical records [@gudbjartsson_sequence_2015]. Additional resources include the Million Veteran Program, Mexican Biobank, BioBank Japan, China Kadoorie Biobank, and emerging African genomics initiatives such as H3Africa [@sirugo_missing_2019].
 
 ::: {.callout-note title="Predict Before Viewing"}
 Before looking at the biobank comparison table, predict: Which characteristic likely determines the statistical power to detect rare variant associations versus common variant associations? Which characteristic most affects whether findings will transfer across global populations?
@@ -396,7 +396,7 @@ If you wanted to know which cell type in the brain expresses a candidate gene fo
 
 ## Protein Databases {#sec-ch02-protein-databases}
 
-A researcher developing a variant effect predictor needs to understand whether a missense mutation disrupts protein function. Sequence conservation across species provides one signal, but structural context adds another dimension: a mutation at an active site or protein-protein interface may be more disruptive than one in a flexible loop. Training models that leverage this structural intuition requires databases cataloging both protein sequences and their three-dimensional structures. These resources have grown from modest beginnings (a few hundred structures in the early PDB) to comprehensive atlases covering essentially all known protein sequences with either experimental or predicted structures.
+A researcher developing a variant effect predictor needs to understand whether a missense mutation disrupts protein function. Sequence conservation across species provides one signal, but structural context adds another dimension: a mutation at an active site or protein-protein interface may be more disruptive than one in a flexible loop. Training models that use this structural intuition requires databases cataloging both protein sequences and their three-dimensional structures. These resources have grown from modest beginnings (a few hundred structures in the early PDB) to comprehensive atlases covering essentially all known protein sequences with either experimental or predicted structures.
 
 Protein databases serve multiple roles in genomic deep learning. Sequence databases provide the training corpora for protein language models (@sec-ch16-protein-lm). Structure databases supply the labels for structure prediction and the geometric constraints that inform structure-aware variant effect predictors. The intersection of sequence and structure enables models that learn evolutionary patterns from millions of sequences while grounding predictions in physical reality.
 

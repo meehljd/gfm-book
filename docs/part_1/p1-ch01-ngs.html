@@ -676,7 +676,7 @@ Deep Dive: Types of Genetic Variants
 <div class="callout-body-container callout-body">
 <p><strong>For ML readers:</strong> Genetic variants are classified by their size and mechanism:</p>
 <p><strong>Single Nucleotide Variants (SNVs):</strong> A single base pair change (e.g., A→G). Also called SNPs (single nucleotide polymorphisms) when common in the population. The most frequent variant type and easiest to detect.</p>
-<p><strong>Insertions and Deletions (Indels):</strong> Addition or removal of 1-50 base pairs. When occurring in coding regions, indels that aren’t multiples of 3 cause <em>frameshifts</em> that disrupt the entire downstream protein sequence.</p>
+<p><strong>Insertions and Deletions (Indels):</strong> Addition or removal of 1-50 base pairs. When occurring in coding regions, indels that are not multiples of 3 cause <em>frameshifts</em> that disrupt the entire downstream protein sequence.</p>
 <p><strong>Structural Variants (SVs):</strong> Large-scale genomic rearrangements (&gt;50 bp):</p>
 <ul>
 <li><em>Deletions</em>: Loss of a genomic segment</li>
@@ -801,10 +801,10 @@ Check Your Answers
 <div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li><p><strong>Targeted cardiac gene panel</strong>—Known disease genes, need for high coverage (&gt;500×) to detect mosaicism, rapid turnaround for clinical decision-making, and cost-effectiveness make panels ideal for suspected Mendelian cardiac conditions.</p></li>
-<li><p><strong>Whole-genome sequencing (WGS)</strong>—Polygenic scores require genome-wide common variant coverage without capture biases; WGS provides uniform depth across coding and noncoding regions, enabling GWAS across all 50 traits from a single sequencing run.</p></li>
-<li><p><strong>Long-read sequencing (PacBio or ONT)</strong>—The <em>SMN1/SMN2</em> locus is a known repetitive region where short reads fail due to the genes’ near-identical sequences; long reads spanning both genes can resolve copy number and structural variants invisible to short-read approaches.</p></li>
-<li><p><strong>Whole-genome sequencing</strong>—Exome-negative cases often harbor noncoding regulatory variants, deep intronic splice variants, or structural variants outside exonic targets; WGS captures the full genomic landscape missed by exome enrichment.</p></li>
+<li><p><strong>Targeted cardiac gene panel</strong>: Known disease genes, need for high coverage (&gt;500×) to detect mosaicism, rapid turnaround for clinical decision-making, and cost-effectiveness make panels ideal for suspected Mendelian cardiac conditions.</p></li>
+<li><p><strong>Whole-genome sequencing (WGS)</strong>: Polygenic scores require genome-wide common variant coverage without capture biases; WGS provides uniform depth across coding and noncoding regions, enabling GWAS across all 50 traits from a single sequencing run.</p></li>
+<li><p><strong>Long-read sequencing (PacBio or ONT)</strong>: The <em>SMN1/SMN2</em> locus is a known repetitive region where short reads fail due to the genes’ near-identical sequences; long reads spanning both genes can resolve copy number and structural variants invisible to short-read approaches.</p></li>
+<li><p><strong>Whole-genome sequencing</strong>: Exome-negative cases often harbor noncoding regulatory variants, deep intronic splice variants, or structural variants outside exonic targets; WGS captures the full genomic landscape missed by exome enrichment.</p></li>
 </ol>
 </div>
 </div>
@@ -1080,7 +1080,7 @@ Check Your Answer
 <div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Inaccurate phasing in reference panels degrades imputation through two mechanisms:</p>
-<p><strong>For common variants:</strong> Phasing errors break up true haplotype blocks, creating chimeric haplotypes that don’t actually exist in the population. When the imputation algorithm tries to match a target individual’s genotypes to reference haplotypes, it may select the wrong haplotype block, leading to incorrect imputation of nearby variants. The impact is moderate because multiple reference haplotypes may carry similar common variant patterns.</p>
+<p><strong>For common variants:</strong> Phasing errors break up true haplotype blocks, creating chimeric haplotypes that do not actually exist in the population. When the imputation algorithm tries to match a target individual’s genotypes to reference haplotypes, it may select the wrong haplotype block, leading to incorrect imputation of nearby variants. The impact is moderate because multiple reference haplotypes may carry similar common variant patterns.</p>
 <p><strong>For rare variants:</strong> The impact is much more severe. Rare variants are typically carried on specific ancestral haplotypes with distinctive patterns of linked common variants. If phasing errors separate a rare variant from its characteristic haplotype background, the imputation algorithm loses the primary signal for inferring that variant’s presence. This leads to systematic underimputation of rare variants, effectively making them invisible in imputed datasets.</p>
 <p><strong>Consequence for models:</strong> Since imputation quality is better for common variants, models trained on imputed data will systematically underweight rare variants compared to models trained on directly sequenced data, potentially missing important rare variant associations.</p>
 </div>
@@ -1242,7 +1242,7 @@ Knowledge Check
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Before reading about error sources, list at least three ways that a variant call might be wrong. What could cause a false positive (calling a variant that isn’t really there)? What could cause a false negative (missing a true variant)?</p>
+<p>Before reading about error sources, list at least three ways that a variant call might be wrong. What could cause a false positive (calling a variant that is not really there)? What could cause a false negative (missing a true variant)?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -1297,7 +1297,7 @@ Key Insight
 </section>
 <section id="sec-ch01-artifacts" class="level3" data-number="1.5.2">
 <h3 data-number="1.5.2" class="anchored" data-anchor-id="sec-ch01-artifacts"><span class="header-section-number">1.5.2</span> Systematic Sequencing Artifacts</h3>
-<p>Sequencing chemistry introduces predictable error patterns that differ qualitatively from random noise. Homopolymer runs (stretches of identical nucleotides such as AAAAAAA or GGGGGG) cause polymerase slippage during synthesis, generating false indels at rates far exceeding substitution errors. Why does slippage occur specifically at homopolymers? During DNA synthesis, the template and nascent strands can transiently dissociate and re-anneal. In non-repetitive sequence, there is only one correct re-annealing position. But in a homopolymer, multiple positions are sequence-identical, allowing the nascent strand to slip forward or backward and re-anneal at an offset position—adding or deleting nucleotides without creating a mismatch that would trigger correction. Certain sequence motifs, particularly those with extreme GC content, exhibit systematically elevated error rates that persist even at high coverage. PCR amplification during library preparation can introduce errors early in the process; these errors then propagate into multiple reads, creating correlated false positives that appear well-supported by independent evidence.</p>
+<p>Sequencing chemistry introduces predictable error patterns that differ qualitatively from random noise. Homopolymer runs (stretches of identical nucleotides such as AAAAAAA or GGGGGG) cause polymerase slippage during synthesis, generating false indels at rates far exceeding substitution errors. Why does slippage occur specifically at homopolymers? During DNA synthesis, the template and nascent strands can transiently dissociate and re-anneal. In non-repetitive sequence, there is only one correct re-annealing position. But in a homopolymer, multiple positions are sequence-identical, allowing the nascent strand to slip forward or backward and re-anneal at an offset position, adding or deleting nucleotides without creating a mismatch that would trigger correction. Certain sequence motifs, particularly those with extreme GC content, exhibit systematically elevated error rates that persist even at high coverage. PCR amplification during library preparation can introduce errors early in the process; these errors then propagate into multiple reads, creating correlated false positives that appear well-supported by independent evidence.</p>
 <p>Index hopping occurs when sample barcodes are misassigned during multiplexed sequencing, causing variants from one sample to appear spuriously in others sharing the same flow cell. Strand bias, where variant-supporting reads cluster on one strand orientation, often indicates systematic artifact rather than true variation. These patterns create correlated errors that cluster by batch, lane, or library preparation method, and they are difficult to distinguish from rare true variants precisely because they can appear in multiple reads with reasonable quality scores.</p>
 </section>
 <section id="sec-ch01-coverage" class="level3" data-number="1.5.3">

@@ -46,7 +46,7 @@ Genomic data violates these assumptions at every level. Consider a protein datas
 
 ![Variants: Multiple dependencies](../figs/part_3/ch11/06-C-fig-random-splits-fail.svg)
 
-Why random data splits fail for genomic machine learning. (A) Image classification: samples are truly independent, so random assignment provides valid performance estimates. (B) Protein classification: evolutionary relationships create dependencies; random splits place homologs (>80% identity) across train/test, enabling memorization of shared sequences rather than learning generalizable features. (C) Variant prediction: multiple dependencies compound—same genes across splits, related individuals sharing rare variants, and population structure confounding features and labels. These dependencies require structured splitting strategies that explicitly account for sequence homology, family relatedness, and population structure.
+Why random data splits fail for genomic machine learning. (A) Image classification: samples are truly independent, so random assignment provides valid performance estimates. (B) Protein classification: evolutionary relationships create dependencies; random splits place homologs (>80% identity) across train/test, enabling memorization of shared sequences rather than learning generalizable features. (C) Variant prediction: multiple dependencies compound: same genes across splits, related individuals sharing rare variants, and population structure confounding features and labels. These dependencies require structured splitting strategies that explicitly account for sequence homology, family relatedness, and population structure.
 :::
 
 The problem compounds when sequence identity is high. Two proteins sharing 80% sequence identity will typically have similar structures and functions. A model trained on one and tested on the other is not really being tested on a novel example; it is being asked to interpolate within a region of sequence space it has already explored. Even at 30% sequence identity, the so-called "twilight zone" of homology detection [@rost_twilight_1999], proteins often share structural and functional similarities that can be exploited by sufficiently powerful models.
@@ -67,7 +67,7 @@ The solution to homology-driven leakage is to explicitly account for sequence si
 ::: {#fig-homology-splitting}
 ![Homology-aware splitting workflow](../figs/part_3/ch11/07-fig-homology-splitting.svg)
 
-Homology-aware splitting prevents sequence similarity leakage. Step 1: Start with all sequences in the dataset. Step 2: Cluster sequences by similarity using tools like CD-HIT or MMseqs2 at an appropriate threshold (30% identity typical for diverse protein tasks). Step 3: Visualize clusters showing which sequences are related. Step 4: Assign entire clusters to single splits—no cluster is divided across train/validation/test. Step 5: Validate that no test sequence exceeds the identity threshold with any training sequence. The threshold determines evaluation stringency: 30% identity tests distant generalization; 50% tests moderate generalization; higher thresholds permit more similarity but provide weaker generalization evidence.
+Homology-aware splitting prevents sequence similarity leakage. Step 1: Start with all sequences in the dataset. Step 2: Cluster sequences by similarity using tools like CD-HIT or MMseqs2 at an appropriate threshold (30% identity typical for diverse protein tasks). Step 3: Visualize clusters showing which sequences are related. Step 4: Assign entire clusters to single splits; no cluster is divided across train/validation/test. Step 5: Validate that no test sequence exceeds the identity threshold with any training sequence. The threshold determines evaluation stringency: 30% identity tests distant generalization; 50% tests moderate generalization; higher thresholds permit more similarity but provide weaker generalization evidence.
 :::
 
 ### Clustering Tools and Workflows {#sec-ch12-clustering-tools}
@@ -108,16 +108,16 @@ For genomic (non-protein) sequences, repeat elements and transposable elements c
 Beyond sequence homology, genomic data admits multiple axes along which splits can be constructed. The choice of axis determines what kind of generalization is being tested.
 
 ::: {.callout-note title="Stop and Think"}
-You're building a variant pathogenicity predictor for clinical use. You could split your data by: (A) random 80/20, (B) by chromosome, (C) by gene family, or (D) by patient ancestry. Each tests different generalization. Which splitting strategy would best simulate real clinical deployment? Why might you want to try multiple strategies?
+You are building a variant pathogenicity predictor for clinical use. You could split your data by: (A) random 80/20, (B) by chromosome, (C) by gene family, or (D) by patient ancestry. Each tests different generalization. Which splitting strategy would best simulate real clinical deployment? Why might you want to try multiple strategies?
 
 *Consider: In the clinic, which of these splits most closely resembles encountering a truly novel variant?*
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-**Best for clinical deployment simulation: (C) Gene family split**, because clinical variants often occur in genes for which you have no training data. A new disease gene identified next year won't share sequence with your training genes, so testing generalization across gene families reveals whether your model learns transferable principles rather than gene-specific patterns.
+**Best for clinical deployment simulation: (C) Gene family split**, because clinical variants often occur in genes for which you have no training data. A new disease gene identified next year will not share sequence with your training genes, so testing generalization across gene families reveals whether your model learns transferable principles rather than gene-specific patterns.
 
 **Why multiple strategies?** Each split tests a different failure mode:
 - **(A) Random** overestimates performance by allowing related variants to leak across splits
-- **(B) Chromosome** tests genomic region transfer but doesn't address gene homology
+- **(B) Chromosome** tests genomic region transfer but does not address gene homology
 - **(C) Gene family** tests whether learned features transfer to novel genes
 - **(D) Ancestry** reveals whether your model works equitably across populations
 
@@ -135,8 +135,7 @@ Splitting strategies test different aspects of generalization. Each strategy (ro
 
 For tasks involving human genetic variation, ensuring that data from the same individual (or related individuals) does not appear in both training and test sets is essential. A variant effect predictor trained on variants from person A and tested on other variants from person A may learn individual-specific patterns, such as haplotype structure or ancestry-correlated allele frequencies, that do not generalize to new individuals.
 
-Family structure creates subtler leakage. First-degree relatives share approximately 50% of their genomes identical by descent. Even distant relatives share genomic segments that can be exploited by sufficiently powerful models. Best practice involves computing kinship coefficients across all individuals and either excluding one member of each related pair or assigning entire family clusters to the same split. The UK Biobank provides pre-computed relatedness estimates; other cohorts may require explicit calculation using tools like KING or `PLINK`. *[Citation Needed]*
-
+Family structure creates subtler leakage. First-degree relatives share approximately 50% of their genomes identical by descent. Even distant relatives share genomic segments that can be exploited by sufficiently powerful models. Best practice involves computing kinship coefficients across all individuals and either excluding one member of each related pair or assigning entire family clusters to the same split. The UK Biobank provides pre-computed relatedness estimates; other cohorts may require explicit calculation using tools like KING or `PLINK`. 
 ### Splitting by Genomic Region {#sec-ch12-splitting-genomic-region}
 
 Chromosome-based splits assign entire chromosomes to training or testing. This approach is common in regulatory genomics, where models trained on chromosomes 1-16 are tested on chromosomes 17-22 (or similar partitions). The advantage is simplicity and reproducibility; the disadvantage is that chromosomes are not independent. Chromosome 6 contains the HLA region with its unusual patterns of variation and selection; chromosome 21 is small and gene-poor; sex chromosomes have distinct biology. Results may vary substantially depending on which chromosomes are held out.
@@ -299,7 +298,7 @@ For protein variant effect prediction, deep mutational scanning datasets provide
 Metrics quantify model performance but different metrics answer different questions. Choosing appropriate metrics requires clarity about what aspect of performance matters for the intended application.
 
 ::: {.callout-note title="Stop and Think"}
-Before reading about specific metrics, consider: You're evaluating a variant pathogenicity predictor where only 0.5% of variants are truly pathogenic. Your model achieves auROC = 0.92. Is this good? What other information do you need to decide whether to use this model in practice?
+Before reading about specific metrics, consider: You are evaluating a variant pathogenicity predictor where only 0.5% of variants are truly pathogenic. Your model achieves auROC = 0.92. Is this good? What other information do you need to decide whether to use this model in practice?
 
 *Hint: Think about what happens when you apply a threshold to actually flag variants for follow-up.*
 :::
@@ -307,7 +306,7 @@ Before reading about specific metrics, consider: You're evaluating a variant pat
 ::: {#fig-metric-selection}
 ![Metric selection flowchart](../figs/part_3/ch11/10-fig-metric-selection.svg)
 
-Metric selection depends on task characteristics and deployment requirements. Binary classification requires different metrics depending on class balance: auROC provides stable ranking assessment for balanced data, while auPRC is essential for imbalanced settings where auROC can mislead. Probability calibration matters for deployment: a model may rank correctly while producing systematically overconfident probabilities. Clinical decision-making requires metrics like net benefit that account for the costs of different error types. Continuous predictions use correlation and error metrics, but high correlation does not guarantee clinical utility—a model may track relative differences while failing to capture absolute effect sizes. Selecting appropriate metrics prevents optimizing for misleading targets.
+Metric selection depends on task characteristics and deployment requirements. Binary classification requires different metrics depending on class balance: auROC provides stable ranking assessment for balanced data, while auPRC is essential for imbalanced settings where auROC can mislead. Probability calibration matters for deployment: a model may rank correctly while producing systematically overconfident probabilities. Clinical decision-making requires metrics like net benefit that account for the costs of different error types. Continuous predictions use correlation and error metrics, but high correlation does not guarantee clinical utility: a model may track relative differences while failing to capture absolute effect sizes. Selecting appropriate metrics prevents optimizing for misleading targets.
 :::
 
 ### Discrimination Metrics {#sec-ch12-discrimination-metrics}
@@ -478,7 +477,7 @@ Genomic foundation models (@sec-ch14-fm-principles) admit multiple evaluation pa
 
 ![Fine-tuning](../figs/part_3/ch11/09-C-fig-fm-evaluation-paradigms.svg)
 
-Foundation model evaluation paradigms test different capabilities. (A) Zero-shot: frozen model predictions test whether pretraining captured task-relevant patterns; requires no task data but limited to aligned tasks. (B) Linear probing: frozen embeddings with learned linear classifier test whether task features are linearly accessible in representations; requires minimal data and isolates representation quality. (C) Fine-tuning: full gradient updates test total potential but conflate representation and adaptation; achieves best performance but requires substantial data. The value of pretraining is best measured by the gap between few-shot and from-scratch performance—large gaps indicate that pretraining provides transferable features beyond what task data alone would support.
+Foundation model evaluation paradigms test different capabilities. (A) Zero-shot: frozen model predictions test whether pretraining captured task-relevant patterns; requires no task data but limited to aligned tasks. (B) Linear probing: frozen embeddings with learned linear classifier test whether task features are linearly accessible in representations; requires minimal data and isolates representation quality. (C) Fine-tuning: full gradient updates test total potential but conflate representation and adaptation; achieves best performance but requires substantial data. The value of pretraining is best measured by the gap between few-shot and from-scratch performance: large gaps indicate that pretraining provides transferable features beyond what task data alone would support.
 :::
 
 ### Zero-Shot Evaluation {#sec-ch12-zero-shot-eval}
@@ -612,23 +611,23 @@ Before reviewing the summary, test your recall:
 5. How does label circularity in ClinVar (where computational predictions influence annotations) compromise benchmark validity for new variant effect predictors?
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-1. **Homology leakage** occurs when evolutionarily related sequences appear in both training and test sets, allowing models to succeed through memorization of family-specific patterns rather than learning general biological principles. Random splits fail because they ignore sequence similarity—a test protein at 80% identity to a training protein provides minimal generalization evidence, yet random splits routinely create such pairs. Homology-aware splitting (using tools like CD-HIT at 30-40% identity thresholds) ensures test sequences are evolutionarily distant from training sequences.
+1. **Homology leakage** occurs when evolutionarily related sequences appear in both training and test sets, allowing models to succeed through memorization of family-specific patterns rather than learning general biological principles. Random splits fail because they ignore sequence similarity: a test protein at 80% identity to a training protein provides minimal generalization evidence, yet random splits routinely create such pairs. Homology-aware splitting (using tools like CD-HIT at 30-40% identity thresholds) ensures test sequences are evolutionarily distant from training sequences.
 
 2. **Four leakage types:**
-   - **Label leakage:** Target labels derived from model features. *Example:* ClinVar pathogenicity classifications that incorporated SIFT/PolyPhen predictions, then used to evaluate new predictors using similar features—the model learns to replicate curation criteria rather than discover independent signal.
+   - **Label leakage:** Target labels derived from model features. *Example:* ClinVar pathogenicity classifications that incorporated SIFT/PolyPhen predictions, then used to evaluate new predictors using similar features; the model learns to replicate curation criteria rather than discover independent signal.
    - **Feature leakage:** Input features encode unavailable future information. *Example:* Using population allele frequency as a feature for pathogenicity prediction captures selection pressure (rare = likely pathogenic) without learning variant biology; appropriate for clinical use but problematic for mechanistic understanding.
    - **Temporal leakage:** Using future information to predict past events. *Example:* Training on 2023 ClinVar annotations to predict variants that were uncertain in 2020, when those 2023 annotations may have used model-like predictions made after 2020.
    - **Benchmark leakage:** Test set construction influenced by similar methods. *Example:* A protein benchmark selecting well-annotated proteins via sequence similarity searches, then evaluating sequence-based models that exploit the same similarity used in benchmark construction.
 
 3. The 0.85 → 0.60 performance drop reveals the model relies heavily on **local sequence context** rather than learning positional effects or long-range constraints. Random splits allow nearby positions to appear in both training and test sets; the model learns that "positions near training variants tend to have similar effects." Contiguous splits remove this crutch by placing entire sequence regions in test, forcing genuine spatial generalization. The 0.25 correlation gap represents how much performance came from interpolating between nearby measured positions versus understanding the protein's functional landscape.
 
-4. **auROC measures ranking** (whether positives score higher than negatives) but is **invariant to probability calibration** (whether a score of 0.8 actually means 80% probability). A model can achieve 0.95 auROC by assigning 0.99 to all pathogenic variants and 0.98 to all benign variants—perfect ranking, useless probabilities. **Well-calibrated models matter most when:**
+4. **auROC measures ranking** (whether positives score higher than negatives) but is **invariant to probability calibration** (whether a score of 0.8 actually means 80% probability). A model can achieve 0.95 auROC by assigning 0.99 to all pathogenic variants and 0.98 to all benign variants (perfect ranking, useless probabilities). **Well-calibrated models matter most when:**
    - Making threshold-based decisions (reporting variants above some probability cutoff)
    - Integrating model evidence with other information (Bayesian updating requires calibrated likelihoods)
    - Communicating uncertainty to clinicians (a stated "80% probability" should be reliable)
    - Comparing risks across different variant types or populations
 
-5. **Label circularity** creates a feedback loop: if ClinVar curators used computational predictions (SIFT, PolyPhen, conservation scores) to classify variants, and those classifications become training labels for new predictors using similar features, the new model learns to **replicate curation criteria** rather than provide independent evidence. This inflates benchmark performance without improving biological insight—the model predicts what previous models predicted, not what biology determines. Detecting circularity requires: (1) comparing against baselines using only the potentially circular features, (2) checking whether performance exceeds what those features alone achieve, (3) temporal validation on prospectively classified variants, and (4) examining whether the model adds value beyond existing predictors in clinical adjudication.
+5. **Label circularity** creates a feedback loop: if ClinVar curators used computational predictions (SIFT, PolyPhen, conservation scores) to classify variants, and those classifications become training labels for new predictors using similar features, the new model learns to **replicate curation criteria** rather than provide independent evidence. This inflates benchmark performance without improving biological insight; the model predicts what previous models predicted, not what biology determines. Detecting circularity requires: (1) comparing against baselines using only the potentially circular features, (2) checking whether performance exceeds what those features alone achieve, (3) temporal validation on prospectively classified variants, and (4) examining whether the model adds value beyond existing predictors in clinical adjudication.
 :::
 :::
 

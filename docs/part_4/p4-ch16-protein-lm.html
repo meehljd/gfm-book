@@ -647,7 +647,7 @@ Deep Dive: Protein Structure Levels
 </tr>
 </tbody>
 </table>
-<p>The remarkable finding is that training only on primary structure (sequences) yields models that implicitly encode higher-level structural information.</p>
+<p>The key finding is that training only on primary structure (sequences) yields models that implicitly encode higher-level structural information.</p>
 </div>
 </div>
 <p>This insight transformed computational biology. Traditional approaches to understanding proteins required either expensive experimental characterization or physics-based simulations that struggled with the complexity of protein behavior. Multiple sequence alignments could extract conservation patterns, but required finding homologs for each protein of interest and could not generalize beyond specific families. Protein language models changed the equation by compressing evolutionary knowledge into neural network parameters that transfer across the entire protein universe. A model trained to predict masked amino acids learns, as a byproduct, which residues contact each other in three-dimensional space, which positions tolerate variation, and which substitutions disrupt function. The physics of protein folding, selected across evolutionary time, emerges from the statistics of surviving sequences.</p>
@@ -1229,7 +1229,7 @@ Key Insight
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-plm-variant-scoring-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;16.4: Zero-shot variant effect prediction from protein language models. (A) The scoring mechanism computes log-likelihood ratio between variant and reference amino acids given sequence context. More negative scores indicate variants the model finds surprising—evolutionarily disfavored substitutions. (B) The evolutionary intuition: billions of years of natural selection have tested trillions of mutations. Low-probability variants violate learned evolutionary constraints, suggesting functional disruption. (C) Correlation with deep mutational scanning experiments validates that PLM scores capture functional effects. (D) Discrimination of ClinVar pathogenic vs.&nbsp;benign variants approaches methods trained with supervised labels, demonstrating that evolutionary constraint encodes pathogenicity information.
+Figure&nbsp;16.4: Zero-shot variant effect prediction from protein language models. (A) The scoring mechanism computes log-likelihood ratio between variant and reference amino acids given sequence context. More negative scores indicate variants the model finds surprising, evolutionarily disfavored substitutions. (B) The evolutionary intuition: billions of years of natural selection have tested trillions of mutations. Low-probability variants violate learned evolutionary constraints, suggesting functional disruption. (C) Correlation with deep mutational scanning experiments validates that PLM scores capture functional effects. (D) Discrimination of ClinVar pathogenic vs.&nbsp;benign variants approaches methods trained with supervised labels, demonstrating that evolutionary constraint encodes pathogenicity information.
 </figcaption>
 </figure>
 </div>
@@ -1281,7 +1281,7 @@ Recall and Connect: Limitations Propagate to Applications
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The limitations described in this section—orphan proteins, novel folds, epistasis—recur throughout clinical applications. In <a href="p4-ch18-vep-fm.html" class="quarto-xref"><span>Chapter 18</span></a>, you’ll see how these limitations affect variant pathogenicity prediction: missense variants in poorly characterized proteins receive unreliable scores. In <a href="../part_7/p7-ch29-rare-disease.html" class="quarto-xref"><span>Chapter 29</span></a>, rare disease diagnosis must account for these gaps when prioritizing candidate variants. The population-specific performance disparities discussed in <a href="../part_3/p3-ch13-confounding.html" class="quarto-xref"><span>Chapter 13</span></a> apply equally here: PLMs trained predominantly on sequences from well-studied organisms may underperform on human variants in understudied gene families.</p>
+<p>The limitations described in this section (orphan proteins, novel folds, epistasis) recur throughout clinical applications. In <a href="p4-ch18-vep-fm.html" class="quarto-xref"><span>Chapter 18</span></a>, you’ll see how these limitations affect variant pathogenicity prediction: missense variants in poorly characterized proteins receive unreliable scores. In <a href="../part_7/p7-ch29-rare-disease.html" class="quarto-xref"><span>Chapter 29</span></a>, rare disease diagnosis must account for these gaps when prioritizing candidate variants. The population-specific performance disparities discussed in <a href="../part_3/p3-ch13-confounding.html" class="quarto-xref"><span>Chapter 13</span></a> apply equally here: PLMs trained predominantly on sequences from well-studied organisms may underperform on human variants in understudied gene families.</p>
 </div>
 </div>
 <div id="fig-plm-limitations" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1354,7 +1354,7 @@ Knowledge Check
 Check your understanding
 </summary>
 <ol type="1">
-<li><p><strong>Orphan proteins</strong> lack evolutionary context. PLMs learn from statistical patterns across protein families—they identify which amino acids are likely at each position based on what evolution has “tried” and preserved. For proteins unique to specific lineages without homologs, the model has no evolutionary data to learn from, making predictions unreliable.</p></li>
+<li><p><strong>Orphan proteins</strong> lack evolutionary context. PLMs learn from statistical patterns across protein families; they identify which amino acids are likely at each position based on what evolution has “tried” and preserved. For proteins unique to specific lineages without homologs, the model has no evolutionary data to learn from, making predictions unreliable.</p></li>
 <li><p><strong>Novel folds</strong> lie outside the training distribution. The model learned sequence-structure relationships from natural proteins in its training data. A computationally designed fold with topology not found in nature represents patterns the model never encountered during training, reducing prediction reliability.</p></li>
 <li><p><strong>Epistatic interactions</strong> occur when variant effects depend on sequence context. The standard scoring approach treats each position independently, computing the effect of mutation A without considering whether mutation B is present. But two individually benign variants may be jointly deleterious if they disrupt compensatory interactions. The combinatorial explosion of pairwise and higher-order interactions makes explicit modeling intractable, and training data rarely includes systematic multi-mutant measurements.</p></li>
 </ol>
@@ -1428,7 +1428,7 @@ Check Your Answer
 </div>
 <div id="callout-20" class="callout-20-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Masked language modeling requires the model to predict hidden amino acids from surrounding context. To succeed, the model must learn what makes sequences “protein-like”—the constraints imposed by evolution. <strong>Emergent knowledge</strong> includes:</p>
+<p>Masked language modeling requires the model to predict hidden amino acids from surrounding context. To succeed, the model must learn what makes sequences “protein-like”: the constraints imposed by evolution. <strong>Emergent knowledge</strong> includes:</p>
 <ol type="1">
 <li><strong>Secondary structure</strong> (alpha helices, beta sheets visible in attention patterns)</li>
 <li><strong>Residue-residue contacts</strong> (spatially close amino acids attend to each other)</li>

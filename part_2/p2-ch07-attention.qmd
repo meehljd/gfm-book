@@ -54,7 +54,7 @@ The next section presents the mathematical formulation of attention. The key equ
 At each position in the input sequence, self-attention computes three vectors: a **query**, a **key**, and a **value**. These vectors emerge from multiplying the input embedding at that position by three learned weight matrices $W^Q$, $W^K$, and $W^V$. The query represents what information this position seeks from other positions. The key represents what information this position offers to queries from elsewhere. The value represents the actual information this position contributes when attended to. This query-key-value structure separates the question of "which positions should interact" (determined by query-key similarity) from "what information flows between them" (determined by values).
 
 ::: {.callout-tip title="Key Insight: The Information Retrieval Analogy"}
-Think of attention like a search engine for sequence positions. Each position issues a **query** describing what it's looking for. Every position also publishes a **key** describing what it has to offer. The dot product between query and key measures relevance, just as a search engine ranks documents by query match. High-scoring positions then send their **value** (the actual content) to the querying position. The separation of key (what I advertise) from value (what I actually send) allows the same position to advertise relevance for one type of information while sending different information when attended to.
+Think of attention like a search engine for sequence positions. Each position issues a **query** describing what it is looking for. Every position also publishes a **key** describing what it has to offer. The dot product between query and key measures relevance, just as a search engine ranks documents by query match. High-scoring positions then send their **value** (the actual content) to the querying position. The separation of key (what I advertise) from value (what I actually send) allows the same position to advertise relevance for one type of information while sending different information when attended to.
 :::
 
 :::{.callout-note title="Predict Before You Look"}
@@ -308,7 +308,7 @@ Each transformer block accomplishes two distinct functions: enabling positions t
 The transformer block's two-stage design reflects a fundamental separation of concerns:
 
 - **Attention**: "Which other positions should I consider?" (inter-position communication)
-- **Feed-forward**: "Given what I've gathered, what should I conclude?" (per-position computation)
+- **Feed-forward**: "Given what I have gathered, what should I conclude?" (per-position computation)
 
 This separation explains why transformers can be so effective: attention handles the variable-length, content-dependent routing problem, while feed-forward networks handle the fixed-size, position-local computation problem. Each component can be optimized for its specific role.
 :::
@@ -413,7 +413,7 @@ When selecting a context length strategy for a genomic application, consider:
 **Use subquadratic architectures (Hyena, Mamba) when:**
 - Context length is the primary constraint (>100 kb)
 - You need single-nucleotide resolution over long ranges
-- You're willing to adopt newer, less mature architectures
+- You are willing to adopt newer, less mature architectures
 :::
 
 ### Memory and Precision {#sec-ch07-memory}

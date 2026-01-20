@@ -32,18 +32,18 @@ Uncertainty in genomic prediction arises from two fundamentally different source
 ::: {.callout-note title="Deep Dive: Epistemic vs. Aleatoric Uncertainty"}
 **For biology readers:** Two fundamentally different types of uncertainty require different responses:
 
-**Epistemic uncertainty** ("knowledge uncertainty") — what the model doesn't know:
+**Epistemic uncertainty** ("knowledge uncertainty"): what the model does not know:
 
 - Arises from limited training data or model limitations
 - *Can be reduced* by collecting more data or improving the model
 - Example: A variant in an understudied gene has high epistemic uncertainty because few similar variants were in training data
 - Detected by: ensemble disagreement, out-of-distribution detection
 
-**Aleatoric uncertainty** ("data uncertainty") — inherent randomness:
+**Aleatoric uncertainty** ("data uncertainty"): inherent randomness:
 
 - Arises from genuine biological variability or measurement noise
 - *Cannot be reduced* even with infinite data
-- Example: Incomplete penetrance in *BRCA1* — the same variant causes cancer in some carriers but not others due to modifier genes and environment
+- Example: Incomplete penetrance in *BRCA1*: the same variant causes cancer in some carriers but not others due to modifier genes and environment [@kuchenbaecker_risks_2017]
 - Detected by: heteroscedastic models, known biology
 
 **Why the distinction matters clinically:**
@@ -66,7 +66,7 @@ The consequences of ignoring uncertainty extend beyond statistical abstraction. 
 :::{.callout-important}
 ## Key Insight: Calibration vs. Accuracy
 
-A model can be highly accurate on average yet dangerously miscalibrated. If a model achieves 90% accuracy but assigns 95% confidence to all predictions, clinicians will trust predictions that deserve skepticism. Conversely, a model with 80% accuracy that honestly reports its uncertainty enables better decisions than the overconfident 90% model. **The goal is not just to be right, but to know when you're right.**
+A model can be highly accurate on average yet dangerously miscalibrated. If a model achieves 90% accuracy but assigns 95% confidence to all predictions, clinicians will trust predictions that deserve skepticism. Conversely, a model with 80% accuracy that honestly reports its uncertainty enables better decisions than the overconfident 90% model. **The goal is not just to be right, but to know when you are right.**
 :::
 
 Decision theory formalizes this intuition. The expected value of a clinical action depends on the probability of each outcome weighted by its utility. When a model reports 0.73 probability of pathogenicity, downstream decision-making implicitly assumes this probability is accurate. If the true probability is 0.50, actions optimized for 0.73 will systematically err. Uncertainty quantification ensures that the probabilities entering clinical decisions reflect genuine knowledge rather than artifacts of model architecture or training procedure.
@@ -80,7 +80,7 @@ A model trained exclusively on European-ancestry data encounters its first genom
 
 ![Epistemic: reducible knowledge-based uncertainty](../figs/part_6/ch24/01-B-fig-uncertainty-types.svg)
 
-Two types of uncertainty. (A) Aleatoric uncertainty: irreducible stochasticity from biological variability or measurement noise—cannot be eliminated with more data. (B) Epistemic uncertainty: reducible uncertainty from limited knowledge—decreases as training data grow. Distinguishing these is critical: high epistemic uncertainty should trigger caution, while aleatoric uncertainty sets fundamental prediction limits.
+Two types of uncertainty. (A) Aleatoric uncertainty: irreducible stochasticity from biological variability or measurement noise (cannot be eliminated with more data). (B) Epistemic uncertainty: reducible uncertainty from limited knowledge (decreases as training data grow). Distinguishing these is critical: high epistemic uncertainty should trigger caution, while aleatoric uncertainty sets fundamental prediction limits.
 :::
 
 Epistemic uncertainty arises from limitations in training data that could, in principle, be reduced by gathering more examples. In genomic foundation models, epistemic uncertainty concentrates in predictable regions of biological space. Proteins from poorly characterized families, where training data contained few homologs, exhibit high epistemic uncertainty because the model has limited basis for inference. This manifests concretely in protein benchmarks: *ProteinGym* performance varies substantially across protein families (@sec-ch11-proteingym). Genes with few characterized variants in ClinVar or gnomAD provide sparse supervision, leaving the model uncertain about which sequence features distinguish pathogenic from benign variation (see @sec-ch02-clinvar and @sec-ch02-gnomad for data resource details). Rare variant classes, such as in-frame deletions in specific protein domains, appear infrequently in training data and consequently generate uncertain predictions. Populations under-represented in biobanks contribute fewer training examples, creating systematic epistemic uncertainty for individuals from these backgrounds, a challenge examined in @sec-ch03-portability and with confounding implications discussed in @sec-ch13-ancestry-confounding.
@@ -144,14 +144,14 @@ These decompositions depend on modeling assumptions and provide approximations r
 
 ![Calibration metrics: ECE and MCE quantify miscalibration](../figs/part_6/ch24/02-D-fig-calibration-diagrams.svg)
 
-Model calibration assessment. (A) Perfect calibration: predicted probabilities match observed frequencies on the diagonal. (B) Overconfident model: predictions systematically exceed reality—dangerous for clinical use. (C) Underconfident model: predictions underestimate true probabilities—reduces utility. (D) Calibration metrics: Expected Calibration Error (ECE) averages across bins; Maximum Calibration Error (MCE) captures worst-case performance.
+Model calibration assessment. (A) Perfect calibration: predicted probabilities match observed frequencies on the diagonal. (B) Overconfident model: predictions systematically exceed reality, dangerous for clinical use. (C) Underconfident model: predictions underestimate true probabilities, reducing utility. (D) Calibration metrics: Expected Calibration Error (ECE) averages across bins; Maximum Calibration Error (MCE) captures worst-case performance.
 :::
 
 ### The Calibration Problem {#sec-ch24-calibration-problem}
 
 *AlphaMissense* outputs a continuous score between 0 and 1 for each possible missense variant in the human proteome. When it reports 0.85 for a particular variant, what does this number mean? If the model is calibrated, collecting all variants scored near 0.85 and checking their true clinical status should reveal that approximately 85% are pathogenic. Perfect calibration means that predicted probabilities match observed frequencies across the entire range of model outputs: among variants scored at 0.30, roughly 30% should be pathogenic; among variants scored at 0.95, roughly 95% should be pathogenic. This alignment between stated confidence and empirical accuracy is calibration, and most foundation models fail to achieve it.
 
-Think of calibration like weather forecasts. When your weather app says "70% chance of rain," you expect that across many days with 70% forecasts, it actually rains about 70% of the time. If it only rains 40% of those days, the app is overconfident and you cannot trust its numbers to plan your week. Similarly, a pathogenicity predictor claiming 85% confidence should be right 85% of the time at that confidence level—otherwise, clinicians cannot rationally weigh its predictions against other evidence.
+Think of calibration like weather forecasts. When your weather app says "70% chance of rain," you expect that across many days with 70% forecasts, it actually rains about 70% of the time. If it only rains 40% of those days, the app is overconfident and you cannot trust its numbers to plan your week. Similarly, a pathogenicity predictor claiming 85% confidence should be right 85% of the time at that confidence level; otherwise, clinicians cannot rationally weigh its predictions against other evidence.
 
 Formally, a model $f$ mapping inputs $X$ to probability estimates $p = f(X)$ is calibrated if $P(Y = 1 \mid f(X) = p) = p$ for all $p$ in the interval from $0$ to $1$. The calibration condition requires that the model's stated confidence equals the true probability of the positive class conditional on that stated confidence. Miscalibration occurs when this equality fails: overconfident models produce predicted probabilities that exceed true frequencies (a variant scored at $0.85$ is pathogenic only $60\%$ of the time), while underconfident models produce predicted probabilities below true frequencies.
 
@@ -165,7 +165,7 @@ Calibration and discrimination are distinct properties. A model can achieve perf
 A variant effect predictor achieves auROC of 0.95 on a held-out test set. A colleague concludes that "the model's probability estimates are reliable." What is wrong with this reasoning? What additional assessment would you recommend?
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-auROC measures discrimination (how well the model ranks pathogenic variants above benign ones) but says nothing about calibration (whether predicted probabilities match observed frequencies). A model can achieve perfect auROC while being arbitrarily miscalibrated—for example, by assigning 0.99 to all pathogenic variants and 0.98 to all benign variants. You should assess calibration using reliability diagrams and ECE, stratified by relevant subgroups like ancestry and variant type.
+auROC measures discrimination (how well the model ranks pathogenic variants above benign ones) but says nothing about calibration (whether predicted probabilities match observed frequencies). A model can achieve perfect auROC while being arbitrarily miscalibrated (for example, by assigning 0.99 to all pathogenic variants and 0.98 to all benign variants). You should assess calibration using reliability diagrams and ECE, stratified by relevant subgroups like ancestry and variant type.
 :::
 :::
 
@@ -233,7 +233,7 @@ Calibration may also vary by variant class, gene constraint level, protein famil
 
 ![Isotonic regression: flexible non-parametric fit](../figs/part_6/ch24/03-C-fig-calibration-methods.svg)
 
-Post-hoc calibration methods. (A) Temperature scaling: divides logits by learned temperature T before softmax—simple, preserves ranking, widely effective. (B) Platt scaling: fits logistic regression on model scores—handles asymmetric miscalibration with two parameters. (C) Isotonic regression: non-parametric monotonic fit—most flexible but requires more calibration data and risks overfitting.
+Post-hoc calibration methods. (A) Temperature scaling: divides logits by learned temperature T before softmax (simple, preserves ranking, widely effective). (B) Platt scaling: fits logistic regression on model scores (handles asymmetric miscalibration with two parameters). (C) Isotonic regression: non-parametric monotonic fit (most flexible but requires more calibration data and risks overfitting).
 :::
 
 :::{.callout-tip}
@@ -374,7 +374,7 @@ For foundation models with billions of parameters, training full ensembles becom
 
 Gal and Ghahramani showed that this procedure approximates variational inference over the model's weights [@gal_dropout_2016]. Each forward pass with dropout samples a different subnetwork, and the distribution of predictions across samples approximates the predictive distribution under a particular prior over weights. High variance across MC samples indicates epistemic uncertainty about the model's parameters for that input.
 
-Why does dropout approximate Bayesian inference? During training, dropout randomly masks neurons to prevent co-adaptation—forcing the network to learn redundant representations. Treating this masking as sampling from a distribution over subnetworks connects to Bayesian inference: each sampled subnetwork is like a draw from a posterior over model architectures. When many subnetworks agree on a prediction, the input lies in a region well-constrained by training data; when subnetworks disagree, the input lies in a region where different architectural variants have learned different solutions—exactly the signature of epistemic uncertainty.
+Why does dropout approximate Bayesian inference? During training, dropout randomly masks neurons to prevent co-adaptation, forcing the network to learn redundant representations. Treating this masking as sampling from a distribution over subnetworks connects to Bayesian inference: each sampled subnetwork is like a draw from a posterior over model architectures. When many subnetworks agree on a prediction, the input lies in a region well-constrained by training data; when subnetworks disagree, the input lies in a region where different architectural variants have learned different solutions, exactly the signature of epistemic uncertainty.
 
 MC dropout offers the significant advantage of requiring only a single trained model, avoiding the computational overhead of ensembles. Implementation is straightforward: enable dropout during inference and average predictions over 10 to 50 stochastic forward passes. The variance or entropy of these predictions serves as the uncertainty estimate.
 
@@ -414,7 +414,7 @@ Heteroscedastic models capture aleatoric uncertainty but not epistemic uncertain
 
 Low total concentration indicates high uncertainty: the model is unsure which class is correct. High total concentration with one dominant class indicates confident prediction. This framework provides a principled way to separate epistemic uncertainty (low concentration) from confident predictions (high concentration), all from a single forward pass without ensembling or MC sampling.
 
-Critics have noted that evidential deep learning can produce unreliable uncertainty estimates when the distributional assumptions are violated or when training data is limited *[Citation Needed]*. Practical experience suggests that ensembles and MC dropout often provide more robust uncertainty estimates, though evidential methods continue to be refined.
+Critics have noted that evidential deep learning can produce unreliable uncertainty estimates when the distributional assumptions are violated or when training data is limited [@bengs_pitfalls_2022]. Practical experience suggests that ensembles and MC dropout often provide more robust uncertainty estimates, though evidential methods continue to be refined.
 
 ### Selecting Uncertainty Quantification Methods {#sec-ch24-selecting-uq}
 
@@ -443,7 +443,7 @@ The following table summarizes uncertainty quantification methods and their trad
 
 Most uncertainty quantification methods make assumptions about model behavior or data distributions that may not hold in practice. Temperature scaling assumes miscalibration follows a particular functional form. Ensembles assume that disagreement reflects epistemic uncertainty rather than artifacts of training. Bayesian methods assume specific priors over model parameters. When these assumptions fail, uncertainty estimates may be unreliable precisely when reliability matters most.
 
-Consider how a cautious doctor might communicate diagnostic uncertainty. Rather than saying "I am 73% confident this is condition A," they might say "Based on your symptoms and test results, I can confidently rule out conditions C, D, and E, but I cannot yet distinguish between A and B—we need more information." This approach sidesteps the difficulty of assigning precise probabilities by instead specifying which possibilities remain plausible. The size of this "plausible set" communicates uncertainty: a single remaining possibility indicates high confidence, while many remaining possibilities indicate low confidence.
+Consider how a cautious doctor might communicate diagnostic uncertainty. Rather than saying "I am 73% confident this is condition A," they might say "Based on your symptoms and test results, I can confidently rule out conditions C, D, and E, but I cannot yet distinguish between A and B; we need more information." This approach sidesteps the difficulty of assigning precise probabilities by instead specifying which possibilities remain plausible. The size of this "plausible set" communicates uncertainty: a single remaining possibility indicates high confidence, while many remaining possibilities indicate low confidence.
 
 **Conformal prediction** formalizes this intuition and offers something stronger: finite-sample coverage guarantees that hold under minimal assumptions. Instead of outputting a point prediction, conformal methods produce a prediction set guaranteed to contain the true label with probability at least $1 - \alpha$, where $\alpha$ is a user-specified error rate. If we request $90\%$ coverage ($\alpha = 0.10$), the prediction set will contain the true label at least $90\%$ of the time, regardless of the model's accuracy or calibration. This guarantee requires only that calibration and test examples are exchangeable (a condition weaker than independent and identically distributed), making conformal prediction robust to model misspecification.
 
@@ -509,7 +509,7 @@ Conformal methods also enable selective prediction, where the model abstains rat
 
 ![Genomic OOD scenarios requiring detection before clinical use](../figs/part_6/ch24/06-C-fig-ood-detection.svg)
 
-Out-of-distribution detection for safe deployment. (A) The OOD problem: models extrapolate confidently into regions where predictions are unreliable. (B) Detection methods: from simple softmax thresholds to sophisticated embedding-space approaches. (C) Genomic OOD scenarios: novel genes, underrepresented populations, unusual variant types, mismatched tissues, and technical batch effects—all require detection before clinical use.
+Out-of-distribution detection for safe deployment. (A) The OOD problem: models extrapolate confidently into regions where predictions are unreliable. (B) Detection methods: from simple softmax thresholds to sophisticated embedding-space approaches. (C) Genomic OOD scenarios: novel genes, underrepresented populations, unusual variant types, mismatched tissues, and technical batch effects; all require detection before clinical use.
 :::
 
 ### Out-of-Distribution Problem {#sec-ch24-ood-problem}
@@ -526,7 +526,7 @@ The confidence problem compounds OOD challenges. Neural networks often produce h
 A protein language model is deployed to score variants in a newly discovered gene with no homologs in UniRef. The model returns high-confidence pathogenicity predictions. What concerns should you have? What additional information would help you assess whether to trust these predictions?
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-This gene is out-of-distribution relative to the model's training data—high epistemic uncertainty is expected. The confident predictions are a red flag: the model may be extrapolating unreliably beyond its training experience. You should check embedding distance to training examples, ensemble disagreement if available, and whether the model's confidence is calibrated for truly novel protein families. Experimental validation through functional assays would be essential before acting on these predictions.
+This gene is out-of-distribution relative to the model's training data; high epistemic uncertainty is expected. The confident predictions are a red flag: the model may be extrapolating unreliably beyond its training experience. You should check embedding distance to training examples, ensemble disagreement if available, and whether the model's confidence is calibrated for truly novel protein families. Experimental validation through functional assays would be essential before acting on these predictions.
 :::
 :::
 
@@ -536,7 +536,7 @@ The intuitive approach to OOD detection uses model likelihood: inputs the model 
 
 This intuition fails for deep generative models. Complex models can assign high likelihood to OOD data for reasons unrelated to semantic similarity to training examples. In high-dimensional spaces, typical sets (regions where most probability mass concentrates) do not coincide with high-density regions. A sequence might land in a high-density region of the model's distribution while being semantically distant from any training example.
 
-Empirically, language models assign high likelihood to repetitive sequences, sequences with unusual but consistent patterns, and sequences from different domains that happen to share statistical properties with training data *[Citation Needed]*. For genomic models, this means likelihood alone cannot reliably distinguish novel biological sequences from sequences within the training distribution.
+Empirically, language models assign high likelihood to repetitive sequences, sequences with unusual but consistent patterns, and sequences from different domains that happen to share statistical properties with training data . For genomic models, this means likelihood alone cannot reliably distinguish novel biological sequences from sequences within the training distribution.
 
 ### Embedding-Based Detection {#sec-ch24-embedding-ood}
 

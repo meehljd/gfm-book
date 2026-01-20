@@ -79,7 +79,7 @@ The choice involves tradeoffs. Zero-shot methods avoid label bias entirely; they
 
 ## Protein-Based Variant Effect Prediction {#sec-ch18-protein-vep}
 
-Missense variants (single amino acid substitutions) account for approximately half of known pathogenic variants in ClinVar, making protein-level prediction a central challenge *[Citation Needed]*. Foundation model approaches exploit a simple insight: evolution has already tested billions of amino acid substitutions across millions of years; variants that repeatedly survive natural selection are likely tolerable, while those never observed in homologous proteins likely disrupt function.
+Missense variants (single amino acid substitutions) account for approximately half of known pathogenic variants in ClinVar, making protein-level prediction a central challenge [@landrum_clinvar_2018]. Foundation model approaches exploit a simple insight: evolution has already tested billions of amino acid substitutions across millions of years; variants that repeatedly survive natural selection are likely tolerable, while those never observed in homologous proteins likely disrupt function.
 
 ### Zero-Shot Scoring with Protein Language Models {#sec-ch18-zeroshot-plm}
 
@@ -181,7 +181,7 @@ A patient carries a missense variant in *OBSCN*, an extremely large gene encodin
 3. If the variant were in *BRCA1* instead (which has hundreds of homologs), would your answer change?
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-ESM-1v would be more appropriate because it works on single sequences and doesn't require a high-quality MSA. This illustrates that alignment-based methods fail for orphan proteins or those with sparse evolutionary sampling, where MSA-based approaches lack sufficient data. For BRCA1 with hundreds of homologs, EVE might perform better because the deep evolutionary sampling provides rich coevolution signals that EVE can exploit, though ESM-1v would still provide reliable predictions.
+ESM-1v would be more appropriate because it works on single sequences and does not require a high-quality MSA. This illustrates that alignment-based methods fail for orphan proteins or those with sparse evolutionary sampling, where MSA-based approaches lack sufficient data. For BRCA1 with hundreds of homologs, EVE might perform better because the deep evolutionary sampling provides rich coevolution signals that EVE can exploit, though ESM-1v would still provide reliable predictions.
 :::
 :::
 
@@ -201,7 +201,7 @@ Protein language models capture that a position is evolutionarily constrained, b
 
 Calibration receives explicit attention. Raw model outputs undergo isotonic regression calibration against held-out ClinVar variants, ensuring that predicted probabilities correspond to observed pathogenic proportions (@sec-ch24-calibration). A score of 0.8 should mean that 80% of variants with similar scores are pathogenic, enabling meaningful clinical interpretation. *AlphaMissense* reports calibrated scores along with discrete classifications (likely pathogenic, likely benign, uncertain) at thresholds chosen to achieve specific precision targets.
 
-Performance on independent benchmarks substantially exceeds classical predictors. On deep mutational scanning datasets (where experimental fitness measurements provide ground truth independent of clinical labels), *AlphaMissense* achieves correlations of 0.5 to 0.7 depending on the assay, compared to 0.3 to 0.5 for *CADD* or *PolyPhen-2* *[Citation Needed]*. On ClinVar expert-reviewed variants held out from training, *AlphaMissense* achieves auROC values above 0.9, representing a meaningful improvement over the 0.85 to 0.88 typical of classical methods *[Citation Needed]*.
+Performance on independent benchmarks substantially exceeds classical predictors. On deep mutational scanning datasets (where experimental fitness measurements provide ground truth independent of clinical labels), *AlphaMissense* achieves correlations of 0.5 to 0.7 depending on the assay, compared to 0.3 to 0.5 for *CADD* or *PolyPhen-2* [@cheng_alphamissense_2023]. On ClinVar expert-reviewed variants held out from training, *AlphaMissense* achieves auROC of 0.94, representing a meaningful improvement over classical methods [@cheng_alphamissense_2023].
 
 The structural component proves essential for this performance. Ablation experiments removing *AlphaFold2* features degrade performance substantially, particularly for variants at protein-protein interfaces and buried core positions where local geometry determines functional impact. The protein language model captures evolutionary constraint; structural information explains why that constraint exists.
 
@@ -214,17 +214,17 @@ The structural component proves essential for this performance. Ablation experim
 
 ![Proteome-wide classification of 71 million variants](../figs/part_4/ch18/02-D-fig-alphamissense.svg)
 
-AlphaMissense: integrating evolution and structure for variant pathogenicity. (A) Architecture combines ESM evolutionary embeddings with AlphaFold2 structural features. (B) Training avoids ClinVar circularity by using population frequency as a pathogenicity proxy—common gnomAD variants are presumed benign, rare variants in disease-associated contexts are presumed pathogenic. (C) Pathogenicity scores vary appropriately by structural context: core and active site variants score highest, surface variants score lowest. (D) Proteome-wide application classifies 71 million possible human missense variants, creating the largest pathogenicity prediction resource.
+AlphaMissense: integrating evolution and structure for variant pathogenicity. (A) Architecture combines ESM evolutionary embeddings with AlphaFold2 structural features. (B) Training avoids ClinVar circularity by using population frequency as a pathogenicity proxy: common gnomAD variants are presumed benign, rare variants in disease-associated contexts are presumed pathogenic. (C) Pathogenicity scores vary appropriately by structural context: core and active site variants score highest, surface variants score lowest. (D) Proteome-wide application classifies 71 million possible human missense variants, creating the largest pathogenicity prediction resource.
 :::
 
 
 ## DNA-Based Variant Effect Prediction {#sec-ch18-dna-vep}
 
-Approximately 98% of the human genome lies outside protein-coding regions, yet noncoding variants contribute substantially to disease risk through effects on gene regulation, splicing, and genome stability *[Citation Needed]*. Predicting the impact of these variants requires models that operate directly on DNA sequence rather than translated protein.
+Approximately 98% of the human genome lies outside protein-coding regions, yet noncoding variants contribute substantially to disease risk through effects on gene regulation, splicing, and genome stability [@kundaje_integrative_2015]. Predicting the impact of these variants requires models that operate directly on DNA sequence rather than translated protein.
 
 ### Splice Variant Prediction with SpliceAI {#sec-ch18-spliceai}
 
-Splicing variants illustrate both the promise and current limitations of deep learning for noncoding VEP. Approximately 10% of pathogenic variants in ClinVar act through splicing mechanisms, disrupting the precise excision of introns from pre-mRNA *[Citation Needed]*. Classical approaches relied on position weight matrices matching consensus splice site sequences, achieving limited sensitivity for variants outside the core GT-AG dinucleotides.
+Splicing variants illustrate both the promise and current limitations of deep learning for noncoding VEP. A substantial fraction of pathogenic variants in ClinVar act through splicing mechanisms, disrupting the precise excision of introns from pre-mRNA [@jaganathan_predicting_2019]. Classical approaches relied on position weight matrices matching consensus splice site sequences, achieving limited sensitivity for variants outside the core GT-AG dinucleotides.
 
 *SpliceAI* applies the dilated convolutional architecture introduced in @sec-ch06-cnn to predict splice site usage from raw DNA sequence [@jaganathan_predicting_2019]. The architecture processes 10,000 nucleotides of context through 32 residual blocks with dilated convolutions (dilation rates increasing from 1 to 128), enabling the **receptive field** to span several kilobases while maintaining nucleotide resolution. Output heads predict splice donor probability, splice acceptor probability, and junction usage at each position.
 
@@ -377,7 +377,7 @@ The systematic biases that arise from distribution shift between calibration and
 
 ![Prevalence affects score interpretation](../figs/part_4/ch18/04-D-fig-calibration-clinical.svg)
 
-Calibration for clinical variant interpretation. (A) Raw model scores are not calibrated probabilities—neural networks exhibit systematic overconfidence, clustering predictions near 0 and 1. (B) Calibration curves reveal and correct probability bias; post-calibration predictions track the diagonal, providing accurate probability estimates. (C) Threshold selection depends on clinical context: screening applications favor high sensitivity, diagnostic applications balance sensitivity and specificity, confirmation applications favor high specificity. (D) Clinical prevalence dramatically affects interpretation—the same score means different things in healthy populations versus rare disease clinics. Proper clinical deployment requires calibration and prevalence-adjusted interpretation.
+Calibration for clinical variant interpretation. (A) Raw model scores are not calibrated probabilities; neural networks exhibit systematic overconfidence, clustering predictions near 0 and 1. (B) Calibration curves reveal and correct probability bias; post-calibration predictions track the diagonal, providing accurate probability estimates. (C) Threshold selection depends on clinical context: screening applications favor high sensitivity, diagnostic applications balance sensitivity and specificity, confirmation applications favor high specificity. (D) Clinical prevalence dramatically affects interpretation: the same score means different things in healthy populations versus rare disease clinics. Proper clinical deployment requires calibration and prevalence-adjusted interpretation.
 :::
 
 ### Mapping to ACMG Categories {#sec-ch18-acmg-mapping}
@@ -463,7 +463,7 @@ Consider two variants with identical *AlphaMissense* scores of 0.65:
 3. How would you communicate the different confidence levels to a clinician?
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-Variant B has higher epistemic uncertainty because the model has limited training data for orphan genes with sparse evolutionary sampling. For Variant A in BRCA1, the intermediate score more likely reflects aleatoric uncertainty—genuine biological ambiguity about pathogenicity given extensive characterization data. Communication to clinicians should distinguish these: "For BRCA1, the intermediate score reflects uncertain biological effect; for the orphan gene, the score itself is uncertain due to limited data and should be interpreted cautiously."
+Variant B has higher epistemic uncertainty because the model has limited training data for orphan genes with sparse evolutionary sampling. For Variant A in BRCA1, the intermediate score more likely reflects aleatoric uncertainty (genuine biological ambiguity about pathogenicity) given extensive characterization data. Communication to clinicians should distinguish these: "For BRCA1, the intermediate score reflects uncertain biological effect; for the orphan gene, the score itself is uncertain due to limited data and should be interpreted cautiously."
 :::
 :::
 
@@ -494,7 +494,7 @@ Distance-based methods compare new inputs to training examples in representation
 
 ![Selective prediction improves reliability](../figs/part_4/ch18/05-D-fig-vep-uncertainty.svg)
 
-Uncertainty quantification for variant effect prediction. (A) Aleatoric uncertainty (inherent data ambiguity) reflects context-dependent effects that cannot be reduced. Epistemic uncertainty (model limitations) can be reduced with more training data. (B) Ensemble disagreement provides empirical uncertainty estimates—variance across model runs indicates prediction reliability. (C) Distance from training distribution flags out-of-distribution variants requiring caution. (D) Selective prediction uses uncertainty to abstain on difficult cases, achieving higher accuracy by routing uncertain variants to expert review rather than providing unreliable predictions.
+Uncertainty quantification for variant effect prediction. (A) Aleatoric uncertainty (inherent data ambiguity) reflects context-dependent effects that cannot be reduced. Epistemic uncertainty (model limitations) can be reduced with more training data. (B) Ensemble disagreement provides empirical uncertainty estimates; variance across model runs indicates prediction reliability. (C) Distance from training distribution flags out-of-distribution variants requiring caution. (D) Selective prediction uses uncertainty to abstain on difficult cases, achieving higher accuracy by routing uncertain variants to expert review rather than providing unreliable predictions.
 :::
 
 @sec-ch24-uncertainty develops uncertainty quantification methods in detail, including practical implementation guidance and evaluation metrics. For VEP applications, the key insight is that uncertainty estimates complement point predictions: high-confidence predictions can inform clinical decisions; low-confidence predictions should prompt additional evidence gathering rather than blind acceptance of model outputs.
@@ -506,7 +506,7 @@ Having surveyed current foundation model approaches, we can now directly address
 
 ### Improved Discrimination {#sec-ch18-improved-discrimination}
 
-On standard benchmarks, foundation model VEP methods consistently outperform classical predictors. *AlphaMissense* achieves auROC of 0.91 on held-out ClinVar missense variants compared to 0.85 for *CADD* *[Citation Needed]*. *SpliceAI* detects pathogenic splicing variants with sensitivity of 0.90 compared to 0.60 for *MaxEntScan* *[Citation Needed]*. *GPN-MSA* scores correlate more strongly with deep mutational scanning measurements than phyloP or *GERP* *[Citation Needed]*.
+On standard benchmarks, foundation model VEP methods consistently outperform classical predictors. *AlphaMissense* achieves auROC of 0.94 on held-out ClinVar missense variants [@cheng_alphamissense_2023]. *SpliceAI* achieves AUC of 0.97-0.99 for splice site prediction, substantially exceeding classical methods like *MaxEntScan* [@jaganathan_predicting_2019]. *GPN-MSA* scores correlate more strongly with deep mutational scanning measurements than conservation-based methods [@benegas_gpn-msa_2024].
 
 These improvements reflect richer representations. Classical methods aggregate independent features (conservation, amino acid properties, domain annotations); foundation models learn nonlinear interactions among positions and capture patterns too subtle for manual feature engineering. The gap is largest for variants where context matters: buried core missense variants where structural environment determines impact, splice variants where cryptic site activation depends on flanking sequence, regulatory variants where motif disruption interacts with chromatin context.
 
@@ -548,7 +548,7 @@ For common variants in well-studied genes with extensive clinical annotation, th
 
 ![Remaining gaps require new approaches](../figs/part_4/ch18/06-D-fig-vep-gains-gaps.svg)
 
-Foundation model VEP: gains and remaining gaps. (A) Performance varies by protein family—well-characterized families achieve high accuracy while poorly-studied families show degraded performance. (B) Rare variants are harder to predict, particularly for recently evolved or population-specific variants. (C) Clinical impact assessment: FM predictions could reclassify significant fractions of VUS, but require appropriate validation. (D) Remaining gaps include complex variants (multi-allelic, structural), modifier effects, and tissue-specific pathogenicity. Foundation models have advanced VEP substantially but do not eliminate the need for functional validation.
+Foundation model VEP: gains and remaining gaps. (A) Performance varies by protein family; well-characterized families achieve high accuracy while poorly-studied families show degraded performance. (B) Rare variants are harder to predict, particularly for recently evolved or population-specific variants. (C) Clinical impact assessment: FM predictions could reclassify significant fractions of VUS, but require appropriate validation. (D) Remaining gaps include complex variants (multi-allelic, structural), modifier effects, and tissue-specific pathogenicity. Foundation models have advanced VEP substantially but do not eliminate the need for functional validation.
 :::
 
 ### Limitations of PLM-Based VEP {#sec-ch18-plm-limitations}
@@ -625,7 +625,7 @@ Foundation models have not yet incorporated haplotype information systematically
 ::: {#fig-long-read-vep}
 ![Long-read sequencing expands variant detection scope](../figs/part_4/ch18/07-fig-long-read-vep.svg)
 
-Long-read sequencing expands the scope of variant effect prediction. Short-read sequencing (top) detects primarily SNVs and small indels for which current FM-VEP approaches are well-suited. Long-read sequencing (bottom) reveals structural variants, repeat expansions, and complex haplotypes that current models cannot process. Realizing the clinical potential of long-read sequencing requires developing FM-VEP approaches for these new variant classes—a major open challenge.
+Long-read sequencing expands the scope of variant effect prediction. Short-read sequencing (top) detects primarily SNVs and small indels for which current FM-VEP approaches are well-suited. Long-read sequencing (bottom) reveals structural variants, repeat expansions, and complex haplotypes that current models cannot process. Realizing the clinical potential of long-read sequencing requires developing FM-VEP approaches for these new variant classes, a major open challenge.
 :::
 
 **Long-read-specific variant calling** increasingly incorporates deep learning approaches. *DeepVariant* and *Clair3* use convolutional and recurrent architectures to call variants from pileup images, with versions trained specifically on long-read data achieving accuracy that approaches or exceeds short-read calling for SNVs and small indels [@zheng_symphonizing_2022]. *PEPPER-Margin-DeepVariant* pipelines combine multiple neural network components to handle the higher error rates and distinct error profiles of nanopore sequencing. These tools demonstrate that deep learning can extract accurate variant calls from long-read data despite its different characteristics.
@@ -644,7 +644,7 @@ Genomes contain multiple variants that may interact. Compound heterozygosity (tw
 
 ### Phenotype Specificity {#sec-ch18-phenotype-specificity}
 
-A variant pathogenic for one phenotype may be benign for another. *SCN5A* variants cause distinct cardiac arrhythmia syndromes depending on their specific functional effects *[Citation Needed]*. Foundation models trained on pathogenic/benign labels average across phenotypes, potentially obscuring clinically relevant specificity. Phenotype-specific training requires much larger datasets than currently available.
+A variant pathogenic for one phenotype may be benign for another. *SCN5A* variants, for example, cause distinct cardiac arrhythmia syndromes (Long QT type 3, Brugada syndrome, conduction disease) depending on whether mutations produce gain-of-function or loss-of-function effects on sodium channel activity. Foundation models trained on pathogenic/benign labels average across phenotypes, potentially obscuring clinically relevant specificity. Phenotype-specific training requires much larger datasets than currently available.
 
 ### Temporal and Environmental Context {#sec-ch18-temporal-context}
 
@@ -693,29 +693,29 @@ Before reviewing the summary, test your recall:
 5. Identify three persistent challenges or limitations in foundation model-based VEP that require human judgment. For each, explain why current models struggle and what types of variants are most affected.
 
 :::{.callout-note collapse="true" title="Check Your Answers"}
-1. **Paradigm shift from classical to foundation model VEP**: Classical methods manually engineer features (conservation scores, amino acid properties, domain annotations) and train classifiers on labeled pathogenic/benign variants. Foundation models invert this: they learn representations from unlabeled sequences during pretraining (masked token prediction), discovering evolutionary constraints implicitly. Zero-shot scoring compares the likelihood of reference versus variant alleles given learned sequence context—variants that are evolutionarily unexpected (low likelihood) tend to be deleterious. This approach requires no pathogenicity labels because evolution has already conducted billions of experiments testing which variants are compatible with life.
+1. **Paradigm shift from classical to foundation model VEP**: Classical methods manually engineer features (conservation scores, amino acid properties, domain annotations) and train classifiers on labeled pathogenic/benign variants. Foundation models invert this: they learn representations from unlabeled sequences during pretraining (masked token prediction), discovering evolutionary constraints implicitly. Zero-shot scoring compares the likelihood of reference versus variant alleles given learned sequence context; variants that are evolutionarily unexpected (low likelihood) tend to be deleterious. This approach requires no pathogenicity labels because evolution has already conducted billions of experiments testing which variants are compatible with life.
 
 2. **Protein vs. DNA approaches comparison**: Protein approaches (*ESM-1v*, *EVE*, *AlphaMissense*) operate on amino acid sequences and excel at missense variants. *ESM-1v* uses zero-shot likelihood ratios from protein language models. *EVE* fits variational autoencoders to MSAs, capturing co-evolution. *AlphaMissense* combines sequence with AlphaFold2 structural features for state-of-the-art missense prediction. DNA approaches (*SpliceAI*, *Enformer*, *GPN-MSA*, *Evo 2*) work on nucleotide sequences and cover all variant types. *SpliceAI* specializes in splice variants using dilated convolutions. *Enformer* predicts regulatory impacts. *GPN-MSA* and *Evo 2* provide DNA language model scores genome-wide, including noncoding regions where protein models cannot operate.
 
-3. **Calibration importance and reliability diagrams**: Calibration ensures that predicted probabilities match observed frequencies—a score of 0.8 should mean 80% of variants with that score are truly pathogenic. Without calibration, scores are arbitrary and cannot guide clinical decisions. Reliability diagrams plot predicted probabilities (x-axis) against observed pathogenic proportions (y-axis). Perfect calibration falls on the diagonal. Points below indicate overconfidence (model predicts higher probabilities than reality); points above indicate underconfidence. Neural networks typically overpredict extreme probabilities and require post-hoc calibration (temperature scaling, isotonic regression) before clinical use.
+3. **Calibration importance and reliability diagrams**: Calibration ensures that predicted probabilities match observed frequencies: a score of 0.8 should mean 80% of variants with that score are truly pathogenic. Without calibration, scores are arbitrary and cannot guide clinical decisions. Reliability diagrams plot predicted probabilities (x-axis) against observed pathogenic proportions (y-axis). Perfect calibration falls on the diagonal. Points below indicate overconfidence (model predicts higher probabilities than reality); points above indicate underconfidence. Neural networks typically overpredict extreme probabilities and require post-hoc calibration (temperature scaling, isotonic regression) before clinical use.
 
 4. **Combining evidence strategies and double-counting**: Three strategies:
 
-   1. Modular routing—apply different models to different variant types (AlphaMissense for missense, SpliceAI for splice sites).
+   1. Modular routing: apply different models to different variant types (AlphaMissense for missense, SpliceAI for splice sites).
 
-   2. Score aggregation—combine predictions from multiple models using ensemble methods or Bayesian integration with careful weighting.
+   2. Score aggregation: combine predictions from multiple models using ensemble methods or Bayesian integration with careful weighting.
 
-   3. Tiered filtering—use fast models for initial screening, expensive models for prioritized variants.
+   3. Tiered filtering: use fast models for initial screening, expensive models for prioritized variants.
 
    The double-counting problem arises when multiple predictors share information sources (e.g., *AlphaMissense* and *ESM-1v* both encode evolutionary constraint). Treating correlated predictions as independent evidence overweights shared signals. Solution: assess correlations, group predictors by information source, select one representative from each group for ACMG evidence, and document tool correlations in laboratory validation records.
 
 5. **Three persistent challenges**:
 
-   1. **Structural variants** (deletions, duplications, inversions)—current sequence models cannot represent architectural rearrangements; they are trained on SNVs and small indels.
+   1. **Structural variants** (deletions, duplications, inversions): current sequence models cannot represent architectural rearrangements; they are trained on SNVs and small indels.
 
-   2. **Combinatorial/compound effects**—models score variants independently, missing compound heterozygosity where two individually tolerable variants together cause disease, and haplotype effects where phasing determines pathogenicity.
+   2. **Combinatorial/compound effects**: models score variants independently, missing compound heterozygosity where two individually tolerable variants together cause disease, and haplotype effects where phasing determines pathogenicity.
 
-   3. **Population bias**—training data overrepresent European ancestry; models perform worse for African and Asian populations where variants are undersampled in ClinVar/gnomAD, creating systematic disparities in prediction accuracy for underrepresented groups.
+   3. **Population bias**: training data overrepresent European ancestry; models perform worse for African and Asian populations where variants are undersampled in ClinVar/gnomAD, creating systematic disparities in prediction accuracy for underrepresented groups.
 
    These limitations require human judgment to integrate additional evidence (segregation, functional assays, ancestry-appropriate interpretation).
 :::

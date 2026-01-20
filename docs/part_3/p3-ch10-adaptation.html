@@ -614,7 +614,7 @@ Chapter Overview
 <li>Apply strategies for handling extreme class imbalance in variant classification</li>
 <li>Validate transfer learning claims and detect common pitfalls</li>
 </ol>
-<p><strong>Why This Matters:</strong> When you deploy a foundation model to a new clinical population, tissue type, or prediction task, “frozen features” may underperform while “full fine-tuning” may catastrophically overfit. Knowing how to adapt models efficiently is the difference between deploying a useful tool and wasting months on failed experiments. The skills in this chapter apply to every clinical genomics project that builds on pretrained models—which, increasingly, means every project.</p>
+<p><strong>Why This Matters:</strong> When you deploy a foundation model to a new clinical population, tissue type, or prediction task, “frozen features” may underperform while “full fine-tuning” may catastrophically overfit. Knowing how to adapt models efficiently is the difference between deploying a useful tool and wasting months on failed experiments. The skills in this chapter apply to every clinical genomics project that builds on pretrained models, which, increasingly, means every project.</p>
 </div>
 </div>
 <p>A research hospital developing tissue-specific expression predictors faces an impossible choice. Frozen features from <em>Enformer</em> provide reasonable baselines, but full fine-tuning for each of fifty tissue types would require months of GPU time and risk overfitting the thousands of tissue-specific training examples. The team needs an intermediate approach: enough flexibility to improve over frozen features, enough constraint to prevent overfitting, enough efficiency to iterate across dozens of tissues.</p>
@@ -633,7 +633,7 @@ Key Insight: Why Low-Rank Works
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The success of LoRA rests on a remarkable empirical finding: task-specific adaptations often lie in a low-dimensional subspace of weight space. You do not need to modify all 500 million parameters to adapt a model for a new tissue type. Instead, a low-rank update (modifying perhaps 2-5 million parameters) captures most of the required adaptation while providing implicit regularization against overfitting. This is analogous to principal component analysis, where a few components often capture most variance in high-dimensional data.</p>
+<p>The success of LoRA rests on an important empirical finding: task-specific adaptations often lie in a low-dimensional subspace of weight space. You do not need to modify all 500 million parameters to adapt a model for a new tissue type. Instead, a low-rank update (modifying perhaps 2-5 million parameters) captures most of the required adaptation while providing implicit regularization against overfitting. This is analogous to principal component analysis, where a few components often capture most variance in high-dimensional data.</p>
 </div>
 </div>
 <p>The efficiency gains prove substantial. A transformer with 500 million parameters might require updating only 2 to 5 million LoRA parameters (representing the low-rank decompositions applied to attention weight matrices), reducing memory requirements by an order of magnitude compared with full fine-tuning. This efficiency enables training on consumer GPUs for models that would otherwise require specialized infrastructure, and enables systematic hyperparameter search that would be prohibitive with full parameter updates. Zhou et al.&nbsp;demonstrated that LoRA adapters on <em>Nucleotide Transformer</em> enable tissue-specific chromatin accessibility prediction, where separate low-rank matrices capture tissue-specific regulatory patterns while the pretrained backbone encodes general sequence understanding <span class="citation" data-cites="zhou_dnabert-2_2024">(<a href="../bib/references.html#ref-zhou_dnabert-2_2024" role="doc-biblioref">Zhou et al. 2024</a>)</span>. Clinical applications of parameter-efficient fine-tuning for risk prediction appear in <a href="../part_7/p7-ch28-clinical-risk.html" class="quarto-xref"><span>Chapter 28</span></a>.</p>
@@ -1078,7 +1078,7 @@ Check Scenario 2
 </div>
 <div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Data quantity (3,000) puts you in LoRA range (500-5,000). However, two complications: (1) <em>HyenaDNA</em> is a decoder, so you face the layer hunting problem—budget for systematic layer probing before committing to adaptation layers. (2) Long-range interactions (50kb) may stress even long-context architectures. Strategy: LoRA with rank 16-32, applied across middle layers, with explicit layer probing experiment first. Compare against frozen features from multiple layers.</p>
+<p>Data quantity (3,000) puts you in LoRA range (500-5,000). However, two complications: (1) <em>HyenaDNA</em> is a decoder, so you face the layer hunting problem; budget for systematic layer probing before committing to adaptation layers. (2) Long-range interactions (50kb) may stress even long-context architectures. Strategy: LoRA with rank 16-32, applied across middle layers, with explicit layer probing experiment first. Compare against frozen features from multiple layers.</p>
 </div>
 </div>
 </div>

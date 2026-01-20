@@ -39,7 +39,7 @@ Convolutional filters are learned position weight matrices. The difference from 
 :::
 
 ::: {.callout-note title="Worked Example: Convolution Computation"}
-Consider a filter of width 4 learning to detect the TATA box motif. Why width 4? The TATA box consensus is approximately 4-6 bp, so a 4-bp filter can capture its core pattern. Filters narrower than the motif miss context; filters much wider waste capacity on flanking sequence that varies between binding sites. The first CNN layer typically uses multiple filter widths (4, 8, 12, 16 bp) to capture motifs of different lengths simultaneously—transcription factor binding sites range from 6-12 bp, so no single width suffices.
+Consider a filter of width 4 learning to detect the TATA box motif. Why width 4? The TATA box consensus is approximately 4-6 bp, so a 4-bp filter can capture its core pattern. Filters narrower than the motif miss context; filters much wider waste capacity on flanking sequence that varies between binding sites. The first CNN layer typically uses multiple filter widths (4, 8, 12, 16 bp) to capture motifs of different lengths simultaneously; transcription factor binding sites range from 6-12 bp, so no single width suffices.
 
 After training, the filter weights might be:
 
@@ -88,7 +88,7 @@ Between convolutional layers, spatial resolution must decrease while the recepti
 ::: {.callout-note title="Deep Dive: Receptive Field"}
 **For biology readers:** The receptive field is how much input sequence can influence each output prediction:
 
-**The concept:** Imagine looking at a photo through a small window—you can only see a portion at a time. A CNN's receptive field is like this window: it determines how much genomic context the model can "see" when making predictions at any position.
+**The concept:** Imagine looking at a photo through a small window; you can only see a portion at a time. A CNN's receptive field is like this window: it determines how much genomic context the model can "see" when making predictions at any position.
 
 **How it grows:**
 
@@ -104,7 +104,7 @@ Between convolutional layers, spatial resolution must decrease while the recepti
 | *SpliceAI* | ~10,000 bp | Splice sites + nearby regulatory elements |
 | *Enformer* | ~200,000 bp | Enhancer-promoter interactions |
 
-**The limitation:** Biology doesn't respect receptive field boundaries. If an enhancer 50 kb from a gene affects its expression, a model with 10 kb receptive field cannot learn this relationship—it simply cannot see both elements simultaneously. This architectural ceiling motivated the move to attention mechanisms.
+**The limitation:** Biology does not respect receptive field boundaries. If an enhancer 50 kb from a gene affects its expression, a model with 10 kb receptive field cannot learn this relationship; it simply cannot see both elements simultaneously. This architectural ceiling motivated the move to attention mechanisms.
 :::
 
 ::: {.callout-warning title="Mathematical Detail"}
@@ -184,7 +184,7 @@ The **multi-task learning** formulation proved essential for generalization. Pre
 
 3. **Transfer:** Features learned from abundant data (e.g., well-studied cell lines) help predictions for scarce data (e.g., rare cell types with few experiments).
 
-**The biology analog:** Think of it like this—understanding general transcription factor binding helps you interpret specific experiments across many cell types, rather than starting from scratch for each.
+**The biology analog:** Think of it like this: understanding general transcription factor binding helps you interpret specific experiments across many cell types, rather than starting from scratch for each.
 
 **Trade-off:** Multi-task learning assumes tasks share structure. If tasks are unrelated, forcing them to share features can hurt performance. For chromatin features, the shared regulatory grammar makes multi-task learning highly effective.
 :::
@@ -433,10 +433,10 @@ The receptive field ceiling of convolutional architectures. Context windows of r
 :::
 
 ::: {.callout-tip title="Knowledge Check"}
-Before proceeding, ensure you can explain: (1) Why can't a CNN learn dependencies that exceed its receptive field, even with more training data? (2) What biological phenomena require context longer than typical CNN receptive fields? (3) What architectural approaches extend receptive fields in CNNs?
+Before proceeding, ensure you can explain: (1) Why cannot a CNN learn dependencies that exceed its receptive field, even with more training data? (2) What biological phenomena require context longer than typical CNN receptive fields? (3) What architectural approaches extend receptive fields in CNNs?
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-1. A CNN cannot learn dependencies beyond its receptive field because positions outside this window have zero gradient with respect to the output—information simply cannot flow between them, regardless of training data quantity.
+1. A CNN cannot learn dependencies beyond its receptive field because positions outside this window have zero gradient with respect to the output; information simply cannot flow between them, regardless of training data quantity.
 
 2. Distal enhancer-promoter interactions (tens of kilobases), long-range chromatin loops, TAD boundary effects, and coordinated regulation across large genomic domains all require longer context than typical CNN receptive fields of 200-1000 bp.
 
@@ -483,13 +483,13 @@ For each genomic modeling scenario, which architecture would you choose and why?
 4. Building a general-purpose sequence encoder for multiple downstream tasks including both local motif detection and long-range chromatin contact prediction.
 
 :::{.callout-note collapse="true" title="Check Your Answers"}
-1. **CNN (DeepSEA/Basset-style)**—Local motif detection within 1 kb is well within CNN receptive fields; convolutional filters directly learn position weight matrix-like patterns without needing long-range context. CNNs are also more computationally efficient for this task.
+1. **CNN (DeepSEA/Basset-style)**: Local motif detection within 1 kb is well within CNN receptive fields; convolutional filters directly learn position weight matrix-like patterns without needing long-range context. CNNs are also more computationally efficient for this task.
 
-2. **Attention-based (Enformer/transformer)**—The 50 kb distance between the variant and gene far exceeds CNN receptive fields; only attention mechanisms can compute direct dependencies across such distances. This task requires the long-range integration that transformers provide.
+2. **Attention-based (Enformer/transformer)**: The 50 kb distance between the variant and gene far exceeds CNN receptive fields; only attention mechanisms can compute direct dependencies across such distances. This task requires the long-range integration that transformers provide.
 
-3. **Dilated CNN (SpliceAI-style)**—Splice prediction requires ~10 kb context (branch point, donor, acceptor), which dilated convolutions reach efficiently. SpliceAI achieves clinical-grade performance; attention adds computational cost without clear benefit for this specific, well-defined task.
+3. **Dilated CNN (SpliceAI-style)**: Splice prediction requires ~10 kb context (branch point, donor, acceptor), which dilated convolutions reach efficiently. SpliceAI achieves clinical-grade performance; attention adds computational cost without clear benefit for this specific, well-defined task.
 
-4. **Hybrid (Enformer-style: CNN + attention)**—Local motif detection benefits from CNN inductive biases, while long-range tasks require attention. Hybrid architectures use convolutional layers for initial motif extraction, then attention layers to integrate across the full context, combining the strengths of both approaches.
+4. **Hybrid (Enformer-style: CNN + attention)**: Local motif detection benefits from CNN inductive biases, while long-range tasks require attention. Hybrid architectures use convolutional layers for initial motif extraction, then attention layers to integrate across the full context, combining the strengths of both approaches.
 :::
 :::
 
