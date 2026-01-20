@@ -469,7 +469,42 @@ The following table provides a decision framework for selecting mitigation strat
 
 Design-based approaches provide the most robust protection against confounding because they prevent the problem rather than attempting to correct it statistically. When cases and controls are matched on potential confounders before data collection, those variables cannot drive spurious associations regardless of model complexity.
 
-Matching strategies balance cases and controls on age, sex, ancestry, recruitment site, and sequencing platform. For ancestry, matching can use self-reported categories, genetic principal components, or fine-scale population assignments depending on the granularity required. Why does matching work when statistical adjustment could handle the same variables? Matching eliminates confounding by design rather than by assumption. Statistical adjustment assumes the functional form relating confounders to outcomes is correctly specified; if the true relationship is nonlinear or involves interactions the model does not include, residual confounding persists. Matching makes no such assumptions: when cases and controls have identical confounder distributions, no functional form is needed because there is no confounder-outcome variation to model. Exact matching (requiring identical values) provides the strongest protection but may be infeasible when confounders are continuous or when the pool of potential controls is limited. **Propensity score matching** or coarsened exact matching offer practical alternatives that achieve approximate balance across multiple confounders simultaneously.
+Matching strategies balance cases and controls on age, sex, ancestry, recruitment site, and sequencing platform. For ancestry, matching can use self-reported categories, genetic principal components, or fine-scale population assignments depending on the granularity required. Why does matching work when statistical adjustment could handle the same variables? Matching eliminates confounding by design rather than by assumption. Statistical adjustment assumes the functional form relating confounders to outcomes is correctly specified; if the true relationship is nonlinear or involves interactions the model does not include, residual confounding persists. Matching makes no such assumptions: when cases and controls have identical confounder distributions, no functional form is needed because there is no confounder-outcome variation to model. Exact matching (requiring identical values) provides the strongest protection but may be infeasible when confounders are continuous or when the pool of potential controls is limited. **PCA-based genetic matching**, **genetic similarity score matching**, or **coarsened exact matching** offer practical alternatives that achieve approximate balance across multiple confounders simultaneously.
+
+::: {.callout-note title="Matching Methods in Genomic Case-Control Studies"}
+
+Genomic case-control studies have developed specialized matching approaches distinct from classical epidemiological methods:
+
+- **PCA-based matching** (e.g., PCAmatchR): Matches cases to controls using weighted Mahalanobis distance on ancestry principal components, with weights proportional to variance explained by each PC.
+- **Genetic similarity score (GSM) matching**: Calculates pairwise genetic similarity directly from genome-wide genotypes, then matches based on similarity scores.
+- **Coarsened exact matching (CEM)**: Coarsens continuous confounders into strata and requires exact matching within strata. Works well for fewer than ~10 strong confounders but can produce extreme sample size losses in high-dimensional settings.
+
+**Why not propensity score matching?** Propensity score matching estimates $P(T=1 \mid X)$, the probability of receiving a treatment given confounder values. In case-control genomic studies, disease status is the *outcome*, not a treatment assignment. There is no "treatment" whose assignment probability can be modeled. When propensity score methods do appear in genomic literature (e.g., PCAPS), they typically address association testing rather than case-control matching at the study design stage.
+
+**Prognostic score matching** is the conceptual mirror: it estimates $\mathbb{E}[Y \mid X, T=0]$ and matches on predicted disease risk. This approach is appropriate when you want to balance expected outcomes rather than treatment assignment probabilities. See the sidebar below for the distinction.
+:::
+
+::: {.callout-tip title="Propensity Scores vs. Prognostic Scores"}
+
+These two matching approaches are often confused but address different causal structures:
+
+| | **Propensity Score** | **Prognostic Score** |
+|---|---|---|
+| **Definition** | $P(T=1 \mid X)$ | $\mathbb{E}[Y \mid X, T=0]$ |
+| **What it models** | Probability of receiving treatment | Expected outcome under control conditions |
+| **Estimated in** | Full sample (all subjects) | Untreated/control group only |
+| **Balances** | Treatment assignment mechanism | Outcome risk factors |
+| **Use case** | Observational studies estimating treatment effects | Studies where outcome prediction matters more than treatment assignment |
+
+**When to use which:**
+
+- **Propensity scores**: When you have a clear treatment/exposure and want to estimate its causal effect. Classic examples include drug efficacy studies or policy interventions.
+- **Prognostic scores**: When disease status is the outcome and you want to match on predicted risk. Appropriate for case-control studies where there is no "treatment assignment" to model.
+
+**Theoretical insight** [@hansen_prognostic_2008]: Prognostic scores directly balance what matters for outcome estimation (the expected outcome under control conditions) rather than balancing treatment assignment. A strong confounder of treatment assignment may be a weak predictor of outcome, and vice versa. Prognostic matching ensures matched pairs have similar *expected outcomes*, making any observed difference more attributable to the exposure of interest.
+
+**Practical consideration**: Propensity score matching is "outcome-blind," allowing you to finalize matched cohorts without examining outcomes and reducing researcher degrees of freedom. Prognostic score matching requires modeling the outcome, which some view as violating the design/analysis separation. Doubly robust approaches combine both propensity and prognostic scores, providing valid causal estimates if *either* model (but not necessarily both) is correctly specified [@leacy_joint_2013].
+:::
 
 Balanced sampling during training prevents models from optimizing primarily for majority patterns. When one ancestry group comprises 80% of training data, gradient updates predominantly reflect that group's patterns, and minority group performance suffers. Down-sampling the majority group or up-sampling minority groups within mini-batches ensures that all groups contribute meaningfully to parameter updates. The trade-off is reduced effective sample size: discarding majority group samples wastes information, while up-sampling minority groups risks overfitting to limited examples.
 
