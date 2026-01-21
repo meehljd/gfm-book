@@ -523,6 +523,7 @@ window.Quarto = {
   <li><a href="#sec-ch15-hyenadna" id="toc-sec-ch15-hyenadna" class="nav-link" data-scroll-target="#sec-ch15-hyenadna"><span class="header-section-number">15.5.1</span> <em>HyenaDNA</em>: Megabase Context via Implicit Convolutions</a></li>
   <li><a href="#sec-ch15-caduceus" id="toc-sec-ch15-caduceus" class="nav-link" data-scroll-target="#sec-ch15-caduceus"><span class="header-section-number">15.5.2</span> <em>Caduceus</em>: Bidirectional Processing with Reverse-Complement Equivariance</a></li>
   <li><a href="#sec-ch15-evo2" id="toc-sec-ch15-evo2" class="nav-link" data-scroll-target="#sec-ch15-evo2"><span class="header-section-number">15.5.3</span> <em>Evo 2</em>: Genome-Scale Modeling Across the Tree of Life</a></li>
+  <li><a href="#sec-ch15-ntv3" id="toc-sec-ch15-ntv3" class="nav-link" data-scroll-target="#sec-ch15-ntv3"><span class="header-section-number">15.5.4</span> Architectural Convergence: NTv3 and U-Net Hybrids</a></li>
   </ul></li>
   <li><a href="#sec-ch15-training-data" id="toc-sec-ch15-training-data" class="nav-link" data-scroll-target="#sec-ch15-training-data"><span class="header-section-number">15.6</span> Training Data and What Models Learn</a>
   <ul class="collapse">
@@ -1058,6 +1059,29 @@ Table&nbsp;15.1: Landmark DNA language models representing distinct architectura
 </div>
 <p>Beyond the models detailed above, the Genomic Language Model (gLM) demonstrates that architectural innovations beyond standard BERT encoders (including mixture-of-experts and improved positional encodings) can yield competitive performance while enabling joint DNA-protein modeling <span class="citation" data-cites="cornman_glm_2024">(<a href="../bib/references.html#ref-cornman_glm_2024" role="doc-biblioref">Cornman et al. 2024</a>)</span>. This multimodal capability suggests future convergence between DNA and protein foundation models.</p>
 </section>
+<section id="sec-ch15-ntv3" class="level3" data-number="15.5.4">
+<h3 data-number="15.5.4" class="anchored" data-anchor-id="sec-ch15-ntv3"><span class="header-section-number">15.5.4</span> Architectural Convergence: NTv3 and U-Net Hybrids</h3>
+<p>How do you achieve single-nucleotide resolution within megabase contexts? Pure transformers face quadratic costs. State space models sacrifice inductive biases. By late 2025, two independently developed models (<em>AlphaGenome</em> and <em>Nucleotide Transformer v3</em>) converged on a solution: U-Net-style hierarchical processing combined with transformers <span class="citation" data-cites="dalla-torre_nucleotide_v3_2025">(<a href="../bib/references.html#ref-dalla-torre_nucleotide_v3_2025" role="doc-biblioref"><strong>dalla-torre_nucleotide_v3_2025?</strong></a>)</span>. The convergence reflects a fundamental tradeoff between context length and nucleotide resolution that limited earlier DNA language models.</p>
+<p>Pure transformer architectures face quadratic cost in context length (see <a href="../part_2/p2-ch07-attention.html#sec-ch07-quadratic-barrier" class="quarto-xref"><span>Section 7.4.1</span></a>). A million-token context at single-nucleotide resolution would require prohibitive memory and compute. State space models like <em>Evo 2</em> and <em>HyenaDNA</em> solved the context problem through sub-quadratic architectures but sacrificed some of the inductive biases that make transformers effective for biological sequence. The U-Net hybrid offers a middle path.</p>
+<p>The architecture follows a multiscale strategy. An encoder pathway progressively downsamples the input sequence through strided convolutions, reducing a 1 megabase input to 1,024 high-level tokens that span 1kb each. A transformer processes these compressed tokens, capturing long-range dependencies within feasible computational budgets. A decoder pathway progressively upsamples through transposed convolutions, restoring single-nucleotide resolution while integrating global context through skip connections from the encoder.</p>
+<div id="fig-ntv3-architecture" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ntv3-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../figs/part_4/ch15/XX-fig-ntv3-architecture.svg" class="img-fluid figure-img"></p>
+<figcaption>NTv3 U-Net + Transformer architecture</figcaption>
+</figure>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ntv3-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.4: NTv3 U-Net hybrid architecture. The encoder (left) downsamples 1Mb input to 1024 tokens via strided convolutions, each token representing ~1kb. The transformer bottleneck (center) captures long-range dependencies at reduced resolution. The decoder (right) upsamples through transposed convolutions with skip connections, restoring nucleotide-level predictions informed by megabase context. This pattern enables single-nucleotide variant effect prediction within megabase regulatory contexts, solving the resolution-context tradeoff that limited earlier architectures.
+</figcaption>
+</figure>
+</div>
+<p>The practical benefit is single-nucleotide variant effect prediction within megabase contexts. A variant in an enhancer 500kb from its target promoter can be scored with awareness of the full regulatory neighborhood, including distal CTCF sites, topologically associating domain boundaries, and competing regulatory elements. Earlier models chose between limited context at high resolution (<em>DNABERT</em>: 512bp) or long context with coarse-grained outputs (<em>Enformer</em>: 200kb context but 128bp bins).</p>
+<p>The architectural pattern it validates makes NTv3 a likely production choice for the 2025-2027 deployment window as the successor to the widely deployed <em>Nucleotide Transformer 2.5B</em>. Hierarchical compression + transformer + hierarchical decompression is likely to appear in future regulatory and multi-omic models.</p>
+</section>
 </section>
 <section id="sec-ch15-training-data" class="level2" data-number="15.6">
 <h2 data-number="15.6" class="anchored" data-anchor-id="sec-ch15-training-data"><span class="header-section-number">15.6</span> Training Data and What Models Learn</h2>
@@ -1096,7 +1120,7 @@ Table&nbsp;15.1: Landmark DNA language models representing distinct architectura
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-evo2-training-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;15.4: Evo 2 training regime for pan-genomic understanding and generation. (A) Training data spans 2.7 trillion nucleotides across all domains of life, enabling learning of universal and lineage-specific sequence patterns. (B) Context length curriculum progressively extends from 8k to 1M tokens, maintaining stable optimization through each transition. (C) The resulting model generates novel sequences with emergent biological coherence: appropriate gene structure, regulatory elements, and statistical properties matching natural genomes. This combination of massive scale, architectural innovation, and careful training regime enables both understanding and generation of genomic sequence.
+Figure&nbsp;15.5: Evo 2 training regime for pan-genomic understanding and generation. (A) Training data spans 2.7 trillion nucleotides across all domains of life, enabling learning of universal and lineage-specific sequence patterns. (B) Context length curriculum progressively extends from 8k to 1M tokens, maintaining stable optimization through each transition. (C) The resulting model generates novel sequences with emergent biological coherence: appropriate gene structure, regulatory elements, and statistical properties matching natural genomes. This combination of massive scale, architectural innovation, and careful training regime enables both understanding and generation of genomic sequence.
 </figcaption>
 </figure>
 </div>
@@ -1312,7 +1336,7 @@ Table&nbsp;15.2: What DNA language models can and cannot learn from sequence alo
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dna-lm-probing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;15.5: Probing analysis reveals what DNA language models learn, and what they cannot. (A) Frozen embeddings support high-accuracy linear classification of genomic element types including promoters, enhancers, and splice sites. (B) Model attention correlates with evolutionary conservation, suggesting learned focus on functionally important positions. (C) Attention patterns capture long-range regulatory relationships between enhancers and promoters. (D) However, probing fails for context-dependent properties: tissue-specific activity, environmental responses, and 3D chromatin organization cannot be predicted from sequence representations alone. DNA language models learn sequence potential; realizing that potential requires cellular context they cannot access.
+Figure&nbsp;15.6: Probing analysis reveals what DNA language models learn, and what they cannot. (A) Frozen embeddings support high-accuracy linear classification of genomic element types including promoters, enhancers, and splice sites. (B) Model attention correlates with evolutionary conservation, suggesting learned focus on functionally important positions. (C) Attention patterns capture long-range regulatory relationships between enhancers and promoters. (D) However, probing fails for context-dependent properties: tissue-specific activity, environmental responses, and 3D chromatin organization cannot be predicted from sequence representations alone. DNA language models learn sequence potential; realizing that potential requires cellular context they cannot access.
 </figcaption>
 </figure>
 </div>
@@ -1388,7 +1412,7 @@ Check Your Answer
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dna-lm-benchmarks-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;15.6: Benchmark comparison across DNA language models. Heatmap shows relative performance on standardized genomic prediction tasks. Larger, newer models generally achieve higher performance, with particularly strong gains on tasks requiring long-range context (enhancer activity, gene expression) where architectural innovations enabling million-base contexts provide clear advantages. Performance on local tasks (splice prediction, promoter classification) is more saturated, with smaller models approaching larger model performance. These benchmarks primarily test frozen embedding quality; fine-tuning would yield different relative rankings.
+Figure&nbsp;15.7: Benchmark comparison across DNA language models. Heatmap shows relative performance on standardized genomic prediction tasks. Larger, newer models generally achieve higher performance, with particularly strong gains on tasks requiring long-range context (enhancer activity, gene expression) where architectural innovations enabling million-base contexts provide clear advantages. Performance on local tasks (splice prediction, promoter classification) is more saturated, with smaller models approaching larger model performance. These benchmarks primarily test frozen embedding quality; fine-tuning would yield different relative rankings.
 </figcaption>
 </figure>
 </div>

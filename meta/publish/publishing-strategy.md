@@ -295,11 +295,19 @@ If traditional publishers decline or impose unacceptable terms:
 
 ## 10. Next Steps
 
-1. **Immediate:** Complete manuscript cleanup (Phase 1)
-2. **Week 2:** Draft proposal materials
-3. **Week 3:** Identify specific editors at target publishers
-4. **Week 4:** Submit proposals to MIT Press and Cambridge UP
-5. **Ongoing:** Continue promoting web version; gather endorsements
+**Status as of 2026-01-20:** Round 1 submissions complete.
+
+| Step | Status | Date |
+|------|--------|------|
+| ~~Submit to MIT Press~~ | ✅ Done | 2026-01-13 |
+| ~~Submit to Cambridge UP~~ | ✅ Done | 2026-01-20 |
+| ~~Contact Mayo internal (Kenna Atherton)~~ | ✅ Done | 2026-01-09 |
+| Follow up with Mayo if no response | Pending | Early Feb 2026 |
+| Follow up with MIT if no response | Pending | Late Feb 2026 |
+| Follow up with Cambridge if no response | Pending | Early Mar 2026 |
+| Round 2 (Oxford, Springer) if needed | Pending | Apr 2026 |
+
+**Current action:** Wait for responses. Continue manuscript polish and promotion.
 
 ---
 

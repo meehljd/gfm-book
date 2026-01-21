@@ -261,9 +261,43 @@ Use this checklist to track manuscript readiness for publisher submission.
 
 ---
 
+## Submission Tracking
+
+| Publisher | Editor | Submitted | Expected Response | Status | Notes |
+|-----------|--------|-----------|-------------------|--------|-------|
+| Mayo Clinic Scientific Press | Kenna Atherton | 2026-01-09 | TBD | Awaiting response | Internal contact |
+| MIT Press | Janice Audet | 2026-01-13 | Mar-Apr 2026 | Awaiting response | Initial inquiry |
+| Cambridge UP | Megan Keirnan | 2026-01-20 | Mar-Apr 2026 | Awaiting response | Initial inquiry |
+
+### Response Timeline Expectations
+
+**Desk rejections** (editor decides not a fit): 1-3 weeks
+**Full review cycle** (sent for external review): 2-4 months
+**No response (ghosting)**: ~20-30% for initial inquiries; rare for invited proposals
+
+### Follow-Up Schedule
+
+| Publisher | Follow up if no response by | Action |
+|-----------|----------------------------|--------|
+| Mayo (Kenna) | Early Feb 2026 (~4 weeks) | Gentle internal follow-up |
+| MIT Press | Late Feb 2026 (~6 weeks) | Polite email follow-up |
+| Cambridge UP | Early Mar 2026 (~6 weeks) | Polite email follow-up |
+
+**Note:** One follow-up is expected and professional. If no response after follow-up, treat as soft pass and proceed to Round 2 (Oxford, Springer).
+
+---
+
 ## Notes
 
 *Use this space to track issues, decisions, and progress notes.*
+
+### 2026-01-20
+- **Round 1 submissions complete:**
+  - MIT Press (Janice Audet): Submitted 01/13
+  - Cambridge UP (Megan Keirnan): Submitted 01/20
+  - Mayo internal (Kenna Atherton): Submitted 01/09
+- Strategy: Wait for Round 1 responses before contacting Round 2 publishers (Oxford, Springer)
+- Next action: Follow up with Mayo internal early Feb if no response
 
 ### 2026-01-13 (Update 2)
 - **Verified structural fixes already complete**:

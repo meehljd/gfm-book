@@ -522,7 +522,8 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#sec-ch14-scaling-framework" id="toc-sec-ch14-scaling-framework" class="nav-link" data-scroll-target="#sec-ch14-scaling-framework"><span class="header-section-number">14.3.1</span> Chinchilla Framework and Genomic Constraints</a></li>
   <li><a href="#sec-ch14-empirical-scaling" id="toc-sec-ch14-empirical-scaling" class="nav-link" data-scroll-target="#sec-ch14-empirical-scaling"><span class="header-section-number">14.3.2</span> Empirical Scaling in Genomic Models</a></li>
-  <li><a href="#sec-ch14-emergence" id="toc-sec-ch14-emergence" class="nav-link" data-scroll-target="#sec-ch14-emergence"><span class="header-section-number">14.3.3</span> Emergent Capabilities</a></li>
+  <li><a href="#sec-ch14-downstream-scaling" id="toc-sec-ch14-downstream-scaling" class="nav-link" data-scroll-target="#sec-ch14-downstream-scaling"><span class="header-section-number">14.3.3</span> Downstream Scaling: A Modified Framework</a></li>
+  <li><a href="#sec-ch14-emergence" id="toc-sec-ch14-emergence" class="nav-link" data-scroll-target="#sec-ch14-emergence"><span class="header-section-number">14.3.4</span> Emergent Capabilities</a></li>
   </ul></li>
   <li><a href="#sec-ch14-learning-theory" id="toc-sec-ch14-learning-theory" class="nav-link" data-scroll-target="#sec-ch14-learning-theory"><span class="header-section-number">14.4</span> Theoretical Foundations: Why Foundation Models Generalize</a>
   <ul class="collapse">
@@ -901,8 +902,63 @@ Stop and Think
 </div>
 </div>
 </section>
-<section id="sec-ch14-emergence" class="level3" data-number="14.3.3">
-<h3 data-number="14.3.3" class="anchored" data-anchor-id="sec-ch14-emergence"><span class="header-section-number">14.3.3</span> Emergent Capabilities</h3>
+<section id="sec-ch14-downstream-scaling" class="level3" data-number="14.3.3">
+<h3 data-number="14.3.3" class="anchored" data-anchor-id="sec-ch14-downstream-scaling"><span class="header-section-number">14.3.3</span> Downstream Scaling: A Modified Framework</h3>
+<p>The Chinchilla scaling laws (<a href="#eq-14-01" class="quarto-xref">Equation&nbsp;<span>14.1</span></a>) govern pretraining loss, but foundation models are not deployed to minimize pretraining loss. They are adapted to downstream tasks: variant effect prediction, regulatory element classification, clinical risk stratification. A model that achieves excellent masked language modeling performance may fail when fine-tuned on limited task-specific labels. The critical question becomes: how do performance, required labeled data, and model capacity relate for downstream classification tasks built on foundation model embeddings?</p>
+<p>Traditional ML scaling laws do not directly apply. The <strong>Chinchilla</strong> framework balances model parameters against pretraining tokens, but downstream tasks substitute a different set of constraints: embedding quality (determined by pretraining), labeled examples available for adaptation, and the alignment between pretraining distribution and task distribution. Recent work has begun to characterize these relationships empirically.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Mathematical Detail: Downstream Task Scaling
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The downstream setting requires a modified framework because the bottleneck shifts from compute to labeled data quality. Based on synthesis of transfer learning literature <span class="citation" data-cites="hernandez_transfer_2021 iclr_downstream_2025">(<a href="../bib/references.html#ref-hernandez_transfer_2021" role="doc-biblioref"><strong>hernandez_transfer_2021?</strong></a>; <a href="../bib/references.html#ref-iclr_downstream_2025" role="doc-biblioref"><strong>iclr_downstream_2025?</strong></a>)</span>, downstream classifier performance can be decomposed:</p>
+<p><span class="math display">\[
+L_{downstream}(D_{ft}, E) = L_{irreducible} + \frac{A'}{E^{\alpha'}} + \frac{B'}{D_{ft}^{\beta'}}
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(L_{downstream}\)</span> = downstream task loss (classification or regression)</li>
+<li><span class="math inline">\(D_{ft}\)</span> = number of labeled fine-tuning examples</li>
+<li><span class="math inline">\(E\)</span> = embedding quality (proxy: pretraining loss, probe performance)</li>
+<li><span class="math inline">\(\alpha'\)</span> = embedding quality exponent (how much better embeddings help)</li>
+<li><span class="math inline">\(\beta'\)</span> = fine-tuning data exponent (how much more data helps)</li>
+<li><span class="math inline">\(L_{irreducible}\)</span> = task-specific noise floor</li>
+</ul>
+<p><strong>Key differences from pretraining scaling:</strong></p>
+<ol type="1">
+<li><span class="math inline">\(E\)</span> replaces model parameters <span class="math inline">\(N\)</span>: embedding quality matters more than raw model size once pretrained</li>
+<li><span class="math inline">\(\beta'\)</span> can exceed pretraining exponents: better embeddings amplify data efficiency gains</li>
+<li><span class="math inline">\(L_{irreducible}\)</span> depends on task-embedding alignment: mismatched tasks may never reach good performance</li>
+</ol>
+</div>
+</div>
+<p>Empirical evidence from protein and DNA language models supports sample efficiency claims. The <em>Nucleotide Transformer</em> study demonstrated that fine-tuning with 1,000 labeled examples matched performance of models trained from scratch on full datasets across 18 genomic prediction tasks <span class="citation" data-cites="dalla-torre_nucleotide_2023">(<a href="../bib/references.html#ref-dalla-torre_nucleotide_2023" role="doc-biblioref">Dalla-Torre et al. 2023</a>)</span>. <em>ULMFiT</em> established the canonical result: 100 labeled examples with transfer learning matched 10,000 examples without transfer on text classification <span class="citation" data-cites="howard_universal_2018">(<a href="../bib/references.html#ref-howard_universal_2018" role="doc-biblioref">Howard and Ruder 2018</a>)</span>. These represent 10-100x reductions in labeled data requirements.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stop and Think: Sample Efficiency Sources
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before reading on, consider: what properties of pretrained embeddings would enable a classifier to learn from fewer labeled examples? What types of patterns must the embeddings already capture?</p>
+<p><em>Hint: Compare training a linear classifier on one-hot encoded sequence versus training it on embeddings from a pretrained DNA language model.</em></p>
+</div>
+</div>
+<p>What determines sample efficiency? The literature identifies several factors. Pretraining-task alignment matters: a model pretrained on human regulatory sequences transfers more efficiently to human enhancer prediction than a model pretrained on bacterial genomes. Embedding dimensionality creates a tradeoff: higher-dimensional embeddings capture richer representations but require more labeled examples for linear probes to avoid overfitting. Layer selection proves task-dependent (<a href="../part_3/p3-ch10-adaptation.html#sec-ch10-layer-selection" class="quarto-xref"><span>Section 10.2</span></a>): optimal representations for variant effect prediction may reside in different layers than optimal representations for cell type classification. Fine-tuning strategy affects efficiency: gradual unfreezing and discriminative layer-wise learning rates preserve pretrained knowledge while adapting to new tasks.</p>
+<p>The <strong>zero-shot</strong> approach bypasses labeled data requirements entirely. Rather than training a downstream classifier, zero-shot methods use the pretrained model’s likelihood as a fitness proxy. For variant effect prediction, the log-likelihood ratio between mutant and wildtype sequences directly scores deleteriousness without any labeled pathogenicity examples (<a href="p4-ch18-vep-fm.html#sec-ch18-zeroshot-plm" class="quarto-xref"><span>Section 18.2.1</span></a>). <em>ESM-1v</em> demonstrated that zero-shot protein variant scoring outperformed supervised baselines on 17 of 41 deep mutational scanning benchmarks, establishing that pretraining alone can capture sufficient functional constraints for some prediction tasks <span class="citation" data-cites="meier_esm-1v_2021">(<a href="../bib/references.html#ref-meier_esm-1v_2021" role="doc-biblioref">Meier et al. 2021</a>)</span>.</p>
+<p>The workflow follows directly: start with zero-shot evaluation if task-appropriate, use linear probes to assess embedding quality with minimal labeled data (100-1,000 examples), and scale to full fine-tuning only when frozen embeddings prove insufficient. This inverts the traditional ML workflow, where supervised training is the default and unsupervised pretraining is an optional enhancement.</p>
+<p><strong>Open questions remain.</strong> What are the fitted values of <span class="math inline">\(\alpha'\)</span> and <span class="math inline">\(\beta'\)</span> for genomic classification tasks? How does class imbalance modify downstream scaling laws? Is there an emergence threshold below which foundation model embeddings provide no benefit over raw sequence features? These questions define the frontier of understanding how foundation models transform genomic prediction.</p>
+</section>
+<section id="sec-ch14-emergence" class="level3" data-number="14.3.4">
+<h3 data-number="14.3.4" class="anchored" data-anchor-id="sec-ch14-emergence"><span class="header-section-number">14.3.4</span> Emergent Capabilities</h3>
 <p>Perhaps the most intriguing aspect of foundation model scaling is the emergence of qualitatively new capabilities at sufficient scale. Emergence refers to abilities that are absent or negligible in smaller models but appear discontinuously as models grow. Think of it like learning to ride a bicycle: you cannot ride “a little bit”—you wobble and fall until suddenly, with enough practice, you can balance. The capability emerges all at once rather than improving gradually. Similarly, certain model capabilities remain effectively zero until the model crosses a threshold, then appear seemingly from nowhere.</p>
 <p>In large language models, emergent capabilities include multi-step reasoning, code generation, and in-context learning. These capabilities appear at model scales of roughly <span class="math inline">\(10^{10}\)</span> parameters and above, with no clear precursor in smaller models <span class="citation" data-cites="wei_emergent_2022">(<a href="../bib/references.html#ref-wei_emergent_2022" role="doc-biblioref">Wei et al. 2022</a>)</span>.</p>
 <p>Genomic foundation models exhibit analogous emergence, though the capability thresholds are less well characterized. The most striking example involves structural understanding from sequence: <em>ESM-2</em> at sufficient scale produces contact maps and secondary structure predictions from single sequences with accuracy approaching multiple sequence alignment methods like <em>trRosetta</em> <span class="citation" data-cites="lin_esm-2_2022">(<a href="../bib/references.html#ref-lin_esm-2_2022" role="doc-biblioref">Lin et al. 2022</a>)</span>. Smaller <em>ESM</em> models show no meaningful structural understanding. This capability emerges at approximately 650 million parameters and continues improving with scale.</p>
@@ -1070,7 +1126,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>At this point, you should be able to distinguish between the three model families covered so far. Without looking back, try to answer: What is the key difference between DNA language models and sequence-to-function models in terms of their training objectives? Which family would you choose if you needed to predict enhancer activity in a novel cell type not represented in existing training data?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1079,7 +1135,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>DNA language models use self-supervised objectives (masked language modeling or next-token prediction) on raw sequence without functional labels, while sequence-to-function models train with supervised multi-task prediction on thousands of chromatin and expression assays. For a novel cell type, DNA language models would be preferable because they learn general sequence patterns that transfer across contexts, whereas sequence-to-function models are tied to the specific cell types and assays in their training data.</p>
 </div>
@@ -1394,7 +1450,7 @@ Test Yourself
 <li><p>When should you build a foundation model from scratch versus adapting an existing one? What are the key decision factors in the build-versus-use hierarchy?</p></li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1403,7 +1459,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Foundation vs.&nbsp;task-specific models</strong>: Foundation models are distinguished by their ability to transfer to diverse downstream tasks through embeddings or lightweight adaptation, not by their size alone. Self-supervised pretraining enables transfer because the model must learn general features useful for reconstructing any genomic context (e.g., how motifs combine, sequence composition patterns, functional vs.&nbsp;non-functional sequence). In contrast, supervised training on narrow tasks produces features specifically optimized for that task (e.g., splice site prediction learns GT-AG consensus and branch points), which may be irrelevant or misleading for other applications.</p></li>
@@ -1462,6 +1518,9 @@ Dalla-Torre, Hugo, Liam Gonzalez, Javier Mendoza-Revilla, Nicolas Lopez Carranza
 <div id="ref-hoffmann_training_2022" class="csl-entry" role="listitem">
 Hoffmann, Jordan, Sebastian Borgeaud, Arthur Mensch, Elena Buchatskaya, Trevor Cai, Eliza Rutherford, Diego de Las Casas, et al. 2022. <span>“Training <span>Compute</span>-<span>Optimal</span> <span>Large</span> <span>Language</span> <span>Models</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2203.15556">https://doi.org/10.48550/arXiv.2203.15556</a>.
 </div>
+<div id="ref-howard_universal_2018" class="csl-entry" role="listitem">
+Howard, Jeremy, and Sebastian Ruder. 2018. <span>“Universal <span>Language</span> <span>Model</span> <span>Fine</span>-Tuning for <span>Text</span> <span>Classification</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.1801.06146">https://doi.org/10.48550/arXiv.1801.06146</a>.
+</div>
 <div id="ref-hu_lora_2021" class="csl-entry" role="listitem">
 Hu, Edward J., Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, and Weizhu Chen. 2021. <span>“<span>LoRA</span>: <span>Low</span>-<span>Rank</span> <span>Adaptation</span> of <span>Large</span> <span>Language</span> <span>Models</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2106.09685">https://doi.org/10.48550/arXiv.2106.09685</a>.
 </div>
@@ -1479,6 +1538,9 @@ Lin, Zeming, Halil Akin, Roshan Rao, Brian Hie, Zhongkai Zhu, Wenting Lu, Allan 
 </div>
 <div id="ref-medvedev_biotoken_2025" class="csl-entry" role="listitem">
 Medvedev, Aleksandr, Karthik Viswanathan, Praveenkumar Kanithi, Kirill Vishniakov, Prateek Munjal, Clément Christophe, Marco AF Pimentel, Ronnie Rajan, and Shadab Khan. 2025. <span>“<span>BioToken</span> and <span>BioFM</span> – <span>Biologically</span>-<span>Informed</span> <span>Tokenization</span> <span>Enables</span> <span>Accurate</span> and <span>Efficient</span> <span>Genomic</span> <span>Foundation</span> <span>Models</span>.”</span> bioRxiv. <a href="https://doi.org/10.1101/2025.03.27.645711">https://doi.org/10.1101/2025.03.27.645711</a>.
+</div>
+<div id="ref-meier_esm-1v_2021" class="csl-entry" role="listitem">
+Meier, Joshua, Roshan Rao, Robert Verkuil, Jason Liu, Tom Sercu, and Alexander Rives. 2021. <span>“[<span>ESM</span>-1v] <span>Language</span> Models Enable Zero-Shot Prediction of the Effects of Mutations on Protein Function.”</span> bioRxiv. <a href="https://doi.org/10.1101/2021.07.09.450648">https://doi.org/10.1101/2021.07.09.450648</a>.
 </div>
 <div id="ref-nguyen_hyenadna_2023" class="csl-entry" role="listitem">
 Nguyen, Eric, Michael Poli, Marjan Faizi, Armin Thomas, Callum Birch-Sykes, Michael Wornow, Aman Patel, et al. 2023. <span>“<span>HyenaDNA</span>: <span>Long</span>-<span>Range</span> <span>Genomic</span> <span>Sequence</span> <span>Modeling</span> at <span>Single</span> <span>Nucleotide</span> <span>Resolution</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2306.15794">https://doi.org/10.48550/arXiv.2306.15794</a>.

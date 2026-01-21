@@ -177,6 +177,22 @@ These benchmarks are particularly relevant for evaluating efficient attention me
 
 Cross-species benchmarks typically evaluate models on held-out species not seen during training. Performance degradation from training to held-out species indicates the degree to which learned representations depend on species-specific features. Some architectures show better cross-species transfer than others, suggesting differences in how well they capture conserved regulatory principles.
 
+### When Foundation Models Fail: The Single-Cell Reality Check {#sec-ch11-scfm-baselines}
+
+Can a **foundation model** trained on millions of cells predict perturbation responses better than a linear classifier? The assumption underlying much single-cell foundation model development is that self-supervised pretraining on massive cellular atlases captures regulatory logic that transfers to downstream prediction tasks. A 2025 Nature Methods study tested this assumption directly by comparing *Geneformer* and *scGPT* to simple baselines on perturbation prediction tasks [@rood_geneformer_benchmark_2025].
+
+The results were sobering. For predicting gene expression changes following CRISPR perturbations, both foundation models were outperformed by a linear regression trained on the same task-specific data. The gap was not subtle: baseline methods achieved higher correlation with experimental measurements across multiple perturbation datasets, and the difference persisted even when foundation models were fine-tuned rather than used zero-shot. The finding echoes similar failures in protein language models, where zero-shot predictions frequently underperform domain-specific baselines despite impressive pretraining scale (see @sec-ch16-limitations for protein-specific examples).
+
+What went wrong? The study identified three systematic issues. First, foundation models excelled at cell type classification and other tasks directly related to their pretraining objective (predicting masked genes from expression context). This capability did not transfer to perturbation prediction, which requires understanding causal interventions rather than observational associations. Second, the models struggled with out-of-distribution genes: perturbations targeting genes poorly represented in pretraining data produced unreliable predictions. Third, simple baselines leveraged task-specific inductive biases that foundation models lacked. A linear model predicting expression changes can directly learn which genes respond together to perturbations. A transformer pretrained on gene co-expression learns which genes co-occur in unperturbed states.
+
+::: {.callout-warning}
+## Zero-Shot ≠ Task-Ready
+
+This benchmark establishes a critical methodological standard: all foundation model evaluations should include strong, task-specific baselines. Reporting that a model achieves 0.72 correlation on perturbation prediction is meaningless without knowing that a linear regression achieves 0.81. The "foundation" label does not exempt models from basic comparison requirements.
+:::
+
+The implications extend beyond single-cell models. Any claim that pretraining improves downstream performance requires demonstrating superiority over appropriately matched baselines trained on the same downstream data. Large scale and self-supervised objectives are necessary but not sufficient for transfer. The questions become: what inductive biases must models capture to generalize beyond their pretraining distribution, and how do we design pretraining objectives that encourage learning those biases rather than shortcuts? These questions remain open.
+
 ## Variant Effect Prediction Benchmarks {#sec-ch11-vep-benchmarks}
 
 **Variant effect prediction** (VEP) benchmarks connect sequence changes to molecular or phenotypic consequences, addressing the clinically central question of which variants matter. These benchmarks span multiple biological levels, from molecular function to clinical pathogenicity.
@@ -323,6 +339,20 @@ Chromosome-based splitting holds out entire chromosomes for testing, preventing 
 ![Data leakage pathways in genomic foundation model evaluation](../figs/part_3/ch11/02-fig-leakage-pathways.svg)
 
 Data leakage pathways in genomic foundation model evaluation. The legitimate pipeline (blue) flows from pretraining through fine-tuning to benchmark evaluation. Leakage pathways (red dashed) create spurious performance: direct overlap when pretraining includes benchmark sequences; homology leakage when training and test sets share high-similarity sequences; label circularity when computational predictions influence ground truth labels that later serve as training targets; resource sharing when databases like ENCODE appear in both pretraining and evaluation; and community iteration when the field collectively overfits to standard benchmarks through publication cycles. Each pathway inflates apparent performance without improving genuine biological understanding.
+:::
+
+### The Leakage Tax: Genomic Heterogeneity Inflates Performance {#sec-ch11-leakage-genomic}
+
+Variant effect prediction models achieve 0.975 auROC when evaluated on random test splits but only 0.697 auROC when evaluated at splice sites. The 28-point drop does not reflect splice site difficulty; it reflects **data leakage**. A 2025 Nature Methods study quantified how genomic heterogeneity (sequence similarity, haplotype structure, conserved regulatory elements) creates hidden connections between training and test sets that random splits fail to sever [@data_leakage_guidelines_2025].
+
+The leakage mechanism differs from the family-level relatedness discussed in @sec-ch12-leakage-detection. Genomes contain repeated elements, conserved motifs, and long-range **linkage disequilibrium** that create subtle similarities between distant loci. A model trained to predict chromatin accessibility at enhancers in chromosome 1 may memorize GC-rich motifs that also appear in chromosome 12 enhancers. When test enhancers share these motifs, performance appears excellent despite the model learning sequence composition rather than regulatory grammar. The solution is **homology-aware splitting**: cluster sequences by similarity, assign entire clusters to train or test, and verify that no significant sequence overlap remains.
+
+The paper documents three splitting strategies with progressively stricter leakage control. Sequence-identity clustering (90% identity threshold) prevents direct homology leakage. Locus-based splits assign entire genes or regulatory regions to train or test, blocking local linkage. Chromosome-based splits eliminate all within-genome structure sharing, though they create artificial distribution shifts that may underestimate real-world performance. The optimal strategy depends on the deployment scenario: if the model will score variants in previously studied genes, sequence-identity clustering suffices; if it must generalize to entirely novel loci, locus-based splits are required.
+
+::: {.callout-tip}
+## Practical Guidance: The hashFrag Tool
+
+The *hashFrag* tool automates homology-aware splitting for genomic sequence data [@hashfrag_2025]. It hashes sequence fragments, clusters by Jaccard similarity, and outputs train/test assignments that respect sequence homology boundaries. Integration with standard benchmark workflows requires only specifying the similarity threshold and cluster assignment strategy.
 :::
 
 ### Metric Selection and Aggregation {#sec-ch11-metrics}

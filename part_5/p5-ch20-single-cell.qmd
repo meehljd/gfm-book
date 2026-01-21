@@ -471,6 +471,16 @@ Batch effects remain the dominant challenge in single-cell analysis. Technical v
 
 The problem is particularly acute when applying pretrained models to new data from platforms or protocols not represented in pretraining. A model trained predominantly on 10x Genomics data may perform poorly on Smart-seq2 data, not because of biological differences but because of systematic technical differences in capture efficiency, amplification bias, and gene detection. Evaluation must carefully distinguish genuine biological generalization from memorization of technical signatures. These evaluation challenges parallel the broader methodological concerns discussed in @sec-ch12-eval, while specific strategies for detecting and mitigating batch-driven confounding appear in @sec-ch23-batch-effects.
 
+### The Zero-Shot Illusion {#sec-ch20-zero-shot-limits}
+
+Foundation models promise zero-shot transfer: deploy pretrained representations directly to new tasks without task-specific training. For single-cell models, this would mean using *Geneformer* or *scGPT* embeddings to classify cell types, predict perturbation responses, or identify disease-associated states in tissues never seen during pretraining. A 2025 Genome Biology study tested these claims systematically [@scfm_zero_shot_limitations_2025].
+
+The results were unambiguous. For zero-shot tasks (cell type annotation in new tissues, batch correction across technologies), both *scGPT* and *Geneformer* were outperformed by classical dimensionality reduction methods: highly variable gene selection followed by Harmony batch correction or scVI latent space learning. The gap persisted across multiple benchmarks. Simple baselines that make no claim to learning regulatory logic outperformed models trained on millions of cells.
+
+Why did zero-shot transfer fail? The study identified the core issue: self-supervised pretraining objectives optimized for reconstructing masked genes within the pretraining distribution do not automatically generalize to tasks requiring discrimination between rare cell states, robustness to technical artifacts, or extrapolation to unseen experimental contexts. A model that predicts which genes co-occur in healthy tissues may fail to identify the subtle expression shifts that distinguish malignant from normal cells.
+
+The implication mirrors the Geneformer benchmark finding (@sec-ch11-scfm-baselines): single-cell foundation models require task-specific fine-tuning to match or exceed domain-specific baselines. The "foundation" provides a useful starting point for adaptation, not a universal solution deployable without downstream training.
+
 ### Cell Type Imbalance {#sec-ch20-imbalance}
 
 Training corpora overrepresent common cell types while rare populations are poorly captured. Immune cells, particularly from blood, dominate many datasets. Rare cell types that may be disease-relevant, such as specific neuronal subtypes or tissue-resident stem cells, appear infrequently. Models may excel at distinguishing well-represented types while struggling with rare or novel populations.

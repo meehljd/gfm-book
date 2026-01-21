@@ -533,6 +533,7 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#sec-ch25-attention-patterns" id="toc-sec-ch25-attention-patterns" class="nav-link" data-scroll-target="#sec-ch25-attention-patterns"><span class="header-section-number">25.5.1</span> What Attention Patterns Reveal</a></li>
   <li><a href="#sec-ch25-attention-caution" id="toc-sec-ch25-attention-caution" class="nav-link" data-scroll-target="#sec-ch25-attention-caution"><span class="header-section-number">25.5.2</span> Why Attention Weights Mislead</a></li>
+  <li><a href="#sec-ch25-attention-genomics" id="toc-sec-ch25-attention-genomics" class="nav-link" data-scroll-target="#sec-ch25-attention-genomics"><span class="header-section-number">25.5.3</span> Systematic Attention Analysis for Genomic Transformers</a></li>
   </ul></li>
   <li><a href="#sec-ch25-global" id="toc-sec-ch25-global" class="nav-link" data-scroll-target="#sec-ch25-global"><span class="header-section-number">25.6</span> Regulatory Vocabularies and Global Interpretability</a>
   <ul class="collapse">
@@ -547,7 +548,8 @@ window.Quarto = {
   <li><a href="#sec-ch25-validation" id="toc-sec-ch25-validation" class="nav-link" data-scroll-target="#sec-ch25-validation"><span class="header-section-number">25.8</span> Validation: From Explanations to Experiments</a>
   <ul class="collapse">
   <li><a href="#sec-ch25-faithfulness" id="toc-sec-ch25-faithfulness" class="nav-link" data-scroll-target="#sec-ch25-faithfulness"><span class="header-section-number">25.8.1</span> Faithfulness Testing</a></li>
-  <li><a href="#sec-ch25-experimental" id="toc-sec-ch25-experimental" class="nav-link" data-scroll-target="#sec-ch25-experimental"><span class="header-section-number">25.8.2</span> Experimental Validation</a></li>
+  <li><a href="#sec-ch25-quality-metrics" id="toc-sec-ch25-quality-metrics" class="nav-link" data-scroll-target="#sec-ch25-quality-metrics"><span class="header-section-number">25.8.2</span> Explanation Quality Metrics</a></li>
+  <li><a href="#sec-ch25-experimental" id="toc-sec-ch25-experimental" class="nav-link" data-scroll-target="#sec-ch25-experimental"><span class="header-section-number">25.8.3</span> Experimental Validation</a></li>
   </ul></li>
   <li><a href="#sec-ch25-clinical" id="toc-sec-ch25-clinical" class="nav-link" data-scroll-target="#sec-ch25-clinical"><span class="header-section-number">25.9</span> Interpretability in Clinical Variant Assessment</a></li>
   <li><a href="#sec-ch25-practical" id="toc-sec-ch25-practical" class="nav-link" data-scroll-target="#sec-ch25-practical"><span class="header-section-number">25.10</span> Practical Approaches for Foundation Model Analysis</a></li>
@@ -601,6 +603,59 @@ Chapter Overview
 <li>Articulate how interpretability enables (or limits) the use of computational evidence in clinical variant assessment</li>
 </ol>
 <p><strong>Estimated Time:</strong> 45-60 minutes</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="XAI Framework">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+XAI Framework
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The interpretability methods in this chapter fit within a broader taxonomy of Explainable AI (XAI) approaches developed in Somani’s <em>Interpretability in Deep Learning</em> <span class="citation" data-cites="somani_interpretability_2023">(<a href="../bib/references.html#ref-somani_interpretability_2023" role="doc-biblioref">Somani, Horsch, and Prasad 2023</a>)</span> and Samek’s <em>Explainable AI</em> <span class="citation" data-cites="samek_explainable_2019">(<a href="../bib/references.html#ref-samek_explainable_2019" role="doc-biblioref">Samek et al. 2019</a>)</span>. A useful organizing framework asks six questions about any explanation:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 32%">
+<col style="width: 67%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Question</th>
+<th>Genomic Application</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>What</strong> is being explained?</td>
+<td>Prediction, representation, or decision</td>
+</tr>
+<tr class="even">
+<td><strong>Who</strong> needs the explanation?</td>
+<td>Researcher, clinician, patient, regulator</td>
+</tr>
+<tr class="odd">
+<td><strong>Why</strong> is explanation needed?</td>
+<td>Debugging, trust, scientific insight, compliance</td>
+</tr>
+<tr class="even">
+<td><strong>When</strong> in the pipeline?</td>
+<td>Training, validation, deployment, post-hoc</td>
+</tr>
+<tr class="odd">
+<td><strong>Where</strong> in the model?</td>
+<td>Input attribution, hidden representations, output</td>
+</tr>
+<tr class="even">
+<td><strong>How</strong> is explanation generated?</td>
+<td>Perturbation, gradient, attention, probing</td>
+</tr>
+</tbody>
+</table>
+<p>This 5W1H framework clarifies that different stakeholders require different explanations. A researcher seeking mechanistic insight needs faithful attribution methods; a clinician needs calibrated confidence and actionable categories; a regulator needs audit trails and reproducibility documentation. No single interpretability approach serves all purposes.</p>
+<p><strong>Model-driven</strong> interpretability explains any model post-hoc; <strong>task-driven</strong> interpretability designs inherently interpretable architectures. Foundation models require model-driven approaches due to their scale and complexity, though architectural choices (attention mechanisms, modular components) increase inherent interpretability.</p>
 </div>
 </div>
 <p>An attribution method highlights a GATA motif when explaining why a model predicts enhancer activity. The explanation is biologically plausible: GATA transcription factors bind this motif and drive tissue-specific expression. But plausibility is not faithfulness. The model may have learned a completely different pattern (perhaps GC content correlating with enhancer labels in the training data) and the attribution method may be highlighting the GATA motif because human-interpretable explanations tend to find human-interpretable patterns. The explanation matches biological intuition without accurately reflecting model computation. This distinction between plausible and faithful interpretation structures the entire field of model interpretability, and failing to respect it produces explanations that provide false comfort rather than genuine insight.</p>
@@ -694,6 +749,7 @@ Stop and Think: Attribution Method Tradeoffs
 <p>Gradient-based methods approximate the counterfactual information from ISM using backpropagation. The gradient of the output with respect to each input position measures how much an infinitesimal change at that position would affect the prediction. With one-hot encoded sequence, the gradient at each base indicates the sensitivity to substituting that nucleotide.</p>
 <p>The simplest approach, often called <strong>saliency mapping</strong>, computes raw gradients and visualizes their magnitudes across the sequence. A common variant multiplies gradients by inputs (gradient <span class="math inline">\(\times\)</span> input), focusing on positions where the current nucleotide is both important and present. These methods require only a single backward pass, making them orders of magnitude faster than ISM.</p>
 <p>Gradient-based methods suffer from saturation in regions where the model is already confident. If a strong motif drives the prediction into a saturated region of the output nonlinearity, small perturbations produce near-zero gradients even though the motif is functionally critical. <em>DeepLIFT</em> addresses this limitation by comparing activations between an input sequence and a reference, propagating differences through the network using custom rules that avoid gradient saturation. The resulting attributions satisfy a completeness property: contributions sum to the difference between input and reference predictions <span class="citation" data-cites="shrikumar_learning_2017">(<a href="../bib/references.html#ref-shrikumar_learning_2017" role="doc-biblioref">Shrikumar, Greenside, and Kundaje 2017</a>)</span>.</p>
+<p>Attribution methods derive from sensitivity analysis and feature importance work in neural networks <span class="citation" data-cites="samek_explainable_2019">(<a href="../bib/references.html#ref-samek_explainable_2019" role="doc-biblioref">Samek et al. 2019</a>)</span>. <strong>Layer-wise Relevance Propagation (LRP)</strong> decomposes predictions backward through the network, assigning relevance scores that sum to the output value. The conservation property (total relevance equals total prediction) guarantees consistency that gradient methods lack. Bach and colleagues established LRP for image classification <span class="citation" data-cites="bach_pixelwise_2015">(<a href="../bib/references.html#ref-bach_pixelwise_2015" role="doc-biblioref">Bach et al. 2015</a>)</span>; adaptations for sequence models replace pixel relevance with nucleotide or token relevance. For genomic foundation models, LRP can complement gradient-based methods by providing different perspectives on the same prediction, with agreement across methods increasing confidence in identified important positions.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -833,7 +889,7 @@ Knowledge Check: CNN Filter Interpretation
 <li>Why might the model learn separate filters for the same motif in different orientations, even though CTCF binding is largely orientation-independent at the ChIP-seq level?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -842,7 +898,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p>Check the reverse complement of the discovered pattern against known CTCF motifs in JASPAR.</p></li>
@@ -1076,6 +1132,34 @@ Key Insight: Attention Is Not Explanation
 <p>Several specific issues undermine naive attention interpretation. Attention weights describe information movement before value vectors are applied; positions with high attention but small value vector magnitudes contribute little to the output. Multi-head attention averages across heads with different functions; examining average attention obscures specialized head behavior. Cross-layer effects mean that the importance of early-layer attention depends on what later layers do with the routed information.</p>
 <p>More robust approaches combine attention analysis with perturbation experiments. If deleting a position that receives high attention changes the prediction substantially, the attention is functionally meaningful. If deletion has minimal effect, the attention may serve computational purposes unrelated to the target output. Attention rollout and attention flow methods propagate attention through layers to better capture information movement across the full network, though these too provide correlational rather than causal evidence.</p>
 </section>
+<section id="sec-ch25-attention-genomics" class="level3" data-number="25.5.3">
+<h3 data-number="25.5.3" class="anchored" data-anchor-id="sec-ch25-attention-genomics"><span class="header-section-number">25.5.3</span> Systematic Attention Analysis for Genomic Transformers</h3>
+<p>A heatmap showing that a promoter-proximal position attends strongly to a distal CTCF motif suggests the model has learned enhancer-promoter looping. But does it? Attention weights indicate where the model looks, not whether looking there was necessary for the prediction. A systematic framework for interpreting attention patterns in genomic contexts addresses this gap <span class="citation" data-cites="attention_interpretability_2025">(<a href="../bib/references.html#ref-attention_interpretability_2025" role="doc-biblioref"><strong>attention_interpretability_2025?</strong></a>)</span>.</p>
+<p>The framework distinguishes three types of attention heads based on what they compute. The framework distinguishes these types computationally by analyzing attention weight distributions: positional heads show distance-dependent decay, compositional heads correlate with k-mer similarity, and functional heads cluster by biological annotation. <strong>Positional heads</strong> attend based on distance, recreating convolution-like local windows regardless of sequence content. These heads capture short-range dependencies (splice sites, transcription factor binding) where proximity determines function. <strong>Compositional heads</strong> attend based on sequence similarity, linking positions with related k-mer content. These heads discover motif co-occurrence (GATA + FOX + SMAD in cardiac enhancers) and repeated elements. <strong>Functional heads</strong> attend based on learned regulatory relationships, connecting enhancers to target promoters, silencers to repressed genes, and boundary elements to loop anchors.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Deep Dive: Automated Attention Head Annotation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The paper introduced a GPT-4-assisted workflow for attention head interpretation. The five-step process:</p>
+<ol type="1">
+<li>Extract attention patterns for 1,000 diverse genomic sequences</li>
+<li>Cluster heads by attention distribution similarity (cosine distance)</li>
+<li>Generate natural language descriptions of each cluster’s typical pattern</li>
+<li>Use GPT-4 to propose biological functions matching each pattern</li>
+<li>Validate proposed functions through ablation (zero out head, measure task performance drop)</li>
+</ol>
+<p>This automation enables systematic analysis of models with hundreds of attention heads, where manual inspection would be infeasible. The validation step (ablation) distinguishes necessary heads from incidental ones.</p>
+</div>
+</div>
+<p>Validation experiments demonstrate which attention patterns are causal versus correlational. The study compared attention-based importance scores to perturbation-based ground truth (in silico mutagenesis). Functional heads showed high concordance (Spearman r &gt; 0.7 between attention weight and ISM effect size); positional and compositional heads showed weak concordance (r &lt; 0.3). This quantifies a critical limitation: attention is not inherently interpretable, but systematic analysis can identify which heads provide faithful explanations.</p>
+<p>The practical output is an interpretability recipe: analyze attention heads in aggregate rather than individually, cluster by computational pattern rather than biological intuition, validate proposed functions through ablation, and report concordance with perturbation-based ground truth. This transforms attention visualization from suggestive figures to rigorous interpretability claims.</p>
+</section>
 </section>
 <section id="sec-ch25-global" class="level2" data-number="25.6">
 <h2 data-number="25.6" class="anchored" data-anchor-id="sec-ch25-global"><span class="header-section-number">25.6</span> Regulatory Vocabularies and Global Interpretability</h2>
@@ -1103,7 +1187,7 @@ Knowledge Check: Local vs.&nbsp;Global Interpretability
 </ol>
 <p><em>Think about the difference between explaining one prediction versus characterizing the model’s overall regulatory vocabulary.</em></p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1112,7 +1196,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p>Local analysis (attribution methods) would identify which specific nucleotides the variant disrupts and what motifs are affected: for example, “variant disrupts a GATA4 binding site at position 142.”</p></li>
@@ -1264,8 +1348,50 @@ Figure&nbsp;25.5: Plausible versus faithful explanations. Both paths start with 
 </figure>
 </div>
 </section>
-<section id="sec-ch25-experimental" class="level3" data-number="25.8.2">
-<h3 data-number="25.8.2" class="anchored" data-anchor-id="sec-ch25-experimental"><span class="header-section-number">25.8.2</span> Experimental Validation</h3>
+<section id="sec-ch25-quality-metrics" class="level3" data-number="25.8.2">
+<h3 data-number="25.8.2" class="anchored" data-anchor-id="sec-ch25-quality-metrics"><span class="header-section-number">25.8.2</span> Explanation Quality Metrics</h3>
+<p>Beyond faithfulness, explanation quality can be assessed along multiple dimensions from the XAI literature <span class="citation" data-cites="samek_explainable_2019">(<a href="../bib/references.html#ref-samek_explainable_2019" role="doc-biblioref">Samek et al. 2019</a>)</span>:</p>
+<ul>
+<li><strong>Fidelity</strong>: Does the explanation accurately reflect model computation?</li>
+<li><strong>Comprehensibility</strong>: Can the target audience understand the explanation?</li>
+<li><strong>Sufficiency</strong>: Does the explanation contain enough information to reproduce the reasoning?</li>
+<li><strong>Completeness</strong>: Are all relevant factors included?</li>
+</ul>
+<p>In genomic models, these criteria become:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 44%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Criterion</th>
+<th>Genomic Test</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Fidelity</td>
+<td>Perturbing highlighted positions changes prediction</td>
+</tr>
+<tr class="even">
+<td>Comprehensibility</td>
+<td>Explanations map to known biology (motifs, domains)</td>
+</tr>
+<tr class="odd">
+<td>Sufficiency</td>
+<td>Synthetic sequences matching explanations show predicted behavior</td>
+</tr>
+<tr class="even">
+<td>Completeness</td>
+<td>No high-importance positions are missed by the explanation</td>
+</tr>
+</tbody>
+</table>
+<p>The Swartout and Moore criteria for explanation systems <span class="citation" data-cites="swartout_explanation_1993">(<a href="../bib/references.html#ref-swartout_explanation_1993" role="doc-biblioref">Swartout and Moore 1993</a>)</span>—explicit representation, fidelity, and understandability—remain foundational for evaluating whether model explanations are scientifically useful rather than merely plausible.</p>
+</section>
+<section id="sec-ch25-experimental" class="level3" data-number="25.8.3">
+<h3 data-number="25.8.3" class="anchored" data-anchor-id="sec-ch25-experimental"><span class="header-section-number">25.8.3</span> Experimental Validation</h3>
 <p>The ultimate test of interpretability connects model-derived hypotheses to biological experiments. Motifs discovered through <em>TF-MoDISco</em> can be tested through electrophoretic mobility shift assays, ChIP-qPCR, or reporter constructs. Predicted spacing constraints can be validated by varying distances between motifs in synthetic constructs and measuring activity. Hypothesized enhancer-promoter connections can be tested through CRISPR deletion of predicted enhancers and measurement of target gene expression.</p>
 <p>This experimental validation distinguishes genuine mechanistic discovery from pattern matching that happens to produce plausible-looking results. A model might learn that certain k-mers correlate with regulatory activity for confounded reasons (batch effects, mappability artifacts) yet produce motif logos resembling real transcription factors. Only experimental testing can determine whether model-derived hypotheses reflect causal regulatory logic.</p>
 <p>High-throughput functional assays enable systematic validation at scale. <strong>Massively parallel reporter assays (MPRAs)</strong> can test thousands of model-predicted regulatory elements simultaneously. Perturb-seq combines CRISPR perturbations with single-cell RNA-seq to measure effects of knocking out predicted regulatory factors (see <a href="../part_5/p5-ch20-single-cell.html#sec-ch20-perturbation" class="quarto-xref"><span>Section 20.3</span></a>). These technologies create opportunities for iterative model improvement: interpretability generates hypotheses, experiments test them, and results refine both model architecture and training.</p>
@@ -1479,6 +1605,9 @@ Chapter Summary
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-bach_pixelwise_2015" class="csl-entry" role="listitem">
+Bach, Sebastian, Alexander Binder, Grégoire Montavon, Frederick Klauschen, Klaus-Robert Müller, and Wojciech Samek. 2015. <span>“On Pixel-Wise Explanations for Non-Linear Classifier Decisions by Layer-Wise Relevance Propagation.”</span> <em>PLoS ONE</em> 10 (7): e0130140. <a href="https://doi.org/10.1371/journal.pone.0130140">https://doi.org/10.1371/journal.pone.0130140</a>.
+</div>
 <div id="ref-castro-mondragon_jaspar_2022" class="csl-entry" role="listitem">
 Castro-Mondragon, Jaime A., Rafael Riudavets-Puig, Ieva Rauluseviciute, Roza Berhanu Lemma, Laura Turchi, Romain Blanc-Mathieu, Jeremy Lucas, et al. 2022. <span>“<span>JASPAR</span> 2022: The 9th Release of the Open-Access Database of Transcription Factor Binding Profiles.”</span> <em>Nucleic Acids Research</em> 50 (D1): D198–207. <a href="https://doi.org/10.1093/nar/gkab1113">https://doi.org/10.1093/nar/gkab1113</a>.
 </div>
@@ -1494,14 +1623,23 @@ Richards, Sue, Nazneen Aziz, Sherri Bale, David Bick, Soma Das, Julie Gastier-Fo
 <div id="ref-rogers_primer_2021" class="csl-entry" role="listitem">
 Rogers, Anna, Olga Kovaleva, and Anna Rumshisky. 2021. <span>“A <span>Primer</span> in <span>BERTology</span>: <span>What</span> <span>We</span> <span>Know</span> <span>About</span> <span>How</span> <span>BERT</span> <span>Works</span>.”</span> <em>Transactions of the Association for Computational Linguistics</em> 8 (January): 842–66. <a href="https://doi.org/10.1162/tacl_a_00349">https://doi.org/10.1162/tacl_a_00349</a>.
 </div>
+<div id="ref-samek_explainable_2019" class="csl-entry" role="listitem">
+Samek, Wojciech, Gregoire Montavon, Andrea Vedaldi, Lars Kai Hansen, and Klaus-Robert Müller. 2019. <em>Explainable AI: Interpreting, Explaining and Visualizing Deep Learning</em>. Vol. 11700. LNAI. Cham: Springer. <a href="https://doi.org/10.1007/978-3-030-28954-6">https://doi.org/10.1007/978-3-030-28954-6</a>.
+</div>
 <div id="ref-shrikumar_learning_2017" class="csl-entry" role="listitem">
 Shrikumar, Avanti, Peyton Greenside, and Anshul Kundaje. 2017. <span>“Learning <span>Important</span> <span>Features</span> <span>Through</span> <span>Propagating</span> <span>Activation</span> <span>Differences</span>.”</span> In <em>Proceedings of the 34th <span>International</span> <span>Conference</span> on <span>Machine</span> <span>Learning</span></em>, 3145–53. PMLR.
 </div>
 <div id="ref-shrikumar_technical_2018" class="csl-entry" role="listitem">
 Shrikumar, Avanti, Katherine Tian, Žiga Avsec, Anna Shcherbina, Abhimanyu Banerjee, Mahfuza Sharmin, Surag Nair, and Anshul Kundaje. 2018. <span>“Technical <span>Note</span> on <span>Transcription</span> <span>Factor</span> <span>Motif</span> <span>Discovery</span> from <span>Importance</span> <span>Scores</span> (<span>TF</span>-<span>MoDISco</span>) Version 0.5.6.5.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.1811.00416">https://doi.org/10.48550/arXiv.1811.00416</a>.
 </div>
+<div id="ref-somani_interpretability_2023" class="csl-entry" role="listitem">
+Somani, Ayush, Alexander Horsch, and Dilip K. Prasad. 2023. <em>Interpretability in Deep Learning</em>. Cham: Springer. <a href="https://doi.org/10.1007/978-3-031-20639-9">https://doi.org/10.1007/978-3-031-20639-9</a>.
+</div>
 <div id="ref-sundararajan_axiomatic_2017" class="csl-entry" role="listitem">
 Sundararajan, Mukund, Ankur Taly, and Qiqi Yan. 2017. <span>“Axiomatic <span>Attribution</span> for <span>Deep</span> <span>Networks</span>.”</span> In <em>Proceedings of the 34th <span>International</span> <span>Conference</span> on <span>Machine</span> <span>Learning</span></em>, 3319–28. PMLR.
+</div>
+<div id="ref-swartout_explanation_1993" class="csl-entry" role="listitem">
+Swartout, William R., and Johanna D. Moore. 1993. <span>“Explanation in Second Generation Expert Systems.”</span> In <em>Second Generation Expert Systems</em>, 543–85. Springer.
 </div>
 <div id="ref-zhou_deepsea_2015" class="csl-entry" role="listitem">
 Zhou, Jian, and Olga G. Troyanskaya. 2015. <span>“[<span>DeepSEA</span>] <span>Predicting</span> Effects of Noncoding Variants with Deep Learning–Based Sequence Model.”</span> <em>Nature Methods</em> 12 (10): 931–34. <a href="https://doi.org/10.1038/nmeth.3547">https://doi.org/10.1038/nmeth.3547</a>.

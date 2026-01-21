@@ -518,6 +518,18 @@ Foundation models are fundamentally predictive. They optimize for generalization
 The cultures are not opposed. Mendelian randomization (@sec-ch26-mendelian-randomization) uses predictive models (genetic instruments) to answer inferential questions (causal effects). Polygenic risk scores use inferential results (GWAS effect sizes) for predictive applications. But understanding which culture a method belongs to clarifies what its evaluation metrics actually measure.
 :::
 
+::: {.callout-note title="Clinical Prediction Methodology"}
+The evaluation frameworks in this chapter draw from Steyerberg's *Clinical Prediction Models* framework [@steyerberg_clinical_2019], which distinguishes three core performance dimensions:
+
+1. **Discrimination**: The model's ability to separate classes (c-statistic, auROC)
+2. **Calibration**: Agreement between predicted probabilities and observed frequencies
+3. **Clinical utility**: Net benefit at actionable decision thresholds
+
+Foundation models must satisfy these requirements if deployed clinically, as the core evaluation framework remains invariant to underlying architecture. A model with perfect discrimination but poor calibration provides unreliable probability estimates; one with good calibration but poor discrimination cannot stratify risk meaningfully. Clinical deployment requires both.
+
+The TRIPOD statement [@collins_transparent_2015] provides reporting guidelines ensuring evaluation results are complete and reproducible. When preparing manuscripts describing genomic foundation model evaluations, TRIPOD compliance should be the minimum standard.
+:::
+
 ### Significance Testing {#sec-ch12-significance-testing}
 
 For classification metrics, significance tests ask whether observed differences exceed what would be expected from sampling variation. **Bootstrap** confidence intervals resample the test set with replacement, recompute metrics on each resample, and report the distribution of metric values. Non-overlapping 95% confidence intervals suggest significant differences. **Permutation tests** shuffle predictions between models and measure how often shuffled differences exceed observed differences.
@@ -652,6 +664,14 @@ Transfer across species, tissues, and experimental modalities provides additiona
 ## Calibration Essentials {#sec-ch12-calibration}
 
 Strong discrimination does not guarantee useful probability estimates. A model achieving 0.95 auROC might assign probability 0.99 to all positive examples and 0.98 to all negatives, ranking perfectly while providing meaningless confidence values. Clinical decision-making requires both: accurate ranking to identify high-risk variants and accurate probabilities to inform the weight of computational evidence. Calibration assesses whether predicted probabilities match observed frequencies, a property essential for rational integration of model outputs into diagnostic workflows.
+
+The clinical prediction literature establishes rigorous standards for calibration assessment [@steyerberg_clinical_2019]. Beyond reliability diagrams and ECE, calibration can be characterized as:
+
+- **Calibration-in-the-large**: Does the mean predicted probability equal the observed event rate? (intercept = 0 in calibration regression)
+- **Calibration slope**: Are predictions appropriately spread? (slope = 1 indicates correct spread; slope < 1 indicates overfitting)
+- **Moderate calibration**: Within meaningful risk strata, do predictions match outcomes?
+
+For genomic foundation models using training data enriched for disease (e.g., case-control studies at ~50% prevalence), calibration-in-the-large commonly fails when applied to population screening contexts (1-5% prevalence). Recalibration techniques described in @sec-ch24-uncertainty address this mismatch.
 
 ### Assessing Calibration {#sec-ch12-assessing-calibration}
 

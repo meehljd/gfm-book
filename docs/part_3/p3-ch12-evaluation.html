@@ -1448,6 +1448,26 @@ Table&nbsp;12.4: The two cultures of statistical modeling applied to genomics.
 <p>The cultures are not opposed. Mendelian randomization (<a href="../part_6/p6-ch26-causal.html#sec-ch26-mendelian-randomization" class="quarto-xref"><span>Section 26.2.2</span></a>) uses predictive models (genetic instruments) to answer inferential questions (causal effects). Polygenic risk scores use inferential results (GWAS effect sizes) for predictive applications. But understanding which culture a method belongs to clarifies what its evaluation metrics actually measure.</p>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Clinical Prediction Methodology">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Clinical Prediction Methodology
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The evaluation frameworks in this chapter draw from Steyerberg’s <em>Clinical Prediction Models</em> framework <span class="citation" data-cites="steyerberg_clinical_2019">(<a href="../bib/references.html#ref-steyerberg_clinical_2019" role="doc-biblioref">Steyerberg 2019</a>)</span>, which distinguishes three core performance dimensions:</p>
+<ol type="1">
+<li><strong>Discrimination</strong>: The model’s ability to separate classes (c-statistic, auROC)</li>
+<li><strong>Calibration</strong>: Agreement between predicted probabilities and observed frequencies</li>
+<li><strong>Clinical utility</strong>: Net benefit at actionable decision thresholds</li>
+</ol>
+<p>Foundation models must satisfy these requirements if deployed clinically, as the core evaluation framework remains invariant to underlying architecture. A model with perfect discrimination but poor calibration provides unreliable probability estimates; one with good calibration but poor discrimination cannot stratify risk meaningfully. Clinical deployment requires both.</p>
+<p>The TRIPOD statement <span class="citation" data-cites="collins_transparent_2015">(<a href="../bib/references.html#ref-collins_transparent_2015" role="doc-biblioref">Collins et al. 2015</a>)</span> provides reporting guidelines ensuring evaluation results are complete and reproducible. When preparing manuscripts describing genomic foundation model evaluations, TRIPOD compliance should be the minimum standard.</p>
+</div>
+</div>
 <section id="sec-ch12-significance-testing" class="level3" data-number="12.10.1">
 <h3 data-number="12.10.1" class="anchored" data-anchor-id="sec-ch12-significance-testing"><span class="header-section-number">12.10.1</span> Significance Testing</h3>
 <p>For classification metrics, significance tests ask whether observed differences exceed what would be expected from sampling variation. <strong>Bootstrap</strong> confidence intervals resample the test set with replacement, recompute metrics on each resample, and report the distribution of metric values. Non-overlapping 95% confidence intervals suggest significant differences. <strong>Permutation tests</strong> shuffle predictions between models and measure how often shuffled differences exceed observed differences.</p>
@@ -1628,6 +1648,13 @@ Figure&nbsp;12.5: Foundation model evaluation paradigms test different capabilit
 <section id="sec-ch12-calibration" class="level2" data-number="12.12">
 <h2 data-number="12.12" class="anchored" data-anchor-id="sec-ch12-calibration"><span class="header-section-number">12.12</span> Calibration Essentials</h2>
 <p>Strong discrimination does not guarantee useful probability estimates. A model achieving 0.95 auROC might assign probability 0.99 to all positive examples and 0.98 to all negatives, ranking perfectly while providing meaningless confidence values. Clinical decision-making requires both: accurate ranking to identify high-risk variants and accurate probabilities to inform the weight of computational evidence. Calibration assesses whether predicted probabilities match observed frequencies, a property essential for rational integration of model outputs into diagnostic workflows.</p>
+<p>The clinical prediction literature establishes rigorous standards for calibration assessment <span class="citation" data-cites="steyerberg_clinical_2019">(<a href="../bib/references.html#ref-steyerberg_clinical_2019" role="doc-biblioref">Steyerberg 2019</a>)</span>. Beyond reliability diagrams and ECE, calibration can be characterized as:</p>
+<ul>
+<li><strong>Calibration-in-the-large</strong>: Does the mean predicted probability equal the observed event rate? (intercept = 0 in calibration regression)</li>
+<li><strong>Calibration slope</strong>: Are predictions appropriately spread? (slope = 1 indicates correct spread; slope &lt; 1 indicates overfitting)</li>
+<li><strong>Moderate calibration</strong>: Within meaningful risk strata, do predictions match outcomes?</li>
+</ul>
+<p>For genomic foundation models using training data enriched for disease (e.g., case-control studies at ~50% prevalence), calibration-in-the-large commonly fails when applied to population screening contexts (1-5% prevalence). Recalibration techniques described in <a href="../part_6/p6-ch24-uncertainty.html" class="quarto-xref"><span>Chapter 24</span></a> address this mismatch.</p>
 <section id="sec-ch12-assessing-calibration" class="level3" data-number="12.12.1">
 <h3 data-number="12.12.1" class="anchored" data-anchor-id="sec-ch12-assessing-calibration"><span class="header-section-number">12.12.1</span> Assessing Calibration</h3>
 <p>The most intuitive assessment comes from <strong>reliability diagrams</strong>, which plot predicted probabilities against observed frequencies. The construction bins predictions into intervals (commonly ten bins spanning 0 to 0.1, 0.1 to 0.2, and so forth), computes the mean predicted probability within each bin, computes the fraction of positive examples within each bin, and plots these quantities against each other. Perfect calibration produces points along the diagonal; systematic deviations reveal overconfidence (points below the diagonal) or underconfidence (points above).</p>
@@ -1729,7 +1756,7 @@ Test Yourself
 <li>How does label circularity in ClinVar (where computational predictions influence annotations) compromise benchmark validity for new variant effect predictors?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1738,7 +1765,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-20" class="callout-20-contents callout-collapse collapse">
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Homology leakage</strong> occurs when evolutionarily related sequences appear in both training and test sets, allowing models to succeed through memorization of family-specific patterns rather than learning general biological principles. Random splits fail because they ignore sequence similarity: a test protein at 80% identity to a training protein provides minimal generalization evidence, yet random splits routinely create such pairs. Homology-aware splitting (using tools like CD-HIT at 30-40% identity thresholds) ensures test sequences are evolutionarily distant from training sequences.</p></li>
@@ -1802,6 +1829,9 @@ Benjamini, Yoav, and Yosef Hochberg. 1995. <span>“Controlling the <span>False<
 <div id="ref-breiman_statistical_2001" class="csl-entry" role="listitem">
 Breiman, Leo. 2001. <span>“Statistical <span>Modeling</span>: <span>The</span> <span>Two</span> <span>Cultures</span>.”</span> <em>Statistical Science</em>, August.
 </div>
+<div id="ref-collins_transparent_2015" class="csl-entry" role="listitem">
+Collins, Gary S., Johannes B. Reitsma, Douglas G. Altman, and Karel G. M. Moons. 2015. <span>“Transparent <span>Reporting</span> of a Multivariable Prediction Model for <span>Individual</span> <span>Prognosis</span> or <span>Diagnosis</span> (<span>TRIPOD</span>): The <span>TRIPOD</span> Statement.”</span> <em>BMJ</em> 350: g7594. <a href="https://doi.org/10.1136/bmj.g7594">https://doi.org/10.1136/bmj.g7594</a>.
+</div>
 <div id="ref-delong_comparing_1988" class="csl-entry" role="listitem">
 DeLong, Elizabeth R., David M. DeLong, and Daniel L. Clarke-Pearson. 1988. <span>“Comparing the <span>Areas</span> Under <span>Two</span> or <span>More</span> <span>Correlated</span> <span>Receiver</span> <span>Operating</span> <span>Characteristic</span> <span>Curves</span>: <span>A</span> <span>Nonparametric</span> <span>Approach</span>.”</span> <em>Biometrics</em> 44 (3): 837–45. <a href="https://doi.org/10.2307/2531595">https://doi.org/10.2307/2531595</a>.
 </div>
@@ -1825,6 +1855,9 @@ Sarkisyan, Karen S., Dmitry A. Bolotin, Margarita V. Meer, Dinara R. Usmanova, A
 </div>
 <div id="ref-steinegger_mmseqs2_2017" class="csl-entry" role="listitem">
 Steinegger, Martin, and Johannes Söding. 2017. <span>“<span>MMseqs2</span> Enables Sensitive Protein Sequence Searching for the Analysis of Massive Data Sets.”</span> <em>Nature Biotechnology</em> 35 (11): 1026–28. <a href="https://doi.org/10.1038/nbt.3988">https://doi.org/10.1038/nbt.3988</a>.
+</div>
+<div id="ref-steyerberg_clinical_2019" class="csl-entry" role="listitem">
+Steyerberg, Ewout W. 2019. <em>Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating</em>. 2nd ed. Cham: Springer. <a href="https://doi.org/10.1007/978-3-030-16399-0">https://doi.org/10.1007/978-3-030-16399-0</a>.
 </div>
 <div id="ref-tanigawa_significant_2022" class="csl-entry" role="listitem">
 Tanigawa, Yosuke, Junyang Qian, Guhan Venkataraman, Johanne Marie Justesen, Ruilin Li, Robert Tibshirani, Trevor Hastie, and Manuel A. Rivas. 2022. <span>“Significant Sparse Polygenic Risk Scores Across 813 Traits in <span>UK</span> <span>Biobank</span>.”</span> <em>PLOS Genetics</em> 18 (3): e1010105. <a href="https://doi.org/10.1371/journal.pgen.1010105">https://doi.org/10.1371/journal.pgen.1010105</a>.

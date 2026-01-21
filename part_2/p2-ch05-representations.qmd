@@ -17,6 +17,19 @@
 **Key insight:** The choice of how to segment and represent genomic sequence is not merely technical preprocessing: it fundamentally determines what patterns a model can detect, what resolution it can achieve, and which biological questions it can answer.
 :::
 
+::: {.callout-note title="NLP Embedding Foundations"}
+Genomic foundation model embeddings derive from natural language processing, where distributed representations revolutionized language understanding. The key insight—that words with similar meanings should have similar vector representations—translates to genomics: sequences with similar functions should occupy nearby regions of embedding space.
+
+Two embedding paradigms emerged from NLP, as described in Paass and Giesselbach's *Foundation Models for Natural Language Processing* [@paass_foundation_2023]:
+
+1. **Static embeddings** (Word2Vec, GloVe): Each token has a fixed vector regardless of context
+2. **Contextual embeddings** (ELMo, BERT, GPT): Token vectors depend on surrounding context
+
+Genomic models inherit this distinction. K-mer frequency vectors are static; masked language model representations are contextual. The power of foundation models derives largely from contextual embeddings: the same nucleotide sequence means different things in a promoter versus an intron, and contextual representations capture this variation.
+
+The distributional hypothesis—"you shall know a word by the company it keeps" (Firth, 1957)—translates directly to genomic modeling: sequences that function similarly in genomic context should have similar learned representations.
+:::
+
 In 2018, a variant effect predictor showed near-perfect performance on its benchmark dataset. Clinical teams deployed it to interpret variants near exon-intron boundaries. The model failed to flag a pathogenic variant at a cryptic splice site: not because the architecture was flawed, not because training data was insufficient, but because the tokenization scheme grouped nucleotides into six-base chunks. The critical AG dinucleotide that created an aberrant splice acceptor was split across two tokens, invisible to the attention mechanism as a meaningful unit. A preprocessing decision made before training began determined whether a patient received an accurate diagnosis.
 
 Before a genomic model learns any parameters, before it sees any training data, before architecture choices are made, a prior decision has already constrained what it can discover: how will sequence be represented? This decision is not merely technical. A **tokenization** scheme that merges nucleotides into coarse multi-base units may obscure the single-nucleotide resolution needed to detect pathogenic splice variants. An **embedding** strategy that encodes local context may lose the long-range dependencies that connect distal enhancers to their target genes. A position encoding that assumes fixed sequence length may fail on the variable-length inputs that clinical applications require. These choices propagate through every subsequent design decision, shaping what patterns the model can detect, what resolution it can achieve, and ultimately which biological questions it can answer.

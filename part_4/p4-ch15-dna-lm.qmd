@@ -294,6 +294,25 @@ The following table highlights five landmark DNA language models representing di
 Beyond the models detailed above, the Genomic Language Model (gLM) demonstrates that architectural innovations beyond standard BERT encoders (including mixture-of-experts and improved positional encodings) can yield competitive performance while enabling joint DNA-protein modeling [@cornman_glm_2024]. This multimodal capability suggests future convergence between DNA and protein foundation models.
 
 
+### Architectural Convergence: NTv3 and U-Net Hybrids {#sec-ch15-ntv3}
+
+How do you achieve single-nucleotide resolution within megabase contexts? Pure transformers face quadratic costs. State space models sacrifice inductive biases. By late 2025, two independently developed models (*AlphaGenome* and *Nucleotide Transformer v3*) converged on a solution: U-Net-style hierarchical processing combined with transformers [@dalla-torre_nucleotide_v3_2025]. The convergence reflects a fundamental tradeoff between context length and nucleotide resolution that limited earlier DNA language models.
+
+Pure transformer architectures face quadratic cost in context length (see @sec-ch07-quadratic-barrier). A million-token context at single-nucleotide resolution would require prohibitive memory and compute. State space models like *Evo 2* and *HyenaDNA* solved the context problem through sub-quadratic architectures but sacrificed some of the inductive biases that make transformers effective for biological sequence. The U-Net hybrid offers a middle path.
+
+The architecture follows a multiscale strategy. An encoder pathway progressively downsamples the input sequence through strided convolutions, reducing a 1 megabase input to 1,024 high-level tokens that span 1kb each. A transformer processes these compressed tokens, capturing long-range dependencies within feasible computational budgets. A decoder pathway progressively upsamples through transposed convolutions, restoring single-nucleotide resolution while integrating global context through skip connections from the encoder.
+
+::: {#fig-ntv3-architecture}
+![NTv3 U-Net + Transformer architecture](../figs/part_4/ch15/XX-fig-ntv3-architecture.svg)
+
+NTv3 U-Net hybrid architecture. The encoder (left) downsamples 1Mb input to 1024 tokens via strided convolutions, each token representing ~1kb. The transformer bottleneck (center) captures long-range dependencies at reduced resolution. The decoder (right) upsamples through transposed convolutions with skip connections, restoring nucleotide-level predictions informed by megabase context. This pattern enables single-nucleotide variant effect prediction within megabase regulatory contexts, solving the resolution-context tradeoff that limited earlier architectures.
+:::
+
+The practical benefit is single-nucleotide variant effect prediction within megabase contexts. A variant in an enhancer 500kb from its target promoter can be scored with awareness of the full regulatory neighborhood, including distal CTCF sites, topologically associating domain boundaries, and competing regulatory elements. Earlier models chose between limited context at high resolution (*DNABERT*: 512bp) or long context with coarse-grained outputs (*Enformer*: 200kb context but 128bp bins).
+
+The architectural pattern it validates makes NTv3 a likely production choice for the 2025-2027 deployment window as the successor to the widely deployed *Nucleotide Transformer 2.5B*. Hierarchical compression + transformer + hierarchical decompression is likely to appear in future regulatory and multi-omic models.
+
+
 ## Training Data and What Models Learn {#sec-ch15-training-data}
 
 DNA language models are trained on diverse corpora ranging from single reference genomes to pan-genomic collections spanning the tree of life. Understanding what training data is used and what models learn from it is essential for anticipating model capabilities and limitations.

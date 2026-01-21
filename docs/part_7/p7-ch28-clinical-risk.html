@@ -600,6 +600,40 @@ Chapter Overview
 </ol>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Clinical Prediction Model Development Framework">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Clinical Prediction Model Development Framework
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The development of clinical prediction models follows an established methodology from Steyerberg’s <em>Clinical Prediction Models</em> <span class="citation" data-cites="steyerberg_clinical_2019">(<a href="../bib/references.html#ref-steyerberg_clinical_2019" role="doc-biblioref">Steyerberg 2019</a>)</span> that genomic foundation models must satisfy for clinical deployment:</p>
+<p><strong>Development Phase:</strong></p>
+<ol type="1">
+<li>Clear specification of target population and outcome</li>
+<li>Appropriate predictor selection with clinical rationale</li>
+<li>Estimate model parameters while avoiding overfitting</li>
+<li>Internal validation (cross-validation, bootstrap)</li>
+</ol>
+<p><strong>Validation Phase:</strong></p>
+<ol start="5" type="1">
+<li>Discrimination assessment (c-statistic, auROC)</li>
+<li>Calibration assessment (reliability diagrams, calibration slope)</li>
+<li>Clinical utility analysis (decision curves, net benefit)</li>
+<li>External validation in independent cohorts</li>
+</ol>
+<p><strong>Deployment Phase:</strong></p>
+<ol start="9" type="1">
+<li>Presentation of predictions (risk categories, absolute risks)</li>
+<li>Decision support integration</li>
+<li>Monitoring and updating</li>
+</ol>
+<p>Foundation models integrate phases 1-3 through pretraining and fine-tuning; however, clinical deployment still requires completing phases 4-11 (validation and monitoring steps). The TRIPOD statement <span class="citation" data-cites="collins_transparent_2015">(<a href="../bib/references.html#ref-collins_transparent_2015" role="doc-biblioref">Collins et al. 2015</a>)</span> provides a 22-item checklist ensuring complete reporting. Clinical deployment of genomic foundation models requires TRIPOD compliance.</p>
+</div>
+</div>
 <p>Maria is 52, with moderately elevated cholesterol and a family history that keeps her cardiologist alert: her father’s heart attack at 49, her brother’s stent at 54. Her physician orders a polygenic risk score and receives a number: 0.84, placing Maria in the top 5% of genetic risk for coronary artery disease. The cardiologist pauses. What should she <em>do</em> differently because of this score? Prescribe the statin she was already considering? Recommend earlier imaging she would have suggested anyway? Counsel Maria about lifestyle modifications she has heard a hundred times before?</p>
 <p>A risk prediction has clinical value only if it changes what happens next. If Maria with her high polygenic risk score receives the same statin prescription, lifestyle counseling, and follow-up schedule as a patient without genetic testing, the score added nothing to her care regardless of its statistical validity. The fundamental challenge is not generating genomic predictions but translating them into actions that improve outcomes. This translation requires more than <strong>discrimination</strong> between who will and will not develop disease; it requires that the prediction reach clinicians in a usable form, at a decision point where alternatives exist, for a patient population where the prediction performs equitably.</p>
 <p>Traditional polygenic scores, despite their scientific validity, often fail this translation test. They reduce entire genomes to single numbers that provide little mechanistic insight. They transfer poorly across ancestries because training data overrepresent European populations. They exist outside the electronic health records where clinical decisions actually happen, requiring manual lookup that busy clinicians rarely perform. Most fundamentally, the clinical actions available in response to a polygenic risk score (PRS), such as lifestyle modification, earlier screening, or preventive medication, are often the same actions recommended for patients with conventional risk factors, leaving unclear what the genetic information specifically enables.</p>
@@ -1017,7 +1051,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>The EEPRS framework showed large improvements for cardiovascular conditions but minimal improvement for breast cancer. Before reading the explanation, can you hypothesize why? Consider what phenotype embeddings capture and how genetic architecture might differ between these conditions.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1026,7 +1060,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Cardiovascular conditions cluster together in clinical practice and share genetic architecture, allowing embeddings to capture cross-phenotype genetic correlations. Breast cancer has largely distinct genetic architecture from cardiovascular diseases, so embedding-based scores derived from cardiovascular-weighted dimensions provide no additional predictive signal for cancer risk.</p>
 </div>
@@ -1178,6 +1212,9 @@ Stop and Think
 <section id="sec-ch28-clinical-utility" class="level3" data-number="28.6.3">
 <h3 data-number="28.6.3" class="anchored" data-anchor-id="sec-ch28-clinical-utility"><span class="header-section-number">28.6.3</span> Clinical Utility</h3>
 <p>Beyond discrimination and calibration, <strong>clinical utility</strong> asks whether using the model will change decisions beneficially. Net reclassification improvement quantifies how many patients are appropriately moved across risk thresholds compared to a baseline model. Decision curve analysis estimates net benefit across threshold probabilities, accounting for the relative costs of false positives and false negatives in specific clinical contexts.</p>
+<p><strong>Net benefit analysis</strong> <span class="citation" data-cites="vickers_decision_2006">(<a href="../bib/references.html#ref-vickers_decision_2006" role="doc-biblioref">Vickers and Elkin 2006</a>)</span> quantifies clinical value by weighing true positives against false positives at each decision threshold:</p>
+<p><span class="math display">\[\text{Net Benefit} = \frac{\text{TP}}{N} - \frac{\text{FP}}{N} \times \frac{p_t}{1-p_t}\]</span></p>
+<p>where <span class="math inline">\(p_t\)</span> is the intervention threshold probability. Decision curves plot net benefit across thresholds, comparing the model to “treat all” and “treat none” strategies. For genomic risk prediction, net benefit analysis answers the question clinical utility ultimately requires: across what range of risk thresholds does using this model improve outcomes compared to simpler strategies? A model may achieve high auROC but provide no net benefit if its discrimination does not translate to actionable risk stratification at clinically relevant thresholds <span class="citation" data-cites="steyerberg_clinical_2019">(<a href="../bib/references.html#ref-steyerberg_clinical_2019" role="doc-biblioref">Steyerberg 2019</a>)</span>.</p>
 <p>For foundation model-based tools, these analyses must demonstrate incremental value over existing alternatives. If a complex genomic foundation model provides only marginal improvement over a traditional polygenic score plus standard clinical calculator, the additional complexity, cost, and implementation burden may not be justified. The relevant comparison is not “better than nothing” but “better than what clinicians can already access.”</p>
 <div id="tbl-evaluation-pillars" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -1307,7 +1344,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>A foundation model-based risk tool provides a prediction of 35% 10-year cardiovascular risk for a patient of Nigerian ancestry, along with a wide confidence interval of 15-55%. The model was trained primarily on European-ancestry data. Is this wide interval more likely reflecting aleatoric or epistemic uncertainty? What would you recommend the clinician do with this prediction?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1316,7 +1353,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>This wide interval primarily reflects epistemic uncertainty due to distributional shift: the model has limited training data from African-ancestry populations and thus low confidence in its predictions. The clinician should interpret this prediction with caution, consider it alongside other risk factors, and potentially order additional testing rather than making treatment decisions based solely on this uncertain estimate.</p>
 </div>
@@ -1543,7 +1580,7 @@ Test Yourself
 <li>What is the difference between analytical validity, clinical validity, and clinical utility? Give an example where a model has one but not the others.</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1552,7 +1589,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div id="callout-19" class="callout-19-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>PRS Limitations</strong>: Traditional polygenic scores have three main limitations: (1) they lack mechanistic insight by reducing genomes to single numbers without indicating which biological pathways drive risk, (2) they show poor cross-ancestry portability because they are derived from European-dominated GWAS data and depend on population-specific linkage disequilibrium patterns, and (3) they remain disconnected from clinical workflows by existing outside electronic health records where decisions actually happen. Foundation model embeddings address these by preserving information about which genomic regions contribute to risk, leveraging sequence-based functional priors that transfer across ancestries, and enabling integration architectures that combine genomic and clinical data within EHR systems.</p></li>
@@ -1595,6 +1632,9 @@ Cao, Zhi-Jie, and Ge Gao. 2022. <span>“[<span>GLUE</span>] <span>Multi</span>-
 <div id="ref-clarke_deeprvat_2024" class="csl-entry" role="listitem">
 Clarke, Brian, Eva Holtkamp, Hakime Öztürk, Marcel Mück, Magnus Wahlberg, Kayla Meyer, Felix Munzlinger, et al. 2024. <span>“[<span>DeepRVAT</span>] <span>Integration</span> of Variant Annotations Using Deep Set Networks Boosts Rare Variant Association Testing.”</span> <em>Nature Genetics</em> 56 (10): 2271–80. <a href="https://doi.org/10.1038/s41588-024-01919-z">https://doi.org/10.1038/s41588-024-01919-z</a>.
 </div>
+<div id="ref-collins_transparent_2015" class="csl-entry" role="listitem">
+Collins, Gary S., Johannes B. Reitsma, Douglas G. Altman, and Karel G. M. Moons. 2015. <span>“Transparent <span>Reporting</span> of a Multivariable Prediction Model for <span>Individual</span> <span>Prognosis</span> or <span>Diagnosis</span> (<span>TRIPOD</span>): The <span>TRIPOD</span> Statement.”</span> <em>BMJ</em> 350: g7594. <a href="https://doi.org/10.1136/bmj.g7594">https://doi.org/10.1136/bmj.g7594</a>.
+</div>
 <div id="ref-dalla-torre_nucleotide_2023" class="csl-entry" role="listitem">
 Dalla-Torre, Hugo, Liam Gonzalez, Javier Mendoza-Revilla, Nicolas Lopez Carranza, Adam Henryk Grzywaczewski, Francesco Oteri, Christian Dallago, et al. 2023. <span>“Nucleotide <span>Transformer</span>: Building and Evaluating Robust Foundation Models for Human Genomics.”</span> <em>Nature Methods</em> 22 (2): 287–97. <a href="https://doi.org/10.1038/s41592-024-02523-z">https://doi.org/10.1038/s41592-024-02523-z</a>.
 </div>
@@ -1634,8 +1674,14 @@ Rakowski, Alexander, and Christoph Lippert. 2025. <span>“[<span>MIFM</span>] <
 <div id="ref-ruan_improving_2022" class="csl-entry" role="listitem">
 Ruan, Yunfeng, Yen-Feng Lin, Yen-Chen Anne Feng, Chia-Yen Chen, Max Lam, Zhenglin Guo, Lin He, et al. 2022. <span>“Improving Polygenic Prediction in Ancestrally Diverse Populations.”</span> <em>Nature Genetics</em> 54 (5): 573–80. <a href="https://doi.org/10.1038/s41588-022-01054-7">https://doi.org/10.1038/s41588-022-01054-7</a>.
 </div>
+<div id="ref-steyerberg_clinical_2019" class="csl-entry" role="listitem">
+Steyerberg, Ewout W. 2019. <em>Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating</em>. 2nd ed. Cham: Springer. <a href="https://doi.org/10.1007/978-3-030-16399-0">https://doi.org/10.1007/978-3-030-16399-0</a>.
+</div>
 <div id="ref-tipirneni_self-supervised_2022" class="csl-entry" role="listitem">
 Tipirneni, Sindhu, and Chandan K. Reddy. 2022. <span>“Self-<span>Supervised</span> <span>Transformer</span> for <span>Sparse</span> and <span>Irregularly</span> <span>Sampled</span> <span>Multivariate</span> <span>Clinical</span> <span>Time</span>-<span>Series</span>.”</span> <em>ACM Trans. Knowl. Discov. Data</em> 16 (6): 105:1–17. <a href="https://doi.org/10.1145/3516367">https://doi.org/10.1145/3516367</a>.
+</div>
+<div id="ref-vickers_decision_2006" class="csl-entry" role="listitem">
+Vickers, Andrew J., and Elena B. Elkin. 2006. <span>“Decision Curve Analysis: A Novel Method for Evaluating Prediction Models.”</span> <em>Medical Decision Making</em> 26 (6): 565–74. <a href="https://doi.org/10.1177/0272989X06295361">https://doi.org/10.1177/0272989X06295361</a>.
 </div>
 <div id="ref-whirl-carrillo_pharmacogenomics_2012" class="csl-entry" role="listitem">
 Whirl-Carrillo, M, E M McDonagh, J M Hebert, L Gong, K Sangkuhl, C F Thorn, R B Altman, and T E Klein. 2012. <span>“Pharmacogenomics <span>Knowledge</span> for <span>Personalized</span> <span>Medicine</span>.”</span> <em>Clinical Pharmacology &amp; Therapeutics</em> 92 (4): 414–17. <a href="https://doi.org/10.1038/clpt.2012.96">https://doi.org/10.1038/clpt.2012.96</a>.

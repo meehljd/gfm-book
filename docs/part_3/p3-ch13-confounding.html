@@ -717,6 +717,26 @@ Table&nbsp;13.1: Distinguishing confounding, bias, leakage, and distribution shi
 </div>
 </figure>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="Statistical Genetics Foundations">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Statistical Genetics Foundations
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The terminology and conceptual framework for understanding heterogeneity in genetic associations derives from classical statistical genetics, including Laird and Lange’s <em>Fundamentals of Modern Statistical Genetics</em> <span class="citation" data-cites="laird_fundamentals_2011">(<a href="../bib/references.html#ref-laird_fundamentals_2011" role="doc-biblioref">Laird and Lange 2011</a>)</span> and Gordon’s <em>Heterogeneity in Statistical Genetics</em> <span class="citation" data-cites="gordon_heterogeneity_2020">(<a href="../bib/references.html#ref-gordon_heterogeneity_2020" role="doc-biblioref">Gordon, Finch, and Kim 2020</a>)</span>. Three forms of heterogeneity documented in genetics can complicate foundation model evaluation:</p>
+<ul>
+<li><strong>Locus heterogeneity</strong>: Different genes cause the same phenotype in different families</li>
+<li><strong>Allelic heterogeneity</strong>: Different variants in the same gene cause the same phenotype</li>
+<li><strong>Population heterogeneity</strong>: Effect sizes vary across ancestry groups</li>
+</ul>
+<p>Each form creates opportunities for shortcut learning. A model that achieves high population-level performance while learning which gene families associate with disease—rather than extracting variant-level regulatory signals—may be exploiting locus heterogeneity as a shortcut. Whether foundation models actually exploit these heterogeneity patterns requires empirical investigation specific to genomic architectures.</p>
+<p>The statistical methods for detecting and addressing heterogeneity in GWAS offer foundations that extend naturally to foundation model evaluation, especially for ancestry-stratified performance analysis.</p>
+</div>
+</div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -881,6 +901,7 @@ Table&nbsp;13.2: Major sources of confounding in genomic modeling. Each source c
 <p>Population structure represents one of the most pervasive confounders in genomic modeling. The core issue is that ancestry simultaneously affects genomic features and many phenotypes through pathways that have nothing to do with direct genetic causation.</p>
 <p>Human genetic variation is structured by ancestry: allele frequencies, haplotype blocks, and <strong>linkage disequilibrium</strong> patterns differ across populations in ways that reflect demographic history. Principal components computed from genome-wide genotypes provide a low-dimensional summary of this structure and have become standard in <strong>genome-wide association studies (GWAS)</strong> to correct for stratification <span class="citation" data-cites="patterson_population_2006 price_principal_2006">(<a href="../bib/references.html#ref-patterson_population_2006" role="doc-biblioref">Patterson, Price, and Reich 2006</a>; <a href="../bib/references.html#ref-price_principal_2006" role="doc-biblioref">Price et al. 2006</a>)</span>. Yet ancestry is not merely a statistical nuisance. It is intertwined with geography, environment, socioeconomic status, and access to healthcare, factors that directly impact disease risk, likelihood of receiving genetic testing, and the quality of phenotyping when testing occurs.</p>
 <p>The statistical genetics community developed these corrections precisely because early genome-wide association studies produced spurious signals driven by ancestry differences between cases and controls rather than causal variant effects (see <a href="../part_1/p1-ch03-gwas.html#sec-ch03-population-structure" class="quarto-xref"><span>Section 3.1.4</span></a> for detailed treatment of population stratification in association testing). Foundation models face the same fundamental problem in a different guise: ancestry structure that confounded linear regression in GWAS now confounds neural network predictions, and the solutions require similar conceptual foundations even when the technical implementations differ.</p>
+<p>Gordon’s heterogeneity framework <span class="citation" data-cites="gordon_heterogeneity_2020">(<a href="../bib/references.html#ref-gordon_heterogeneity_2020" role="doc-biblioref">Gordon, Finch, and Kim 2020</a>)</span> offers additional perspective: when effect sizes differ across populations (G×E or G×ancestry interactions), no single model can simultaneously achieve optimal prediction in all groups. This fundamental limitation affects foundation models as much as linear PRS, though the mechanisms of failure differ. Foundation models may achieve apparent high performance by weighting populations differently, masking poor calibration in underrepresented groups behind strong discrimination in majority populations.</p>
 <div id="fig-population-structure-shortcut" class="quarto-layout-panel">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-population-structure-shortcut-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -946,6 +967,9 @@ Key Insight: Capacity Amplifies Confounding
 <h3 data-number="13.3.1" class="anchored" data-anchor-id="sec-ch13-addressing-ancestry-bias"><span class="header-section-number">13.3.1</span> Addressing Ancestry Bias in Genomic Models</h3>
 <p>Several approaches have emerged to address ancestry confounding in genomic prediction. <span class="citation" data-cites="amariuta_improving_2020">Amariuta et al. (<a href="../bib/references.html#ref-amariuta_improving_2020" role="doc-biblioref">2020</a>)</span> demonstrated that incorporating functional genomic annotations can improve PRS transferability across populations, with larger gains for traits with well-characterized regulatory mechanisms.</p>
 <p>The importance of diverse representation extends beyond European-focused cohorts. <span class="citation" data-cites="sohail_mexican_2023">Sohail et al. (<a href="../bib/references.html#ref-sohail_mexican_2023" role="doc-biblioref">2023</a>)</span> provides critical analysis of PRS performance in Latin American populations, revealing systematic biases that cannot be addressed by simple recalibration. The work highlights the need for foundation models to be evaluated explicitly on diverse populations rather than assuming that performance on European-ancestry cohorts will transfer.</p>
+<p>A 2025 study provided the first systematic documentation of ancestry-stratified performance disparities across variant effect predictors. When evaluated separately within European, African, East Asian, and South Asian ancestry groups, all major VEP tools (<em>CADD</em>, <em>REVEL</em>, <em>AlphaMissense</em>) showed significantly degraded discrimination in non-European populations <span class="citation" data-cites="martin_pervasive_2025">(<a href="../bib/references.html#ref-martin_pervasive_2025" role="doc-biblioref"><strong>martin_pervasive_2025?</strong></a>)</span>. The performance gap was not subtle: auROC differences ranged from 0.05 to 0.12 between European and African ancestry groups, with the gap widening further for rare variants that constitute the clinically actionable tier.</p>
+<p>The mechanism is straightforward confounding: training data for VEP models derives predominantly from European-ancestry individuals. Biobanks oversample European populations (<a href="../part_1/p1-ch02-data.html#sec-ch02-biobanks" class="quarto-xref"><span>Section 2.3</span></a>), and clinical genetic testing has historically served European-ancestry patients disproportionately. Models learn patterns specific to European haplotype backgrounds, which fail to generalize when LD structure, allele frequencies, and functional variant distributions differ in other populations. A variant that appears pathogenic because it occurs on a rare European haplotype may be benign when the same allele appears on a common African haplotype.</p>
+<p>The clinical consequence follows directly: computational pathogenicity scores systematically overpredict pathogenicity for variants common in non-European populations, generating false positive flags that burden clinical interpretation pipelines and potentially delay diagnosis. The study established ancestry-stratified evaluation as a methodological requirement for any variant effect predictor claiming clinical utility, paralleling the <strong>fairness</strong> requirements for polygenic scores discussed in <a href="../part_1/p1-ch03-gwas.html#sec-ch03-fairness" class="quarto-xref"><span>Section 3.7.2</span></a>.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Knowledge Check: Recall Key Concepts">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -963,7 +987,7 @@ Knowledge Check: Recall Key Concepts
 <li>What diagnostic would reveal that your model’s 0.85 auROC primarily reflects ancestry rather than biological mechanism?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -972,7 +996,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p>A confounder is a variable that affects both features and labels (e.g., ancestry affects allele frequencies and disease risk through healthcare access), while data leakage occurs when test information influences training (e.g., the same variant appearing in both train and test sets). Both inflate performance, but leakage involves information that should not exist at prediction time, while confounding involves real but non-causal associations.</p></li>
@@ -1039,7 +1063,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>A model achieves 0.88 auROC predicting disease status from whole-genome sequences. You discover that case samples were sequenced at Center A using Illumina NovaSeq, while control samples were sequenced at Center B using HiSeq. What would you predict about performance on a new cohort where cases and controls are equally distributed across both centers? What diagnostic would you run to test for batch confounding?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1048,7 +1072,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Performance would likely collapse to near-chance levels (close to 0.50 auROC) because the model learned to distinguish sequencing centers rather than disease biology. When cases and controls are equally distributed across both centers, the batch-disease correlation disappears and the learned shortcut becomes useless.</p>
 <p>Diagnostics to run:</p>
@@ -1342,7 +1366,7 @@ Knowledge Check: Apply Detection Methods
 <li>If your confounder-only baseline achieves 0.82 auROC, what does this tell you about your model?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1351,7 +1375,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><strong>Three key diagnostics:</strong>
@@ -1475,7 +1499,88 @@ Table&nbsp;13.4: Mitigation strategy selection guide. Choose based on when inter
 <section id="sec-ch13-study-design" class="level3" data-number="13.9.1">
 <h3 data-number="13.9.1" class="anchored" data-anchor-id="sec-ch13-study-design"><span class="header-section-number">13.9.1</span> Study Design and Cohort Construction</h3>
 <p>Design-based approaches provide the most robust protection against confounding because they prevent the problem rather than attempting to correct it statistically. When cases and controls are matched on potential confounders before data collection, those variables cannot drive spurious associations regardless of model complexity.</p>
-<p>Matching strategies balance cases and controls on age, sex, ancestry, recruitment site, and sequencing platform. For ancestry, matching can use self-reported categories, genetic principal components, or fine-scale population assignments depending on the granularity required. Why does matching work when statistical adjustment could handle the same variables? Matching eliminates confounding by design rather than by assumption. Statistical adjustment assumes the functional form relating confounders to outcomes is correctly specified; if the true relationship is nonlinear or involves interactions the model does not include, residual confounding persists. Matching makes no such assumptions: when cases and controls have identical confounder distributions, no functional form is needed because there is no confounder-outcome variation to model. Exact matching (requiring identical values) provides the strongest protection but may be infeasible when confounders are continuous or when the pool of potential controls is limited. <strong>Propensity score matching</strong> or coarsened exact matching offer practical alternatives that achieve approximate balance across multiple confounders simultaneously.</p>
+<p>Matching strategies balance cases and controls on age, sex, ancestry, recruitment site, and sequencing platform. For ancestry, matching can use self-reported categories, genetic principal components, or fine-scale population assignments depending on the granularity required. Why does matching work when statistical adjustment could handle the same variables? Matching eliminates confounding by design rather than by assumption. Statistical adjustment assumes the functional form relating confounders to outcomes is correctly specified; if the true relationship is nonlinear or involves interactions the model does not include, residual confounding persists. Matching makes no such assumptions: when cases and controls have identical confounder distributions, no functional form is needed because there is no confounder-outcome variation to model. Exact matching (requiring identical values) provides the strongest protection but may be infeasible when confounders are continuous or when the pool of potential controls is limited. <strong>PCA-based genetic matching</strong>, <strong>genetic similarity score matching</strong>, or <strong>coarsened exact matching</strong> offer practical alternatives that achieve approximate balance across multiple confounders simultaneously.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Matching Methods in Genomic Case-Control Studies">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Matching Methods in Genomic Case-Control Studies
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Genomic case-control studies have developed specialized matching approaches distinct from classical epidemiological methods:</p>
+<ul>
+<li><strong>PCA-based matching</strong> (e.g., PCAmatchR): Matches cases to controls using weighted Mahalanobis distance on ancestry principal components, with weights proportional to variance explained by each PC.</li>
+<li><strong>Genetic similarity score (GSM) matching</strong>: Calculates pairwise genetic similarity directly from genome-wide genotypes, then matches based on similarity scores.</li>
+<li><strong>Coarsened exact matching (CEM)</strong>: Coarsens continuous confounders into strata and requires exact matching within strata. Works well for fewer than ~10 strong confounders but can produce extreme sample size losses in high-dimensional settings.</li>
+</ul>
+<p><strong>Why not propensity score matching?</strong> Propensity score matching estimates <span class="math inline">\(P(T=1 \mid X)\)</span>, the probability of receiving a treatment given confounder values. In case-control genomic studies, disease status is the <em>outcome</em>, not a treatment assignment. There is no “treatment” whose assignment probability can be modeled. When propensity score methods do appear in genomic literature (e.g., PCAPS), they typically address association testing rather than case-control matching at the study design stage.</p>
+<p><strong>Prognostic score matching</strong> is the conceptual mirror: it estimates <span class="math inline">\(\mathbb{E}[Y \mid X, T=0]\)</span> and matches on predicted disease risk. This approach is appropriate when you want to balance expected outcomes rather than treatment assignment probabilities. See the sidebar below for the distinction.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Propensity Scores vs. Prognostic Scores">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Propensity Scores vs.&nbsp;Prognostic Scores
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>These two matching approaches are often confused but address different causal structures:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Propensity Score</strong></th>
+<th><strong>Prognostic Score</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Definition</strong></td>
+<td><span class="math inline">\(P(T=1 \mid X)\)</span></td>
+<td><span class="math inline">\(\mathbb{E}[Y \mid X, T=0]\)</span></td>
+</tr>
+<tr class="even">
+<td><strong>What it models</strong></td>
+<td>Probability of receiving treatment</td>
+<td>Expected outcome under control conditions</td>
+</tr>
+<tr class="odd">
+<td><strong>Estimated in</strong></td>
+<td>Full sample (all subjects)</td>
+<td>Untreated/control group only</td>
+</tr>
+<tr class="even">
+<td><strong>Balances</strong></td>
+<td>Treatment assignment mechanism</td>
+<td>Outcome risk factors</td>
+</tr>
+<tr class="odd">
+<td><strong>Use case</strong></td>
+<td>Observational studies estimating treatment effects</td>
+<td>Studies where outcome prediction matters more than treatment assignment</td>
+</tr>
+</tbody>
+</table>
+<p><strong>When to use which:</strong></p>
+<ul>
+<li><strong>Propensity scores</strong>: When you have a clear treatment/exposure and want to estimate its causal effect. Classic examples include drug efficacy studies or policy interventions.</li>
+<li><strong>Prognostic scores</strong>: When disease status is the outcome and you want to match on predicted risk. Appropriate for case-control studies where there is no “treatment assignment” to model.</li>
+</ul>
+<p><strong>Theoretical insight</strong> <span class="citation" data-cites="hansen_prognostic_2008">(<a href="../bib/references.html#ref-hansen_prognostic_2008" role="doc-biblioref">Hansen 2008</a>)</span>: Prognostic scores directly balance what matters for outcome estimation (the expected outcome under control conditions) rather than balancing treatment assignment. A strong confounder of treatment assignment may be a weak predictor of outcome, and vice versa. Prognostic matching ensures matched pairs have similar <em>expected outcomes</em>, making any observed difference more attributable to the exposure of interest.</p>
+<p><strong>Practical consideration</strong>: Propensity score matching is “outcome-blind,” allowing you to finalize matched cohorts without examining outcomes and reducing researcher degrees of freedom. Prognostic score matching requires modeling the outcome, which some view as violating the design/analysis separation. Doubly robust approaches combine both propensity and prognostic scores, providing valid causal estimates if <em>either</em> model (but not necessarily both) is correctly specified <span class="citation" data-cites="leacy_joint_2013">(<a href="../bib/references.html#ref-leacy_joint_2013" role="doc-biblioref">Leacy and Stuart 2013</a>)</span>.</p>
+</div>
+</div>
 <p>Balanced sampling during training prevents models from optimizing primarily for majority patterns. When one ancestry group comprises 80% of training data, gradient updates predominantly reflect that group’s patterns, and minority group performance suffers. Down-sampling the majority group or up-sampling minority groups within mini-batches ensures that all groups contribute meaningfully to parameter updates. The trade-off is reduced effective sample size: discarding majority group samples wastes information, while up-sampling minority groups risks overfitting to limited examples.</p>
 <p>Prospective collection with diversity targets ensures that training data represent the populations where models will be deployed. Retrospective matching can balance existing cohorts but cannot address variants or patterns that are absent from the original collection. The All of Us Research Program, Million Veteran Program, and similar initiatives that prioritize ancestral diversity from inception provide data that enable genuinely generalizable models, though the genomic AI field has yet to fully leverage these resources.</p>
 <p>The limitation of design-based approaches is that they must anticipate which variables will confound. Unknown or unmeasured confounders cannot be matched, and over-matching (matching on variables that are consequences of the exposure) can introduce bias rather than remove it. Design and analysis approaches work best in combination: match on known confounders, then adjust for residual imbalances that matching did not eliminate.</p>
@@ -1536,7 +1641,7 @@ Knowledge Check
 <li>What monitoring should be implemented post-deployment?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1545,7 +1650,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Major fairness concerns:</strong> The score may show 40-75% reduced accuracy in non-European populations, potentially providing inferior risk stratification to already underserved groups. Differential performance could lead to missed diagnoses in minority populations or inappropriate screening recommendations.</p></li>
@@ -1609,7 +1714,7 @@ Test Yourself
 <li>What splitting strategies address different types of leakage (individual overlap, family structure, position memorization, temporal drift)?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1618,7 +1723,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-21" class="callout-21-contents callout-collapse collapse">
+<div id="callout-24" class="callout-24-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Confounding, bias, leakage, and distribution shift</strong>: Confounding occurs when a variable affects both features and labels (example: ancestry influences allele frequencies through population history and disease risk through healthcare access pathways). Bias is systematic deviation from the target quantity (example: training on 50% disease prevalence but deploying at 5% prevalence causes systematic over-prediction). Data leakage occurs when test information influences training (example: the same variant appearing in both training and test sets, or ClinVar labels being influenced by CADD scores that later become training features). Distribution shift is mismatch between training and deployment distributions (example: a model trained on one hospital’s coding practices failing at a different institution with different documentation standards).</p></li>
@@ -1699,8 +1804,20 @@ Duncan, L., H. Shen, B. Gelaye, J. Meijsen, K. Ressler, M. Feldman, R. Peterson,
 <div id="ref-ge_polygenic_2019" class="csl-entry" role="listitem">
 Ge, Tian, Chia-Yen Chen, Yang Ni, Yen-Chen Anne Feng, and Jordan W. Smoller. 2019. <span>“Polygenic Prediction via <span>Bayesian</span> Regression and Continuous Shrinkage Priors.”</span> <em>Nature Communications</em> 10 (1): 1776. <a href="https://doi.org/10.1038/s41467-019-09718-5">https://doi.org/10.1038/s41467-019-09718-5</a>.
 </div>
+<div id="ref-gordon_heterogeneity_2020" class="csl-entry" role="listitem">
+Gordon, Derek, Stephen J. Finch, and Wonkuk Kim. 2020. <em>Heterogeneity in Statistical Genetics: How to Assess, Address, and Account for Mixtures in Association Studies</em>. Cham: Springer. <a href="https://doi.org/10.1007/978-3-030-61121-7">https://doi.org/10.1007/978-3-030-61121-7</a>.
+</div>
+<div id="ref-hansen_prognostic_2008" class="csl-entry" role="listitem">
+Hansen, Ben B. 2008. <span>“The Prognostic Analogue of the Propensity Score.”</span> <em>Biometrika</em> 95 (2): 481–88. <a href="https://doi.org/10.1093/biomet/asn004">https://doi.org/10.1093/biomet/asn004</a>.
+</div>
+<div id="ref-laird_fundamentals_2011" class="csl-entry" role="listitem">
+Laird, Nan M., and Christoph Lange. 2011. <em>The Fundamentals of Modern Statistical Genetics</em>. New York: Springer. <a href="https://doi.org/10.1007/978-1-4419-7338-2">https://doi.org/10.1007/978-1-4419-7338-2</a>.
+</div>
 <div id="ref-landrum_clinvar_2018" class="csl-entry" role="listitem">
 Landrum, Melissa J, Jennifer M Lee, Mark Benson, Garth R Brown, Chen Chao, Shanmuga Chitipiralla, Baoshan Gu, et al. 2018. <span>“<span>ClinVar</span>: Improving Access to Variant Interpretations and Supporting Evidence.”</span> <em>Nucleic Acids Research</em> 46 (D1): D1062–67. <a href="https://doi.org/10.1093/nar/gkx1153">https://doi.org/10.1093/nar/gkx1153</a>.
+</div>
+<div id="ref-leacy_joint_2013" class="csl-entry" role="listitem">
+Leacy, Finbarr P., and Elizabeth A. Stuart. 2013. <span>“On the Joint Use of Propensity and Prognostic Scores in Estimation of the Average Treatment Effect on the Treated: A Simulation Study.”</span> <em>Statistics in Medicine</em> 33 (20): 3488–508. <a href="https://doi.org/10.1002/sim.6030">https://doi.org/10.1002/sim.6030</a>.
 </div>
 <div id="ref-lipsitch_negative_2010" class="csl-entry" role="listitem">
 Lipsitch, Marc, Eric Tchetgen Tchetgen, and Ted Cohen. 2010. <span>“Negative <span>Controls</span>: <span>A</span> <span>Tool</span> for <span>Detecting</span> <span>Confounding</span> and <span>Bias</span> in <span>Observational</span> <span>Studies</span>.”</span> <em>Epidemiology</em> 21 (3): 383. <a href="https://doi.org/10.1097/EDE.0b013e3181d61eeb">https://doi.org/10.1097/EDE.0b013e3181d61eeb</a>.

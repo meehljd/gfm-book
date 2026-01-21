@@ -19,6 +19,23 @@
 **Estimated Time:** 45-60 minutes
 :::
 
+::: {.callout-note title="XAI Framework"}
+The interpretability methods in this chapter fit within a broader taxonomy of Explainable AI (XAI) approaches developed in Somani's *Interpretability in Deep Learning* [@somani_interpretability_2023] and Samek's *Explainable AI* [@samek_explainable_2019]. A useful organizing framework asks six questions about any explanation:
+
+| Question | Genomic Application |
+|----------|---------------------|
+| **What** is being explained? | Prediction, representation, or decision |
+| **Who** needs the explanation? | Researcher, clinician, patient, regulator |
+| **Why** is explanation needed? | Debugging, trust, scientific insight, compliance |
+| **When** in the pipeline? | Training, validation, deployment, post-hoc |
+| **Where** in the model? | Input attribution, hidden representations, output |
+| **How** is explanation generated? | Perturbation, gradient, attention, probing |
+
+This 5W1H framework clarifies that different stakeholders require different explanations. A researcher seeking mechanistic insight needs faithful attribution methods; a clinician needs calibrated confidence and actionable categories; a regulator needs audit trails and reproducibility documentation. No single interpretability approach serves all purposes.
+
+**Model-driven** interpretability explains any model post-hoc; **task-driven** interpretability designs inherently interpretable architectures. Foundation models require model-driven approaches due to their scale and complexity, though architectural choices (attention mechanisms, modular components) increase inherent interpretability.
+:::
+
 An attribution method highlights a GATA motif when explaining why a model predicts enhancer activity. The explanation is biologically plausible: GATA transcription factors bind this motif and drive tissue-specific expression. But plausibility is not faithfulness. The model may have learned a completely different pattern (perhaps GC content correlating with enhancer labels in the training data) and the attribution method may be highlighting the GATA motif because human-interpretable explanations tend to find human-interpretable patterns. The explanation matches biological intuition without accurately reflecting model computation. This distinction between plausible and faithful interpretation structures the entire field of model interpretability, and failing to respect it produces explanations that provide false comfort rather than genuine insight.
 
 The stakes extend beyond scientific curiosity. Variant interpretation guidelines from the American College of Medical Genetics require that computational evidence be weighed alongside functional assays, segregation data, and population frequency (see @sec-ch29-rare-disease for detailed discussion of the ACMG-AMP framework). A pathogenicity score alone satisfies only weak evidence criteria; knowing that a variant disrupts a specific CTCF binding site in a cardiac enhancer provides interpretable mechanistic evidence that can be combined with clinical presentation and family history. When models cannot explain their predictions faithfully, clinicians cannot integrate computational evidence with biological reasoning. The same limitation affects research: a model that predicts enhancer activity cannot generate testable hypotheses about regulatory grammar unless its internal computations can be translated into statements about motifs, spacing constraints, and combinatorial logic that can be experimentally validated.
@@ -72,6 +89,8 @@ Gradient-based methods approximate the counterfactual information from ISM using
 The simplest approach, often called **saliency mapping**, computes raw gradients and visualizes their magnitudes across the sequence. A common variant multiplies gradients by inputs (gradient $\times$ input), focusing on positions where the current nucleotide is both important and present. These methods require only a single backward pass, making them orders of magnitude faster than ISM.
 
 Gradient-based methods suffer from saturation in regions where the model is already confident. If a strong motif drives the prediction into a saturated region of the output nonlinearity, small perturbations produce near-zero gradients even though the motif is functionally critical. *DeepLIFT* addresses this limitation by comparing activations between an input sequence and a reference, propagating differences through the network using custom rules that avoid gradient saturation. The resulting attributions satisfy a completeness property: contributions sum to the difference between input and reference predictions [@shrikumar_learning_2017].
+
+Attribution methods derive from sensitivity analysis and feature importance work in neural networks [@samek_explainable_2019]. **Layer-wise Relevance Propagation (LRP)** decomposes predictions backward through the network, assigning relevance scores that sum to the output value. The conservation property (total relevance equals total prediction) guarantees consistency that gradient methods lack. Bach and colleagues established LRP for image classification [@bach_pixelwise_2015]; adaptations for sequence models replace pixel relevance with nucleotide or token relevance. For genomic foundation models, LRP can complement gradient-based methods by providing different perspectives on the same prediction, with agreement across methods increasing confidence in identified important positions.
 
 ::: {.callout-important}
 ## Key Insight: The Saturation Problem
@@ -317,6 +336,31 @@ Several specific issues undermine naive attention interpretation. Attention weig
 More robust approaches combine attention analysis with perturbation experiments. If deleting a position that receives high attention changes the prediction substantially, the attention is functionally meaningful. If deletion has minimal effect, the attention may serve computational purposes unrelated to the target output. Attention rollout and attention flow methods propagate attention through layers to better capture information movement across the full network, though these too provide correlational rather than causal evidence.
 
 
+### Systematic Attention Analysis for Genomic Transformers {#sec-ch25-attention-genomics}
+
+A heatmap showing that a promoter-proximal position attends strongly to a distal CTCF motif suggests the model has learned enhancer-promoter looping. But does it? Attention weights indicate where the model looks, not whether looking there was necessary for the prediction. A systematic framework for interpreting attention patterns in genomic contexts addresses this gap [@attention_interpretability_2025].
+
+The framework distinguishes three types of attention heads based on what they compute. The framework distinguishes these types computationally by analyzing attention weight distributions: positional heads show distance-dependent decay, compositional heads correlate with k-mer similarity, and functional heads cluster by biological annotation. **Positional heads** attend based on distance, recreating convolution-like local windows regardless of sequence content. These heads capture short-range dependencies (splice sites, transcription factor binding) where proximity determines function. **Compositional heads** attend based on sequence similarity, linking positions with related k-mer content. These heads discover motif co-occurrence (GATA + FOX + SMAD in cardiac enhancers) and repeated elements. **Functional heads** attend based on learned regulatory relationships, connecting enhancers to target promoters, silencers to repressed genes, and boundary elements to loop anchors.
+
+::: {.callout-note}
+## Deep Dive: Automated Attention Head Annotation
+
+The paper introduced a GPT-4-assisted workflow for attention head interpretation. The five-step process:
+
+1. Extract attention patterns for 1,000 diverse genomic sequences
+2. Cluster heads by attention distribution similarity (cosine distance)
+3. Generate natural language descriptions of each cluster's typical pattern
+4. Use GPT-4 to propose biological functions matching each pattern
+5. Validate proposed functions through ablation (zero out head, measure task performance drop)
+
+This automation enables systematic analysis of models with hundreds of attention heads, where manual inspection would be infeasible. The validation step (ablation) distinguishes necessary heads from incidental ones.
+:::
+
+Validation experiments demonstrate which attention patterns are causal versus correlational. The study compared attention-based importance scores to perturbation-based ground truth (in silico mutagenesis). Functional heads showed high concordance (Spearman r > 0.7 between attention weight and ISM effect size); positional and compositional heads showed weak concordance (r < 0.3). This quantifies a critical limitation: attention is not inherently interpretable, but systematic analysis can identify which heads provide faithful explanations.
+
+The practical output is an interpretability recipe: analyze attention heads in aggregate rather than individually, cluster by computational pattern rather than biological intuition, validate proposed functions through ablation, and report concordance with perturbation-based ground truth. This transforms attention visualization from suggestive figures to rigorous interpretability claims.
+
+
 ## Regulatory Vocabularies and Global Interpretability {#sec-ch25-global}
 
 Local interpretability methods explain individual predictions; global interpretability characterizes what a model has learned across its entire training distribution. For genomic models trained to predict thousands of chromatin features, global interpretability asks whether the model has learned a coherent vocabulary of regulatory sequence classes and how those classes map to biological programs.
@@ -436,6 +480,27 @@ The following table summarizes the hierarchy of validation tests, from weakest t
 
 Plausible versus faithful explanations. Both paths start with attributions highlighting a GATA motif. Left: plausible but unfaithful—the explanation matches intuition, but the model learned GC content; validation tests fail. Right: faithful—the model actually uses the GATA motif; validation tests pass. The distinction determines whether interpretability generates genuine insight or false comfort. Always validate: does ablating the feature change prediction? Does inserting it increase prediction?
 :::
+
+
+### Explanation Quality Metrics {#sec-ch25-quality-metrics}
+
+Beyond faithfulness, explanation quality can be assessed along multiple dimensions from the XAI literature [@samek_explainable_2019]:
+
+- **Fidelity**: Does the explanation accurately reflect model computation?
+- **Comprehensibility**: Can the target audience understand the explanation?
+- **Sufficiency**: Does the explanation contain enough information to reproduce the reasoning?
+- **Completeness**: Are all relevant factors included?
+
+In genomic models, these criteria become:
+
+| Criterion | Genomic Test |
+|-----------|--------------|
+| Fidelity | Perturbing highlighted positions changes prediction |
+| Comprehensibility | Explanations map to known biology (motifs, domains) |
+| Sufficiency | Synthetic sequences matching explanations show predicted behavior |
+| Completeness | No high-importance positions are missed by the explanation |
+
+The Swartout and Moore criteria for explanation systems [@swartout_explanation_1993]—explicit representation, fidelity, and understandability—remain foundational for evaluating whether model explanations are scientifically useful rather than merely plausible.
 
 
 ### Experimental Validation {#sec-ch25-experimental}

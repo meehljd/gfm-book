@@ -526,6 +526,7 @@ window.Quarto = {
   <li><a href="#sec-ch11-bend" id="toc-sec-ch11-bend" class="nav-link" data-scroll-target="#sec-ch11-bend"><span class="header-section-number">11.2.4</span> BEND: Benchmark for DNA Language Models</a></li>
   <li><a href="#sec-ch11-long-range" id="toc-sec-ch11-long-range" class="nav-link" data-scroll-target="#sec-ch11-long-range"><span class="header-section-number">11.2.5</span> Long-Range Benchmarks</a></li>
   <li><a href="#sec-ch11-cross-species" id="toc-sec-ch11-cross-species" class="nav-link" data-scroll-target="#sec-ch11-cross-species"><span class="header-section-number">11.2.6</span> Cross-Species Evaluation</a></li>
+  <li><a href="#sec-ch11-scfm-baselines" id="toc-sec-ch11-scfm-baselines" class="nav-link" data-scroll-target="#sec-ch11-scfm-baselines"><span class="header-section-number">11.2.7</span> When Foundation Models Fail: The Single-Cell Reality Check</a></li>
   </ul></li>
   <li><a href="#sec-ch11-vep-benchmarks" id="toc-sec-ch11-vep-benchmarks" class="nav-link" data-scroll-target="#sec-ch11-vep-benchmarks"><span class="header-section-number">11.3</span> Variant Effect Prediction Benchmarks</a>
   <ul class="collapse">
@@ -544,8 +545,9 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#sec-ch11-label-provenance" id="toc-sec-ch11-label-provenance" class="nav-link" data-scroll-target="#sec-ch11-label-provenance"><span class="header-section-number">11.5.1</span> Data Sources and Label Provenance</a></li>
   <li><a href="#sec-ch11-splitting" id="toc-sec-ch11-splitting" class="nav-link" data-scroll-target="#sec-ch11-splitting"><span class="header-section-number">11.5.2</span> Splitting Strategies and Leakage</a></li>
-  <li><a href="#sec-ch11-metrics" id="toc-sec-ch11-metrics" class="nav-link" data-scroll-target="#sec-ch11-metrics"><span class="header-section-number">11.5.3</span> Metric Selection and Aggregation</a></li>
-  <li><a href="#sec-ch11-goodhart" id="toc-sec-ch11-goodhart" class="nav-link" data-scroll-target="#sec-ch11-goodhart"><span class="header-section-number">11.5.4</span> Goodhart’s Law and Benchmark Gaming</a></li>
+  <li><a href="#sec-ch11-leakage-genomic" id="toc-sec-ch11-leakage-genomic" class="nav-link" data-scroll-target="#sec-ch11-leakage-genomic"><span class="header-section-number">11.5.3</span> The Leakage Tax: Genomic Heterogeneity Inflates Performance</a></li>
+  <li><a href="#sec-ch11-metrics" id="toc-sec-ch11-metrics" class="nav-link" data-scroll-target="#sec-ch11-metrics"><span class="header-section-number">11.5.4</span> Metric Selection and Aggregation</a></li>
+  <li><a href="#sec-ch11-goodhart" id="toc-sec-ch11-goodhart" class="nav-link" data-scroll-target="#sec-ch11-goodhart"><span class="header-section-number">11.5.5</span> Goodhart’s Law and Benchmark Gaming</a></li>
   </ul></li>
   <li><a href="#sec-ch11-saturation-staleness" id="toc-sec-ch11-saturation-staleness" class="nav-link" data-scroll-target="#sec-ch11-saturation-staleness"><span class="header-section-number">11.6</span> Benchmark Saturation and Staleness</a>
   <ul class="collapse">
@@ -848,6 +850,26 @@ Check Your Answer
 <p><em>GenBench</em> and related resources test whether models trained on one organism generalize to related species . Cross-species evaluation is important for several reasons. Many applications require predictions in non-human organisms (agricultural genomics, model organism research, comparative genomics). Multi-species training may improve within-species performance by providing additional evolutionary signal (<a href="p3-ch08-pretraining.html#sec-ch08-multispecies" class="quarto-xref"><span>Section 8.8.3</span></a>). The ability to transfer across species indicates that models have learned general principles of genome organization rather than species-specific artifacts.</p>
 <p>Cross-species benchmarks typically evaluate models on held-out species not seen during training. Performance degradation from training to held-out species indicates the degree to which learned representations depend on species-specific features. Some architectures show better cross-species transfer than others, suggesting differences in how well they capture conserved regulatory principles.</p>
 </section>
+<section id="sec-ch11-scfm-baselines" class="level3" data-number="11.2.7">
+<h3 data-number="11.2.7" class="anchored" data-anchor-id="sec-ch11-scfm-baselines"><span class="header-section-number">11.2.7</span> When Foundation Models Fail: The Single-Cell Reality Check</h3>
+<p>Can a <strong>foundation model</strong> trained on millions of cells predict perturbation responses better than a linear classifier? The assumption underlying much single-cell foundation model development is that self-supervised pretraining on massive cellular atlases captures regulatory logic that transfers to downstream prediction tasks. A 2025 Nature Methods study tested this assumption directly by comparing <em>Geneformer</em> and <em>scGPT</em> to simple baselines on perturbation prediction tasks <span class="citation" data-cites="rood_geneformer_benchmark_2025">(<a href="../bib/references.html#ref-rood_geneformer_benchmark_2025" role="doc-biblioref"><strong>rood_geneformer_benchmark_2025?</strong></a>)</span>.</p>
+<p>The results were sobering. For predicting gene expression changes following CRISPR perturbations, both foundation models were outperformed by a linear regression trained on the same task-specific data. The gap was not subtle: baseline methods achieved higher correlation with experimental measurements across multiple perturbation datasets, and the difference persisted even when foundation models were fine-tuned rather than used zero-shot. The finding echoes similar failures in protein language models, where zero-shot predictions frequently underperform domain-specific baselines despite impressive pretraining scale (see <a href="../part_4/p4-ch16-protein-lm.html#sec-ch16-limitations" class="quarto-xref"><span>Section 16.8</span></a> for protein-specific examples).</p>
+<p>What went wrong? The study identified three systematic issues. First, foundation models excelled at cell type classification and other tasks directly related to their pretraining objective (predicting masked genes from expression context). This capability did not transfer to perturbation prediction, which requires understanding causal interventions rather than observational associations. Second, the models struggled with out-of-distribution genes: perturbations targeting genes poorly represented in pretraining data produced unreliable predictions. Third, simple baselines leveraged task-specific inductive biases that foundation models lacked. A linear model predicting expression changes can directly learn which genes respond together to perturbations. A transformer pretrained on gene co-expression learns which genes co-occur in unperturbed states.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Zero-Shot ≠ Task-Ready
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This benchmark establishes a critical methodological standard: all foundation model evaluations should include strong, task-specific baselines. Reporting that a model achieves 0.72 correlation on perturbation prediction is meaningless without knowing that a linear regression achieves 0.81. The “foundation” label does not exempt models from basic comparison requirements.</p>
+</div>
+</div>
+<p>The implications extend beyond single-cell models. Any claim that pretraining improves downstream performance requires demonstrating superiority over appropriately matched baselines trained on the same downstream data. Large scale and self-supervised objectives are necessary but not sufficient for transfer. The questions become: what inductive biases must models capture to generalize beyond their pretraining distribution, and how do we design pretraining objectives that encourage learning those biases rather than shortcuts? These questions remain open.</p>
+</section>
 </section>
 <section id="sec-ch11-vep-benchmarks" class="level2" data-number="11.3">
 <h2 data-number="11.3" class="anchored" data-anchor-id="sec-ch11-vep-benchmarks"><span class="header-section-number">11.3</span> Variant Effect Prediction Benchmarks</h2>
@@ -1078,14 +1100,33 @@ Figure&nbsp;11.2: Data leakage pathways in genomic foundation model evaluation. 
 </figure>
 </div>
 </section>
-<section id="sec-ch11-metrics" class="level3" data-number="11.5.3">
-<h3 data-number="11.5.3" class="anchored" data-anchor-id="sec-ch11-metrics"><span class="header-section-number">11.5.3</span> Metric Selection and Aggregation</h3>
+<section id="sec-ch11-leakage-genomic" class="level3" data-number="11.5.3">
+<h3 data-number="11.5.3" class="anchored" data-anchor-id="sec-ch11-leakage-genomic"><span class="header-section-number">11.5.3</span> The Leakage Tax: Genomic Heterogeneity Inflates Performance</h3>
+<p>Variant effect prediction models achieve 0.975 auROC when evaluated on random test splits but only 0.697 auROC when evaluated at splice sites. The 28-point drop does not reflect splice site difficulty; it reflects <strong>data leakage</strong>. A 2025 Nature Methods study quantified how genomic heterogeneity (sequence similarity, haplotype structure, conserved regulatory elements) creates hidden connections between training and test sets that random splits fail to sever <span class="citation" data-cites="data_leakage_guidelines_2025">(<a href="../bib/references.html#ref-data_leakage_guidelines_2025" role="doc-biblioref"><strong>data_leakage_guidelines_2025?</strong></a>)</span>.</p>
+<p>The leakage mechanism differs from the family-level relatedness discussed in <a href="p3-ch12-evaluation.html#sec-ch12-leakage-detection" class="quarto-xref"><span>Section 12.4</span></a>. Genomes contain repeated elements, conserved motifs, and long-range <strong>linkage disequilibrium</strong> that create subtle similarities between distant loci. A model trained to predict chromatin accessibility at enhancers in chromosome 1 may memorize GC-rich motifs that also appear in chromosome 12 enhancers. When test enhancers share these motifs, performance appears excellent despite the model learning sequence composition rather than regulatory grammar. The solution is <strong>homology-aware splitting</strong>: cluster sequences by similarity, assign entire clusters to train or test, and verify that no significant sequence overlap remains.</p>
+<p>The paper documents three splitting strategies with progressively stricter leakage control. Sequence-identity clustering (90% identity threshold) prevents direct homology leakage. Locus-based splits assign entire genes or regulatory regions to train or test, blocking local linkage. Chromosome-based splits eliminate all within-genome structure sharing, though they create artificial distribution shifts that may underestimate real-world performance. The optimal strategy depends on the deployment scenario: if the model will score variants in previously studied genes, sequence-identity clustering suffices; if it must generalize to entirely novel loci, locus-based splits are required.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Practical Guidance: The hashFrag Tool
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <em>hashFrag</em> tool automates homology-aware splitting for genomic sequence data <span class="citation" data-cites="hashfrag_2025">(<a href="../bib/references.html#ref-hashfrag_2025" role="doc-biblioref"><strong>hashfrag_2025?</strong></a>)</span>. It hashes sequence fragments, clusters by Jaccard similarity, and outputs train/test assignments that respect sequence homology boundaries. Integration with standard benchmark workflows requires only specifying the similarity threshold and cluster assignment strategy.</p>
+</div>
+</div>
+</section>
+<section id="sec-ch11-metrics" class="level3" data-number="11.5.4">
+<h3 data-number="11.5.4" class="anchored" data-anchor-id="sec-ch11-metrics"><span class="header-section-number">11.5.4</span> Metric Selection and Aggregation</h3>
 <p>Benchmark metrics determine what aspects of model performance are measured. Discrimination metrics (auROC, auPRC, correlation) assess whether models rank predictions correctly. Calibration metrics (expected calibration error, reliability diagrams) assess whether predicted probabilities match observed frequencies (<a href="../part_6/p6-ch24-uncertainty.html#sec-ch24-calibration" class="quarto-xref"><span>Section 24.3</span></a>). Clinical utility metrics (net benefit, decision curves) assess whether predictions improve decisions compared to treating all patients the same (<a href="../part_7/p7-ch28-clinical-risk.html" class="quarto-xref"><span>Chapter 28</span></a>).</p>
 <p>Different metrics can yield different rankings of models. A model with superior discrimination may have poor calibration, predicting the right relative order but wrong absolute probabilities. Choosing which metric to optimize, and how to aggregate across multiple tasks or datasets, involves implicit decisions about what matters for downstream use.</p>
 <p>Aggregation across tasks raises additional issues. Mean performance across many tasks weights each task equally, regardless of clinical importance or dataset quality. Median performance is robust to outliers but obscures variation. Reporting full distributions of task-level performance provides more information but complicates comparison. The choice of aggregation method can substantially affect which model appears best.</p>
 </section>
-<section id="sec-ch11-goodhart" class="level3" data-number="11.5.4">
-<h3 data-number="11.5.4" class="anchored" data-anchor-id="sec-ch11-goodhart"><span class="header-section-number">11.5.4</span> Goodhart’s Law and Benchmark Gaming</h3>
+<section id="sec-ch11-goodhart" class="level3" data-number="11.5.5">
+<h3 data-number="11.5.5" class="anchored" data-anchor-id="sec-ch11-goodhart"><span class="header-section-number">11.5.5</span> Goodhart’s Law and Benchmark Gaming</h3>
 <p>Benchmarks create incentive structures, and incentive structures invite optimization. Goodhart’s Law, that a measure ceases to be a good measure once it becomes a target, applies with particular force to machine learning evaluation. When model development prioritizes leaderboard position, the benchmark becomes the optimization target rather than a proxy for the underlying capability it was designed to measure.</p>
 <p>Gaming takes multiple forms in genomic AI. Architectural choices may be tuned specifically to benchmark characteristics: receptive fields sized to match benchmark sequence lengths, output heads designed for benchmark label distributions, hyperparameters selected through extensive benchmark-specific search. Such tuning improves benchmark performance without necessarily improving generalization to deployment scenarios that differ from benchmark conditions.</p>
 <p>More subtle gaming arises from selective reporting. Models may be evaluated on many benchmarks with only favorable results published. Benchmark versions may be chosen to maximize apparent performance. Evaluation protocols may deviate from published standards in ways that inflate metrics. The cumulative effect is a literature where reported performance systematically overestimates deployment capability.</p>
@@ -1202,7 +1243,7 @@ Figure&nbsp;11.5: Cross-population performance reveals systematic failures for u
 </figcaption>
 </figure>
 </div>
-<p>Modality coverage remains uneven: long-read sequencing data is scarce in benchmarks despite its advantages for structural variants and phasing (<a href="../part_1/p1-ch01-ngs.html#sec-ch01-longread" class="quarto-xref"><span>Section 1.2.4</span></a>). Single-cell benchmarks are emerging but remain limited compared to bulk assay benchmarks; the evaluation challenges specific to single-cell models are examined in <a href="../part_5/p5-ch20-single-cell.html#sec-ch20-evaluation" class="quarto-xref"><span>Section 20.6.3</span></a>. Spatial transcriptomics and other emerging modalities have minimal coverage, though multi-omic integration approaches (<a href="../part_5/p5-ch23-multi-omics.html" class="quarto-xref"><span>Chapter 23</span></a>) are beginning to address cross-modality assessment.</p>
+<p>Modality coverage remains uneven: long-read sequencing data is scarce in benchmarks despite its advantages for structural variants and phasing (<a href="../part_1/p1-ch01-ngs.html#sec-ch01-longread" class="quarto-xref"><span>Section 1.2.4</span></a>). Single-cell benchmarks are emerging but remain limited compared to bulk assay benchmarks; the evaluation challenges specific to single-cell models are examined in <a href="../part_5/p5-ch20-single-cell.html#sec-ch20-evaluation" class="quarto-xref"><span>Section 20.6.4</span></a>. Spatial transcriptomics and other emerging modalities have minimal coverage, though multi-omic integration approaches (<a href="../part_5/p5-ch23-multi-omics.html" class="quarto-xref"><span>Chapter 23</span></a>) are beginning to address cross-modality assessment.</p>
 <p>Clinical endpoints are underrepresented: most benchmarks use molecular surrogates rather than hard clinical endpoints. Disease incidence, progression, treatment response, and patient-reported outcomes are rarely the direct prediction target. The gap between molecular proxy accuracy and clinical utility remains poorly characterized.</p>
 <p>These gaps mean that strong benchmark performance may not predict utility for underserved populations, understudied variant classes, or clinical applications that depend on endpoints the benchmarks do not measure.</p>
 </section>

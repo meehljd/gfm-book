@@ -216,6 +216,56 @@ Consider the genomic data constraint: reference genomes contain roughly $10^{11}
 :::
 
 
+### Downstream Scaling: A Modified Framework {#sec-ch14-downstream-scaling}
+
+The Chinchilla scaling laws (@eq-14-01) govern pretraining loss, but foundation models are not deployed to minimize pretraining loss. They are adapted to downstream tasks: variant effect prediction, regulatory element classification, clinical risk stratification. A model that achieves excellent masked language modeling performance may fail when fine-tuned on limited task-specific labels. The critical question becomes: how do performance, required labeled data, and model capacity relate for downstream classification tasks built on foundation model embeddings?
+
+Traditional ML scaling laws do not directly apply. The **Chinchilla** framework balances model parameters against pretraining tokens, but downstream tasks substitute a different set of constraints: embedding quality (determined by pretraining), labeled examples available for adaptation, and the alignment between pretraining distribution and task distribution. Recent work has begun to characterize these relationships empirically.
+
+::: {.callout-note}
+## Mathematical Detail: Downstream Task Scaling
+
+The downstream setting requires a modified framework because the bottleneck shifts from compute to labeled data quality. Based on synthesis of transfer learning literature [@hernandez_transfer_2021; @iclr_downstream_2025], downstream classifier performance can be decomposed:
+
+$$
+L_{downstream}(D_{ft}, E) = L_{irreducible} + \frac{A'}{E^{\alpha'}} + \frac{B'}{D_{ft}^{\beta'}}
+$$
+
+where:
+
+- $L_{downstream}$ = downstream task loss (classification or regression)
+- $D_{ft}$ = number of labeled fine-tuning examples
+- $E$ = embedding quality (proxy: pretraining loss, probe performance)
+- $\alpha'$ = embedding quality exponent (how much better embeddings help)
+- $\beta'$ = fine-tuning data exponent (how much more data helps)
+- $L_{irreducible}$ = task-specific noise floor
+
+**Key differences from pretraining scaling:**
+
+1. $E$ replaces model parameters $N$: embedding quality matters more than raw model size once pretrained
+2. $\beta'$ can exceed pretraining exponents: better embeddings amplify data efficiency gains
+3. $L_{irreducible}$ depends on task-embedding alignment: mismatched tasks may never reach good performance
+:::
+
+Empirical evidence from protein and DNA language models supports sample efficiency claims. The *Nucleotide Transformer* study demonstrated that fine-tuning with 1,000 labeled examples matched performance of models trained from scratch on full datasets across 18 genomic prediction tasks [@dalla-torre_nucleotide_2023]. *ULMFiT* established the canonical result: 100 labeled examples with transfer learning matched 10,000 examples without transfer on text classification [@howard_universal_2018]. These represent 10-100x reductions in labeled data requirements.
+
+::: {.callout-tip}
+## Stop and Think: Sample Efficiency Sources
+
+Before reading on, consider: what properties of pretrained embeddings would enable a classifier to learn from fewer labeled examples? What types of patterns must the embeddings already capture?
+
+*Hint: Compare training a linear classifier on one-hot encoded sequence versus training it on embeddings from a pretrained DNA language model.*
+:::
+
+What determines sample efficiency? The literature identifies several factors. Pretraining-task alignment matters: a model pretrained on human regulatory sequences transfers more efficiently to human enhancer prediction than a model pretrained on bacterial genomes. Embedding dimensionality creates a tradeoff: higher-dimensional embeddings capture richer representations but require more labeled examples for linear probes to avoid overfitting. Layer selection proves task-dependent (@sec-ch10-layer-selection): optimal representations for variant effect prediction may reside in different layers than optimal representations for cell type classification. Fine-tuning strategy affects efficiency: gradual unfreezing and discriminative layer-wise learning rates preserve pretrained knowledge while adapting to new tasks.
+
+The **zero-shot** approach bypasses labeled data requirements entirely. Rather than training a downstream classifier, zero-shot methods use the pretrained model's likelihood as a fitness proxy. For variant effect prediction, the log-likelihood ratio between mutant and wildtype sequences directly scores deleteriousness without any labeled pathogenicity examples (@sec-ch18-zeroshot-plm). *ESM-1v* demonstrated that zero-shot protein variant scoring outperformed supervised baselines on 17 of 41 deep mutational scanning benchmarks, establishing that pretraining alone can capture sufficient functional constraints for some prediction tasks [@meier_esm-1v_2021].
+
+The workflow follows directly: start with zero-shot evaluation if task-appropriate, use linear probes to assess embedding quality with minimal labeled data (100-1,000 examples), and scale to full fine-tuning only when frozen embeddings prove insufficient. This inverts the traditional ML workflow, where supervised training is the default and unsupervised pretraining is an optional enhancement.
+
+**Open questions remain.** What are the fitted values of $\alpha'$ and $\beta'$ for genomic classification tasks? How does class imbalance modify downstream scaling laws? Is there an emergence threshold below which foundation model embeddings provide no benefit over raw sequence features? These questions define the frontier of understanding how foundation models transform genomic prediction.
+
+
 ### Emergent Capabilities {#sec-ch14-emergence}
 
 Perhaps the most intriguing aspect of foundation model scaling is the emergence of qualitatively new capabilities at sufficient scale. Emergence refers to abilities that are absent or negligible in smaller models but appear discontinuously as models grow. Think of it like learning to ride a bicycle: you cannot ride "a little bit"---you wobble and fall until suddenly, with enough practice, you can balance. The capability emerges all at once rather than improving gradually. Similarly, certain model capabilities remain effectively zero until the model crosses a threshold, then appear seemingly from nowhere.

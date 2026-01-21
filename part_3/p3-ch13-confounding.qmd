@@ -68,6 +68,18 @@ The following table clarifies the distinctions between these related but distinc
 | **Data leakage** | Test information influences training | Same variant in train and test sets | Performance collapse under strict splits | Rigorous deduplication, temporal splits |
 | **Distribution shift** | Train/deploy distributions differ | Model trained on one hospital, deployed at another | Performance degradation on new cohorts | Domain adaptation, multi-site training |
 
+::: {.callout-note title="Statistical Genetics Foundations"}
+The terminology and conceptual framework for understanding heterogeneity in genetic associations derives from classical statistical genetics, including Laird and Lange's *Fundamentals of Modern Statistical Genetics* [@laird_fundamentals_2011] and Gordon's *Heterogeneity in Statistical Genetics* [@gordon_heterogeneity_2020]. Three forms of heterogeneity documented in genetics can complicate foundation model evaluation:
+
+- **Locus heterogeneity**: Different genes cause the same phenotype in different families
+- **Allelic heterogeneity**: Different variants in the same gene cause the same phenotype
+- **Population heterogeneity**: Effect sizes vary across ancestry groups
+
+Each form creates opportunities for shortcut learning. A model that achieves high population-level performance while learning which gene families associate with disease—rather than extracting variant-level regulatory signals—may be exploiting locus heterogeneity as a shortcut. Whether foundation models actually exploit these heterogeneity patterns requires empirical investigation specific to genomic architectures.
+
+The statistical methods for detecting and addressing heterogeneity in GWAS offer foundations that extend naturally to foundation model evaluation, especially for ancestry-stratified performance analysis.
+:::
+
 ::: {.callout-tip}
 ## Key Insight: The Confounder-Mechanism Distinction
 
@@ -168,6 +180,8 @@ Human genetic variation is structured by ancestry: allele frequencies, haplotype
 
 The statistical genetics community developed these corrections precisely because early genome-wide association studies produced spurious signals driven by ancestry differences between cases and controls rather than causal variant effects (see @sec-ch03-population-structure for detailed treatment of population stratification in association testing). Foundation models face the same fundamental problem in a different guise: ancestry structure that confounded linear regression in GWAS now confounds neural network predictions, and the solutions require similar conceptual foundations even when the technical implementations differ.
 
+Gordon's heterogeneity framework [@gordon_heterogeneity_2020] offers additional perspective: when effect sizes differ across populations (G×E or G×ancestry interactions), no single model can simultaneously achieve optimal prediction in all groups. This fundamental limitation affects foundation models as much as linear PRS, though the mechanisms of failure differ. Foundation models may achieve apparent high performance by weighting populations differently, masking poor calibration in underrepresented groups behind strong discrimination in majority populations.
+
 ::: {#fig-population-structure-shortcut layout-ncol=2}
 ![Population structure in genomic data](../figs/part_3/ch13/02-A-fig-population-structure-shortcut.svg)
 
@@ -197,6 +211,12 @@ This mismatch between the populations used for model development and the populat
 Several approaches have emerged to address ancestry confounding in genomic prediction. @amariuta_improving_2020 demonstrated that incorporating functional genomic annotations can improve PRS transferability across populations, with larger gains for traits with well-characterized regulatory mechanisms.
 
 The importance of diverse representation extends beyond European-focused cohorts. @sohail_mexican_2023 provides critical analysis of PRS performance in Latin American populations, revealing systematic biases that cannot be addressed by simple recalibration. The work highlights the need for foundation models to be evaluated explicitly on diverse populations rather than assuming that performance on European-ancestry cohorts will transfer.
+
+A 2025 study provided the first systematic documentation of ancestry-stratified performance disparities across variant effect predictors. When evaluated separately within European, African, East Asian, and South Asian ancestry groups, all major VEP tools (*CADD*, *REVEL*, *AlphaMissense*) showed significantly degraded discrimination in non-European populations [@martin_pervasive_2025]. The performance gap was not subtle: auROC differences ranged from 0.05 to 0.12 between European and African ancestry groups, with the gap widening further for rare variants that constitute the clinically actionable tier.
+
+The mechanism is straightforward confounding: training data for VEP models derives predominantly from European-ancestry individuals. Biobanks oversample European populations (@sec-ch02-biobanks), and clinical genetic testing has historically served European-ancestry patients disproportionately. Models learn patterns specific to European haplotype backgrounds, which fail to generalize when LD structure, allele frequencies, and functional variant distributions differ in other populations. A variant that appears pathogenic because it occurs on a rare European haplotype may be benign when the same allele appears on a common African haplotype.
+
+The clinical consequence follows directly: computational pathogenicity scores systematically overpredict pathogenicity for variants common in non-European populations, generating false positive flags that burden clinical interpretation pipelines and potentially delay diagnosis. The study established ancestry-stratified evaluation as a methodological requirement for any variant effect predictor claiming clinical utility, paralleling the **fairness** requirements for polygenic scores discussed in @sec-ch03-fairness.
 
 ::: {.callout-tip title="Knowledge Check: Recall Key Concepts"}
 Before moving to technical artifacts, test your retention from the earlier sections:

@@ -580,6 +580,26 @@ Chapter Overview
 <p><strong>Key insight:</strong> The choice of how to segment and represent genomic sequence is not merely technical preprocessing: it fundamentally determines what patterns a model can detect, what resolution it can achieve, and which biological questions it can answer.</p>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled" title="NLP Embedding Foundations">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+NLP Embedding Foundations
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Genomic foundation model embeddings derive from natural language processing, where distributed representations revolutionized language understanding. The key insight—that words with similar meanings should have similar vector representations—translates to genomics: sequences with similar functions should occupy nearby regions of embedding space.</p>
+<p>Two embedding paradigms emerged from NLP, as described in Paass and Giesselbach’s <em>Foundation Models for Natural Language Processing</em> <span class="citation" data-cites="paass_foundation_2023">(<a href="../bib/references.html#ref-paass_foundation_2023" role="doc-biblioref">Paass and Giesselbach 2023</a>)</span>:</p>
+<ol type="1">
+<li><strong>Static embeddings</strong> (Word2Vec, GloVe): Each token has a fixed vector regardless of context</li>
+<li><strong>Contextual embeddings</strong> (ELMo, BERT, GPT): Token vectors depend on surrounding context</li>
+</ol>
+<p>Genomic models inherit this distinction. K-mer frequency vectors are static; masked language model representations are contextual. The power of foundation models derives largely from contextual embeddings: the same nucleotide sequence means different things in a promoter versus an intron, and contextual representations capture this variation.</p>
+<p>The distributional hypothesis—“you shall know a word by the company it keeps” (Firth, 1957)—translates directly to genomic modeling: sequences that function similarly in genomic context should have similar learned representations.</p>
+</div>
+</div>
 <p>In 2018, a variant effect predictor showed near-perfect performance on its benchmark dataset. Clinical teams deployed it to interpret variants near exon-intron boundaries. The model failed to flag a pathogenic variant at a cryptic splice site: not because the architecture was flawed, not because training data was insufficient, but because the tokenization scheme grouped nucleotides into six-base chunks. The critical AG dinucleotide that created an aberrant splice acceptor was split across two tokens, invisible to the attention mechanism as a meaningful unit. A preprocessing decision made before training began determined whether a patient received an accurate diagnosis.</p>
 <p>Before a genomic model learns any parameters, before it sees any training data, before architecture choices are made, a prior decision has already constrained what it can discover: how will sequence be represented? This decision is not merely technical. A <strong>tokenization</strong> scheme that merges nucleotides into coarse multi-base units may obscure the single-nucleotide resolution needed to detect pathogenic splice variants. An <strong>embedding</strong> strategy that encodes local context may lose the long-range dependencies that connect distal enhancers to their target genes. A position encoding that assumes fixed sequence length may fail on the variable-length inputs that clinical applications require. These choices propagate through every subsequent design decision, shaping what patterns the model can detect, what resolution it can achieve, and ultimately which biological questions it can answer.</p>
 <p>The challenge is that biological structure operates at multiple scales simultaneously, and no single representation captures all scales equally well. Transcription factor binding sites span 6 to 12 nucleotides; the regulatory grammar linking multiple sites extends over hundreds of base pairs. Coding sequences follow a strict three-nucleotide codon structure; noncoding regions have no such constraint. A splice acceptor consists of just two nucleotides (the AG dinucleotide marking exon boundaries), yet splice regulation depends on sequences spanning the entire intron. Any representation scheme must navigate these biological realities while remaining computationally tractable for sequences that dwarf typical language model inputs by orders of magnitude.</p>
@@ -693,7 +713,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>Consider a single-nucleotide variant (SNP) at some position in a sequence tokenized with overlapping 6-mers. How many tokens would this single nucleotide change affect? Think about which 6-mer windows would include that position.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -702,7 +722,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>A single nucleotide change affects exactly 6 tokens in overlapping 6-mer tokenization. The changed nucleotide appears in six different 6-mer windows: the one starting at that position, plus the five windows that start before but include that position. This propagation of changes across multiple tokens complicates variant effect interpretation.</p>
 </div>
@@ -948,7 +968,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>In a one-hot encoding, the vectors for A, C, G, and T are all orthogonal (perpendicular) to each other. What biological relationships would you expect to emerge in a learned embedding space trained on regulatory sequence prediction? Consider which nucleotides might end up closer together and why.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -957,7 +977,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>In learned embeddings for regulatory prediction, you would expect purines (A, G) to cluster closer together and pyrimidines (C, T) to cluster closer together, reflecting their similar chemical properties and interchangeable roles in many binding motifs. Additionally, complementary base pairs (A-T and G-C) might show proximity because they appear in similar sequence contexts when models learn strand-invariant patterns.</p>
 </div>
@@ -1095,7 +1115,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>A research team has pretrained a DNA language model using BPE tokenization with an average compression ratio of 4:1. They want to fine-tune it for splice site prediction, which requires identifying exact dinucleotide boundaries (GT…AG). What challenges might they face? How might they address these challenges?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1104,7 +1124,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The main challenge is that BPE tokens have variable length and may not align with the precise GT and AG dinucleotides that define splice boundaries. A token might contain part of GT plus neighboring bases, making it difficult to pinpoint the exact junction. They could address this by:</p>
 <ol type="1">
@@ -1136,7 +1156,7 @@ Test Yourself
 <li>What architectural innovation enabled HyenaDNA to process million-base-pair contexts at single-nucleotide resolution, escaping the compression-resolution tradeoff?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1145,7 +1165,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div id="callout-20" class="callout-20-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Overlapping k-mer compression</strong>: Overlapping k-mer tokenization generates one token per nucleotide position (minus k-1 at the end), meaning a 10 kb sequence still requires approximately 10,000 tokens. This fails to address transformers’ quadratic attention complexity, which scales as O(L^2) with sequence length, making long genomic contexts computationally prohibitive despite the apparent use of multi-nucleotide tokens.</p></li>
@@ -1197,6 +1217,9 @@ Medvedev, Aleksandr, Karthik Viswanathan, Praveenkumar Kanithi, Kirill Vishniako
 </div>
 <div id="ref-nguyen_hyenadna_2023" class="csl-entry" role="listitem">
 Nguyen, Eric, Michael Poli, Marjan Faizi, Armin Thomas, Callum Birch-Sykes, Michael Wornow, Aman Patel, et al. 2023. <span>“<span>HyenaDNA</span>: <span>Long</span>-<span>Range</span> <span>Genomic</span> <span>Sequence</span> <span>Modeling</span> at <span>Single</span> <span>Nucleotide</span> <span>Resolution</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2306.15794">https://doi.org/10.48550/arXiv.2306.15794</a>.
+</div>
+<div id="ref-paass_foundation_2023" class="csl-entry" role="listitem">
+Paass, Gerhard, and Sven Giesselbach. 2023. <em>Foundation Models for Natural Language Processing: Pre-Trained Language Models Integrating Media</em>. Cham: Springer. <a href="https://doi.org/10.1007/978-3-031-23190-2">https://doi.org/10.1007/978-3-031-23190-2</a>.
 </div>
 <div id="ref-sanabria_grover_2024" class="csl-entry" role="listitem">
 Sanabria, Melissa, Jonas Hirsch, Pierre M. Joubert, and Anna R. Poetsch. 2024. <span>“[<span>GROVER</span>] <span>DNA</span> Language Model <span>GROVER</span> Learns Sequence Context in the Human Genome.”</span> <em>Nature Machine Intelligence</em> 6 (8): 911–23. <a href="https://doi.org/10.1038/s42256-024-00872-0">https://doi.org/10.1038/s42256-024-00872-0</a>.
