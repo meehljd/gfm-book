@@ -1,0 +1,236 @@
+<mxfile host="app.diagrams.net" modified="2024-01-22T00:00:00.000Z" agent="Claude" version="22.1.0" type="device">
+  <diagram name="Metric Selection Flowchart" id="metric-selection">
+    <mxGraphModel dx="500" dy="500" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="480" pageHeight="480" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="Metric Selection Decision Flowchart" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Subtitle -->
+        <mxCell id="subtitle" value="Choose metrics based on task characteristics and deployment requirements" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="30" width="400" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Start node -->
+        <mxCell id="start" value="&lt;b&gt;Task Type?&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="190" y="55" width="100" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Binary classification branch -->
+        <mxCell id="arrow-binary" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="190" y="75" as="sourcePoint"/>
+            <mxPoint x="100" y="110" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-binary" value="Binary" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="130" y="82" width="40" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Continuous branch -->
+        <mxCell id="arrow-continuous" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="290" y="75" as="sourcePoint"/>
+            <mxPoint x="380" y="110" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-cont" value="Continuous" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="300" y="82" width="55" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Binary: Class balance decision -->
+        <mxCell id="balance-node" value="&lt;b&gt;Class&lt;br&gt;Balance?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="55" y="115" width="90" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Balanced path -->
+        <mxCell id="arrow-balanced" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="55" y="140" as="sourcePoint"/>
+            <mxPoint x="20" y="180" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-bal" value="~50/50" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="15" y="152" width="35" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Imbalanced path -->
+        <mxCell id="arrow-imbal" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="145" y="140" as="sourcePoint"/>
+            <mxPoint x="180" y="180" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-imbal" value="&lt;5%" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="150" y="152" width="30" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- auROC box -->
+        <mxCell id="auroc-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="10" y="185" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="auroc-title" value="&lt;b&gt;auROC&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="22" y="188" width="50" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="auroc-desc" value="Ranking across&lt;br&gt;full range" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="15" y="205" width="65" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- auPRC box -->
+        <mxCell id="auprc-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="100" y="185" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="auprc-title" value="&lt;b&gt;auPRC&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="112" y="188" width="50" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="auprc-desc" value="Essential for&lt;br&gt;rare positives" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="105" y="205" width="65" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Clinical decision branch -->
+        <mxCell id="clinical-node" value="&lt;b&gt;Clinical&lt;br&gt;Decision?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="55" y="260" width="90" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="arrow-to-clinical" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="100" y="240" as="sourcePoint"/>
+            <mxPoint x="100" y="260" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Yes to clinical -->
+        <mxCell id="arrow-yes-clinical" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="55" y="285" as="sourcePoint"/>
+            <mxPoint x="20" y="320" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-yes" value="Yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="25" y="295" width="25" height="12" as="geometry"/>
+        </mxCell>
+
+        <!-- Net benefit box -->
+        <mxCell id="netbenefit-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="10" y="325" width="80" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="netbenefit-title" value="&lt;b&gt;Net Benefit&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="20" y="328" width="60" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="netbenefit-desc" value="Accounts for&lt;br&gt;FP/FN costs" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="15" y="342" width="65" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Calibration branch -->
+        <mxCell id="arrow-no-clinical" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="145" y="285" as="sourcePoint"/>
+            <mxPoint x="180" y="320" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-no" value="No" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="155" y="295" width="20" height="12" as="geometry"/>
+        </mxCell>
+
+        <!-- Calibration decision -->
+        <mxCell id="calib-node" value="&lt;b&gt;Need&lt;br&gt;Probabilities?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="105" y="325" width="95" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="arrow-yes-calib" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="152" y="375" as="sourcePoint"/>
+            <mxPoint x="152" y="400" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="label-yes-calib" value="Yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="155" y="380" width="25" height="12" as="geometry"/>
+        </mxCell>
+
+        <!-- ECE box -->
+        <mxCell id="ece-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="105" y="405" width="95" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="ece-title" value="&lt;b&gt;ECE + Reliability&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="115" y="408" width="75" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="ece-desc" value="Calibration error +&lt;br&gt;reliability diagrams" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="110" y="422" width="85" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Continuous metrics -->
+        <mxCell id="cont-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="115" width="130" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="cont-title" value="&lt;b&gt;Continuous Metrics&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#1f77b4;" vertex="1" parent="1">
+          <mxGeometry x="355" y="120" width="80" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- R² -->
+        <mxCell id="r2-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="140" width="50" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2-title" value="&lt;b&gt;R²&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="350" y="143" width="30" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2-desc" value="Variance&lt;br&gt;explained" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=6;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="340" y="155" width="50" height="18" as="geometry"/>
+        </mxCell>
+
+        <!-- Correlation -->
+        <mxCell id="corr-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="140" width="50" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="corr-title" value="&lt;b&gt;ρ&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="410" y="143" width="30" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="corr-desc" value="Spearman&lt;br&gt;rank" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=6;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="400" y="155" width="50" height="18" as="geometry"/>
+        </mxCell>
+
+        <!-- MAE -->
+        <mxCell id="mae-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="185" width="50" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="mae-title" value="&lt;b&gt;MAE&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="345" y="188" width="40" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="mae-desc" value="Absolute&lt;br&gt;error" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=6;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="340" y="200" width="50" height="18" as="geometry"/>
+        </mxCell>
+
+        <!-- RMSE -->
+        <mxCell id="rmse-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="185" width="50" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="rmse-title" value="&lt;b&gt;RMSE&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="405" y="188" width="40" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="rmse-desc" value="Penalizes&lt;br&gt;outliers" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=6;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="400" y="200" width="50" height="18" as="geometry"/>
+        </mxCell>
+
+        <!-- Warning box -->
+        <mxCell id="warn-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="260" width="165" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="warn-title" value="⚠ &lt;b&gt;Caution:&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#d62728;" vertex="1" parent="1">
+          <mxGeometry x="308" y="263" width="60" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="warn-text" value="High correlation ≠ clinical utility&lt;br&gt;Model may track relative differences&lt;br&gt;but miss absolute effect sizes" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="308" y="277" width="150" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- Key insight -->
+        <mxCell id="key-box" value="&lt;b&gt;Key:&lt;/b&gt; Different metrics answer different questions. auROC can mislead for imbalanced data; clinical use requires calibration and cost-aware metrics." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;fontFamily=Arial;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="220" y="405" width="245" height="45" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

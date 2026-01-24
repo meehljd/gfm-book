@@ -124,6 +124,12 @@ Predicted functional consequence shapes prioritization. **Loss-of-function** var
 
 Gene-level filters incorporate prior knowledge. Curated gene panels for specific phenotypes (such as the PanelApp epilepsy panel or cardiomyopathy panel) restrict analysis to genes with established disease associations. For undiagnosed cases without clear phenotype match, broader approaches may include all OMIM disease genes or genes with high constraint (low observed/expected loss-of-function ratios in gnomAD).
 
+::: {.callout-note title="Gene-Disease Validity Resources"}
+**Gene-disease validity** scores from ClinGen and Gene2Phenotype are aggregated in the **Open Targets Platform**, enabling systematic filtering of candidate genes by strength of prior evidence [@ochoa_open_2023]. When combined with foundation model variant scores, these validity assessments help prioritize variants in genes with established disease mechanisms over variants in genes where the disease association remains uncertain.
+
+For rare disease diagnosis, restricting analysis to genes with "Definitive" or "Strong" ClinGen validity can dramatically reduce the candidate list while focusing on genes most likely to be clinically actionable. Conversely, variants in genes with "Limited" or "Disputed" validity require more cautious interpretation, even when foundation model pathogenicity scores are high.
+:::
+
 ### Foundation Model Scoring {#sec-ch29-fm-scoring}
 
 After quality, frequency, and consequence filters, foundation model predictions provide quantitative effect estimates for remaining candidates. For missense variants, *AlphaMissense* scores offer genome-wide pathogenicity estimates derived from protein structure and evolutionary conservation [@cheng_alphamissense_2023]. For splice-region variants, SpliceAI predictions quantify the probability and magnitude of splicing disruption [@jaganathan_predicting_2019]. For regulatory variants, *Enformer* and related models estimate effects on chromatin accessibility and gene expression in relevant tissues (@sec-ch17-enformer; @sec-ch17-enformer-vep) [@avsec_enformer_2021].
@@ -147,7 +153,7 @@ These scores do not directly translate to pathogenicity classifications. A high 
 You learned about population frequency filtering earlier (@sec-ch29-frequency-filters). Now that you understand foundation model scoring, consider: Why must frequency filtering happen *before* FM scoring rather than after? What would happen if you scored all 25,000 variants with AlphaMissense and then filtered by frequency?
 
 :::{.callout-note collapse="true" title="Check Your Answer"}
-Frequency filtering must happen first for computational efficiency and biological logic. Scoring all 25,000 variants would waste resources on common variants that cannot explain rare disease regardless of predicted effect. More importantly, high FM scores on common variants represent benign variation that happens to alter protein function—the population frequency evidence overrides the functional prediction. The prioritization funnel applies filters in order of both efficiency (removing the most variants earliest) and biological logic (ruling out impossibilities before evaluating functional impact).
+Frequency filtering must happen first for computational efficiency and biological logic. Scoring all 25,000 variants would waste resources on common variants that cannot explain rare disease regardless of predicted effect. More importantly, high FM scores on common variants represent benign variation that happens to alter protein function; the population frequency evidence overrides the functional prediction. The prioritization funnel applies filters in order of both efficiency (removing the most variants earliest) and biological logic (ruling out impossibilities before evaluating functional impact).
 :::
 :::
 
@@ -247,7 +253,7 @@ Foundation models assist *de novo* interpretation by providing effect estimates 
 
 ### Compound Heterozygosity and Phasing {#sec-ch29-compound-het}
 
-Recessive diseases require biallelic disruption: both copies of the gene must be affected for disease to manifest. When a proband carries two different heterozygous variants in the same gene, the critical question is whether these variants are in *trans* (on opposite chromosomes, leading to biallelic disruption) or in *cis* (on the same chromosome, leaving one copy functional). Think of it like having two copies of a critical instruction manual: if each copy has a different page torn out, you can piece together the complete instructions from the two damaged copies. But if both torn pages are from the same copy, you still have one perfect backup—and one copy missing two pages that you cannot use anyway.
+Recessive diseases require biallelic disruption: both copies of the gene must be affected for disease to manifest. When a proband carries two different heterozygous variants in the same gene, the critical question is whether these variants are in *trans* (on opposite chromosomes, leading to biallelic disruption) or in *cis* (on the same chromosome, leaving one copy functional). Think of it like having two copies of a critical instruction manual: if each copy has a different page torn out, you can piece together the complete instructions from the two damaged copies. But if both torn pages are from the same copy, you still have one perfect backup, and one copy missing two pages that you cannot use anyway.
 
 ::: {.callout-tip title="Stop and Think"}
 A child has a rare recessive metabolic disorder. You identify two heterozygous missense variants in the candidate gene. The mother carries both variants. What does this tell you about whether these variants can explain the disease? What additional information would you need?

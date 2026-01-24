@@ -285,6 +285,8 @@ Domain tags:
 
 **LoRA (Low-Rank Adaptation)** [ML]: A parameter-efficient fine-tuning method that learns low-rank updates to weight matrices while keeping original weights frozen. Often used to adapt large foundation models on limited compute. See also: **adapter**.
 
+**Locus-to-gene (L2G) score** [Statistics]: A machine learning-derived score that prioritizes which gene at a GWAS locus is most likely to be causal, integrating fine-mapping posterior probabilities, eQTL colocalization, chromatin interaction data, and distance-based priors. Developed by Open Targets Genetics as a systematic approach to the GWAS-to-gene problem. See also: **fine-mapping**, **eQTL**, **Open Targets**.
+
 **Masked language modeling (MLM)** [ML]: A self-supervised objective where random tokens are masked and the model predicts them from surrounding context. Widely used for DNA and protein foundation models to learn rich embeddings.
 
 **Mechanistic interpretability** [ML]: Methods that aim to understand internal model computations (circuits, attention patterns, neurons) rather than only correlational feature importance. In genomics, used to connect learned features to motifs, domains, or pathways.
@@ -338,6 +340,8 @@ Domain tags:
 **OOD detection (out-of-distribution detection)** [Statistics]: Methods that identify inputs unlike the training data where predictions may be unreliable. Important for genomic models deployed across species, assays, ancestries, or sequencing pipelines. See also: **distribution shift**.
 
 **Open set recognition** [ML]: Recognizing when an input belongs to a class not seen during training. Relevant for clinical settings where rare diseases or novel variant mechanisms appear.
+
+**Open Targets** [Clinical]: A public-private partnership platform (opentargets.org) that aggregates genetic, genomic, and drug data to systematically identify and prioritize therapeutic targets. Integrates GWAS, rare variant, expression, pathway, and literature evidence into target-disease association scores. Used for drug target validation, repurposing, and bridging genetic discovery to therapeutic translation. See also: **locus-to-gene (L2G) score**, **target-disease association score**.
 
 **Out-of-distribution (OOD)** [Statistics]: Inputs that differ substantially from training data, where predictions may be unreliable. Evaluations often include OOD tests across sites, assays, species, or ancestries.
 
@@ -456,6 +460,8 @@ Domain tags:
 **Target engagement** [Clinical]: Evidence that a drug binds or modulates its intended biological target in vivo. Target engagement is necessary but not sufficient for clinical benefit.
 
 **Target validation** [Clinical]: Experimental and clinical evidence confirming that modulating a target affects disease-relevant outcomes. Validation reduces attrition in drug programs.
+
+**Target-disease association score** [Clinical]: A composite score quantifying the evidence linking a gene (target) to a disease, typically aggregating multiple evidence types including genetics, expression, pathways, and literature. Used in systematic target prioritization for drug discovery. Platforms like **Open Targets** provide standardized association scores across thousands of target-disease pairs.
 
 **TF (transcription factor)** [Genomics]: A protein that binds DNA motifs to regulate gene transcription. TF activity is often inferred from accessibility and expression rather than measured directly.
 

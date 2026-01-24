@@ -896,14 +896,14 @@ Key Insight: Masked Language Modeling as Entropy Estimation
 <p>Masked language modeling has a precise information-theoretic interpretation that explains <em>what</em> the model learns and <em>why</em> it transfers.</p>
 <p><strong>Conditional Entropy Minimization.</strong> When training MLM, we minimize:</p>
 <p><span class="math display">\[\mathcal{L}_{MLM} = -\mathbb{E}[\log p_\theta(x_i | x_{\setminus i})]\]</span></p>
-<p>This is equivalent to estimating the <em>conditional entropy</em> <span class="math inline">\(H(X_i | X_{\setminus i})\)</span>—the uncertainty about a position given its context. A well-trained MLM learns <span class="math inline">\(p_\theta(x_i | x_{\setminus i}) \approx p_{data}(x_i | x_{\setminus i})\)</span>.</p>
-<p><strong>What Low Entropy Reveals.</strong> Positions with low conditional entropy are <em>highly constrained</em> by context—they carry biological signal:</p>
+<p>This is equivalent to estimating the <em>conditional entropy</em> <span class="math inline">\(H(X_i | X_{\setminus i})\)</span>, the uncertainty about a position given its context. A well-trained MLM learns <span class="math inline">\(p_\theta(x_i | x_{\setminus i}) \approx p_{data}(x_i | x_{\setminus i})\)</span>.</p>
+<p><strong>What Low Entropy Reveals.</strong> Positions with low conditional entropy are <em>highly constrained</em> by context; they carry biological signal:</p>
 <ul>
 <li>Splice donor sites: Given surrounding context, GT is nearly deterministic</li>
 <li>Codon wobble positions: First two bases strongly predict the third</li>
 <li>TFBS cores: Flanking sequence predicts the binding motif</li>
 </ul>
-<p><strong>Why Transfer Works.</strong> The model’s internal representations must capture the <em>mutual information</em> <span class="math inline">\(I(X_i; X_{\setminus i})\)</span> to achieve low loss. This mutual information encodes local motif patterns (short-range), grammatical constraints like reading frame (medium-range), and regulatory element co-occurrence (long-range). These learned correlations transfer to downstream tasks because biological function <em>creates</em> the correlations—splicing machinery <em>causes</em> conserved splice sites, so learning splice site patterns implicitly learns about splicing.</p>
+<p><strong>Why Transfer Works.</strong> The model’s internal representations must capture the <em>mutual information</em> <span class="math inline">\(I(X_i; X_{\setminus i})\)</span> to achieve low loss. This mutual information encodes local motif patterns (short-range), grammatical constraints like reading frame (medium-range), and regulatory element co-occurrence (long-range). These learned correlations transfer to downstream tasks because biological function <em>creates</em> the correlations: splicing machinery <em>causes</em> conserved splice sites, so learning splice site patterns implicitly learns about splicing.</p>
 </div>
 </div>
 </section>

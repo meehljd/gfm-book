@@ -1,0 +1,165 @@
+<mxfile host="app.diagrams.net" modified="2024-01-22T00:00:00.000Z" agent="Claude" version="22.1.0" type="device">
+  <diagram name="Multitask Pretraining" id="multitask-pretraining">
+    <mxGraphModel dx="500" dy="520" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="420" pageHeight="500" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="Multitask Pretraining" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Subtitle -->
+        <mxCell id="subtitle" value="Combining multiple objectives for richer representations" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="32" width="380" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Input sequence -->
+        <mxCell id="input-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="110" y="55" width="200" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="input-label" value="Input Sequence" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="165" y="57" width="90" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="input-seq" value="A  T  G  [M]  C  T  A  G  ?" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Consolas;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="125" y="70" width="170" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow to encoder -->
+        <mxCell id="arr-enc" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="90" as="sourcePoint"/>
+            <mxPoint x="210" y="115" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Shared encoder -->
+        <mxCell id="encoder" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="115" width="260" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="enc-title" value="&lt;b&gt;Shared Encoder&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontFamily=Arial;fontColor=#1f77b4;" vertex="1" parent="1">
+          <mxGeometry x="150" y="120" width="120" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="enc-detail" value="Transformer backbone&lt;br&gt;(weights shared across all tasks)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="125" y="145" width="170" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrows to task heads -->
+        <mxCell id="arr-mlm" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#2ca02c;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="130" y="185" as="sourcePoint"/>
+            <mxPoint x="90" y="220" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arr-ntp" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#d62728;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="185" as="sourcePoint"/>
+            <mxPoint x="210" y="220" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arr-cont" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#9467bd;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="290" y="185" as="sourcePoint"/>
+            <mxPoint x="330" y="220" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- MLM head -->
+        <mxCell id="mlm-head" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="30" y="220" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="mlm-title" value="&lt;b&gt;MLM Head&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="50" y="225" width="80" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="mlm-detail" value="Predict [MASK]&lt;br&gt;tokens" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="45" y="245" width="90" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="mlm-loss" value="L&lt;sub&gt;MLM&lt;/sub&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=1;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="60" y="270" width="60" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- NTP head -->
+        <mxCell id="ntp-head" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="150" y="220" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ntp-title" value="&lt;b&gt;NTP Head&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#d62728;" vertex="1" parent="1">
+          <mxGeometry x="170" y="225" width="80" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="ntp-detail" value="Predict next&lt;br&gt;token" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="165" y="245" width="90" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="ntp-loss" value="L&lt;sub&gt;NTP&lt;/sub&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=1;fontColor=#d62728;" vertex="1" parent="1">
+          <mxGeometry x="180" y="270" width="60" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Contrastive head -->
+        <mxCell id="cont-head" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="270" y="220" width="120" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="cont-title" value="&lt;b&gt;Contrastive&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#9467bd;" vertex="1" parent="1">
+          <mxGeometry x="290" y="225" width="80" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="cont-detail" value="Pull orthologs,&lt;br&gt;push negatives" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="285" y="245" width="90" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="cont-loss" value="L&lt;sub&gt;CL&lt;/sub&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=1;fontColor=#9467bd;" vertex="1" parent="1">
+          <mxGeometry x="300" y="270" width="60" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Combined loss -->
+        <mxCell id="loss-arr1" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="90" y="290" as="sourcePoint"/>
+            <mxPoint x="170" y="320" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="loss-arr2" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="290" as="sourcePoint"/>
+            <mxPoint x="210" y="320" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="loss-arr3" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="330" y="290" as="sourcePoint"/>
+            <mxPoint x="250" y="320" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="combined-loss" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="110" y="320" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="loss-title" value="&lt;b&gt;Combined Loss&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="160" y="323" width="100" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="loss-eq" value="L = λ₁L&lt;sub&gt;MLM&lt;/sub&gt; + λ₂L&lt;sub&gt;NTP&lt;/sub&gt; + λ₃L&lt;sub&gt;CL&lt;/sub&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="125" y="340" width="170" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Benefits section -->
+        <mxCell id="benefits-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="390" width="180" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="benefits-title" value="&lt;b&gt;Benefits:&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#1f77b4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="393" width="60" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="benefits-text" value="✓ Richer representations&lt;br&gt;✓ Better generalization&lt;br&gt;✓ Task-specific + general features&lt;br&gt;✓ More gradient signal&lt;br&gt;✓ Regularization effect" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="40" y="410" width="160" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Challenges section -->
+        <mxCell id="challenges-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="390" width="170" height="95" as="geometry"/>
+        </mxCell>
+        <mxCell id="challenges-title" value="&lt;b&gt;Challenges:&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#d62728;" vertex="1" parent="1">
+          <mxGeometry x="230" y="393" width="70" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="challenges-text" value="⚠ Task interference&lt;br&gt;⚠ Loss weighting (λ tuning)&lt;br&gt;⚠ Training instability&lt;br&gt;⚠ Compute overhead&lt;br&gt;⚠ Gradient conflicts" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="230" y="410" width="150" height="70" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

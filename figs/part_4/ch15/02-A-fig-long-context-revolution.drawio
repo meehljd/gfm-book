@@ -1,0 +1,83 @@
+<mxfile host="app.diagrams.net" modified="2024-01-22T00:00:00.000Z" agent="Claude" version="22.1.0" type="device">
+  <diagram name="Quadratic Bottleneck" id="quadratic-bottleneck">
+    <mxGraphModel dx="350" dy="380" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="320" pageHeight="350" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="(A) The Quadratic Attention Bottleneck" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="15" y="10" width="280" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Subtitle -->
+        <mxCell id="subtitle" value="Standard transformers scale O(n²) with sequence length" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="15" y="32" width="280" height="12" as="geometry"/>
+        </mxCell>
+
+        <!-- Attention matrix visualization -->
+        <mxCell id="matrix-label" value="Attention Matrix (n × n)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="110" y="50" width="100" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Small matrix (512 tokens) -->
+        <mxCell id="small-matrix" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="75" width="40" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="small-label" value="512 × 512&#xa;262K ops" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="30" y="120" width="60" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="small-check" value="✓" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontFamily=Arial;fontColor=#2ca02c;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="82" width="20" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Medium matrix (4k tokens) -->
+        <mxCell id="med-matrix" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="110" y="75" width="60" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="med-label" value="4k × 4k&#xa;16M ops" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="110" y="140" width="60" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="med-warn" value="⚠" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontFamily=Arial;fontColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="130" y="90" width="20" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Large matrix (1M tokens) -->
+        <mxCell id="large-matrix" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="195" y="60" width="100" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="large-label" value="1M × 1M&#xa;1 TRILLION ops!" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;fontColor=#d62728;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="195" y="165" width="100" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="large-x" value="✗" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontFamily=Arial;fontColor=#d62728;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="95" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Scaling formula -->
+        <mxCell id="formula-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="200" width="280" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="formula" value="&lt;b&gt;Self-Attention Complexity:&lt;/b&gt;  O(n² · d)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="30" y="205" width="260" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="formula-explain" value="n = sequence length, d = embedding dimension&#xa;Doubling sequence length → 4× compute &amp; memory" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="30" y="222" width="260" height="28" as="geometry"/>
+        </mxCell>
+
+        <!-- Problem statement -->
+        <mxCell id="problem-box" value="&lt;b&gt;Problem:&lt;/b&gt; Genomic regulation spans 100kb-1Mb.&#xa;Standard transformers cannot process these contexts." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=8;fontFamily=Arial;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="20" y="265" width="280" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Context comparison -->
+        <mxCell id="context-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="315" width="280" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="context-text" value="BERT: 512 | GPT-2: 1k | GPT-4: 128k | &lt;b&gt;Genomics needs: 1M+&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="25" y="318" width="270" height="18" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

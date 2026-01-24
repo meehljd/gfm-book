@@ -355,6 +355,19 @@ The functional scores introduced in @sec-ch02-data provide systematic frameworks
 
 Large-scale resources now link GWAS summary statistics, fine-mapping results, and functional genomic annotations across hundreds of traits and thousands of loci [@buniello_open_2025; @mountjoy_open_2021]. These datasets enable systematic identification of variants that are both statistically prioritized and functionally plausible, though the biological validation required to confirm causal mechanisms remains laborious and is completed for only a small fraction of associated loci.
 
+::: {.callout-note title="From Variants to Genes: Locus-to-Gene Scores"}
+Even after fine-mapping identifies likely causal variants, connecting noncoding variants to their target genes remains challenging. Most GWAS signals fall in regulatory regions that may affect expression of genes other than the nearest gene through long-range enhancer-promoter interactions.
+
+**Locus-to-gene (L2G) scores** address this GWAS-to-gene problem systematically [@mountjoy_open_2021]. The Open Targets Genetics platform integrates multiple evidence types into a machine learning model that ranks candidate genes at each GWAS locus:
+
+- **Fine-mapping probabilities**: Which variants are most likely causal
+- **eQTL colocalization**: Genetic variants affecting expression of nearby genes
+- **Chromatin contacts**: Physical interactions between enhancers and promoters (Hi-C, pcHi-C)
+- **Distance-based priors**: Proximity to transcription start sites
+
+L2G scores provide principled starting points for interpreting GWAS hits, though they remain computational predictions requiring experimental validation. The concept is explored further in @sec-ch26-gwas-to-genes (causal inference context) and @sec-ch30-opentargets (drug discovery applications).
+:::
+
 ### Multi-Ancestry Fine-Mapping {#sec-ch03-multi-ancestry-fine-mapping}
 
 Single-ancestry fine-mapping encounters a fundamental resolution limit: when variants are in tight LD within the study population, no amount of statistical sophistication can distinguish them. Multi-ancestry approaches break through this limit by exploiting the population-specificity of LD structure. A variant in tight LD with twenty neighbors in Europeans may have only three correlated variants in African-ancestry populations, where shorter LD blocks (reflecting larger historical effective population size) provide greater resolution.

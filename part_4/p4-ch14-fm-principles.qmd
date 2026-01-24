@@ -289,11 +289,11 @@ Certain capabilities only appear above specific scale thresholds. A 100 million 
 
 ## Theoretical Foundations: Why Foundation Models Generalize {#sec-ch14-learning-theory}
 
-Foundation models challenge classical statistical learning theory—they have far more parameters than training examples yet generalize remarkably well. Understanding this puzzle requires revisiting fundamental concepts.
+Foundation models challenge classical statistical learning theory: they have far more parameters than training examples yet generalize remarkably well. Understanding this puzzle requires revisiting fundamental concepts.
 
 ### Classical Generalization Theory {#sec-ch14-classical-theory}
 
-**VC Dimension and Capacity.** The Vapnik-Chervonenkis (VC) dimension measures a model class's *capacity*—the largest set of points it can perfectly classify in all possible labelings ("shatter"). For a linear classifier in $d$ dimensions: $\text{VC}(H) = d + 1$.
+**VC Dimension and Capacity.** The Vapnik-Chervonenkis (VC) dimension measures a model class's *capacity*, the largest set of points it can perfectly classify in all possible labelings ("shatter"). For a linear classifier in $d$ dimensions: $\text{VC}(H) = d + 1$.
 
 Classical bounds state that generalization error scales as:
 
@@ -324,7 +324,7 @@ These theoretical insights have practical consequences:
 1. **More parameters generally help** (until compute-limited, not data-limited)
 2. **Pretraining provides implicit regularization** for downstream tasks
 3. **Transfer works because** pretrained representations lie on low-dimensional manifolds aligned with biological structure
-4. **Overfitting to genomic benchmarks** is a real risk—effective sample size for rare variants may be much smaller than nominal test set size
+4. **Overfitting to genomic benchmarks** is a real risk; effective sample size for rare variants may be much smaller than nominal test set size
 
 
 ## A Taxonomy of Genomic Foundation Models {#sec-ch14-taxonomy}
@@ -628,7 +628,7 @@ Before reviewing the summary, test your recall:
 
    4. Multi-omic models integrate across modalities for holistic understanding but face data engineering complexity and are still early in development.
 
-4. **Emergent capabilities**: These are abilities that appear discontinuously at certain scale thresholds and are absent in smaller models (e.g., ESM-2's structural understanding emerges at ~650M parameters, zero-shot variant effect prediction requires sufficient scale). This matters because attempting to fine-tune a model below the capability threshold is wasted effort—if a 100M parameter model fundamentally cannot perform a task, no amount of fine-tuning will enable it. You must verify that models of similar scale have demonstrated the required capability before attempting adaptation.
+4. **Emergent capabilities**: These are abilities that appear discontinuously at certain scale thresholds and are absent in smaller models (e.g., ESM-2's structural understanding emerges at ~650M parameters, zero-shot variant effect prediction requires sufficient scale). This matters because attempting to fine-tune a model below the capability threshold is wasted effort: if a 100M parameter model fundamentally cannot perform a task, no amount of fine-tuning will enable it. You must verify that models of similar scale have demonstrated the required capability before attempting adaptation.
 
 5. **Build vs. use hierarchy**: Start with frozen embeddings from existing models (hours of work, ~$10 compute, 70-90% of fine-tuned performance). Escalate to parameter-efficient adaptation like LoRA if embeddings underperform (days of work, $100-1000 compute, ~95% of full fine-tuning). Consider full fine-tuning only for high-stakes applications (weeks, $1000+). Train from scratch only when: (a) target domain differs fundamentally from existing pretraining data, (b) you have unique large-scale data, (c) timeline permits months, and (d) budget permits $100K+ compute. Most researchers never need to train from scratch.
 :::

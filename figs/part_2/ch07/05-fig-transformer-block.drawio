@@ -1,0 +1,202 @@
+<mxfile host="app.diagrams.net" modified="2024-01-22T00:00:00.000Z" agent="Claude" version="22.1.0" type="device">
+  <diagram name="Transformer Block Architecture" id="transformer-block">
+    <mxGraphModel dx="500" dy="550" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="420" pageHeight="520" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="Transformer Block: The Repeating Unit" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Subtitle -->
+        <mxCell id="subtitle" value="Each block: attention + feed-forward, with residuals and normalization" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="32" width="380" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Main block container -->
+        <mxCell id="block-container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;strokeDasharray=3 3;" vertex="1" parent="1">
+          <mxGeometry x="80" y="55" width="260" height="400" as="geometry"/>
+        </mxCell>
+        <mxCell id="block-label" value="&lt;b&gt;Transformer Block (×N layers)&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="130" y="58" width="160" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Input -->
+        <mxCell id="input" value="Input X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontSize=10;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="80" width="80" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="input-dim" value="[L × d_model]" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="255" y="85" width="70" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow to LayerNorm 1 -->
+        <mxCell id="arr1" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="110" as="sourcePoint"/>
+            <mxPoint x="210" y="130" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Layer Norm 1 -->
+        <mxCell id="ln1" value="LayerNorm" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;fontSize=9;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="160" y="130" width="100" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow to MHA -->
+        <mxCell id="arr2" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="155" as="sourcePoint"/>
+            <mxPoint x="210" y="175" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Multi-Head Attention -->
+        <mxCell id="mha" value="Multi-Head&lt;br&gt;Self-Attention" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=10;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="145" y="175" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="mha-note" value="h heads, d_k = d_model/h" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="280" y="190" width="100" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Residual connection 1 (bypass around attention) -->
+        <mxCell id="res1-vert" value="" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#9467bd;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="120" y="95" as="sourcePoint"/>
+            <mxPoint x="120" y="250" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="res1-horz1" value="" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#9467bd;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="120" y="95" as="sourcePoint"/>
+            <mxPoint x="165" y="95" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="res1-horz2" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#9467bd;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="120" y="250" as="sourcePoint"/>
+            <mxPoint x="185" y="250" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Arrow from MHA -->
+        <mxCell id="arr3" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="225" as="sourcePoint"/>
+            <mxPoint x="210" y="245" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Add 1 -->
+        <mxCell id="add1" value="+" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=14;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="195" y="240" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow to LayerNorm 2 -->
+        <mxCell id="arr4" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="270" as="sourcePoint"/>
+            <mxPoint x="210" y="290" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Layer Norm 2 -->
+        <mxCell id="ln2" value="LayerNorm" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;fontSize=9;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="160" y="290" width="100" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow to FFN -->
+        <mxCell id="arr5" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="315" as="sourcePoint"/>
+            <mxPoint x="210" y="335" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Feed-Forward Network -->
+        <mxCell id="ffn" value="Feed-Forward&lt;br&gt;Network" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;fontSize=10;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="145" y="335" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="ffn-detail" value="Linear → ReLU/GELU → Linear" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="280" y="350" width="115" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Residual connection 2 -->
+        <mxCell id="res2-vert" value="" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#9467bd;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="120" y="255" as="sourcePoint"/>
+            <mxPoint x="120" y="410" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="res2-horz2" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#9467bd;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="120" y="410" as="sourcePoint"/>
+            <mxPoint x="185" y="410" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Arrow from FFN -->
+        <mxCell id="arr6" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="385" as="sourcePoint"/>
+            <mxPoint x="210" y="405" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Add 2 -->
+        <mxCell id="add2" value="+" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=14;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="195" y="400" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Output arrow -->
+        <mxCell id="arr7" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="430" as="sourcePoint"/>
+            <mxPoint x="210" y="460" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Output -->
+        <mxCell id="output" value="Output" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontSize=10;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="460" width="80" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="output-dim" value="[L × d_model]" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="255" y="465" width="70" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="90" width="60" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg-title" value="&lt;b&gt;Legend&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="355" y="93" width="50" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg-res" value="" style="endArrow=none;html=1;strokeWidth=2;strokeColor=#9467bd;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="358" y="118" as="sourcePoint"/>
+            <mxPoint x="378" y="118" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg-res-t" value="Residual" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=6;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="358" y="123" width="45" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg-norm" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="358" y="138" width="20" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg-norm-t" value="Norm" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=6;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="358" y="150" width="45" height="10" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg-add" value="+" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="360" y="162" width="15" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Key insight -->
+        <mxCell id="key-box" value="&lt;b&gt;Key:&lt;/b&gt; Residuals allow gradients to flow; LayerNorm stabilizes training. Stack N blocks (6-32+)." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;fontFamily=Arial;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="20" y="500" width="380" height="25" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

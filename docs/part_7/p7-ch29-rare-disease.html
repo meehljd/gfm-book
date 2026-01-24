@@ -768,6 +768,20 @@ Key Insight: Frequency Thresholds Are Disease-Specific
 <h3 data-number="29.1.3" class="anchored" data-anchor-id="sec-ch29-consequence-filters"><span class="header-section-number">29.1.3</span> Consequence and Gene Filters</h3>
 <p>Predicted functional consequence shapes prioritization. <strong>Loss-of-function</strong> variants (frameshift, nonsense, canonical splice site) in genes intolerant to haploinsufficiency receive immediate attention. Missense variants require additional assessment, as most are benign. Intronic and intergenic variants have historically been deprioritized, though foundation models are beginning to identify functional noncoding variants with greater precision (see <a href="../part_4/p4-ch17-regulatory.html#sec-ch17-enformer" class="quarto-xref"><span>Section 17.2</span></a> for regulatory models and <a href="../part_4/p4-ch17-regulatory.html#sec-ch17-enformer-vep" class="quarto-xref"><span>Section 17.2.3</span></a> for variant effect prediction in noncoding regions).</p>
 <p>Gene-level filters incorporate prior knowledge. Curated gene panels for specific phenotypes (such as the PanelApp epilepsy panel or cardiomyopathy panel) restrict analysis to genes with established disease associations. For undiagnosed cases without clear phenotype match, broader approaches may include all OMIM disease genes or genes with high constraint (low observed/expected loss-of-function ratios in gnomAD).</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Gene-Disease Validity Resources">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Gene-Disease Validity Resources
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Gene-disease validity</strong> scores from ClinGen and Gene2Phenotype are aggregated in the <strong>Open Targets Platform</strong>, enabling systematic filtering of candidate genes by strength of prior evidence <span class="citation" data-cites="ochoa_open_2023">(<a href="../bib/references.html#ref-ochoa_open_2023" role="doc-biblioref">Ochoa et al. 2023</a>)</span>. When combined with foundation model variant scores, these validity assessments help prioritize variants in genes with established disease mechanisms over variants in genes where the disease association remains uncertain.</p>
+<p>For rare disease diagnosis, restricting analysis to genes with “Definitive” or “Strong” ClinGen validity can dramatically reduce the candidate list while focusing on genes most likely to be clinically actionable. Conversely, variants in genes with “Limited” or “Disputed” validity require more cautious interpretation, even when foundation model pathogenicity scores are high.</p>
+</div>
+</div>
 </section>
 <section id="sec-ch29-fm-scoring" class="level3" data-number="29.1.4">
 <h3 data-number="29.1.4" class="anchored" data-anchor-id="sec-ch29-fm-scoring"><span class="header-section-number">29.1.4</span> Foundation Model Scoring</h3>
@@ -855,7 +869,7 @@ Stop and Think: Spaced Retrieval
 <div class="callout-body-container callout-body">
 <p>You learned about population frequency filtering earlier (<a href="#sec-ch29-frequency-filters" class="quarto-xref"><span>Section 29.1.2</span></a>). Now that you understand foundation model scoring, consider: Why must frequency filtering happen <em>before</em> FM scoring rather than after? What would happen if you scored all 25,000 variants with AlphaMissense and then filtered by frequency?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -864,9 +878,9 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Frequency filtering must happen first for computational efficiency and biological logic. Scoring all 25,000 variants would waste resources on common variants that cannot explain rare disease regardless of predicted effect. More importantly, high FM scores on common variants represent benign variation that happens to alter protein function—the population frequency evidence overrides the functional prediction. The prioritization funnel applies filters in order of both efficiency (removing the most variants earliest) and biological logic (ruling out impossibilities before evaluating functional impact).</p>
+<p>Frequency filtering must happen first for computational efficiency and biological logic. Scoring all 25,000 variants would waste resources on common variants that cannot explain rare disease regardless of predicted effect. More importantly, high FM scores on common variants represent benign variation that happens to alter protein function; the population frequency evidence overrides the functional prediction. The prioritization funnel applies filters in order of both efficiency (removing the most variants earliest) and biological logic (ruling out impossibilities before evaluating functional impact).</p>
 </div>
 </div>
 </div>
@@ -909,7 +923,7 @@ Knowledge Check
 <p>A missense variant is absent from gnomAD (PM2), has a high <em>AlphaMissense</em> score (PP3), and occurs in a gene associated with the patient’s phenotype (PP4). Under ACMG-AMP rules, what would be the maximum classification? Why cannot this evidence alone achieve “Pathogenic”?</p>
 <p><em>Hint: Consider what evidence strengths these criteria provide and what combinations are required for pathogenic classification.</em></p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -918,7 +932,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The maximum classification would be “Likely Pathogenic.” These criteria provide one moderate (PM2) and two supporting (PP3, PP4) levels of evidence. Pathogenic classification requires either one very strong plus one strong criterion, or two strong criteria; this combination falls short of that threshold. The computational evidence (PP3) provides only supporting-level weight unless upgraded by gene-specific calibration.</p>
 </div>
@@ -1014,7 +1028,7 @@ Stop and Think
 <div class="callout-body-container callout-body">
 <p>A missense variant has an AlphaMissense score of 0.92. The gene-specific ClinGen recommendation allows upgrading PP3 to moderate strength for scores above 0.85 in this gene. The variant is also absent from gnomAD (PM2). Can this variant be classified as pathogenic? What additional evidence would be needed?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1023,7 +1037,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>No, this cannot yet be classified as pathogenic. The evidence totals one moderate (PM2 for absence in population databases) plus one moderate (upgraded PP3). Pathogenic classification requires either one very strong plus one strong, or two strong criteria. This combination reaches only “Likely Pathogenic” at best. Additional evidence needed might include: de novo status (PS2, strong), strong functional data (PS3), or co-segregation with disease in multiple families (PP1 upgradable to strong).</p>
 </div>
@@ -1092,7 +1106,7 @@ Figure&nbsp;29.3: Family-based analysis for rare disease diagnosis. (A) Inherita
 </section>
 <section id="sec-ch29-compound-het" class="level3" data-number="29.3.2">
 <h3 data-number="29.3.2" class="anchored" data-anchor-id="sec-ch29-compound-het"><span class="header-section-number">29.3.2</span> Compound Heterozygosity and Phasing</h3>
-<p>Recessive diseases require biallelic disruption: both copies of the gene must be affected for disease to manifest. When a proband carries two different heterozygous variants in the same gene, the critical question is whether these variants are in <em>trans</em> (on opposite chromosomes, leading to biallelic disruption) or in <em>cis</em> (on the same chromosome, leaving one copy functional). Think of it like having two copies of a critical instruction manual: if each copy has a different page torn out, you can piece together the complete instructions from the two damaged copies. But if both torn pages are from the same copy, you still have one perfect backup—and one copy missing two pages that you cannot use anyway.</p>
+<p>Recessive diseases require biallelic disruption: both copies of the gene must be affected for disease to manifest. When a proband carries two different heterozygous variants in the same gene, the critical question is whether these variants are in <em>trans</em> (on opposite chromosomes, leading to biallelic disruption) or in <em>cis</em> (on the same chromosome, leaving one copy functional). Think of it like having two copies of a critical instruction manual: if each copy has a different page torn out, you can piece together the complete instructions from the two damaged copies. But if both torn pages are from the same copy, you still have one perfect backup, and one copy missing two pages that you cannot use anyway.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="Stop and Think">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1105,7 +1119,7 @@ Stop and Think
 <div class="callout-body-container callout-body">
 <p>A child has a rare recessive metabolic disorder. You identify two heterozygous missense variants in the candidate gene. The mother carries both variants. What does this tell you about whether these variants can explain the disease? What additional information would you need?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1114,7 +1128,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>If the mother carries both variants and is unaffected, the variants are most likely in <em>cis</em> (on the same chromosome). The child inherited this chromosome from the mother, meaning one of the child’s gene copies has both variants, but the other copy (from the father) is likely normal. This configuration cannot explain a recessive disorder because one functional copy remains. You would need to: (1) confirm the father’s genotype at these positions, (2) check for a third variant the child might have inherited from the father, or (3) reconsider whether this gene explains the phenotype.</p>
 </div>
@@ -1179,7 +1193,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>A 45-year-old woman with breast cancer has tumor sequencing that identifies a <em>BRCA1</em> frameshift mutation. What additional test would you recommend, and why does it matter for her family members?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1188,7 +1202,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>You would recommend germline testing on a blood sample to determine whether the <em>BRCA1</em> mutation is germline (inherited) or somatic (tumor-only). If germline, it indicates hereditary cancer predisposition affecting her family members and warrants genetic counseling and cascade testing. If somatic, it arose only in the tumor and has no implications for inherited risk in relatives.</p>
 </div>
@@ -1384,7 +1398,7 @@ Recall and Connect
 <p>From <a href="../part_6/p6-ch27-regulatory.html#sec-ch27-samd" class="quarto-xref"><span>Section 27.1.1</span></a>, recall the SaMD (Software as Medical Device) risk classification framework based on condition seriousness and decision role. Where would a foundation model-based rare disease diagnostic tool fall in this framework? What level of regulatory evidence would be required?</p>
 </div>
 </div>
-<p>Clinical use of foundation model predictions raises regulatory questions addressed more fully in <a href="../part_6/p6-ch27-regulatory.html#sec-ch27-regulatory" class="quarto-xref"><span>Section 27.1</span></a>. In the United States, laboratory-developed tests using computational predictions fall under CLIA oversight, with additional FDA jurisdiction increasingly asserted for software as a medical device. European regulations under IVDR impose their own requirements. Laboratories must navigate this evolving landscape while ensuring that clinical utility keeps pace with regulatory compliance.</p>
+<p>Clinical use of foundation model predictions raises regulatory questions addressed more fully in <a href="../part_6/p6-ch27-regulatory.html" class="quarto-xref"><span>Chapter 27</span></a>. In the United States, laboratory-developed tests using computational predictions fall under CLIA oversight, with additional FDA jurisdiction increasingly asserted for software as a medical device. European regulations under IVDR impose their own requirements. Laboratories must navigate this evolving landscape while ensuring that clinical utility keeps pace with regulatory compliance.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1449,7 +1463,7 @@ Test Yourself
 <li>How does somatic variant interpretation differ from germline variant interpretation? What different questions does each framework answer?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-25-contents" aria-controls="callout-25" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1458,7 +1472,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-24" class="callout-24-contents callout-collapse collapse">
+<div id="callout-25" class="callout-25-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Variant Prioritization Funnel</strong>: The funnel applies progressive filters: quality/technical filters remove sequencing artifacts, population frequency filters remove common variants unlikely to cause rare disease, consequence filters prioritize coding and functional variants, and foundation model scoring ranks remaining candidates by predicted effect. Foundation models contribute most effectively at the scoring stage (~50 candidates remaining), after basic filters eliminate obvious non-candidates but before expensive expert curation. This positioning maximizes efficiency while minimizing the risk of discarding true causal variants.</p></li>
@@ -1485,7 +1499,7 @@ Check Your Answers
 <ul>
 <li>Variant effect prediction models: <a href="../part_4/p4-ch18-vep-fm.html" class="quarto-xref"><span>Chapter 18</span></a></li>
 <li>Calibration and uncertainty: <a href="../part_6/p6-ch24-uncertainty.html#sec-ch24-calibration" class="quarto-xref"><span>Section 24.3</span></a></li>
-<li>Regulatory and ethical frameworks: <a href="../part_6/p6-ch27-regulatory.html#sec-ch27-regulatory" class="quarto-xref"><span>Section 27.1</span></a></li>
+<li>Regulatory and ethical frameworks: <a href="../part_6/p6-ch27-regulatory.html" class="quarto-xref"><span>Chapter 27</span></a></li>
 <li>Ancestry and fairness considerations: <a href="../part_3/p3-ch13-confounding.html#sec-ch13-ancestry-confounding" class="quarto-xref"><span>Section 13.2.1</span></a></li>
 </ul>
 </div>
@@ -1531,6 +1545,9 @@ Lynch, Thomas J., Daphne W. Bell, Raffaella Sordella, Sarada Gurubhagavatula, Ro
 </div>
 <div id="ref-nguengang_wakap_estimating_2019" class="csl-entry" role="listitem">
 Nguengang Wakap, Stéphanie, Deborah M. Lambert, Annie Olry, Charlotte Rodwell, Charlotte Gueydan, Valérie Lanneau, Daniel Murphy, Yann Le Cam, and Ana Rath. 2019. <span>“Estimating Cumulative Point Prevalence of Rare Diseases: Analysis of the <span>Orphanet</span> Database.”</span> <em>European Journal of Human Genetics</em> 28 (2): 165–73. <a href="https://doi.org/10.1038/s41431-019-0508-0">https://doi.org/10.1038/s41431-019-0508-0</a>.
+</div>
+<div id="ref-ochoa_open_2023" class="csl-entry" role="listitem">
+Ochoa, David, Andrew Hercules, Miguel Carmona, Daniel Suveges, James Baker, Cinzia Malangone, Irene Lopez, et al. 2023. <span>“The Next-Generation <span>Open</span> <span>Targets</span> <span>Platform</span>: Reimagined, Redesigned, Rebuilt.”</span> <em>Nucleic Acids Research</em> 51 (D1): D1353–59. <a href="https://doi.org/10.1093/nar/gkac1046">https://doi.org/10.1093/nar/gkac1046</a>.
 </div>
 <div id="ref-pejaver_calibration_2022" class="csl-entry" role="listitem">
 Pejaver, Vikas, Alicia B. Byrne, Bing-Jian Feng, Kymberleigh A. Pagel, Sean D. Mooney, Rachel Karchin, Anne O’Donnell-Luria, et al. 2022. <span>“Calibration of Computational Tools for Missense Variant Pathogenicity Classification and <span>ClinGen</span> Recommendations for <span>PP3</span>/<span>BP4</span> Criteria.”</span> <em>American Journal of Human Genetics</em> 109 (12): 2163–77. <a href="https://doi.org/10.1016/j.ajhg.2022.10.013">https://doi.org/10.1016/j.ajhg.2022.10.013</a>.

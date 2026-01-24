@@ -1153,6 +1153,27 @@ Check Your Answer
 <p>Annotation-informed approaches update fine-mapping priors based on these external data sources. Variants in coding regions, promoters, enhancers, or regions of evolutionary constraint may be assigned higher prior probability of causality. Integration with chromatin accessibility data (from ATAC-seq or DNase-seq), transcription factor binding maps (from ChIP-seq), or expression quantitative trait loci (eQTL) can further prioritize variants with plausible regulatory mechanisms.</p>
 <p>The functional scores introduced in <a href="p1-ch02-data.html" class="quarto-xref"><span>Chapter 2</span></a> provide systematic frameworks for quantifying variant-level annotations. Scores such as <em>CADD</em>, <em>DANN</em>, and <em>Eigen</em> integrate diverse genomic features into single numbers that can inform fine-mapping priors <span class="citation" data-cites="kircher_general_2014 quang_dann_2015 ionita-laza_spectral_2016">(<a href="../bib/references.html#ref-kircher_general_2014" role="doc-biblioref">Kircher et al. 2014</a>; <a href="../bib/references.html#ref-quang_dann_2015" role="doc-biblioref">Quang, Chen, and Xie 2015</a>; <a href="../bib/references.html#ref-ionita-laza_spectral_2016" role="doc-biblioref">Ionita-Laza et al. 2016</a>)</span>. More recently, foundation models trained on genomic sequence have produced variant effect predictions that capture functional information beyond what traditional annotations provide (<a href="../part_4/p4-ch18-vep-fm.html" class="quarto-xref"><span>Chapter 18</span></a>). These scores transform fine-mapping from a purely statistical exercise into an integrative analysis that combines association evidence with mechanistic plausibility.</p>
 <p>Large-scale resources now link GWAS summary statistics, fine-mapping results, and functional genomic annotations across hundreds of traits and thousands of loci <span class="citation" data-cites="buniello_open_2025 mountjoy_open_2021">(<a href="../bib/references.html#ref-buniello_open_2025" role="doc-biblioref">Buniello et al. 2025</a>; <a href="../bib/references.html#ref-mountjoy_open_2021" role="doc-biblioref">Mountjoy et al. 2021</a>)</span>. These datasets enable systematic identification of variants that are both statistically prioritized and functionally plausible, though the biological validation required to confirm causal mechanisms remains laborious and is completed for only a small fraction of associated loci.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="From Variants to Genes: Locus-to-Gene Scores">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+From Variants to Genes: Locus-to-Gene Scores
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Even after fine-mapping identifies likely causal variants, connecting noncoding variants to their target genes remains challenging. Most GWAS signals fall in regulatory regions that may affect expression of genes other than the nearest gene through long-range enhancer-promoter interactions.</p>
+<p><strong>Locus-to-gene (L2G) scores</strong> address this GWAS-to-gene problem systematically <span class="citation" data-cites="mountjoy_open_2021">(<a href="../bib/references.html#ref-mountjoy_open_2021" role="doc-biblioref">Mountjoy et al. 2021</a>)</span>. The Open Targets Genetics platform integrates multiple evidence types into a machine learning model that ranks candidate genes at each GWAS locus:</p>
+<ul>
+<li><strong>Fine-mapping probabilities</strong>: Which variants are most likely causal</li>
+<li><strong>eQTL colocalization</strong>: Genetic variants affecting expression of nearby genes</li>
+<li><strong>Chromatin contacts</strong>: Physical interactions between enhancers and promoters (Hi-C, pcHi-C)</li>
+<li><strong>Distance-based priors</strong>: Proximity to transcription start sites</li>
+</ul>
+<p>L2G scores provide principled starting points for interpreting GWAS hits, though they remain computational predictions requiring experimental validation. The concept is explored further in <a href="../part_6/p6-ch26-causal.html#sec-ch26-gwas-to-genes" class="quarto-xref"><span>Section 26.2.5</span></a> (causal inference context) and <a href="../part_7/p7-ch30-drug-discovery.html#sec-ch30-opentargets" class="quarto-xref"><span>Section 30.1.3</span></a> (drug discovery applications).</p>
+</div>
+</div>
 </section>
 <section id="sec-ch03-multi-ancestry-fine-mapping" class="level3" data-number="3.4.3">
 <h3 data-number="3.4.3" class="anchored" data-anchor-id="sec-ch03-multi-ancestry-fine-mapping"><span class="header-section-number">3.4.3</span> Multi-Ancestry Fine-Mapping</h3>
@@ -1523,7 +1544,7 @@ Test Yourself
 <li>What is the purpose of fine-mapping, and what do credible sets represent?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-26-contents" aria-controls="callout-26" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-27-contents" aria-controls="callout-27" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1532,7 +1553,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-26" class="callout-26-contents callout-collapse collapse">
+<div id="callout-27" class="callout-27-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p><strong>1. LD and the association-causation gap:</strong> Linkage disequilibrium means nearby variants are inherited together in correlated haplotype blocks. When a causal variant affects a trait, all variants in high LD with it will also show statistical association, even if they have no functional role. GWAS cannot distinguish the causal variant from correlated “tag” variants based on association statistics alone, creating fundamental ambiguity about which variants actually matter biologically.</p>
 <p><strong>2. Three layers of heritability:</strong> - <strong>Pedigree heritability (h²)</strong>: Estimated from family resemblance (e.g., twin studies), represents the total proportion of phenotypic variance attributable to genetic factors (~80% for height). This is the upper bound. - <strong>SNP-heritability (h²_SNP)</strong>: Variance explained by common variants on genotyping arrays (~50-60% for height). This sets the ceiling for what common-variant polygenic scores can achieve. - <strong>Missing heritability</strong>: The gap between pedigree and SNP-heritability, representing genetic variation not captured by common SNPs (rare variants, structural variants, poorly tagged regions).</p>

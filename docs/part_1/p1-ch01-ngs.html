@@ -884,12 +884,12 @@ Deep Dive: Quality Scores in Sequencing
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../figs/part_1/ch01/01-fig-variant-pipeline.svg" class="img-fluid figure-img"></p>
-<figcaption>The variant calling pipeline from DNA sample to VCF</figcaption>
+<figcaption>The variant calling pipeline from DNA sample to VCF.</figcaption>
 </figure>
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-variant-calling-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1.1: The variant calling pipeline transforms raw sequencing data into genotype calls through multiple processing stages. DNA samples undergo fragmentation and library preparation before sequencing on short-read (Illumina) or long-read (PacBio, ONT) platforms. Base calling produces FASTQ files containing reads and quality scores. Alignment maps reads to a reference genome (GRCh38 or T2T-CHM13), generating BAM/CRAM files. Post-alignment processing marks PCR duplicates and recalibrates base quality scores. Per-sample variant calling produces genomic VCF (gVCF) files encoding genotype likelihoods at all positions. Joint genotyping across a cohort merges samples and applies population-informed priors. Final filtering separates high-confidence variants from probable artifacts. File sizes shown are approximate for 30× whole-genome sequencing.
+Figure&nbsp;1.1: The variant calling pipeline transforms raw sequencing data into high-confidence genotype calls. Sample preparation fragments DNA for either short-read (Illumina) or long-read (PacBio, ONT) sequencing, producing FASTQ files of reads with quality scores. Alignment maps reads to a reference genome, generating BAM/CRAM files that undergo duplicate marking and base quality recalibration. Per-sampl e variant calling with tools like HaplotypeCaller or DeepVariant produces genomic VCF (gVCF) files. Joint genotyping across the cohort applies population-informed priors, and final filtering separates high-confidence variants from artifacts. File sizes are approximate for 30× whole-genome sequencing.
 </figcaption>
 </figure>
 </div>
@@ -1098,39 +1098,19 @@ Check Your Answer
 </section>
 <section id="sec-ch01-phasing-methods" class="level3" data-number="1.4.2">
 <h3 data-number="1.4.2" class="anchored" data-anchor-id="sec-ch01-phasing-methods"><span class="header-section-number">1.4.2</span> Phasing Methods</h3>
-<p>Different data types enable different phasing strategies, each with characteristic strengths and resolution. <strong>Read-backed phasing</strong> uses sequencing reads that span multiple heterozygous sites to assign alleles to the same physical molecule. Short reads typically phase variants within tens to hundreds of base pairs, limited by fragment length. Long reads extend this range to tens of kilobases or more, providing direct physical evidence of haplotype structure.</p>
-<div id="fig-phasing-compound-het" class="quarto-layout-panel">
+<p>Different data types enable different phasing strategies, each with characteris tic strengths and resolution. <strong>Read-backed phasing</strong> uses sequencing reads that span multiple heterozygous sites to assign alleles to the same physical molecule. Short reads typically phase variants within tens to hundreds of base pairs, limited by fragment length. Long reads extend this range to tens of kilobases or more, providing direct physical evidence of haplotype structure.</p>
+<div id="fig-phasing-compound-het" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-phasing-compound-het-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../figs/part_1/ch01/02-A-fig-phasing-compound-het.svg" class="img-fluid figure-img"></p>
-<figcaption>Two chromosomes with variant positions</figcaption>
+<p><img src="../figs/part_1/ch01/02-fig-phasing-compound-het.svg" class="img-fluid figure-img"></p>
+<figcaption>Haplotype phase determines clinical outcome in compound heterozygosity.</figcaption>
 </figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../figs/part_1/ch01/02-B-fig-phasing-compound-het.svg" class="img-fluid figure-img"></p>
-<figcaption>Cis configuration: both variants on same chromosome</figcaption>
-</figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../figs/part_1/ch01/02-C-fig-phasing-compound-het.svg" class="img-fluid figure-img"></p>
-<figcaption>Trans configuration: variants on opposite chromosomes</figcaption>
-</figure>
-</div>
-</div>
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-phasing-compound-het-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1.2: Haplotype phase determines clinical outcome in compound heterozygosity. (A) Two chromosomes carry the <em>CFTR</em> gene, with two pathogenic variant positions indicated. Standard VCF genotypes (0/1 at each site) cannot distinguish the configurations shown in (B) and (C). (B) <em>Cis</em> configuration: both variants reside on the maternal chromosome, leaving the paternal copy functional. The child is an unaffected carrier. (C) <em>Trans</em> configuration: one variant on each parental chromosome eliminates all functional copies. The child has cystic fibrosis. Phased VCF notation (using | delimiter) encodes this distinction: 0|1, 0|1 indicates both alternate alleles on the same haplotype (cis), while 1|0, 0|1 indicates alternate alleles on opposite haplotypes (trans).
+Figure&nbsp;1.2: A) Two chromosomes carry the <em>CFTR</em> gene with pathogenic variants at two positions. Standard VCF notation (0/1, 0/1) cannot distinguish phase. B) <em>Cis</em> configuration: both variants on the maternal chromosome leave the paternal copy functional; the child is an unaffected carrier. C) <em>Trans</em> configuration: one variant per chromosome eliminates all functional copies, causing cystic fibrosis. Phased VCF notation uses the | delimiter: 0|1, 0|1 indicates cis (same haplotype), while 1|0, 0|1 indicates trans (opposite haplotypes).
 </figcaption>
 </figure>
 </div>
@@ -1274,12 +1254,12 @@ Check Your Answer
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../figs/part_1/ch01/03-fig-error-sources.svg" class="img-fluid figure-img"></p>
-<figcaption>Taxonomy of variant calling error sources</figcaption>
+<figcaption>Taxonomy of variant calling error sources.</figcaption>
 </figure>
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-error-sources-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1.3: Variant calling errors arise from three distinct sources with different consequences. Sequencing artifacts from instrument noise and library preparation create false positive (FP) variant calls. Alignment artifacts from ambiguous mapping in repetitive regions cause both false positives (variants called at wrong locations) and false negatives (FN, true variants missed due to mapping uncertainty). Biological complexity including mosaicism and low allele fractions primarily causes false negatives, as genuine variants fail to meet detection thresholds. Understanding error sources is essential for interpreting callset limitations and designing robust training strategies for downstream models.
+Figure&nbsp;1.3: Three error sources produce distinct failure modes. Sequencing artifacts (instrument noise, library prep, homopolymer slippage) generate false positives. Alignment artifacts (repetitive regions, reference bias) cause both false positives and false negatives. Biological complexity (mosaicism, low allele fractions) primarily causes false negatives when true variants fall below detection thresholds. Training data inherits these systematic errors, creating blind spots that downstream models learn as if they were biological signal.
 </figcaption>
 </figure>
 </div>
@@ -1353,7 +1333,7 @@ When to Worry
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-difficult-regions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1.4: Genomic regions where short-read variant calling systematically fails. Ideogram showing the human genome with difficult regions highlighted. Segmental duplications (yellow) including the <em>CYP2D6</em> pharmacogene region on chromosome 22q11 create mapping ambiguity. The HLA complex (orange) on chromosome 6p21 contains extreme polymorphism that confounds reference-based alignment. Centromeric and pericentromeric regions (gray) lack unique sequence. Tandem repeat disorder loci including <em>HTT</em> (Huntington disease, 4p16) and <em>FMR1</em> (fragile X, Xq27) resist accurate short-read genotyping. Inset (lower right) shows approximate genome fraction in each difficulty class. Inset (lower left) illustrates how long reads spanning entire difficult regions resolve ambiguities invisible to short reads.
+Figure&nbsp;1.4: Genomic regions where short-read variant calling systematically fails. Segmental duplications (yellow) including <em>CYP2D6</em> on 22q11 create mapping ambiguity. The HLA complex (orange) on 6p21 contains extreme polymorphism. Centromeric regions (gray) lack unique sequence. Tandem repeat loci (<em>HTT</em>, <em>FMR1</em>) resist short-read genotyping. Lower insets show genome fraction by difficulty class and how long reads resolve ambiguities by spanning entire difficult regions.
 </figcaption>
 </figure>
 </div>
@@ -1453,7 +1433,7 @@ Key Insight
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-deepvariant-pileup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1.5: DeepVariant encodes read evidence as a multi-channel pileup tensor for CNN-based genotype classification. Each row represents a sequencing read overlapping the candidate variant position (center column). Multiple channels encode: base identity (matches in gray, mismatches color-coded by nucleotide), base quality (intensity gradient), mapping quality, strand orientation, and allele support. The reference sequence appears at top. This example shows a heterozygous SNV with approximately half of reads supporting each allele. The CNN processes this tensor representation and outputs posterior probabilities over three genotype classes. The called genotype (0/1) corresponds to the highest posterior probability (0.96).
+Figure&nbsp;1.5: DeepVariant encodes read evidence as a multi-channel pileup tensor for CNN-based genotype classification. Rows represent reads; columns represent positions around the candidate variant. Channels encode base identity, quality scores, mapping quality, and strand orientation. This example shows a heterozygous SNV with ~50% reads supporting each allele. The CNN outputs posterior probabilities over three genotype classes; the called genotype (0/1) corresponds to the highest probability (0.96).
 </figcaption>
 </figure>
 </div>

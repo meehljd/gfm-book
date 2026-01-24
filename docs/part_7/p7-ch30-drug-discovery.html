@@ -486,6 +486,7 @@ div.csl-indent {
   <ul class="collapse">
   <li><a href="#sec-ch30-variant-to-gene" id="toc-sec-ch30-variant-to-gene" class="nav-link" data-scroll-target="#sec-ch30-variant-to-gene"><span class="header-section-number">30.1.1</span> From Variant-Level Predictions to Gene-Level Evidence</a></li>
   <li><a href="#sec-ch30-safety-efficacy" id="toc-sec-ch30-safety-efficacy" class="nav-link" data-scroll-target="#sec-ch30-safety-efficacy"><span class="header-section-number">30.1.2</span> Linking Genetics to Target Safety and Efficacy</a></li>
+  <li><a href="#sec-ch30-opentargets" id="toc-sec-ch30-opentargets" class="nav-link" data-scroll-target="#sec-ch30-opentargets"><span class="header-section-number">30.1.3</span> Systematic Target Prioritization with Open Targets</a></li>
   </ul></li>
   <li><a href="#sec-ch30-network-discovery" id="toc-sec-ch30-network-discovery" class="nav-link" data-scroll-target="#sec-ch30-network-discovery"><span class="header-section-number">30.2</span> Network-Aware Target Discovery and Repurposing</a>
   <ul class="collapse">
@@ -722,6 +723,94 @@ Table&nbsp;30.1: Evidence types for variant-to-gene mapping in drug target prior
 <p>Classical human genetics has established several heuristics for target selection that foundation models can reinforce and extend. Human knockout individuals, people carrying biallelic loss-of-function variants, provide natural experiments on the consequences of gene inactivation. Protective variants that reduce disease risk suggest the directionality of therapeutic intervention: partial inhibition of a protein may be beneficial rather than harmful. <strong>Pleiotropy</strong>, meaning associations with many unrelated traits, may signal safety liabilities if modulating a target affects multiple physiological systems (see <a href="../part_1/p1-ch03-gwas.html#sec-ch03-phewas" class="quarto-xref"><span>Section 3.8</span></a>).</p>
 <p>Foundation models sharpen these assessments. Fine-mapping methods combined with regulatory foundation models can distinguish causal variants from those merely in <strong>linkage disequilibrium</strong> with causal variants (see <a href="../part_1/p1-ch03-gwas.html#sec-ch03-ld" class="quarto-xref"><span>Section 3.3</span></a>). Variant effect scores from protein and regulatory models approximate effect sizes, helping differentiate subtle modulators from catastrophic loss-of-function mutations. Multi-task predictions across chromatin marks, transcription factor binding, expression, and splicing provide mechanistic hypotheses for how risk loci affect biology, moving beyond statistical association toward functional understanding.</p>
 <p>The output of this workflow is a ranked list of candidate targets with structured evidence that can be compared across diseases and programs. Each target comes annotated with the strength of genetic evidence (effect sizes, fine-mapping probabilities), predicted mechanisms (coding versus regulatory, affected tissues), constraint information (tolerance to loss-of-function, essentiality), and druggability features (protein family, structural information, existing ligands).</p>
+</section>
+<section id="sec-ch30-opentargets" class="level3" data-number="30.1.3">
+<h3 data-number="30.1.3" class="anchored" data-anchor-id="sec-ch30-opentargets"><span class="header-section-number">30.1.3</span> Systematic Target Prioritization with Open Targets</h3>
+<p>The <strong>Open Targets Platform</strong> (platform.opentargets.org) exemplifies systematic target prioritization by aggregating evidence across multiple domains into target-disease association scores <span class="citation" data-cites="ochoa_open_2023">(<a href="../bib/references.html#ref-ochoa_open_2023" role="doc-biblioref">Ochoa et al. 2023</a>)</span>. Rather than building ad hoc evidence integration for each therapeutic program, Open Targets provides a standardized framework that foundation model predictions can complement and extend.</p>
+<div id="tbl-opentargets-evidence" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-opentargets-evidence-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;30.2: Evidence types integrated by the Open Targets Platform for target-disease association scoring. Foundation models can enhance several components, particularly genetic association refinement and functional consequence prediction.
+</figcaption>
+<div aria-describedby="tbl-opentargets-evidence-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 18%">
+<col style="width: 24%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Evidence Type</th>
+<th>Data Sources</th>
+<th>What It Captures</th>
+<th>FM Enhancement Opportunity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Genetic associations</td>
+<td>GWAS Catalog, UK Biobank, FinnGen</td>
+<td>Population-level risk variants</td>
+<td>Fine-mapping, VEP scoring</td>
+</tr>
+<tr class="even">
+<td>Somatic mutations</td>
+<td>COSMIC, IntOGen</td>
+<td>Cancer driver genes</td>
+<td>Driver vs.&nbsp;passenger classification</td>
+</tr>
+<tr class="odd">
+<td>Rare variant burden</td>
+<td>Gene burden tests</td>
+<td>High-impact coding variants</td>
+<td>AlphaMissense pathogenicity</td>
+</tr>
+<tr class="even">
+<td>Expression</td>
+<td>GTEx, Expression Atlas</td>
+<td>Tissue-specific regulation</td>
+<td>Expression FMs, cell-type specificity</td>
+</tr>
+<tr class="odd">
+<td>Pathways</td>
+<td>Reactome</td>
+<td>Biological context</td>
+<td>Network embedding propagation</td>
+</tr>
+<tr class="even">
+<td>Literature</td>
+<td>Europe PMC text mining</td>
+<td>Published associations</td>
+<td>N/A</td>
+</tr>
+<tr class="odd">
+<td>Known drugs</td>
+<td>ChEMBL</td>
+<td>Existing therapeutic context</td>
+<td>DTI prediction for novel compounds</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Open Targets Genetics (genetics.opentargets.org) addresses the GWAS-to-gene problem systematically through <strong>locus-to-gene (L2G) scores</strong> <span class="citation" data-cites="mountjoy_open_2021">(<a href="../bib/references.html#ref-mountjoy_open_2021" role="doc-biblioref">Mountjoy et al. 2021</a>)</span>. For each GWAS signal, L2G scores rank candidate genes by integrating fine-mapping posterior probabilities, eQTL colocalization evidence, chromatin interaction data, and distance-based priors. This machine learning approach provides principled starting points for interpreting GWAS hits, though experimental validation remains necessary to confirm causality (see <a href="../part_1/p1-ch03-gwas.html#sec-ch03-fine-mapping" class="quarto-xref"><span>Section 3.4</span></a> for fine-mapping methods and <a href="../part_6/p6-ch26-causal.html#sec-ch26-gwas-to-genes" class="quarto-xref"><span>Section 26.2.5</span></a> for causal gene identification).</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Key Insight: Open Targets as Target Validation Baseline
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Before developing novel foundation model-based target identification approaches, researchers should benchmark against Open Targets’ systematic scoring. A new method that underperforms this established baseline on retrospective target validation likely has limited practical value, regardless of performance on other metrics. Open Targets also provides a natural integration point: foundation model predictions can feed into the evidence framework rather than replacing it entirely.</p>
+</div>
+</div>
+<p>The platform has begun incorporating foundation model predictions directly. <em>AlphaMissense</em> pathogenicity scores are now integrated into the genetic evidence layer, demonstrating how foundation model outputs can be incorporated into systematic target validation pipelines. This integration provides a template for how other foundation model predictions—regulatory variant effects, network-derived scores, expression-based prioritization—might enter established workflows rather than requiring entirely new infrastructure.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -734,7 +823,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>A target gene has strong GWAS support (p &lt; 5e-8) but high pleiotropy (associated with 50+ traits in PheWAS) and high constraint (pLI &gt; 0.99). Should this gene be prioritized or deprioritized as a drug target? What additional information would help decide?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -743,7 +832,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>This gene should be approached cautiously and requires deeper investigation. High constraint suggests the gene is essential for viability, indicating potential toxicity from inhibition. High pleiotropy suggests modulating it affects many systems, raising concerns about on-target side effects. Additional information needed includes: which specific traits are associated (are they safety-relevant?), human knockout data from biobanks, tissue expression patterns, and whether the GWAS associations suggest the direction of effect aligns with therapeutic goals.</p>
 </div>
@@ -840,7 +929,7 @@ Knowledge Check: Single-Gene vs.&nbsp;Network Approach?
 <li><p>A target validation study where a single gene shows borderline GWAS significance (p = 10⁻⁶) but sits at a hub position connecting multiple confirmed disease genes.</p></li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -849,7 +938,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Single-gene approach</strong>: Strong genetic evidence for a single causal gene, clear mechanism, and structural data make this ideal for direct targeting without network propagation.</p></li>
@@ -910,7 +999,7 @@ Stop and Think
 </div>
 <div class="callout-body-container callout-body">
 <p>Traditional drug-target interaction prediction requires experimental protein structures for docking. Why might protein language model embeddings enable binding prediction for targets without solved structures? What information do these embeddings capture that might correlate with binding behavior?</p>
-<p><strong>The key insight:</strong> Protein language model embeddings encode evolutionary constraints on each position—which amino acids are tolerated, which co-evolve with other positions, which are absolutely conserved. These constraints reflect structural and functional requirements: a position buried in a hydrophobic core shows different evolutionary patterns than a solvent-exposed loop, and active site residues show patterns distinct from scaffolding regions. Binding sites are evolutionarily constrained because mutations that disrupt binding are selected against. Even without explicit structure, embeddings capture the statistical signatures of binding site residues: unusual conservation patterns, co-evolutionary relationships with other binding site positions, and amino acid preferences reflecting the chemical environment. Two proteins with similar binding site embeddings likely share binding site properties—enabling affinity prediction from sequence alone.</p>
+<p><strong>The key insight:</strong> Protein language model embeddings encode evolutionary constraints on each position: which amino acids are tolerated, which co-evolve with other positions, and which are absolutely conserved. These constraints reflect structural and functional requirements: a position buried in a hydrophobic core shows different evolutionary patterns than a solvent-exposed loop, and active site residues show patterns distinct from scaffolding regions. Binding sites are evolutionarily constrained because mutations that disrupt binding are selected against. Even without explicit structure, embeddings capture the statistical signatures of binding site residues: unusual conservation patterns, co-evolutionary relationships with other binding site positions, and amino acid preferences reflecting the chemical environment. Two proteins with similar binding site embeddings likely share binding site properties, enabling affinity prediction from sequence alone.</p>
 </div>
 </div>
 <p>The prediction task becomes: given a protein embedding (derived from a protein language model) and a molecule embedding (derived from a chemical language model or graph neural network), predict binding affinity or interaction probability. These models can be trained on large databases of known drug-target interactions and binding affinities, then applied to predict interactions for novel targets or molecules.</p>
@@ -1047,7 +1136,7 @@ Knowledge Check
 <div class="callout-body-container callout-body">
 <p>A foundation model predicts that positions 45-60 in a protein domain are highly constrained, while positions 120-135 have high uncertainty in their functional predictions. Which region should receive more variants in a saturation mutagenesis library, and why?</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1056,7 +1145,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div id="callout-19" class="callout-19-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>The high-uncertainty region (positions 120-135) should receive more variants. Active learning principles suggest testing where the model is uncertain provides the most information to improve predictions. The highly constrained region (45-60) will likely show most mutations are deleterious, which confirms existing predictions but teaches us little new. The uncertain region may reveal unexpected functional tolerance or sensitivity that refines the model for future predictions.</p>
 </div>
@@ -1236,7 +1325,7 @@ Recall and Connect
 <div id="tbl-build-buy-finetune" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-build-buy-finetune-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;30.2: Strategic options for foundation model adoption in drug discovery organizations. The optimal choice depends on internal data assets, computational resources, and use case specificity.
+Table&nbsp;30.3: Strategic options for foundation model adoption in drug discovery organizations. The optimal choice depends on internal data assets, computational resources, and use case specificity.
 </figcaption>
 <div aria-describedby="tbl-build-buy-finetune-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1356,13 +1445,13 @@ Recall and Connect
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>From <a href="../part_6/p6-ch27-regulatory.html#sec-ch27-regulatory" class="quarto-xref"><span>Section 27.1</span></a>, recall the challenges of model documentation for regulatory submissions and the liability chain from model developer to clinician. How do these governance considerations affect industry decisions about whether to build, buy, or fine-tune foundation models for drug discovery?</p>
+<p>From <a href="../part_6/p6-ch27-regulatory.html" class="quarto-xref"><span>Chapter 27</span></a>, recall the challenges of model documentation for regulatory submissions and the liability chain from model developer to clinician. How do these governance considerations affect industry decisions about whether to build, buy, or fine-tune foundation models for drug discovery?</p>
 </div>
 </div>
 <p>Foundation models raise new questions around intellectual property, data sharing, and regulatory expectations that organizations must navigate.</p>
 <p>Models trained on proprietary data can be valuable assets but are difficult to patent directly. The model architecture is typically based on published methods; the weights reflect training data that may include public and proprietary components. Downstream discoveries, including specific targets, biomarkers, and therapeutic hypotheses derived from foundation model analyses, are more clearly protectable but require careful documentation of inventive contribution.</p>
 <p>Collaborative model development across institutions may require federated learning or model-to-data paradigms, especially for patient-level data. Genomic data carries re-identification risk (see <a href="../part_6/p6-ch27-regulatory.html#sec-ch27-privacy" class="quarto-xref"><span>Section 27.3</span></a>); sharing raw data, even for model training, requires appropriate consent and data use agreements. Federated approaches that train on local data without centralizing raw information can enable multi-institutional collaboration while respecting privacy constraints.</p>
-<p>For regulatory submissions, foundation models used in drug development create documentation requirements. If a model informed target selection, patient stratification, or safety assessment, regulators may request information about model training, validation, and performance across subgroups (see <a href="../part_6/p6-ch27-regulatory.html#sec-ch27-regulatory" class="quarto-xref"><span>Section 27.1</span></a>). The confounding and interpretability challenges discussed in <a href="../part_3/p3-ch13-confounding.html" class="quarto-xref"><span>Chapter 13</span></a> and <a href="../part_6/p6-ch25-interpretability.html" class="quarto-xref"><span>Chapter 25</span></a> become acute when models inform pivotal decisions in drug development. Clear documentation trails from model prediction to program decision support regulatory review.</p>
+<p>For regulatory submissions, foundation models used in drug development create documentation requirements. If a model informed target selection, patient stratification, or safety assessment, regulators may request information about model training, validation, and performance across subgroups (see <a href="../part_6/p6-ch27-regulatory.html" class="quarto-xref"><span>Chapter 27</span></a>). The confounding and interpretability challenges discussed in <a href="../part_3/p3-ch13-confounding.html" class="quarto-xref"><span>Chapter 13</span></a> and <a href="../part_6/p6-ch25-interpretability.html" class="quarto-xref"><span>Chapter 25</span></a> become acute when models inform pivotal decisions in drug development. Clear documentation trails from model prediction to program decision support regulatory review.</p>
 </section>
 </section>
 <section id="sec-ch30-evaluation" class="level2" data-number="30.8">
@@ -1419,7 +1508,7 @@ Test Yourself
 <li>What is the difference between exploiting model predictions (choosing high-scoring designs) versus exploring uncertain regions in active learning? When should you prioritize each strategy?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-27-contents" aria-controls="callout-27" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-28-contents" aria-controls="callout-28" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1428,7 +1517,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-27" class="callout-27-contents callout-collapse collapse">
+<div id="callout-28" class="callout-28-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Genetic validation advantage</strong>: Genetically validated targets succeed at approximately twice the rate of non-validated targets because human genetics provides causal evidence of target-disease relationships through lifelong modulation in real populations. Unlike correlational evidence from expression studies or pathway membership, genetic associations reflect actual consequences of gene function changes, including protective variants that indicate direction of effect and human knockouts that demonstrate the physiological consequences of complete gene inactivation.</p></li>
@@ -1487,8 +1576,14 @@ Hie, Brian L., Varun R. Shanker, Duo Xu, Theodora U. J. Bruun, Payton A. Weidenb
 <div id="ref-lin_esm-2_2022" class="csl-entry" role="listitem">
 Lin, Zeming, Halil Akin, Roshan Rao, Brian Hie, Zhongkai Zhu, Wenting Lu, Allan dos Santos Costa, et al. 2022. <span>“[<span>ESM</span>-2] <span>Language</span> Models of Protein Sequences at the Scale of Evolution Enable Accurate Structure Prediction.”</span> bioRxiv. <a href="https://doi.org/10.1101/2022.07.20.500902">https://doi.org/10.1101/2022.07.20.500902</a>.
 </div>
+<div id="ref-mountjoy_open_2021" class="csl-entry" role="listitem">
+Mountjoy, Edward, Ellen M. Schmidt, Miguel Carmona, Jeremy Schwartzentruber, Gareth Peat, Alfredo Miranda, Luca Fumis, et al. 2021. <span>“An Open Approach to Systematically Prioritize Causal Variants and Genes at All Published Human <span>GWAS</span> Trait-Associated Loci.”</span> <em>Nature Genetics</em> 53 (11): 1527–33. <a href="https://doi.org/10.1038/s41588-021-00945-5">https://doi.org/10.1038/s41588-021-00945-5</a>.
+</div>
 <div id="ref-nelson_support_2015" class="csl-entry" role="listitem">
 Nelson, Matthew R., Hannah Tipney, Jeffery L. Painter, Judong Shen, Paola Nicoletti, Yufeng Shen, Aris Floratos, et al. 2015. <span>“The Support of Human Genetic Evidence for Approved Drug Indications.”</span> <em>Nature Genetics</em> 47 (8): 856–60. <a href="https://doi.org/10.1038/ng.3314">https://doi.org/10.1038/ng.3314</a>.
+</div>
+<div id="ref-ochoa_open_2023" class="csl-entry" role="listitem">
+Ochoa, David, Andrew Hercules, Miguel Carmona, Daniel Suveges, James Baker, Cinzia Malangone, Irene Lopez, et al. 2023. <span>“The Next-Generation <span>Open</span> <span>Targets</span> <span>Platform</span>: Reimagined, Redesigned, Rebuilt.”</span> <em>Nucleic Acids Research</em> 51 (D1): D1353–59. <a href="https://doi.org/10.1093/nar/gkac1046">https://doi.org/10.1093/nar/gkac1046</a>.
 </div>
 <div id="ref-rakowski_mifm_2025" class="csl-entry" role="listitem">
 Rakowski, Alexander, and Christoph Lippert. 2025. <span>“[<span>MIFM</span>] <span>Multiple</span> Instance Fine-Mapping: Predicting Causal Regulatory Variants with a Deep Sequence Model.”</span> medRxiv. <a href="https://doi.org/10.1101/2025.06.13.25329551">https://doi.org/10.1101/2025.06.13.25329551</a>.

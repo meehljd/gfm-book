@@ -1,0 +1,89 @@
+<mxfile host="app.diagrams.net" modified="2024-01-22T00:00:00.000Z" agent="Claude" version="22.1.0" type="device">
+  <diagram name="Encoder-Only Architecture" id="encoder-only">
+    <mxGraphModel dx="450" dy="400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="380" pageHeight="380" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="(A) Encoder-Only: Bidirectional Context" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Subtitle -->
+        <mxCell id="subtitle" value="Each position attends to all positions (no masking)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="30" width="340" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Architecture diagram -->
+        <mxCell id="input-seq" value="A  T  G  C  [M]  T  A" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=1;fontSize=10;fontFamily=Consolas;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="55" width="200" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="input-label" value="Input (with [MASK] token)" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="60" width="65" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Encoder stack -->
+        <mxCell id="enc-arrow1" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="190" y="80" as="sourcePoint"/>
+            <mxPoint x="190" y="100" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="encoder-stack" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="90" y="100" width="200" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="enc-title" value="&lt;b&gt;Encoder Stack&lt;/b&gt;&lt;br&gt;(N layers)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="130" y="105" width="120" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="enc-detail" value="Bidirectional self-attention&lt;br&gt;+ Feed-forward" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="115" y="140" width="150" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Attention pattern visualization -->
+        <mxCell id="attn-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="100" width="60" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="attn-full" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="300" y="100" width="60" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="attn-label" value="Full attention&lt;br&gt;(all-to-all)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="297" y="163" width="65" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Output -->
+        <mxCell id="enc-arrow2" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="190" y="180" as="sourcePoint"/>
+            <mxPoint x="190" y="200" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="output-seq" value="Contextualized representations" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=1;fontSize=9;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="90" y="200" width="200" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Use cases -->
+        <mxCell id="use-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="240" width="340" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="use-title" value="&lt;b&gt;Use Cases:&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#1f77b4;" vertex="1" parent="1">
+          <mxGeometry x="30" y="243" width="70" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="use-text" value="• Masked language modeling (predict [MASK] tokens)&lt;br&gt;• Sequence classification (CLS token → classifier)&lt;br&gt;• Token classification (each position → label)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="30" y="258" width="320" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="use-models" value="&lt;b&gt;Models:&lt;/b&gt; BERT, DNABERT, DNABERT-2, ESM (proteins)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="30" y="295" width="320" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Key -->
+        <mxCell id="key-box" value="&lt;b&gt;Key:&lt;/b&gt; Sees full context in both directions — best for understanding, not generation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;fontFamily=Arial;align=left;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="20" y="325" width="340" height="25" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

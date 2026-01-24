@@ -200,7 +200,7 @@ where the **prior** $p(\theta)$ encodes beliefs before seeing data, the **likeli
 
 $$p(y^* | x^*, D) = \int p(y^* | x^*, \theta) p(\theta | D) d\theta$$ {#eq-24-predictive}
 
-This integral *marginalizes* over parameter uncertainty—predictions account for not knowing the "true" parameters.
+This integral *marginalizes* over parameter uncertainty, so predictions account for not knowing the "true" parameters.
 
 ### Approximate Bayesian Inference for Neural Networks {#sec-ch24-approx-bayesian}
 
@@ -210,7 +210,7 @@ Full Bayesian inference is computationally prohibitive for large neural networks
 
 **Deep Ensembles as Posterior Samples.** Training $M$ networks from different initializations can be viewed as sampling from an implicit posterior. Ensemble disagreement estimates epistemic uncertainty without explicit Bayesian computation.
 
-**Variational Inference.** Approximate the posterior with a tractable family $q_\phi(\theta)$ by maximizing the evidence lower bound (ELBO). Mean-field VI assumes independent posteriors per parameter—scales to large networks but may underestimate uncertainty.
+**Variational Inference.** Approximate the posterior with a tractable family $q_\phi(\theta)$ by maximizing the evidence lower bound (ELBO). Mean-field VI assumes independent posteriors per parameter, which scales to large networks but may underestimate uncertainty.
 
 :::{.callout-tip}
 ## Practical Guidance: Bayesian UQ Workflow
@@ -487,7 +487,7 @@ If one model expresses uncertainty about a prediction, querying multiple models 
 
 Why do ensembles work for uncertainty estimation? The key insight is that ensemble disagreement reveals where the data underdetermines the model. The theoretical basis for ensemble uncertainty estimation rests on the observation that disagreement between models reflects regions of input space where the training data provides insufficient constraint. Where training examples are dense, gradient descent from different initializations converges to similar solutions, producing agreement. Where training examples are sparse or conflicting, different initializations find different local optima, producing disagreement. This interpretation connects ensembles to Bayesian model averaging, where predictions are averaged over the posterior distribution of model parameters.
 
-For foundation models with billions of parameters, training full ensembles becomes prohibitively expensive. Training five copies of a large protein language model requires approximately five times the compute of a single model, potentially millions of dollars in cloud computing costs. However, some foundation models are released as ensembles by design. *ESM-1v* [@meier_language_2021] exemplifies this approach: the original release includes five models trained with different random seeds, explicitly enabling ensemble-based uncertainty quantification for variant effect prediction. Ensemble disagreement among the five ESM-1v models provides a principled measure of epistemic uncertainty, and variants where all five models agree warrant higher confidence than variants where predictions diverge.
+For foundation models with billions of parameters, training full ensembles becomes prohibitively expensive. Training five copies of a large protein language model requires approximately five times the compute of a single model, potentially millions of dollars in cloud computing costs. However, some foundation models are released as ensembles by design. *ESM-1v* [@meier_esm-1v_2021] exemplifies this approach: the original release includes five models trained with different random seeds, explicitly enabling ensemble-based uncertainty quantification for variant effect prediction. Ensemble disagreement among the five ESM-1v models provides a principled measure of epistemic uncertainty, and variants where all five models agree warrant higher confidence than variants where predictions diverge.
 
 For models not released as ensembles, several practical alternatives reduce the computational burden. Last-layer ensembles freeze the pretrained backbone and train only an ensemble of prediction heads, reducing cost by orders of magnitude while still capturing uncertainty from the fine-tuning process. Snapshot ensembles save model checkpoints at various points during optimization and use these snapshots as ensemble members, requiring only single-model training time. Multi-seed fine-tuning trains the same architecture from multiple random seeds on the fine-tuning task, which is far cheaper than multi-seed pretraining. The broader considerations of fine-tuning and adaptation strategies are discussed in @sec-ch09-transfer.
 

@@ -825,7 +825,7 @@ Recall and Connect
 <section id="sec-ch26-identification" class="level3" data-number="26.2.1">
 <h3 data-number="26.2.1" class="anchored" data-anchor-id="sec-ch26-identification"><span class="header-section-number">26.2.1</span> Causal Identification Theory</h3>
 <p><em>Identification</em> asks: can we estimate a causal effect from observational data, and if so, how?</p>
-<p><strong>The Fundamental Problem.</strong> We want <span class="math inline">\(P(Y | do(X=x))\)</span>—the distribution of <span class="math inline">\(Y\)</span> if we <em>intervene</em> to set <span class="math inline">\(X=x\)</span>. But we only observe <span class="math inline">\(P(Y | X=x)\)</span>—the distribution when <span class="math inline">\(X\)</span> <em>happens to be</em> <span class="math inline">\(x\)</span>.</p>
+<p><strong>The Fundamental Problem.</strong> We want <span class="math inline">\(P(Y | do(X=x))\)</span>: the distribution of <span class="math inline">\(Y\)</span> if we <em>intervene</em> to set <span class="math inline">\(X=x\)</span>. But we only observe <span class="math inline">\(P(Y | X=x)\)</span>: the distribution when <span class="math inline">\(X\)</span> <em>happens to be</em> <span class="math inline">\(x\)</span>.</p>
 <p>These differ when confounders exist:</p>
 <p><span class="math display">\[P(Y | X=x) \neq P(Y | do(X=x)) \text{ in general}\]</span></p>
 <p><strong>Backdoor Criterion.</strong> A set <span class="math inline">\(Z\)</span> satisfies the backdoor criterion for estimating <span class="math inline">\(X \to Y\)</span> if:</p>
@@ -878,7 +878,7 @@ Table&nbsp;26.2: Common scenarios in genomics and whether backdoor adjustment is
 <li>Exchange actions and observations</li>
 <li>Insert/delete actions</li>
 </ol>
-<p>These rules are <em>complete</em>—if a causal effect is identifiable, do-calculus can derive the estimand. The practical implication: when standard adjustment fails, systematic application of do-calculus can reveal alternative identification strategies.</p>
+<p>These rules are <em>complete</em>: if a causal effect is identifiable, do-calculus can derive the estimand. The practical implication: when standard adjustment fails, systematic application of do-calculus can reveal alternative identification strategies.</p>
 </section>
 <section id="sec-ch26-mendelian-randomization" class="level3" data-number="26.2.2">
 <h3 data-number="26.2.2" class="anchored" data-anchor-id="sec-ch26-mendelian-randomization"><span class="header-section-number">26.2.2</span> Mendelian Randomization</h3>
@@ -1269,6 +1269,20 @@ Stop and Think: Causal Structure Across Omics Layers
 <p>Drug development requires confidence that a target is causally involved in disease: that modulating the target will affect disease outcomes. Foundation model predictions contribute to this evidence base but sit within a broader hierarchy of target validation evidence.</p>
 <p>At the weakest level, association evidence shows that the target’s expression or activity correlates with disease in observational data. Foundation models excel at identifying such associations but cannot distinguish causal from confounded relationships. Moderate evidence comes from Mendelian randomization, where genetic instruments affecting the target causally affect disease risk; this provides human in-vivo evidence of causation but may reflect effects of lifetime exposure rather than therapeutic intervention. Strong evidence requires perturbation experiments: knocking out or modulating the target in cellular or animal models affects disease-relevant phenotypes, and foundation models trained on perturbation data can predict such effects but require experimental validation. The strongest evidence comes from clinical intervention, where drugs targeting the mechanism show efficacy in clinical trials, the ultimate validation but one that comes late in development.</p>
 <p>Foundation models can accelerate target validation by integrating across evidence types: identifying associations, predicting perturbation effects, and prioritizing candidates for experimental validation (<a href="../part_7/p7-ch30-drug-discovery.html" class="quarto-xref"><span>Chapter 30</span></a>). But they cannot substitute for experimental and clinical evidence; they can only prioritize which targets receive experimental investment.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Evidence Integration in Practice: Open Targets">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Evidence Integration in Practice: Open Targets
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <strong>Open Targets Platform</strong> operationalizes this evidence hierarchy through systematic scoring of genetics (GWAS, rare variants), genomics (expression, pathways), literature, and clinical data <span class="citation" data-cites="ochoa_open_2023">(<a href="../bib/references.html#ref-ochoa_open_2023" role="doc-biblioref">Ochoa et al. 2023</a>)</span>. Their genetic association scores explicitly distinguish between associational evidence (GWAS hits) and causal evidence (rare variant burden in constrained genes, Mendelian disease genes), implementing the distinction between rung 1 and rung 2 evidence discussed above.</p>
+<p>For foundation model practitioners, Open Targets provides a useful calibration: if your target prioritization method underperforms this established baseline on retrospective validation, reconsider before investing in experimental follow-up. Conversely, foundation model outputs can feed into Open Targets-style frameworks (<em>AlphaMissense</em> pathogenicity scores are already integrated) rather than requiring entirely separate validation infrastructure.</p>
+</div>
+</div>
 <div id="fig-evidence-hierarchy" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-evidence-hierarchy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1310,7 +1324,7 @@ Practical Guidance: Communicating Causal Claims
 <p>Regulatory agencies evaluate medical AI systems based on their intended use. Systems that make causal claims face higher evidentiary standards than purely predictive systems.</p>
 <p>A risk stratification model that identifies high-risk patients without claiming to identify treatable causes requires validation of predictive accuracy: does the model correctly identify who is at risk? This is achievable through retrospective validation on held-out data.</p>
 <p>A treatment recommendation model that suggests interventions based on predicted causal effects requires validation of causal accuracy: do the recommended interventions actually produce the predicted effects? This requires prospective trials comparing outcomes for patients who receive model-guided vs.&nbsp;standard treatment.</p>
-<p>Current regulatory frameworks (<a href="p6-ch27-regulatory.html#sec-ch27-regulatory" class="quarto-xref"><span>Section 27.1</span></a>) do not fully distinguish predictive from causal validation, but the distinction has practical implications. Foundation model predictions deployed as associational tools (risk scores, phenotype predictions) face achievable validation requirements. The same models deployed as causal tools (treatment recommendations, target prioritization) face requirements that may be impractical without substantial prospective evidence.</p>
+<p>Current regulatory frameworks (<a href="p6-ch27-regulatory.html" class="quarto-xref"><span>Chapter 27</span></a>) do not fully distinguish predictive from causal validation, but the distinction has practical implications. Foundation model predictions deployed as associational tools (risk scores, phenotype predictions) face achievable validation requirements. The same models deployed as causal tools (treatment recommendations, target prioritization) face requirements that may be impractical without substantial prospective evidence.</p>
 <p>Developers of foundation model systems should consider intended use carefully. Claiming causal capabilities that cannot be validated creates both regulatory risk and potential patient harm. Limiting claims to predictive performance, while acknowledging causal limitations, provides a more defensible regulatory path while appropriately caveating clinical use.</p>
 </section>
 </section>
@@ -1337,7 +1351,7 @@ Test Yourself
 <li>How can foundation models be trained to support causal reasoning? What types of training data would enable movement from associational to interventional predictions?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1346,7 +1360,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-20" class="callout-20-contents callout-collapse collapse">
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Rung 1 (Association)</strong>: P(Y|X): observing X tells us about Y. <strong>Rung 2 (Intervention)</strong>: P(Y|do(X)): changing X affects Y. <strong>Rung 3 (Counterfactual)</strong>: What would Y have been for this individual if X were different? More data at Rung 1 cannot reach Rung 2 because observational data conflates causal and confounded associations; no amount of correlation data distinguishes causation from common causes without interventional data or causal assumptions.</p></li>
@@ -1369,7 +1383,7 @@ Chapter Summary
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This chapter examined the gap between association (what we observe) and causation (what happens if we intervene)—a distinction critical for clinical application of foundation models.</p>
+<p>This chapter examined the gap between association (what we observe) and causation (what happens if we intervene), a distinction critical for clinical application of foundation models.</p>
 <p><strong>Key takeaways</strong>:</p>
 <ol type="1">
 <li><p><strong>Pearl’s ladder of causation</strong> distinguishes association (rung 1), intervention (rung 2), and counterfactual reasoning (rung 3). Foundation models trained on observational data operate at rung 1; moving higher requires interventional data or causal assumptions.</p></li>
@@ -1379,7 +1393,7 @@ Chapter Summary
 <li><p><strong>Clinical stakes are high</strong>. Association-based predictions support screening and stratification. Causal claims support intervention. Confusing the two leads to ineffective treatments and potential patient harm.</p></li>
 <li><p><strong>Three paths forward</strong>: Training on interventional data, integrating with causal inference frameworks, and building closed-loop experimental systems all offer routes toward causally valid foundation models.</p></li>
 </ol>
-<p><strong>Looking ahead</strong>: <a href="p6-ch27-regulatory.html#sec-ch27-regulatory" class="quarto-xref"><span>Section 27.1</span></a> examines how regulatory frameworks evaluate AI systems, with implications for causal claims. <a href="../part_7/p7-ch30-drug-discovery.html" class="quarto-xref"><span>Chapter 30</span></a> applies these concepts to drug target identification. <a href="../part_7/p7-ch32-frontiers.html#sec-ch32-causality" class="quarto-xref"><span>Section 32.1.3</span></a> explores frontier challenges in causal reasoning for genomics.</p>
+<p><strong>Looking ahead</strong>: <a href="p6-ch27-regulatory.html" class="quarto-xref"><span>Chapter 27</span></a> examines how regulatory frameworks evaluate AI systems, with implications for causal claims. <a href="../part_7/p7-ch30-drug-discovery.html" class="quarto-xref"><span>Chapter 30</span></a> applies these concepts to drug target identification. <a href="../part_7/p7-ch32-frontiers.html#sec-ch32-causality" class="quarto-xref"><span>Section 32.1.3</span></a> explores frontier challenges in causal reasoning for genomics.</p>
 </div>
 </div>
 
@@ -1429,6 +1443,9 @@ Maller, Julian B., Gilean McVean, Jake Byrnes, Damjan Vukcevic, Kimmo Palin, Zha
 </div>
 <div id="ref-mcelreath_statistical_2020" class="csl-entry" role="listitem">
 McElreath, Richard. 2020. <em>Statistical <span>Rethinking</span>: <span>A</span> <span>Bayesian</span> <span>Course</span> with <span>Examples</span> in <span>R</span> and <span>Stan</span></em>. 2nd ed. Chapman; Hall/CRC.
+</div>
+<div id="ref-ochoa_open_2023" class="csl-entry" role="listitem">
+Ochoa, David, Andrew Hercules, Miguel Carmona, Daniel Suveges, James Baker, Cinzia Malangone, Irene Lopez, et al. 2023. <span>“The Next-Generation <span>Open</span> <span>Targets</span> <span>Platform</span>: Reimagined, Redesigned, Rebuilt.”</span> <em>Nucleic Acids Research</em> 51 (D1): D1353–59. <a href="https://doi.org/10.1093/nar/gkac1046">https://doi.org/10.1093/nar/gkac1046</a>.
 </div>
 <div id="ref-pearl_book_2018" class="csl-entry" role="listitem">
 Pearl, Judea, and Dana Mackenzie. 2018. <em>The <span>Book</span> of <span>Why</span></em>. Hachette Book Group.

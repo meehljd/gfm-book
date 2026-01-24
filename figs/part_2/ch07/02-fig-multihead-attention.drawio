@@ -1,0 +1,187 @@
+<mxfile host="app.diagrams.net" modified="2024-01-22T00:00:00.000Z" agent="Claude" version="22.1.0" type="device">
+  <diagram name="Multi-Head Attention" id="multihead-attention">
+    <mxGraphModel dx="550" dy="500" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="480" pageHeight="500" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="Multi-Head Attention: Parallel Specialized Processing" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="400" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Subtitle -->
+        <mxCell id="subtitle" value="h independent attention heads learn different relationship patterns" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="32" width="400" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Input -->
+        <mxCell id="input-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="200" y="55" width="80" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="input-label" value="Input X" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="60" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="input-dim" value="[L × d_model]" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="200" y="88" width="80" height="12" as="geometry"/>
+        </mxCell>
+
+        <!-- Split arrows to heads -->
+        <mxCell id="split1" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="85" as="sourcePoint"/>
+            <mxPoint x="70" y="120" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="split2" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="240" y="85" as="sourcePoint"/>
+            <mxPoint x="240" y="120" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="split3" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="270" y="85" as="sourcePoint"/>
+            <mxPoint x="410" y="120" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Head 1 -->
+        <mxCell id="head1-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="120" width="100" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="head1-title" value="&lt;b&gt;Head 1&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="20" y="123" width="100" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="head1-qkv" value="W_Q¹, W_K¹, W_V¹" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="25" y="140" width="90" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="head1-attn" value="Attention" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#82b366;fontSize=9;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="35" y="155" width="70" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="head1-spec" value="&lt;i&gt;Local patterns&lt;br&gt;(adjacent positions)&lt;/i&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="25" y="183" width="90" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="head1-out" value="head₁" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=1;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="35" y="210" width="50" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Head 2 -->
+        <mxCell id="head2-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="190" y="120" width="100" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="head2-title" value="&lt;b&gt;Head 2&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Arial;fontColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="190" y="123" width="100" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="head2-qkv" value="W_Q², W_K², W_V²" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="195" y="140" width="90" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="head2-attn" value="Attention" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff9e6;strokeColor=#d6b656;fontSize=9;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="205" y="155" width="70" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="head2-spec" value="&lt;i&gt;Motif patterns&lt;br&gt;(consensus sites)&lt;/i&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="195" y="183" width="90" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="head2-out" value="head₂" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=1;fontColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="205" y="210" width="50" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Head h (ellipsis style) -->
+        <mxCell id="headh-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="360" y="120" width="100" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="headh-title" value="&lt;b&gt;Head h&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Arial;fontColor=#9467bd;" vertex="1" parent="1">
+          <mxGeometry x="360" y="123" width="100" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="headh-qkv" value="W_Qʰ, W_Kʰ, W_Vʰ" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="365" y="140" width="90" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="headh-attn" value="Attention" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f3e8f9;strokeColor=#9673a6;fontSize=9;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="375" y="155" width="70" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="headh-spec" value="&lt;i&gt;Long-range&lt;br&gt;(distant interactions)&lt;/i&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="365" y="183" width="90" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="headh-out" value="headₕ" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=1;fontColor=#9467bd;" vertex="1" parent="1">
+          <mxGeometry x="375" y="210" width="50" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Ellipsis between heads -->
+        <mxCell id="ellipsis" value="· · ·" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontFamily=Arial;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="300" y="165" width="50" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Merge arrows -->
+        <mxCell id="merge1" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="70" y="230" as="sourcePoint"/>
+            <mxPoint x="200" y="270" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="merge2" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="240" y="230" as="sourcePoint"/>
+            <mxPoint x="240" y="270" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="merge3" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="410" y="230" as="sourcePoint"/>
+            <mxPoint x="280" y="270" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Concat -->
+        <mxCell id="concat-box" value="Concat" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;strokeWidth=2;fontSize=10;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="270" width="120" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="concat-dim" value="[L × (h · d_v)]" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="180" y="295" width="120" height="12" as="geometry"/>
+        </mxCell>
+
+        <!-- Linear projection -->
+        <mxCell id="linear-arrow" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="240" y="310" as="sourcePoint"/>
+            <mxPoint x="240" y="330" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="linear-box" value="Linear W_O" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;fontSize=10;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="330" width="120" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="linear-note" value="Project back to d_model" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="180" y="355" width="120" height="12" as="geometry"/>
+        </mxCell>
+
+        <!-- Output -->
+        <mxCell id="output-arrow" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="240" y="370" as="sourcePoint"/>
+            <mxPoint x="240" y="390" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="output-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="200" y="390" width="80" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="output-label" value="Output" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="395" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="output-dim" value="[L × d_model]" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="200" y="423" width="80" height="12" as="geometry"/>
+        </mxCell>
+
+        <!-- Formula box -->
+        <mxCell id="formula-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="445" width="440" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="formula-title" value="&lt;b&gt;Formula:&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="30" y="448" width="60" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="formula-text" value="MultiHead(Q,K,V) = Concat(head₁, ..., headₕ) · W_O   where headᵢ = Attention(Q·W_Qⁱ, K·W_Kⁱ, V·W_Vⁱ)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="30" y="463" width="420" height="22" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

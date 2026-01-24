@@ -92,6 +92,32 @@ Foundation models sharpen these assessments. Fine-mapping methods combined with 
 
 The output of this workflow is a ranked list of candidate targets with structured evidence that can be compared across diseases and programs. Each target comes annotated with the strength of genetic evidence (effect sizes, fine-mapping probabilities), predicted mechanisms (coding versus regulatory, affected tissues), constraint information (tolerance to loss-of-function, essentiality), and druggability features (protein family, structural information, existing ligands).
 
+### Systematic Target Prioritization with Open Targets {#sec-ch30-opentargets}
+
+The **Open Targets Platform** (platform.opentargets.org) exemplifies systematic target prioritization by aggregating evidence across multiple domains into target-disease association scores [@ochoa_open_2023]. Rather than building ad hoc evidence integration for each therapeutic program, Open Targets provides a standardized framework that foundation model predictions can complement and extend.
+
+: Evidence types integrated by the Open Targets Platform for target-disease association scoring. Foundation models can enhance several components, particularly genetic association refinement and functional consequence prediction. {#tbl-opentargets-evidence}
+
+| Evidence Type | Data Sources | What It Captures | FM Enhancement Opportunity |
+|---------------|--------------|------------------|----------------------------|
+| Genetic associations | GWAS Catalog, UK Biobank, FinnGen | Population-level risk variants | Fine-mapping, VEP scoring |
+| Somatic mutations | COSMIC, IntOGen | Cancer driver genes | Driver vs. passenger classification |
+| Rare variant burden | Gene burden tests | High-impact coding variants | AlphaMissense pathogenicity |
+| Expression | GTEx, Expression Atlas | Tissue-specific regulation | Expression FMs, cell-type specificity |
+| Pathways | Reactome | Biological context | Network embedding propagation |
+| Literature | Europe PMC text mining | Published associations | N/A |
+| Known drugs | ChEMBL | Existing therapeutic context | DTI prediction for novel compounds |
+
+Open Targets Genetics (genetics.opentargets.org) addresses the GWAS-to-gene problem systematically through **locus-to-gene (L2G) scores** [@mountjoy_open_2021]. For each GWAS signal, L2G scores rank candidate genes by integrating fine-mapping posterior probabilities, eQTL colocalization evidence, chromatin interaction data, and distance-based priors. This machine learning approach provides principled starting points for interpreting GWAS hits, though experimental validation remains necessary to confirm causality (see @sec-ch03-fine-mapping for fine-mapping methods and @sec-ch26-gwas-to-genes for causal gene identification).
+
+::: {.callout-important}
+## Key Insight: Open Targets as Target Validation Baseline
+
+Before developing novel foundation model-based target identification approaches, researchers should benchmark against Open Targets' systematic scoring. A new method that underperforms this established baseline on retrospective target validation likely has limited practical value, regardless of performance on other metrics. Open Targets also provides a natural integration point: foundation model predictions can feed into the evidence framework rather than replacing it entirely.
+:::
+
+The platform has begun incorporating foundation model predictions directly. *AlphaMissense* pathogenicity scores are now integrated into the genetic evidence layer, demonstrating how foundation model outputs can be incorporated into systematic target validation pipelines. This integration provides a template for how other foundation model predictions---regulatory variant effects, network-derived scores, expression-based prioritization---might enter established workflows rather than requiring entirely new infrastructure.
+
 ::: {.callout-note}
 ## Knowledge Check
 
@@ -195,7 +221,7 @@ Generative approaches offer an alternative paradigm for molecular docking. *Diff
 
 Traditional drug-target interaction prediction requires experimental protein structures for docking. Why might protein language model embeddings enable binding prediction for targets without solved structures? What information do these embeddings capture that might correlate with binding behavior?
 
-**The key insight:** Protein language model embeddings encode evolutionary constraints on each position—which amino acids are tolerated, which co-evolve with other positions, which are absolutely conserved. These constraints reflect structural and functional requirements: a position buried in a hydrophobic core shows different evolutionary patterns than a solvent-exposed loop, and active site residues show patterns distinct from scaffolding regions. Binding sites are evolutionarily constrained because mutations that disrupt binding are selected against. Even without explicit structure, embeddings capture the statistical signatures of binding site residues: unusual conservation patterns, co-evolutionary relationships with other binding site positions, and amino acid preferences reflecting the chemical environment. Two proteins with similar binding site embeddings likely share binding site properties—enabling affinity prediction from sequence alone.
+**The key insight:** Protein language model embeddings encode evolutionary constraints on each position: which amino acids are tolerated, which co-evolve with other positions, and which are absolutely conserved. These constraints reflect structural and functional requirements: a position buried in a hydrophobic core shows different evolutionary patterns than a solvent-exposed loop, and active site residues show patterns distinct from scaffolding regions. Binding sites are evolutionarily constrained because mutations that disrupt binding are selected against. Even without explicit structure, embeddings capture the statistical signatures of binding site residues: unusual conservation patterns, co-evolutionary relationships with other binding site positions, and amino acid preferences reflecting the chemical environment. Two proteins with similar binding site embeddings likely share binding site properties, enabling affinity prediction from sequence alone.
 :::
 
 The prediction task becomes: given a protein embedding (derived from a protein language model) and a molecule embedding (derived from a chemical language model or graph neural network), predict binding affinity or interaction probability. These models can be trained on large databases of known drug-target interactions and binding affinities, then applied to predict interactions for novel targets or molecules.

@@ -230,7 +230,7 @@ For each cluster, align seqlets and compute position weight matrices. Results mi
 | 1 | 8,200 | HNF4A | 0.92 |
 | 2 | 5,100 | CEBPA | 0.89 |
 | 3 | 3,400 | FOXA1 | 0.85 |
-| 4 | 2,800 | Novel (no match > 0.7) | — |
+| 4 | 2,800 | Novel (no match > 0.7) | N/A |
 
 **Step 5: Validate**
 The HNF4A and CEBPA motifs are known liver-specific transcription factors, confirming the model learned biologically relevant features. Cluster 4 represents a potential novel regulatory element requiring experimental validation.
@@ -310,7 +310,7 @@ Transformer-based genomic models use self-attention to aggregate information acr
 
 ![Multi-head specialization: different heads capture different patterns](../figs/part_6/ch25/04-C-fig-attention-visualization.svg)
 
-Attention patterns in genomic transformers. (A) Attention heatmap showing position-position weights with local and long-range patterns. (B) Biological overlay: attention sometimes aligns with regulatory elements, but correlation does not prove the model learned these relationships causally. (C) Multi-head specialization: different heads capture local context, long-range interactions, or specific motifs. **Caution**: attention weights describe information routing, not importance—always validate with perturbation experiments.
+Attention patterns in genomic transformers. (A) Attention heatmap showing position-position weights with local and long-range patterns. (B) Biological overlay: attention sometimes aligns with regulatory elements, but correlation does not prove the model learned these relationships causally. (C) Multi-head specialization: different heads capture local context, long-range interactions, or specific motifs. **Caution**: attention weights describe information routing, not importance; always validate with perturbation experiments.
 :::
 
 
@@ -478,7 +478,7 @@ The following table summarizes the hierarchy of validation tests, from weakest t
 ::: {#fig-plausible-vs-faithful}
 ![Plausible versus faithful explanations: validation distinguishes them](../figs/part_6/ch25/05-fig-plausible-vs-faithful.svg)
 
-Plausible versus faithful explanations. Both paths start with attributions highlighting a GATA motif. Left: plausible but unfaithful—the explanation matches intuition, but the model learned GC content; validation tests fail. Right: faithful—the model actually uses the GATA motif; validation tests pass. The distinction determines whether interpretability generates genuine insight or false comfort. Always validate: does ablating the feature change prediction? Does inserting it increase prediction?
+Plausible versus faithful explanations. Both paths start with attributions highlighting a GATA motif. Left: plausible but unfaithful, where the explanation matches intuition, but the model learned GC content; validation tests fail. Right: faithful, where the model actually uses the GATA motif; validation tests pass. The distinction determines whether interpretability generates genuine insight or false comfort. Always validate: does ablating the feature change prediction? Does inserting it increase prediction?
 :::
 
 
@@ -500,7 +500,7 @@ In genomic models, these criteria become:
 | Sufficiency | Synthetic sequences matching explanations show predicted behavior |
 | Completeness | No high-importance positions are missed by the explanation |
 
-The Swartout and Moore criteria for explanation systems [@swartout_explanation_1993]—explicit representation, fidelity, and understandability—remain foundational for evaluating whether model explanations are scientifically useful rather than merely plausible.
+The Swartout and Moore criteria for explanation systems [@swartout_explanation_1993] (explicit representation, fidelity, and understandability) remain foundational for evaluating whether model explanations are scientifically useful rather than merely plausible.
 
 
 ### Experimental Validation {#sec-ch25-experimental}

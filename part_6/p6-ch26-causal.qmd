@@ -158,7 +158,7 @@ Genomics has developed specialized methods for causal inference that leverage th
 
 *Identification* asks: can we estimate a causal effect from observational data, and if so, how?
 
-**The Fundamental Problem.** We want $P(Y | do(X=x))$—the distribution of $Y$ if we *intervene* to set $X=x$. But we only observe $P(Y | X=x)$—the distribution when $X$ *happens to be* $x$.
+**The Fundamental Problem.** We want $P(Y | do(X=x))$: the distribution of $Y$ if we *intervene* to set $X=x$. But we only observe $P(Y | X=x)$: the distribution when $X$ *happens to be* $x$.
 
 These differ when confounders exist:
 
@@ -192,7 +192,7 @@ $$P(Y | do(X)) = \sum_m P(M=m|X) \sum_{x'} P(Y|M=m, X=x') P(X=x')$$
 2. Exchange actions and observations
 3. Insert/delete actions
 
-These rules are *complete*—if a causal effect is identifiable, do-calculus can derive the estimand. The practical implication: when standard adjustment fails, systematic application of do-calculus can reveal alternative identification strategies.
+These rules are *complete*: if a causal effect is identifiable, do-calculus can derive the estimand. The practical implication: when standard adjustment fails, systematic application of do-calculus can reveal alternative identification strategies.
 
 ### Mendelian Randomization {#sec-ch26-mendelian-randomization}
 
@@ -500,6 +500,12 @@ At the weakest level, association evidence shows that the target's expression or
 
 Foundation models can accelerate target validation by integrating across evidence types: identifying associations, predicting perturbation effects, and prioritizing candidates for experimental validation (@sec-ch30-drug-discovery). But they cannot substitute for experimental and clinical evidence; they can only prioritize which targets receive experimental investment.
 
+::: {.callout-note title="Evidence Integration in Practice: Open Targets"}
+The **Open Targets Platform** operationalizes this evidence hierarchy through systematic scoring of genetics (GWAS, rare variants), genomics (expression, pathways), literature, and clinical data [@ochoa_open_2023]. Their genetic association scores explicitly distinguish between associational evidence (GWAS hits) and causal evidence (rare variant burden in constrained genes, Mendelian disease genes), implementing the distinction between rung 1 and rung 2 evidence discussed above.
+
+For foundation model practitioners, Open Targets provides a useful calibration: if your target prioritization method underperforms this established baseline on retrospective validation, reconsider before investing in experimental follow-up. Conversely, foundation model outputs can feed into Open Targets-style frameworks (*AlphaMissense* pathogenicity scores are already integrated) rather than requiring entirely separate validation infrastructure.
+:::
+
 ::: {#fig-evidence-hierarchy}
 ![Evidence hierarchy for drug target validation](../figs/part_6/ch26/04-fig-evidence-hierarchy.svg)
 
@@ -564,7 +570,7 @@ Before reviewing the summary, test your recall:
 ::: {.callout-note}
 ## Chapter Summary
 
-This chapter examined the gap between association (what we observe) and causation (what happens if we intervene)---a distinction critical for clinical application of foundation models.
+This chapter examined the gap between association (what we observe) and causation (what happens if we intervene), a distinction critical for clinical application of foundation models.
 
 **Key takeaways**:
 

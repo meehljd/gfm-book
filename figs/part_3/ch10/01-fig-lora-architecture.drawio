@@ -1,0 +1,160 @@
+<mxfile host="app.diagrams.net" modified="2024-01-22T00:00:00.000Z" agent="Claude" version="22.1.0" type="device">
+  <diagram name="Low-Rank Adaptation (LoRA) Architecture" id="lora-architecture">
+    <mxGraphModel dx="500" dy="520" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="450" pageHeight="500" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="Low-Rank Adaptation (LoRA)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="20" y="10" width="300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Subtitle -->
+        <mxCell id="subtitle" value="Parameter-efficient fine-tuning via low-rank decomposition" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="32" width="400" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Input -->
+        <mxCell id="input" value="Input x" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=1;fontSize=10;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="185" y="60" width="80" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="input-dim" value="[d]" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="270" y="67" width="30" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Split arrows -->
+        <mxCell id="arr-split1" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="180" y="75" as="sourcePoint"/>
+            <mxPoint x="120" y="110" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arr-split2" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="270" y="75" as="sourcePoint"/>
+            <mxPoint x="330" y="110" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Original frozen weights (W) -->
+        <mxCell id="w-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="30" y="110" width="180" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="w-title" value="&lt;b&gt;Pretrained Weights W&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Arial;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="55" y="115" width="130" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="w-frozen" value="❄ FROZEN" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontStyle=1;fontColor=#1f77b4;" vertex="1" parent="1">
+          <mxGeometry x="75" y="130" width="90" height="15" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="w-matrix" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e0e0e0;strokeColor=#999999;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="55" y="150" width="130" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="w-label" value="&lt;b&gt;W&lt;/b&gt;&lt;br&gt;[d × d]&lt;br&gt;(full rank)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="80" y="160" width="80" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="w-params" value="~millions params" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="70" y="225" width="100" height="12" as="geometry"/>
+        </mxCell>
+
+        <!-- LoRA branch (BA) -->
+        <mxCell id="lora-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="240" y="110" width="180" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="lora-title" value="&lt;b&gt;LoRA Adapter ΔW&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="270" y="115" width="120" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="lora-trainable" value="🔥 TRAINABLE" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;fontStyle=1;fontColor=#d62728;" vertex="1" parent="1">
+          <mxGeometry x="285" y="130" width="90" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Matrix A -->
+        <mxCell id="a-matrix" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="155" width="25" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="a-label" value="&lt;b&gt;A&lt;/b&gt;&lt;br&gt;[r×d]" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="255" y="165" width="35" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Multiply symbol -->
+        <mxCell id="mult" value="×" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="290" y="175" width="20" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Matrix B -->
+        <mxCell id="b-matrix" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="315" y="155" width="60" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="b-label" value="&lt;b&gt;B&lt;/b&gt; [d×r]" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="315" y="160" width="60" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- Result -->
+        <mxCell id="eq" value="ΔW = B × A" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontStyle=1;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="280" y="195" width="100" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="rank-note" value="r ≪ d (e.g., r=8, d=768)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;fontStyle=2;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="270" y="210" width="120" height="12" as="geometry"/>
+        </mxCell>
+        <mxCell id="lora-params" value="~thousands params" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;fontStyle=2;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="280" y="225" width="100" height="12" as="geometry"/>
+        </mxCell>
+
+        <!-- Merge arrows -->
+        <mxCell id="arr-merge1" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="120" y="250" as="sourcePoint"/>
+            <mxPoint x="180" y="280" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arr-merge2" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="330" y="250" as="sourcePoint"/>
+            <mxPoint x="270" y="280" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Addition -->
+        <mxCell id="add" value="+" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=14;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="210" y="275" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Output -->
+        <mxCell id="arr-out" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#666666;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="225" y="305" as="sourcePoint"/>
+            <mxPoint x="225" y="330" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="output" value="Output: (W + ΔW)x" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=1;fontSize=10;fontFamily=Arial;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="330" width="130" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Benefits box -->
+        <mxCell id="benefits-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="380" width="185" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="benefits-title" value="&lt;b&gt;Benefits:&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#2ca02c;" vertex="1" parent="1">
+          <mxGeometry x="40" y="383" width="60" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="benefits-text" value="✓ 0.1-1% params trained&lt;br&gt;✓ No inference latency&lt;br&gt;✓ Multiple adapters switchable&lt;br&gt;✓ Prevents catastrophic forgetting&lt;br&gt;✓ Works with any linear layer" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="40" y="400" width="165" height="65" as="geometry"/>
+        </mxCell>
+
+        <!-- Hyperparameters -->
+        <mxCell id="hyper-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="235" y="380" width="185" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="hyper-title" value="&lt;b&gt;Key Hyperparameters:&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Arial;fontColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="245" y="383" width="120" height="15" as="geometry"/>
+        </mxCell>
+        <mxCell id="hyper-text" value="• &lt;b&gt;r&lt;/b&gt; (rank): 4-64 (typical: 8-16)&lt;br&gt;• &lt;b&gt;α&lt;/b&gt; (scaling): often α = r&lt;br&gt;• &lt;b&gt;Target layers&lt;/b&gt;: Q, K, V projections&lt;br&gt;• &lt;b&gt;Dropout&lt;/b&gt;: 0.0-0.1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontFamily=Arial;" vertex="1" parent="1">
+          <mxGeometry x="245" y="400" width="165" height="65" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -982,10 +982,10 @@ Key Insight: Emergence Creates Capability Thresholds
 </section>
 <section id="sec-ch14-learning-theory" class="level2" data-number="14.4">
 <h2 data-number="14.4" class="anchored" data-anchor-id="sec-ch14-learning-theory"><span class="header-section-number">14.4</span> Theoretical Foundations: Why Foundation Models Generalize</h2>
-<p>Foundation models challenge classical statistical learning theory—they have far more parameters than training examples yet generalize remarkably well. Understanding this puzzle requires revisiting fundamental concepts.</p>
+<p>Foundation models challenge classical statistical learning theory: they have far more parameters than training examples yet generalize remarkably well. Understanding this puzzle requires revisiting fundamental concepts.</p>
 <section id="sec-ch14-classical-theory" class="level3" data-number="14.4.1">
 <h3 data-number="14.4.1" class="anchored" data-anchor-id="sec-ch14-classical-theory"><span class="header-section-number">14.4.1</span> Classical Generalization Theory</h3>
-<p><strong>VC Dimension and Capacity.</strong> The Vapnik-Chervonenkis (VC) dimension measures a model class’s <em>capacity</em>—the largest set of points it can perfectly classify in all possible labelings (“shatter”). For a linear classifier in <span class="math inline">\(d\)</span> dimensions: <span class="math inline">\(\text{VC}(H) = d + 1\)</span>.</p>
+<p><strong>VC Dimension and Capacity.</strong> The Vapnik-Chervonenkis (VC) dimension measures a model class’s <em>capacity</em>, the largest set of points it can perfectly classify in all possible labelings (“shatter”). For a linear classifier in <span class="math inline">\(d\)</span> dimensions: <span class="math inline">\(\text{VC}(H) = d + 1\)</span>.</p>
 <p>Classical bounds state that generalization error scales as:</p>
 <p><span class="math display">\[\epsilon_{gen} \leq \epsilon_{train} + O\left(\sqrt{\frac{\text{VC}(H)}{n}}\right)\]</span></p>
 <p><strong>The Puzzle:</strong> A transformer with 1B parameters has enormous capacity, yet generalizes from “only” billions of tokens. The VC bound would predict catastrophic overfitting.</p>
@@ -1007,7 +1007,7 @@ Key Insight: Emergence Creates Capability Thresholds
 <li><strong>More parameters generally help</strong> (until compute-limited, not data-limited)</li>
 <li><strong>Pretraining provides implicit regularization</strong> for downstream tasks</li>
 <li><strong>Transfer works because</strong> pretrained representations lie on low-dimensional manifolds aligned with biological structure</li>
-<li><strong>Overfitting to genomic benchmarks</strong> is a real risk—effective sample size for rare variants may be much smaller than nominal test set size</li>
+<li><strong>Overfitting to genomic benchmarks</strong> is a real risk; effective sample size for rare variants may be much smaller than nominal test set size</li>
 </ol>
 </section>
 </section>
@@ -1471,7 +1471,7 @@ Check Your Answers
 <li><p>Variant effect prediction models integrate multiple information sources for clinical relevance but focus narrowly on variant interpretation.</p></li>
 <li><p>Multi-omic models integrate across modalities for holistic understanding but face data engineering complexity and are still early in development.</p></li>
 </ol></li>
-<li><p><strong>Emergent capabilities</strong>: These are abilities that appear discontinuously at certain scale thresholds and are absent in smaller models (e.g., ESM-2’s structural understanding emerges at ~650M parameters, zero-shot variant effect prediction requires sufficient scale). This matters because attempting to fine-tune a model below the capability threshold is wasted effort—if a 100M parameter model fundamentally cannot perform a task, no amount of fine-tuning will enable it. You must verify that models of similar scale have demonstrated the required capability before attempting adaptation.</p></li>
+<li><p><strong>Emergent capabilities</strong>: These are abilities that appear discontinuously at certain scale thresholds and are absent in smaller models (e.g., ESM-2’s structural understanding emerges at ~650M parameters, zero-shot variant effect prediction requires sufficient scale). This matters because attempting to fine-tune a model below the capability threshold is wasted effort: if a 100M parameter model fundamentally cannot perform a task, no amount of fine-tuning will enable it. You must verify that models of similar scale have demonstrated the required capability before attempting adaptation.</p></li>
 <li><p><strong>Build vs.&nbsp;use hierarchy</strong>: Start with frozen embeddings from existing models (hours of work, ~$10 compute, 70-90% of fine-tuned performance). Escalate to parameter-efficient adaptation like LoRA if embeddings underperform (days of work, $100-1000 compute, ~95% of full fine-tuning). Consider full fine-tuning only for high-stakes applications (weeks, $1000+). Train from scratch only when: (a) target domain differs fundamentally from existing pretraining data, (b) you have unique large-scale data, (c) timeline permits months, and (d) budget permits $100K+ compute. Most researchers never need to train from scratch.</p></li>
 </ol>
 </div>
