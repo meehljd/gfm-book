@@ -1607,6 +1607,20 @@ Propensity Scores vs.&nbsp;Prognostic Scores
 <p>Deduplication across training and evaluation sets prevents direct memorization. For genomic data, deduplication must operate at multiple levels: individual samples (the same person appearing under different identifiers), family groups (relatives sharing haplotype segments), and genomic loci (the same variant position appearing in both training and test sets). Variant effect prediction requires particularly stringent locus-level deduplication; a model that has seen any variant at position chr1:12345 during training cannot be fairly evaluated on novel variants at that position.</p>
 <p>Splitting strategies determine what generalization is actually tested. Random splits assess interpolation within the training distribution. Locus-level splits test generalization to novel genomic positions. Chromosome holdouts test transfer across genomic regions. Cohort splits test robustness to institutional and demographic differences. Temporal splits simulate prospective deployment. Each strategy answers a different question, and benchmark performance under one splitting regime does not guarantee performance under others. Reporting results across multiple splitting strategies reveals which aspects of generalization a model has achieved. The comprehensive treatment of benchmark design in <a href="p3-ch11-benchmarks.html" class="quarto-xref"><span>Chapter 11</span></a> addresses these considerations in detail.</p>
 <p>Benchmark diversity ensures that evaluation reflects the full range of deployment contexts. Benchmarks constructed from a single ancestry group, institution, or sequencing platform test only narrow generalization. Explicitly including diverse ancestries, multiple institutions, and varied technical platforms in evaluation sets reveals performance heterogeneity that homogeneous benchmarks would hide. The ProteinGym and CASP benchmarks in protein modeling demonstrate how thoughtfully constructed evaluation resources can drive genuine progress; genomic variant interpretation would benefit from similar community efforts.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Measuring Dataset Diversity">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Measuring Dataset Diversity
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Stating that a dataset is “diverse” is insufficient without quantification. The <strong>Vendi Score</strong> <span class="citation" data-cites="friedman_vendi_2023">(<a href="../bib/references.html#ref-friedman_vendi_2023" role="doc-biblioref">Friedman and Dieng 2023</a>)</span> provides a principled metric for this purpose. Given a set of samples and a pairwise similarity function (e.g., kernel on embeddings or genotype distances), the Vendi Score computes the matrix exponential of the Shannon entropy of the normalized similarity matrix’s eigenvalues — equivalent to the <strong>effective rank</strong> of the similarity matrix. The score ranges from 1 (all samples identical) to <span class="math inline">\(n\)</span> (all samples maximally distinct), providing an intuitive interpretation as the effective number of unique elements in the dataset.</p>
+<p>For genomic applications, the Vendi Score can quantify diversity along multiple axes: ancestry representation in a cohort (using genetic distance kernels), embedding coverage of a foundation model’s representation space, or phenotypic breadth of an evaluation benchmark. Tracking diversity scores across train/test splits and subsampling schemes helps ensure that data reduction preserves representativeness rather than collapsing onto a homogeneous subset. When benchmark diversity scores are low despite inclusion of nominally different populations, the benchmark may not test the generalization it claims to assess.</p>
+</div>
+</div>
 <p>Documentation of overlaps between training resources and benchmarks enables readers to assess potential leakage. When a foundation model is pretrained on gnomAD, fine-tuned on ClinVar, and evaluated on a benchmark that filters variants using gnomAD frequencies, the information flow is complex and potentially circular. Explicit documentation of which resources contributed to which stages of model development allows appropriate skepticism about performance claims. Benchmark papers should catalog known overlaps with major training resources; model papers should acknowledge which benchmarks may be compromised by their pretraining choices.</p>
 </section>
 <section id="sec-ch13-causal-inference" class="level3" data-number="13.9.5">
@@ -1641,7 +1655,7 @@ Knowledge Check
 <li>What monitoring should be implemented post-deployment?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1650,7 +1664,7 @@ Check Your Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-21" class="callout-21-contents callout-collapse collapse">
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Major fairness concerns:</strong> The score may show 40-75% reduced accuracy in non-European populations, potentially providing inferior risk stratification to already underserved groups. Differential performance could lead to missed diagnoses in minority populations or inappropriate screening recommendations.</p></li>
@@ -1714,7 +1728,7 @@ Test Yourself
 <li>What splitting strategies address different types of leakage (individual overlap, family structure, position memorization, temporal drift)?</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled" title="Check Your Answers">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-25-contents" aria-controls="callout-25" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1723,7 +1737,7 @@ Check Your Answers
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-24" class="callout-24-contents callout-collapse collapse">
+<div id="callout-25" class="callout-25-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>Confounding, bias, leakage, and distribution shift</strong>: Confounding occurs when a variable affects both features and labels (example: ancestry influences allele frequencies through population history and disease risk through healthcare access pathways). Bias is systematic deviation from the target quantity (example: training on 50% disease prevalence but deploying at 5% prevalence causes systematic over-prediction). Data leakage occurs when test information influences training (example: the same variant appearing in both training and test sets, or ClinVar labels being influenced by CADD scores that later become training features). Distribution shift is mismatch between training and deployment distributions (example: a model trained on one hospital’s coding practices failing at a different institution with different documentation standards).</p></li>
@@ -1800,6 +1814,9 @@ Davey Smith, George, and Shah Ebrahim. 2003. <span>“<span>‘<span>Mendelian</
 </div>
 <div id="ref-duncan_analysis_2019" class="csl-entry" role="listitem">
 Duncan, L., H. Shen, B. Gelaye, J. Meijsen, K. Ressler, M. Feldman, R. Peterson, and B. Domingue. 2019. <span>“Analysis of Polygenic Risk Score Usage and Performance in Diverse Human Populations.”</span> <em>Nature Communications</em> 10 (1): 3328. <a href="https://doi.org/10.1038/s41467-019-11112-0">https://doi.org/10.1038/s41467-019-11112-0</a>.
+</div>
+<div id="ref-friedman_vendi_2023" class="csl-entry" role="listitem">
+Friedman, Dan, and Adji Bousso Dieng. 2023. <span>“The <span>Vendi</span> <span>Score</span>: <span>A</span> <span>Diversity</span> <span>Evaluation</span> <span>Metric</span> for <span>Machine</span> <span>Learning</span>.”</span> <em>Transactions on Machine Learning Research</em>. <a href="https://openreview.net/forum?id=S7hJSmMM5l">https://openreview.net/forum?id=S7hJSmMM5l</a>.
 </div>
 <div id="ref-ge_polygenic_2019" class="csl-entry" role="listitem">
 Ge, Tian, Chia-Yen Chen, Yang Ni, Yen-Chen Anne Feng, and Jordan W. Smoller. 2019. <span>“Polygenic Prediction via <span>Bayesian</span> Regression and Continuous Shrinkage Priors.”</span> <em>Nature Communications</em> 10 (1): 1776. <a href="https://doi.org/10.1038/s41467-019-09718-5">https://doi.org/10.1038/s41467-019-09718-5</a>.
